@@ -12,38 +12,46 @@ use string::*;
 
 const ROM_PAGE: usize = 0x2000;
 
+/// Pkmnapi database
+///
+/// # Example
+///
+/// ```
+/// use std::fs;
+/// use pkmnapi::db::*;
+/// # use std::fs::File;
+/// # use std::io::prelude::*;
+/// # let mut file = File::create("rom.db").unwrap();
+/// # file.write_all(&vec![0x00; 0x150]).unwrap();
+///
+/// let rom = fs::read("rom.db").unwrap();
+/// let db = PkmnapiDB::new(&rom).unwrap();
+/// # fs::remove_file("rom.db");
+/// ```
 #[derive(Debug)]
 pub struct PkmnapiDB {
-    rom: Vec<u8>,
+    pub rom: Vec<u8>,
     pub hash: String,
     pub header: PkmnapiDBHeader,
 }
 
-#[derive(Debug, PartialEq)]
-pub struct PkmnapiDBTypeName {
-    pub name: PkmnapiDBString,
-}
-
-#[derive(Debug, PartialEq)]
-pub struct PkmnapiDBTypeEffect {
-    pub attacker_id: u8,
-    pub defender_id: u8,
-    pub multiplier: f32,
-}
-
-#[derive(Debug, PartialEq)]
-pub struct PkmnapiDBStats {
-    pub base_hp: u8,
-    pub base_attack: u8,
-    pub base_defence: u8,
-    pub base_speed: u8,
-    pub base_special: u8,
-    pub type_ids: Vec<u8>,
-    pub catch_rate: u8,
-    pub base_exp_yield: u8,
-}
-
 impl PkmnapiDB {
+    /// Create new database
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi::db::*;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # file.write_all(&vec![0x00; 0x150]).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// # fs::remove_file("rom.db");
+    /// ```
     pub fn new(rom: &Vec<u8>) -> Result<PkmnapiDB, String> {
         let hash = format!("{:x}", md5::compute(&rom));
         let header = PkmnapiDBHeader::from(&rom)?;
@@ -55,6 +63,24 @@ impl PkmnapiDB {
         })
     }
 
+    /// Verify global checksum
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi::db::*;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # file.write_all(&vec![0x00; 0x150]).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// assert_eq!(db.verify_checksum(db.header.global_checksum), true);
+    /// # fs::remove_file("rom.db");
+    /// ```
     pub fn verify_checksum(&self, global_checksum: u16) -> bool {
         let rom = [&self.rom[..0x014E], &self.rom[0x0150..]].concat();
         let checksum = rom
@@ -64,10 +90,53 @@ impl PkmnapiDB {
         checksum.0 == global_checksum
     }
 
+    /// Verify ROM hash
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi::db::*;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # file.write_all(&vec![0x00; 0x150]).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// assert_eq!(db.verify_hash("6923685781779ac0b69c77ec08ce0479"), true);
+    /// # fs::remove_file("rom.db");
+    /// ```
     pub fn verify_hash<S: Into<String>>(&self, hash: S) -> bool {
         self.hash == hash.into()
     }
 
+    /// Apply ROM patch
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi::db::*;
+    /// use pkmnapi::db::patch::*;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # file.write_all(&vec![0x00; 0x150]).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let mut db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// assert_eq!(db.rom[..4], [0x00, 0x00, 0x00, 0x00]);
+    ///
+    /// let patch = PkmnapiDBPatch::new(0x00, vec![0x13, 0x37]);
+    ///
+    /// db.apply_patch(patch);
+    ///
+    /// assert_eq!(db.rom[..4], [0x13, 0x37, 0x00, 0x00]);
+    /// # fs::remove_file("rom.db");
+    /// ```
     pub fn apply_patch(&mut self, patch: PkmnapiDBPatch) {
         let rom = [
             &self.rom[..patch.offset],
@@ -236,6 +305,30 @@ impl PkmnapiDB {
 
         Ok(PkmnapiDBPatch::new(offset, stats_raw))
     }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct PkmnapiDBTypeName {
+    pub name: PkmnapiDBString,
+}
+
+#[derive(Debug, PartialEq)]
+pub struct PkmnapiDBTypeEffect {
+    pub attacker_id: u8,
+    pub defender_id: u8,
+    pub multiplier: f32,
+}
+
+#[derive(Debug, PartialEq)]
+pub struct PkmnapiDBStats {
+    pub base_hp: u8,
+    pub base_attack: u8,
+    pub base_defence: u8,
+    pub base_speed: u8,
+    pub base_special: u8,
+    pub type_ids: Vec<u8>,
+    pub catch_rate: u8,
+    pub base_exp_yield: u8,
 }
 
 #[cfg(test)]
