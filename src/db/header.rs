@@ -35,8 +35,9 @@ impl PkmnapiDBHeader {
     /// let rom = [
     ///     vec![0x00; 0x134],
     ///     "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(),
-    ///     vec![0x00; 0x012]
-    /// ].concat();
+    ///     vec![0x00; 0x012],
+    /// ]
+    /// .concat();
     /// let header = PkmnapiDBHeader::from(&rom).unwrap();
     ///
     /// assert_eq!(header.title, "GAMEBOYGAME");
@@ -102,8 +103,9 @@ impl PkmnapiDBHeader {
     ///     "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(),
     ///     vec![0x00; 0x00E],
     ///     vec![0xC9], // header checksum
-    ///     vec![0x00; 0x003]
-    /// ].concat();
+    ///     vec![0x00; 0x003],
+    /// ]
+    /// .concat();
     /// let header = PkmnapiDBHeader::from(&rom).unwrap();
     ///
     /// assert_eq!(header.verify_checksum(), true);

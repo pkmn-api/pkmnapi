@@ -38,7 +38,10 @@ impl PkmnapiDBPatch {
     ///
     /// let patch = PkmnapiDBPatch::new(0x123456, vec![0x13, 0x37]);
     ///
-    /// assert_eq!(patch.to_raw(), vec![0x12, 0x34, 0x56, 0x00, 0x02, 0x13, 0x37]);
+    /// assert_eq!(
+    ///     patch.to_raw(),
+    ///     vec![0x12, 0x34, 0x56, 0x00, 0x02, 0x13, 0x37]
+    /// );
     /// ```
     pub fn to_raw(&self) -> Vec<u8> {
         let mut offset = vec![];
