@@ -78,16 +78,60 @@ impl PkmnapiDB {
     /// let rom = fs::read("rom.db").unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
-    /// assert_eq!(db.verify_checksum(db.header.global_checksum), true);
+    /// assert_eq!(db.verify_checksum(), true);
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn verify_checksum(&self, global_checksum: u16) -> bool {
+    pub fn verify_checksum(&self) -> bool {
         let rom = [&self.rom[..0x014E], &self.rom[0x0150..]].concat();
         let checksum = rom
             .iter()
             .fold(Wrapping(0u16), |acc, x| acc + Wrapping(*x as u16));
 
-        checksum.0 == global_checksum
+        checksum.0 == self.header.global_checksum
+    }
+
+    /// Generate global checksum
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi::db::*;
+    /// use pkmnapi::db::patch::*;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # file.write_all(&vec![0x00; 0x150]).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let mut db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// db.rom[0x100] = 0x42;
+    ///
+    /// assert_eq!(db.verify_checksum(), false);
+    ///
+    /// let patch = db.generate_checksum();
+    ///
+    /// assert_eq!(patch, PkmnapiDBPatch {
+    ///     offset: 0x014E,
+    ///     length: 0x02,
+    ///     data: vec![0x00, 0x42]
+    /// });
+    ///
+    /// assert_eq!(db.verify_checksum(), true);
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn generate_checksum(&mut self) -> PkmnapiDBPatch {
+        let rom = [&self.rom[..0x014E], &self.rom[0x0150..]].concat();
+        let checksum = rom
+            .iter()
+            .fold(Wrapping(0u16), |acc, x| acc + Wrapping(*x as u16));
+
+        self.header.global_checksum = checksum.0;
+
+        let checksum = checksum.0.to_be_bytes().to_vec();
+
+        PkmnapiDBPatch::new(0x014E, checksum)
     }
 
     /// Verify ROM hash
@@ -148,6 +192,33 @@ impl PkmnapiDB {
         self.rom = rom;
     }
 
+    /// Get type name by type ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi::db::*;
+    /// use pkmnapi::db::string::*;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x27DAE],
+    /// #     vec![0xB0, 0x7D],
+    /// #     vec![0x8D, 0x8E, 0x91, 0x8C, 0x80, 0x8B, 0x50],
+    /// #     vec![0x00; 0x03]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let type_name = db.get_type_name_by_id(0).unwrap();
+    ///
+    /// assert_eq!(type_name.name.decode_trimmed(), "NORMAL");
+    /// # fs::remove_file("rom.db");
+    /// ```
     pub fn get_type_name_by_id(&self, type_id: u8) -> Result<PkmnapiDBTypeName, String> {
         let offset_base = ROM_PAGE * 0x10;
         let pointer_offset = (offset_base + 0x7DAE) + (type_id as usize * 2);
@@ -157,11 +228,45 @@ impl PkmnapiDB {
             cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
         };
 
-        let name = PkmnapiDBString::new(&self.rom[pointer..=(pointer + 9)]);
+        let type_name = PkmnapiDBTypeName::from(&self.rom[pointer..=(pointer + 9)]);
 
-        Ok(PkmnapiDBTypeName { name })
+        Ok(type_name)
     }
 
+    /// Set type name by type ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi::db::*;
+    /// use pkmnapi::db::patch::*;
+    /// use pkmnapi::db::string::*;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x27DAE],
+    /// #     vec![0xB0, 0x7D],
+    /// #     vec![0x8D, 0x8E, 0x91, 0x8C, 0x80, 0x8B, 0x50],
+    /// #     vec![0x00; 0x03]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let patch = db.set_type_name_by_id(0, PkmnapiDBTypeName {
+    ///     name: PkmnapiDBString::from_string("BORING")
+    /// }).unwrap();
+    ///
+    /// assert_eq!(patch, PkmnapiDBPatch {
+    ///     offset: 0x27DB0,
+    ///     length: 6,
+    ///     data: vec![0x81, 0x8E, 0x91, 0x88, 0x8D, 0x86]
+    /// });
+    /// # fs::remove_file("rom.db");
+    /// ```
     pub fn set_type_name_by_id(
         &self,
         type_id: u8,
@@ -170,7 +275,7 @@ impl PkmnapiDB {
         let old_type_name = self.get_type_name_by_id(type_id)?;
         let old_type_name = old_type_name.name.decode_trimmed();
         let old_type_name_len = old_type_name.len();
-        let type_name_raw = type_name.name.value;
+        let type_name_raw = type_name.to_raw();
         let type_name_len = type_name_raw.len();
 
         if old_type_name_len < type_name_len {
@@ -188,9 +293,40 @@ impl PkmnapiDB {
             cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
         };
 
-        Ok(PkmnapiDBPatch::new(pointer, type_name_raw))
+        let data = [type_name_raw, vec![0x50; old_type_name_len - type_name_len]].concat();
+
+        Ok(PkmnapiDBPatch::new(pointer, data))
     }
 
+    /// Get type effect by type effect ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi::db::*;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x3E474],
+    /// #     vec![0x01, 0x02, 0x14],
+    /// #     vec![0xFF]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let type_effect = db.get_type_effect_by_id(0).unwrap();
+    ///
+    /// assert_eq!(type_effect, PkmnapiDBTypeEffect {
+    ///     attacking_type_id: 0x01,
+    ///     defending_type_id: 0x02,
+    ///     multiplier: 2.0
+    /// });
+    /// # fs::remove_file("rom.db");
+    /// ```
     pub fn get_type_effect_by_id(&self, type_effect_id: u8) -> Result<PkmnapiDBTypeEffect, String> {
         let offset_base = ROM_PAGE * 0x1F;
         let pointer = offset_base + 0x0474;
@@ -206,19 +342,46 @@ impl PkmnapiDB {
         }
 
         let pointer = pointer + (type_effect_id as usize * 3);
-        let mut cursor = Cursor::new(&self.rom[pointer..(pointer + 3)]);
 
-        let attacker_id = cursor.read_u8().unwrap_or(0);
-        let defender_id = cursor.read_u8().unwrap_or(0);
-        let multiplier = (cursor.read_u8().unwrap_or(0) as f32) / 10.0;
+        let type_effect = PkmnapiDBTypeEffect::from(&self.rom[pointer..(pointer + 3)]);
 
-        Ok(PkmnapiDBTypeEffect {
-            attacker_id,
-            defender_id,
-            multiplier,
-        })
+        Ok(type_effect)
     }
 
+    /// Set type effect by type effect ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi::db::*;
+    /// use pkmnapi::db::patch::*;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x3E474],
+    /// #     vec![0x01, 0x02, 0x14],
+    /// #     vec![0xFF]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let patch = db.set_type_effect_by_id(0, PkmnapiDBTypeEffect {
+    ///     attacking_type_id: 0x13,
+    ///     defending_type_id: 0x37,
+    ///     multiplier: 0.5
+    /// }).unwrap();
+    ///
+    /// assert_eq!(patch, PkmnapiDBPatch {
+    ///     offset: 0x3E474,
+    ///     length: 0x03,
+    ///     data: vec![0x13, 0x37, 0x05]
+    /// });
+    /// # fs::remove_file("rom.db");
+    /// ```
     pub fn set_type_effect_by_id(
         &self,
         type_effect_id: u8,
@@ -238,22 +401,327 @@ impl PkmnapiDB {
         }
 
         let pointer = pointer + (type_effect_id as usize * 3);
-        let type_effect_raw = vec![
-            type_effect.attacker_id,
-            type_effect.defender_id,
-            cmp::min((type_effect.multiplier * 10.0) as u8, 254),
-        ];
+
+        let type_effect_raw = type_effect.to_raw();
 
         Ok(PkmnapiDBPatch::new(pointer, type_effect_raw))
     }
 
+    /// Get stats by Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi::db::*;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x383DE],
+    /// #     vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A],
+    /// #     vec![0x00; 0x12]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let type_effect = db.get_stats_by_id(1).unwrap();
+    ///
+    /// assert_eq!(type_effect, PkmnapiDBStats {
+    ///     pokedex_id: 0x01,
+    ///     base_hp: 0x02,
+    ///     base_attack: 0x03,
+    ///     base_defence: 0x04,
+    ///     base_speed: 0x05,
+    ///     base_special: 0x06,
+    ///     type_ids: vec![0x07, 0x08],
+    ///     catch_rate: 0x09,
+    ///     base_exp_yield: 0x0A
+    /// });
+    /// # fs::remove_file("rom.db");
+    /// ```
     pub fn get_stats_by_id(&self, pokedex_id: u8) -> Result<PkmnapiDBStats, String> {
+        if pokedex_id < 1 {
+            return Err(format!("Pokédex ID too low: {}", pokedex_id));
+        }
+
         let offset_base = ROM_PAGE * 0x1C;
-        let offset = (offset_base + 0x03DE) + (pokedex_id as usize * 0x1C);
-        let mut cursor = Cursor::new(&self.rom[offset..(offset + 0x1C)]);
+        let offset = (offset_base + 0x03DE) + ((pokedex_id as usize - 1) * 0x1C);
 
-        cursor.set_position(1); // pokedex id
+        let stats = PkmnapiDBStats::from(&self.rom[offset..(offset + 0x1C)]);
 
+        Ok(stats)
+    }
+
+    /// Set stats by Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi::db::*;
+    /// use pkmnapi::db::patch::*;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x383DE],
+    /// #     vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A],
+    /// #     vec![0x00; 0x12]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let type_effect = db.set_stats_by_id(1, PkmnapiDBStats {
+    ///     pokedex_id: 0x01,
+    ///     base_hp: 0x42,
+    ///     base_attack: 0x13,
+    ///     base_defence: 0x37,
+    ///     base_speed: 0x13,
+    ///     base_special: 0x37,
+    ///     type_ids: vec![0x13, 0x37],
+    ///     catch_rate: 0x13,
+    ///     base_exp_yield: 0x37
+    /// }).unwrap();
+    ///
+    /// assert_eq!(type_effect, PkmnapiDBPatch {
+    ///     offset: 0x383DE,
+    ///     length: 0x0A,
+    ///     data: vec![0x01, 0x42, 0x13, 0x37, 0x13, 0x37, 0x13, 0x37, 0x13, 0x37]
+    /// });
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn set_stats_by_id(
+        &self,
+        pokedex_id: u8,
+        stats: PkmnapiDBStats,
+    ) -> Result<PkmnapiDBPatch, String> {
+        if pokedex_id < 1 {
+            return Err(format!("Pokédex ID too low: {}", pokedex_id));
+        }
+
+        let offset_base = ROM_PAGE * 0x1C;
+        let offset = (offset_base + 0x03DE) + ((pokedex_id as usize - 1) * 0x1C);
+
+        let stats_raw = stats.to_raw();
+
+        Ok(PkmnapiDBPatch::new(offset, stats_raw))
+    }
+}
+
+/// Type name
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi::db::*;
+/// use pkmnapi::db::string::*;
+///
+/// let rom = vec![0x80, 0x81, 0x82, 0x50];
+/// let type_name = PkmnapiDBTypeName::from(&rom[..]);
+///
+/// assert_eq!(type_name, PkmnapiDBTypeName {
+///     name: PkmnapiDBString::from_string("ABC@")
+/// });
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct PkmnapiDBTypeName {
+    pub name: PkmnapiDBString,
+}
+
+impl From<&[u8]> for PkmnapiDBTypeName {
+    /// Convert &[u8] to PkmnapiDBTypeName
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::*;
+    /// use pkmnapi::db::string::*;
+    ///
+    /// let rom = vec![0x80, 0x81, 0x82, 0x50];
+    /// let type_name = PkmnapiDBTypeName::from(&rom[..]);
+    ///
+    /// assert_eq!(type_name, PkmnapiDBTypeName {
+    ///     name: PkmnapiDBString::from_string("ABC@")
+    /// });
+    /// ```
+    fn from(rom: &[u8]) -> Self {
+        let name = PkmnapiDBString::new(rom);
+
+        PkmnapiDBTypeName { name }
+    }
+}
+
+impl PkmnapiDBTypeName {
+    /// Type name to raw bytes
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::*;
+    /// use pkmnapi::db::string::*;
+    ///
+    /// let type_name = PkmnapiDBTypeName {
+    ///     name: PkmnapiDBString::from_string("ABC@")
+    /// };
+    ///
+    /// let raw = type_name.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x80, 0x81, 0x82, 0x50]);
+    /// ```
+    pub fn to_raw(&self) -> Vec<u8> {
+        self.name.value[..].to_vec()
+    }
+}
+
+/// Type effect (attacker, defender, multiplier)
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi::db::*;
+///
+/// let rom = vec![0x01, 0x02, 0x14];
+/// let type_effect = PkmnapiDBTypeEffect::from(&rom[..]);
+///
+/// assert_eq!(type_effect, PkmnapiDBTypeEffect {
+///     attacking_type_id: 0x01,
+///     defending_type_id: 0x02,
+///     multiplier: 2.0
+/// });
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct PkmnapiDBTypeEffect {
+    pub attacking_type_id: u8,
+    pub defending_type_id: u8,
+    pub multiplier: f32,
+}
+
+impl From<&[u8]> for PkmnapiDBTypeEffect {
+    /// Convert &[u8] to PkmnapiDBTypeEffect
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::*;
+    ///
+    /// let rom = vec![0x01, 0x02, 0x14];
+    /// let type_effect = PkmnapiDBTypeEffect::from(&rom[..]);
+    ///
+    /// assert_eq!(type_effect, PkmnapiDBTypeEffect {
+    ///     attacking_type_id: 0x01,
+    ///     defending_type_id: 0x02,
+    ///     multiplier: 2.0
+    /// });
+    /// ```
+    fn from(rom: &[u8]) -> Self {
+        let mut cursor = Cursor::new(rom);
+
+        let attacking_type_id = cursor.read_u8().unwrap_or(0);
+        let defending_type_id = cursor.read_u8().unwrap_or(0);
+        let multiplier = (cursor.read_u8().unwrap_or(0) as f32) / 10.0;
+
+        PkmnapiDBTypeEffect {
+            attacking_type_id,
+            defending_type_id,
+            multiplier,
+        }
+    }
+}
+
+impl PkmnapiDBTypeEffect {
+    /// Convert type effect to raw bytes
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::*;
+    ///
+    /// let type_effect = PkmnapiDBTypeEffect {
+    ///     attacking_type_id: 0x01,
+    ///     defending_type_id: 0x02,
+    ///     multiplier: 2.0
+    /// };
+    ///
+    /// let raw = type_effect.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x01, 0x02, 0x14]);
+    /// ```
+    pub fn to_raw(&self) -> Vec<u8> {
+        vec![
+            self.attacking_type_id,
+            self.defending_type_id,
+            cmp::min((self.multiplier * 10.0) as u8, 254),
+        ]
+    }
+}
+
+/// Pokemon stats (HP, attack, defence, etc)
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi::db::*;
+///
+/// let rom = vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A];
+/// let stats = PkmnapiDBStats::from(&rom[..]);
+///
+/// assert_eq!(stats, PkmnapiDBStats {
+///     pokedex_id: 0x01,
+///     base_hp: 0x02,
+///     base_attack: 0x03,
+///     base_defence: 0x04,
+///     base_speed: 0x05,
+///     base_special: 0x06,
+///     type_ids: vec![0x07, 0x08],
+///     catch_rate: 0x09,
+///     base_exp_yield: 0x0A
+/// });
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct PkmnapiDBStats {
+    pub pokedex_id: u8,
+    pub base_hp: u8,
+    pub base_attack: u8,
+    pub base_defence: u8,
+    pub base_speed: u8,
+    pub base_special: u8,
+    pub type_ids: Vec<u8>,
+    pub catch_rate: u8,
+    pub base_exp_yield: u8,
+}
+
+impl From<&[u8]> for PkmnapiDBStats {
+    /// Convert &[u8] to PkmnapiDBStats
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::*;
+    ///
+    /// let rom = vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A];
+    /// let stats = PkmnapiDBStats::from(&rom[..]);
+    ///
+    /// assert_eq!(stats, PkmnapiDBStats {
+    ///     pokedex_id: 0x01,
+    ///     base_hp: 0x02,
+    ///     base_attack: 0x03,
+    ///     base_defence: 0x04,
+    ///     base_speed: 0x05,
+    ///     base_special: 0x06,
+    ///     type_ids: vec![0x07, 0x08],
+    ///     catch_rate: 0x09,
+    ///     base_exp_yield: 0x0A
+    /// });
+    /// ```
+    fn from(rom: &[u8]) -> Self {
+        let mut cursor = Cursor::new(rom);
+
+        let pokedex_id = cursor.read_u8().unwrap_or(0);
         let base_hp = cursor.read_u8().unwrap_or(0);
         let base_attack = cursor.read_u8().unwrap_or(0);
         let base_defence = cursor.read_u8().unwrap_or(0);
@@ -269,7 +737,8 @@ impl PkmnapiDB {
         let catch_rate = cursor.read_u8().unwrap_or(0);
         let base_exp_yield = cursor.read_u8().unwrap_or(0);
 
-        Ok(PkmnapiDBStats {
+        PkmnapiDBStats {
+            pokedex_id,
             base_hp,
             base_attack,
             base_defence,
@@ -278,57 +747,49 @@ impl PkmnapiDB {
             type_ids,
             catch_rate,
             base_exp_yield,
-        })
+        }
     }
+}
 
-    pub fn set_stats_by_id(
-        &self,
-        pokedex_id: u8,
-        stats: PkmnapiDBStats,
-    ) -> Result<PkmnapiDBPatch, String> {
-        let offset_base = ROM_PAGE * 0x1C;
-        let offset = (offset_base + 0x03DE) + (pokedex_id as usize * 0x1C);
-
-        let stats_raw = [
+impl PkmnapiDBStats {
+    /// Convert stats to raw bytes
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::*;
+    ///
+    /// let stats = PkmnapiDBStats {
+    ///     pokedex_id: 0x01,
+    ///     base_hp: 0x02,
+    ///     base_attack: 0x03,
+    ///     base_defence: 0x04,
+    ///     base_speed: 0x05,
+    ///     base_special: 0x06,
+    ///     type_ids: vec![0x07, 0x08],
+    ///     catch_rate: 0x09,
+    ///     base_exp_yield: 0x0A
+    /// };
+    ///
+    /// let raw = stats.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A]);
+    /// ```
+    pub fn to_raw(&self) -> Vec<u8> {
+        [
             &[
-                pokedex_id,
-                stats.base_hp,
-                stats.base_attack,
-                stats.base_defence,
-                stats.base_speed,
-                stats.base_special,
+                self.pokedex_id,
+                self.base_hp,
+                self.base_attack,
+                self.base_defence,
+                self.base_speed,
+                self.base_special,
             ],
-            &stats.type_ids[..],
-            &[stats.catch_rate, stats.base_exp_yield],
+            &self.type_ids[..],
+            &[self.catch_rate, self.base_exp_yield],
         ]
-        .concat();
-
-        Ok(PkmnapiDBPatch::new(offset, stats_raw))
+        .concat()
     }
-}
-
-#[derive(Debug, PartialEq)]
-pub struct PkmnapiDBTypeName {
-    pub name: PkmnapiDBString,
-}
-
-#[derive(Debug, PartialEq)]
-pub struct PkmnapiDBTypeEffect {
-    pub attacker_id: u8,
-    pub defender_id: u8,
-    pub multiplier: f32,
-}
-
-#[derive(Debug, PartialEq)]
-pub struct PkmnapiDBStats {
-    pub base_hp: u8,
-    pub base_attack: u8,
-    pub base_defence: u8,
-    pub base_speed: u8,
-    pub base_special: u8,
-    pub type_ids: Vec<u8>,
-    pub catch_rate: u8,
-    pub base_exp_yield: u8,
 }
 
 #[cfg(test)]
@@ -412,7 +873,7 @@ mod tests {
         .concat();
         let db = PkmnapiDB::new(&rom).unwrap();
 
-        assert_eq!(db.header.verify(), true);
+        assert_eq!(db.header.verify_checksum(), true);
     }
 
     #[test]
@@ -443,7 +904,7 @@ mod tests {
         .concat();
         let db = PkmnapiDB::new(&rom).unwrap();
 
-        assert_eq!(db.header.verify(), false);
+        assert_eq!(db.header.verify_checksum(), false);
     }
 
     #[test]
@@ -472,9 +933,11 @@ mod tests {
             vec![0x1A, 0x41],                                            // global_checksum
         ]
         .concat();
-        let db = PkmnapiDB::new(&rom).unwrap();
+        let mut db = PkmnapiDB::new(&rom).unwrap();
 
-        assert_eq!(db.verify_checksum(0x1A41), true);
+        db.header.global_checksum = 0x1A41;
+
+        assert_eq!(db.verify_checksum(), true);
     }
 
     #[test]
@@ -503,9 +966,11 @@ mod tests {
             vec![0x1A, 0x41],                                            // global_checksum
         ]
         .concat();
-        let db = PkmnapiDB::new(&rom).unwrap();
+        let mut db = PkmnapiDB::new(&rom).unwrap();
 
-        assert_eq!(db.verify_checksum(0x1234), false);
+        db.header.global_checksum = 0x1234;
+
+        assert_eq!(db.verify_checksum(), false);
     }
 
     #[test]

@@ -106,9 +106,9 @@ impl PkmnapiDBHeader {
     /// ].concat();
     /// let header = PkmnapiDBHeader::from(&rom).unwrap();
     ///
-    /// assert_eq!(header.verify(), true);
+    /// assert_eq!(header.verify_checksum(), true);
     /// ```
-    pub fn verify(&self) -> bool {
+    pub fn verify_checksum(&self) -> bool {
         let checksum = self.raw[0x034..=0x04C]
             .iter()
             .fold(Wrapping(0u8), |acc, x| acc - Wrapping(*x) - Wrapping(1u8));
