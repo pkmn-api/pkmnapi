@@ -1,3 +1,17 @@
+//! Pkmnapi patch module
+//!
+//! # Example
+//!
+//! ```
+//! use pkmnapi::db::patch::*;
+//!
+//! let patch = PkmnapiDBPatch::new(0x123456, vec![0x13, 0x37]);
+//!
+//! assert_eq!(patch.offset, 0x123456);
+//! assert_eq!(patch.length, 0x02);
+//! assert_eq!(patch.data, vec![0x13, 0x37]);
+//! ```
+
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use std::io::Cursor;
 

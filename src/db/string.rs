@@ -1,3 +1,15 @@
+//! Pkmnapi string module
+//!
+//! # Example
+//!
+//! ```
+//! use pkmnapi::db::string::*;
+//!
+//! let string = PkmnapiDBString::new(&[0x80, 0x81, 0x82, 0x50]);
+//!
+//! assert_eq!(string.value, vec![0x80, 0x81, 0x82, 0x50]);
+//! ```
+
 /// Representation of a ROM string
 #[derive(Debug, PartialEq)]
 pub struct PkmnapiDBString {
@@ -14,7 +26,7 @@ impl PkmnapiDBString {
     ///
     /// let string = PkmnapiDBString::new(&[0x80, 0x81, 0x82, 0x50]);
     ///
-    /// assert_eq!(string.value, &[0x80, 0x81, 0x82, 0x50]);
+    /// assert_eq!(string.value, vec![0x80, 0x81, 0x82, 0x50]);
     /// ```
     pub fn new(dbstr: &[u8]) -> PkmnapiDBString {
         PkmnapiDBString {
@@ -31,7 +43,7 @@ impl PkmnapiDBString {
     ///
     /// let string = PkmnapiDBString::from_string("ABC@");
     ///
-    /// assert_eq!(string.value, &[0x80, 0x81, 0x82, 0x50]);
+    /// assert_eq!(string.value, vec![0x80, 0x81, 0x82, 0x50]);
     /// ```
     pub fn from_string<S: Into<String>>(dbstr: S) -> Self {
         let value: Vec<u8> = dbstr
@@ -162,7 +174,7 @@ mod tests {
     fn string_iterop() {
         let db_string = PkmnapiDBString::new(&[0x80, 0x81, 0x82, 0x50]);
 
-        assert_eq!(db_string.value, &[0x80, 0x81, 0x82, 0x50]);
+        assert_eq!(db_string.value, vec![0x80, 0x81, 0x82, 0x50]);
 
         let string = db_string.decode();
 

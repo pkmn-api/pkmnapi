@@ -1,3 +1,25 @@
+//! Pkmnapi database header module
+//!
+//! ```
+//! use pkmnapi::db::header::*;
+//! use std::fs;
+//! # use std::fs::File;
+//! # use std::io::prelude::*;
+//! # let mut file = File::create("rom.db").unwrap();
+//! # let data: Vec<u8> = [
+//! #     vec![0x00; 0x134],
+//! #     "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(),
+//! #     vec![0x00; 0x012],
+//! # ].concat();
+//! # file.write_all(&data).unwrap();
+//!
+//! let rom = fs::read("rom.db").unwrap();
+//! let header = PkmnapiDBHeader::from(&rom).unwrap();
+//!
+//! assert_eq!(header.title, "GAMEBOYGAME");
+//! # fs::remove_file("rom.db");
+//! ```
+
 use byteorder::{BigEndian, ReadBytesExt};
 use std::io::Cursor;
 use std::num::Wrapping;
@@ -31,16 +53,22 @@ impl PkmnapiDBHeader {
     ///
     /// ```
     /// use pkmnapi::db::header::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x134],
+    /// #     "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(),
+    /// #     vec![0x00; 0x012],
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
     ///
-    /// let rom = [
-    ///     vec![0x00; 0x134],
-    ///     "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(),
-    ///     vec![0x00; 0x012],
-    /// ]
-    /// .concat();
+    /// let rom = fs::read("rom.db").unwrap();
     /// let header = PkmnapiDBHeader::from(&rom).unwrap();
     ///
     /// assert_eq!(header.title, "GAMEBOYGAME");
+    /// # fs::remove_file("rom.db");
     /// ```
     pub fn from(rom: &[u8]) -> Result<PkmnapiDBHeader, String> {
         if rom.len() < 0x150 {
@@ -97,18 +125,24 @@ impl PkmnapiDBHeader {
     ///
     /// ```
     /// use pkmnapi::db::header::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #   vec![0x00; 0x134],
+    /// #   "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(),
+    /// #   vec![0x00; 0x00E],
+    /// #   vec![0xC9], // header checksum
+    /// #   vec![0x00; 0x003],
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
     ///
-    /// let rom = [
-    ///     vec![0x00; 0x134],
-    ///     "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(),
-    ///     vec![0x00; 0x00E],
-    ///     vec![0xC9], // header checksum
-    ///     vec![0x00; 0x003],
-    /// ]
-    /// .concat();
+    /// let rom = fs::read("rom.db").unwrap();
     /// let header = PkmnapiDBHeader::from(&rom).unwrap();
     ///
     /// assert_eq!(header.verify_checksum(), true);
+    /// # fs::remove_file("rom.db");
     /// ```
     pub fn verify_checksum(&self) -> bool {
         let checksum = self.raw[0x034..=0x04C]

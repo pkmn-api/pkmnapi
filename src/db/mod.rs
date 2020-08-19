@@ -1,3 +1,21 @@
+//! Pkmnapi database module
+//!
+//! # Example
+//!
+//! ```
+//! use pkmnapi::db::*;
+//! use std::fs;
+//! # use std::fs::File;
+//! # use std::io::prelude::*;
+//! # let mut file = File::create("rom.db").unwrap();
+//! # let data = vec![0x00; 0x150];
+//! # file.write_all(&data).unwrap();
+//!
+//! let rom = fs::read("rom.db").unwrap();
+//! let db = PkmnapiDB::new(&rom).unwrap();
+//! # fs::remove_file("rom.db");
+//! ```
+
 pub mod header;
 pub mod patch;
 pub mod string;
@@ -23,7 +41,8 @@ const POKEMON_INTERNAL_MAX: usize = 190;
 /// # use std::fs::File;
 /// # use std::io::prelude::*;
 /// # let mut file = File::create("rom.db").unwrap();
-/// # file.write_all(&vec![0x00; 0x150]).unwrap();
+/// # let data = vec![0x00; 0x150];
+/// # file.write_all(&data).unwrap();
 ///
 /// let rom = fs::read("rom.db").unwrap();
 /// let db = PkmnapiDB::new(&rom).unwrap();
@@ -47,7 +66,8 @@ impl PkmnapiDB {
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
     /// # let mut file = File::create("rom.db").unwrap();
-    /// # file.write_all(&vec![0x00; 0x150]).unwrap();
+    /// # let data = vec![0x00; 0x150];
+    /// # file.write_all(&data).unwrap();
     ///
     /// let rom = fs::read("rom.db").unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
@@ -74,7 +94,8 @@ impl PkmnapiDB {
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
     /// # let mut file = File::create("rom.db").unwrap();
-    /// # file.write_all(&vec![0x00; 0x150]).unwrap();
+    /// # let data = vec![0x00; 0x150];
+    /// # file.write_all(&data).unwrap();
     ///
     /// let rom = fs::read("rom.db").unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
@@ -102,7 +123,8 @@ impl PkmnapiDB {
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
     /// # let mut file = File::create("rom.db").unwrap();
-    /// # file.write_all(&vec![0x00; 0x150]).unwrap();
+    /// # let data = vec![0x00; 0x150];
+    /// # file.write_all(&data).unwrap();
     ///
     /// let rom = fs::read("rom.db").unwrap();
     /// let mut db = PkmnapiDB::new(&rom).unwrap();
@@ -148,7 +170,8 @@ impl PkmnapiDB {
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
     /// # let mut file = File::create("rom.db").unwrap();
-    /// # file.write_all(&vec![0x00; 0x150]).unwrap();
+    /// # let data = vec![0x00; 0x150];
+    /// # file.write_all(&data).unwrap();
     ///
     /// let rom = fs::read("rom.db").unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
@@ -171,7 +194,8 @@ impl PkmnapiDB {
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
     /// # let mut file = File::create("rom.db").unwrap();
-    /// # file.write_all(&vec![0x00; 0x150]).unwrap();
+    /// # let data = vec![0x00; 0x150];
+    /// # file.write_all(&data).unwrap();
     ///
     /// let rom = fs::read("rom.db").unwrap();
     /// let mut db = PkmnapiDB::new(&rom).unwrap();

@@ -1,3 +1,15 @@
+//! Pkmnapi types module
+//!
+//! # Example
+//!
+//! ```
+//! use pkmnapi::db::types::*;
+//!
+//! let pokedex_id = PkmnapiDBPokedexID::from(151);
+//!
+//! assert_eq!(pokedex_id, 151);
+//! ```
+
 use crate::db::string::*;
 use byteorder::ReadBytesExt;
 use std::cmp::{self, Ordering};
