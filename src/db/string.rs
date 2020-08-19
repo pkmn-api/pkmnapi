@@ -148,7 +148,7 @@ impl PkmnapiDBString {
 
 #[cfg(test)]
 mod tests {
-    use crate::db::*;
+    use crate::db::string::*;
 
     #[test]
     fn string_iterop() {
