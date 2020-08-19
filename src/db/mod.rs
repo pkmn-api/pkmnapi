@@ -613,7 +613,7 @@ impl PkmnapiDB {
     /// let rom = fs::read("rom.db").unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
-    /// let type_effect = db
+    /// let patch = db
     ///     .set_stats_by_id(
     ///         1,
     ///         PkmnapiDBStats {
@@ -631,7 +631,7 @@ impl PkmnapiDB {
     ///     .unwrap();
     ///
     /// assert_eq!(
-    ///     type_effect,
+    ///     patch,
     ///     PkmnapiDBPatch {
     ///         offset: 0x383DE,
     ///         length: 0x0A,
@@ -640,21 +640,72 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn set_stats_by_id(
+    pub fn set_stats_by_id<S: Into<PkmnapiDBPokedexID>>(
         &self,
-        pokedex_id: u8,
+        pokedex_id: S,
         stats: PkmnapiDBStats,
     ) -> Result<PkmnapiDBPatch, String> {
+        let pokedex_id = pokedex_id.into();
+
         if pokedex_id < 1 {
             return Err(format!("Pokédex ID too low: {}", pokedex_id));
         }
 
         let offset_base = ROM_PAGE * 0x1C;
-        let offset = (offset_base + 0x03DE) + ((pokedex_id as usize - 1) * 0x1C);
+        let offset = (offset_base + 0x03DE) + ((pokedex_id - 1) * 0x1C);
 
         let stats_raw = stats.to_raw();
 
         Ok(PkmnapiDBPatch::new(offset, stats_raw))
+    }
+
+    /// Get Pokémon name by Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::patch::*;
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x1C21E],
+    /// #     vec![0x91, 0x87, 0x98, 0x83, 0x8E, 0x8D, 0x50, 0x50, 0x50, 0x50],
+    /// #     vec![0x00; 0x24DFC],
+    /// #     vec![0x70],
+    /// #     vec![0x00; 0xBD]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let pokemon_name = db.get_pokemon_name_by_pokedex_id(112).unwrap();
+    ///
+    /// assert_eq!(pokemon_name.name.decode_trimmed(), "RHYDON");
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn get_pokemon_name_by_pokedex_id<S: Into<PkmnapiDBPokedexID>>(
+        &self,
+        pokedex_id: S,
+    ) -> Result<PkmnapiDBPokemonName, String> {
+        let pokedex_id = pokedex_id.into();
+
+        if pokedex_id < 1 {
+            return Err(format!("Pokédex ID too low: {}", pokedex_id));
+        }
+
+        let internal_id = self.pokedex_id_to_internal_id(pokedex_id).unwrap();
+
+        let offset_base = ROM_PAGE * 0x0E;
+        let offset = (offset_base + 0x021E) + (internal_id * 10);
+
+        let pokemon_name = PkmnapiDBPokemonName::from(&self.rom[offset..(offset + 10)]);
+
+        Ok(pokemon_name)
     }
 }
 

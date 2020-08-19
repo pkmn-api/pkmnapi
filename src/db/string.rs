@@ -65,6 +65,10 @@ impl PkmnapiDBString {
                 'X' => 0x97,
                 'Y' => 0x98,
                 'Z' => 0x99,
+                '\'' => 0xE0,
+                '.' => 0xE8,
+                '♂' => 0xEF,
+                '♀' => 0xF5,
                 _ => 0x00,
             })
             .collect();
@@ -116,6 +120,10 @@ impl PkmnapiDBString {
                 0x97 => "X",
                 0x98 => "Y",
                 0x99 => "Z",
+                0xE0 => "'",
+                0xE8 => ".",
+                0xEF => "♂",
+                0xF5 => "♀",
                 _ => "?",
             })
             .collect();

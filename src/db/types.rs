@@ -109,6 +109,14 @@ impl Add<usize> for PkmnapiDBInternalID {
     }
 }
 
+impl Mul<usize> for PkmnapiDBInternalID {
+    type Output = usize;
+
+    fn mul(self, other: usize) -> usize {
+        self.0 as usize * other
+    }
+}
+
 /// Type ID
 ///
 /// # Example
@@ -269,6 +277,26 @@ impl PkmnapiDBTypeName {
     /// ```
     pub fn to_raw(&self) -> Vec<u8> {
         self.name.value[..].to_vec()
+    }
+
+    /// Type name to string (trimmed)
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let type_name = PkmnapiDBTypeName {
+    ///     name: PkmnapiDBString::from_string("ABC@"),
+    /// };
+    ///
+    /// let string = type_name.to_string();
+    ///
+    /// assert_eq!(string, "ABC");
+    /// ```
+    pub fn to_string(&self) -> String {
+        self.name.decode_trimmed()
     }
 }
 
@@ -504,5 +532,96 @@ impl PkmnapiDBStats {
             vec![self.catch_rate, self.base_exp_yield],
         ]
         .concat()
+    }
+}
+
+/// Pokémon name
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi::db::string::*;
+/// use pkmnapi::db::types::*;
+///
+/// let rom = vec![0x80, 0x81, 0x82, 0x50];
+/// let type_name = PkmnapiDBPokemonName::from(&rom[..]);
+///
+/// assert_eq!(
+///     type_name,
+///     PkmnapiDBPokemonName {
+///         name: PkmnapiDBString::from_string("ABC@")
+///     }
+/// );
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct PkmnapiDBPokemonName {
+    pub name: PkmnapiDBString,
+}
+
+impl From<&[u8]> for PkmnapiDBPokemonName {
+    /// Convert &[u8] to PkmnapiDBPokemonName
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let rom = vec![0x80, 0x81, 0x82, 0x50];
+    /// let type_name = PkmnapiDBPokemonName::from(&rom[..]);
+    ///
+    /// assert_eq!(
+    ///     type_name,
+    ///     PkmnapiDBPokemonName {
+    ///         name: PkmnapiDBString::from_string("ABC@")
+    ///     }
+    /// );
+    /// ```
+    fn from(rom: &[u8]) -> Self {
+        let name = PkmnapiDBString::new(rom);
+
+        PkmnapiDBPokemonName { name }
+    }
+}
+
+impl PkmnapiDBPokemonName {
+    /// Pokémon name to raw bytes
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let pokemon_name = PkmnapiDBPokemonName {
+    ///     name: PkmnapiDBString::from_string("ABC@"),
+    /// };
+    ///
+    /// let raw = pokemon_name.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x80, 0x81, 0x82, 0x50]);
+    /// ```
+    pub fn to_raw(&self) -> Vec<u8> {
+        self.name.value[..].to_vec()
+    }
+
+    /// Pokémon name to string (trimmed)
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let pokemon_name = PkmnapiDBPokemonName {
+    ///     name: PkmnapiDBString::from_string("ABC@"),
+    /// };
+    ///
+    /// let string = pokemon_name.to_string();
+    ///
+    /// assert_eq!(string, "ABC");
+    /// ```
+    pub fn to_string(&self) -> String {
+        self.name.decode_trimmed()
     }
 }
