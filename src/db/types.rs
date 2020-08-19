@@ -163,7 +163,7 @@ impl Mul<usize> for PkmnapiDBTypeID {
     }
 }
 
-/// Type ID
+/// Type effect ID
 ///
 /// # Example
 ///
@@ -623,5 +623,166 @@ impl PkmnapiDBPokemonName {
     /// ```
     pub fn to_string(&self) -> String {
         self.name.decode_trimmed()
+    }
+}
+
+/// Move ID
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi::db::types::*;
+///
+/// let move_id = PkmnapiDBMoveID::from(0x12);
+///
+/// assert_eq!(move_id, 0x12);
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct PkmnapiDBMoveID(u8);
+
+impl PkmnapiDBMoveID {
+    pub fn value(&self) -> u8 {
+        self.0
+    }
+}
+
+impl From<u8> for PkmnapiDBMoveID {
+    fn from(move_id: u8) -> Self {
+        PkmnapiDBMoveID(move_id)
+    }
+}
+
+impl PartialEq<u8> for PkmnapiDBMoveID {
+    fn eq(&self, other: &u8) -> bool {
+        self.0 == *other
+    }
+}
+
+impl PartialOrd<u8> for PkmnapiDBMoveID {
+    fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
+        self.0.partial_cmp(&other)
+    }
+}
+
+impl fmt::Display for PkmnapiDBMoveID {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl Sub<usize> for PkmnapiDBMoveID {
+    type Output = usize;
+
+    fn sub(self, other: usize) -> usize {
+        self.0 as usize - other
+    }
+}
+
+/// Move stats
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi::db::types::*;
+///
+/// let rom = vec![0x01, 0x00, 0x28, 0x00, 0xFF, 0x23];
+/// let type_name = PkmnapiDBMoveStats::from(&rom[..]);
+///
+/// assert_eq!(
+///     type_name,
+///     PkmnapiDBMoveStats {
+///         move_id: PkmnapiDBMoveID::from(0x01),
+///         effect: 0x00,
+///         power: 0x28,
+///         type_id: PkmnapiDBTypeID::from(0x00),
+///         accuracy: 1.0,
+///         pp: 0x23
+///     }
+/// );
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct PkmnapiDBMoveStats {
+    pub move_id: PkmnapiDBMoveID,
+    pub effect: u8,
+    pub power: u8,
+    pub type_id: PkmnapiDBTypeID,
+    pub accuracy: f32,
+    pub pp: u8,
+}
+
+impl From<&[u8]> for PkmnapiDBMoveStats {
+    /// Convert &[u8] to PkmnapiDBMoveStats
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let rom = vec![0x01, 0x00, 0x28, 0x00, 0xFF, 0x23];
+    /// let move_stats = PkmnapiDBMoveStats::from(&rom[..]);
+    ///
+    /// assert_eq!(
+    ///     move_stats,
+    ///     PkmnapiDBMoveStats {
+    ///         move_id: PkmnapiDBMoveID::from(0x01),
+    ///         effect: 0x00,
+    ///         power: 0x28,
+    ///         type_id: PkmnapiDBTypeID::from(0x00),
+    ///         accuracy: 1.0,
+    ///         pp: 0x23
+    ///     }
+    /// );
+    /// ```
+    fn from(rom: &[u8]) -> Self {
+        let mut cursor = Cursor::new(rom);
+
+        let move_id = PkmnapiDBMoveID::from(cursor.read_u8().unwrap_or(0));
+        let effect = cursor.read_u8().unwrap_or(0);
+        let power = cursor.read_u8().unwrap_or(0);
+        let type_id = PkmnapiDBTypeID::from(cursor.read_u8().unwrap_or(0));
+        let accuracy = (cursor.read_u8().unwrap_or(0) as f32) / 255.0;
+        let pp = cursor.read_u8().unwrap_or(0);
+
+        PkmnapiDBMoveStats {
+            move_id,
+            effect,
+            power,
+            type_id,
+            accuracy,
+            pp,
+        }
+    }
+}
+
+impl PkmnapiDBMoveStats {
+    /// Pokémon name to raw bytes
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let move_stats = PkmnapiDBMoveStats {
+    ///     move_id: PkmnapiDBMoveID::from(0x01),
+    ///     effect: 0x00,
+    ///     power: 0x28,
+    ///     type_id: PkmnapiDBTypeID::from(0x00),
+    ///     accuracy: 1.0,
+    ///     pp: 0x23,
+    /// };
+    ///
+    /// let raw = move_stats.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x01, 0x00, 0x28, 0x00, 0xFF, 0x23]);
+    /// ```
+    pub fn to_raw(&self) -> Vec<u8> {
+        vec![
+            self.move_id.value(),
+            self.effect,
+            self.power,
+            self.type_id.value(),
+            (self.accuracy * 255.0) as u8,
+            self.pp,
+        ]
     }
 }

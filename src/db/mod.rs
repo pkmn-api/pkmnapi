@@ -664,7 +664,6 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
     /// use pkmnapi::db::types::*;
     /// use pkmnapi::db::*;
     /// use std::fs;
@@ -701,11 +700,196 @@ impl PkmnapiDB {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id).unwrap();
 
         let offset_base = ROM_PAGE * 0x0E;
-        let offset = (offset_base + 0x021E) + (internal_id * 10);
+        let offset = (offset_base + 0x021E) + (internal_id * 0x0A);
 
         let pokemon_name = PkmnapiDBPokemonName::from(&self.rom[offset..(offset + 10)]);
 
         Ok(pokemon_name)
+    }
+
+    /// Set Pokémon name by Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::patch::*;
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x1C21E],
+    /// #     vec![0x91, 0x87, 0x98, 0x83, 0x8E, 0x8D, 0x50, 0x50, 0x50, 0x50],
+    /// #     vec![0x00; 0x24DFC],
+    /// #     vec![0x70],
+    /// #     vec![0x00; 0xBD]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let patch = db
+    ///     .set_pokemon_name_by_pokedex_id(
+    ///         112,
+    ///         PkmnapiDBPokemonName {
+    ///             name: PkmnapiDBString::from_string("ABC@"),
+    ///         },
+    ///     )
+    ///     .unwrap();
+    ///
+    /// assert_eq!(
+    ///     patch,
+    ///     PkmnapiDBPatch {
+    ///         offset: 0x1C21E,
+    ///         length: 0x0A,
+    ///         data: vec![0x80, 0x81, 0x82, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50]
+    ///     }
+    /// );
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn set_pokemon_name_by_pokedex_id<S: Into<PkmnapiDBPokedexID>>(
+        &self,
+        pokedex_id: S,
+        pokemon_name: PkmnapiDBPokemonName,
+    ) -> Result<PkmnapiDBPatch, String> {
+        let pokedex_id = pokedex_id.into();
+
+        if pokedex_id < 1 {
+            return Err(format!("Pokédex ID too low: {}", pokedex_id));
+        }
+
+        let internal_id = self.pokedex_id_to_internal_id(pokedex_id).unwrap();
+
+        let offset_base = ROM_PAGE * 0x0E;
+        let offset = (offset_base + 0x021E) + (internal_id * 0x0A);
+
+        let pokemon_name_len = pokemon_name.name.value.len();
+        let pokemon_name_raw = pokemon_name.to_raw();
+
+        let data = [pokemon_name_raw, vec![0x50; 0x0A - pokemon_name_len]].concat();
+
+        Ok(PkmnapiDBPatch::new(offset, data))
+    }
+
+    /// Get move stats by move ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x38000],
+    /// #     vec![0x01, 0x00, 0x28, 0x00, 0xFF, 0x23],
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let move_stats = db.get_move_stats_by_move_id(1).unwrap();
+    ///
+    /// assert_eq!(
+    ///     move_stats,
+    ///     PkmnapiDBMoveStats {
+    ///         move_id: PkmnapiDBMoveID::from(0x01),
+    ///         effect: 0x00,
+    ///         power: 0x28,
+    ///         type_id: PkmnapiDBTypeID::from(0x00),
+    ///         accuracy: 1.0,
+    ///         pp: 0x23
+    ///     }
+    /// );
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn get_move_stats_by_move_id<S: Into<PkmnapiDBMoveID>>(
+        &self,
+        move_id: S,
+    ) -> Result<PkmnapiDBMoveStats, String> {
+        let move_id = move_id.into();
+
+        if move_id < 1 {
+            return Err(format!("Move ID too low: {}", move_id));
+        }
+
+        let offset_base = ROM_PAGE * 0x1C;
+        let offset = offset_base + ((move_id - 1) * 0x06);
+
+        let move_stats = PkmnapiDBMoveStats::from(&self.rom[offset..(offset + 6)]);
+
+        Ok(move_stats)
+    }
+
+    /// Set move stats by move ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::patch::*;
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x38000],
+    /// #     vec![0x01, 0x00, 0x28, 0x00, 0xFF, 0x23],
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let patch = db
+    ///     .set_move_stats_by_move_id(
+    ///         1,
+    ///         PkmnapiDBMoveStats {
+    ///             move_id: PkmnapiDBMoveID::from(0x01),
+    ///             effect: 0x00,
+    ///             power: 0xFF,
+    ///             type_id: PkmnapiDBTypeID::from(0x01),
+    ///             accuracy: 0.0,
+    ///             pp: 0xFF,
+    ///         },
+    ///     )
+    ///     .unwrap();
+    ///
+    /// assert_eq!(
+    ///     patch,
+    ///     PkmnapiDBPatch {
+    ///         offset: 0x38000,
+    ///         length: 0x06,
+    ///         data: vec![0x01, 0x00, 0xFF, 0x01, 0x00, 0xFF]
+    ///     }
+    /// );
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn set_move_stats_by_move_id<S: Into<PkmnapiDBMoveID>>(
+        &self,
+        move_id: S,
+        move_stats: PkmnapiDBMoveStats,
+    ) -> Result<PkmnapiDBPatch, String> {
+        let move_id = move_id.into();
+
+        if move_id < 1 {
+            return Err(format!("Move ID too low: {}", move_id));
+        }
+
+        let offset_base = ROM_PAGE * 0x1C;
+        let offset = offset_base + ((move_id - 1) * 0x06);
+
+        let move_stats_raw = move_stats.to_raw();
+
+        Ok(PkmnapiDBPatch::new(offset, move_stats_raw))
     }
 }
 
