@@ -999,3 +999,167 @@ impl PkmnapiDBHM {
         vec![self.move_id.value()]
     }
 }
+
+/// TM ID
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi::db::types::*;
+///
+/// let tm_id = PkmnapiDBTMID::from(0x12);
+///
+/// assert_eq!(tm_id, 0x12);
+/// ```
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct PkmnapiDBTMID(u8);
+
+impl From<u8> for PkmnapiDBTMID {
+    fn from(move_id: u8) -> Self {
+        PkmnapiDBTMID(move_id)
+    }
+}
+
+impl PartialEq<u8> for PkmnapiDBTMID {
+    fn eq(&self, other: &u8) -> bool {
+        self.0 == *other
+    }
+}
+
+impl PartialOrd<u8> for PkmnapiDBTMID {
+    fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
+        self.0.partial_cmp(&other)
+    }
+}
+
+impl fmt::Display for PkmnapiDBTMID {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl Sub<usize> for PkmnapiDBTMID {
+    type Output = usize;
+
+    fn sub(self, other: usize) -> usize {
+        self.0 as usize - other
+    }
+}
+
+/// TM
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi::db::types::*;
+///
+/// let tm = PkmnapiDBTM::from(0x01);
+///
+/// assert_eq!(
+///     tm,
+///     PkmnapiDBTM {
+///         move_id: PkmnapiDBMoveID::from(0x01)
+///     }
+/// );
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct PkmnapiDBTM {
+    pub move_id: PkmnapiDBMoveID,
+}
+
+impl From<u8> for PkmnapiDBTM {
+    /// Convert u8 to PkmnapiDBTM
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let tm = PkmnapiDBTM::from(0x01);
+    ///
+    /// assert_eq!(
+    ///     tm,
+    ///     PkmnapiDBTM {
+    ///         move_id: PkmnapiDBMoveID::from(0x01)
+    ///     }
+    /// );
+    /// ```
+    fn from(move_id: u8) -> Self {
+        PkmnapiDBTM {
+            move_id: PkmnapiDBMoveID::from(move_id),
+        }
+    }
+}
+
+impl PkmnapiDBTM {
+    /// TM to raw bytes
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let tm = PkmnapiDBTM::from(0x01);
+    ///
+    /// let raw = tm.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x01]);
+    /// ```
+    pub fn to_raw(&self) -> Vec<u8> {
+        vec![self.move_id.value()]
+    }
+}
+
+/// TM price
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi::db::types::*;
+///
+/// let tm = PkmnapiDBTMPrice::from(0x01);
+///
+/// assert_eq!(tm, PkmnapiDBTMPrice { value: 1000 });
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct PkmnapiDBTMPrice {
+    pub value: u32,
+}
+
+impl From<u8> for PkmnapiDBTMPrice {
+    /// Convert u8 to PkmnapiDBTMPrice
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let tm = PkmnapiDBTMPrice::from(0x01);
+    ///
+    /// assert_eq!(tm, PkmnapiDBTMPrice { value: 1000 });
+    /// ```
+    fn from(tm_price: u8) -> Self {
+        PkmnapiDBTMPrice {
+            value: (tm_price as u32) * 1000,
+        }
+    }
+}
+
+impl PkmnapiDBTMPrice {
+    /// TM price to raw bytes
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let tm_price = PkmnapiDBTMPrice::from(0x01);
+    ///
+    /// let raw = tm_price.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x01]);
+    /// ```
+    pub fn to_raw(&self) -> Vec<u8> {
+        vec![(self.value as f32 / 1000.0) as u8]
+    }
+}

@@ -1206,248 +1206,231 @@ impl PkmnapiDB {
 
         Ok(PkmnapiDBPatch::new(offset, hm.to_raw()))
     }
-}
 
-#[cfg(test)]
-mod tests {
-    use crate::db::*;
+    /// Get TM by TM ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x13773],
+    /// #     vec![0x05]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let tm = db.get_tm_by_tm_id(1).unwrap();
+    ///
+    /// assert_eq!(
+    ///     tm,
+    ///     PkmnapiDBTM {
+    ///         move_id: PkmnapiDBMoveID::from(0x05),
+    ///     }
+    /// );
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn get_tm_by_tm_id<S: Into<PkmnapiDBTMID>>(&self, tm_id: S) -> Result<PkmnapiDBTM, String> {
+        let tm_id = tm_id.into();
 
-    #[test]
-    fn new_success() {
-        let rom = vec![0u8; 1024];
+        let offset_base = ROM_PAGE * 0x09;
+        let offset_base = offset_base + 0x1773;
 
-        PkmnapiDB::new(&rom).unwrap();
+        let max_id = 50;
+
+        if tm_id < 1 || tm_id > max_id {
+            return Err(format!("Invalid ID: valid range is 1-{}", max_id));
+        }
+
+        let offset = (tm_id - 1) + offset_base;
+
+        let tm = PkmnapiDBTM::from(self.rom[offset]);
+
+        Ok(tm)
     }
 
-    #[test]
-    fn new_failure() {
-        let rom = vec![];
+    /// Set TM by TM ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::patch::*;
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x13773],
+    /// #     vec![0x05]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let patch = db
+    ///     .set_tm_by_tm_id(
+    ///         1,
+    ///         PkmnapiDBTM {
+    ///             move_id: PkmnapiDBMoveID::from(0x42),
+    ///         },
+    ///     )
+    ///     .unwrap();
+    ///
+    /// assert_eq!(
+    ///     patch,
+    ///     PkmnapiDBPatch {
+    ///         offset: 0x13773,
+    ///         length: 0x01,
+    ///         data: vec![0x42]
+    ///     }
+    /// );
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn set_tm_by_tm_id<S: Into<PkmnapiDBTMID>>(
+        &self,
+        tm_id: S,
+        tm: PkmnapiDBTM,
+    ) -> Result<PkmnapiDBPatch, String> {
+        let tm_id = tm_id.into();
 
-        match PkmnapiDB::new(&rom) {
-            Err(e) => assert_eq!(e, "Header too small"),
-            _ => {}
+        let offset_base = ROM_PAGE * 0x09;
+        let offset_base = offset_base + 0x1773;
+
+        let max_id = 50;
+
+        if tm_id < 1 || tm_id > max_id {
+            return Err(format!("Invalid ID: valid range is 1-{}", max_id));
+        }
+
+        let offset = (tm_id - 1) + offset_base;
+
+        Ok(PkmnapiDBPatch::new(offset, tm.to_raw()))
+    }
+
+    /// Get TM price by TM ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x7BFA7],
+    /// #     vec![0x32]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let tm_price = db.get_tm_price_by_tm_id(1).unwrap();
+    ///
+    /// assert_eq!(tm_price, PkmnapiDBTMPrice { value: 3000 });
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn get_tm_price_by_tm_id<S: Into<PkmnapiDBTMID>>(
+        &self,
+        tm_id: S,
+    ) -> Result<PkmnapiDBTMPrice, String> {
+        let tm_id = tm_id.into();
+
+        let offset_base = ROM_PAGE * 0x3D;
+        let offset_base = offset_base + 0x1FA7;
+
+        let max_id = 50;
+
+        if tm_id < 1 || tm_id > max_id {
+            return Err(format!("Invalid ID: valid range is 1-{}", max_id));
+        }
+
+        let offset = (((tm_id - 1) as f32 / 2.0) as usize) + offset_base;
+        let value = {
+            if ((tm_id - 1) % 2) == 0 {
+                (self.rom[offset] & 0xF0) >> 4
+            } else {
+                self.rom[offset] & 0x0F
+            }
         };
+
+        let tm_price = PkmnapiDBTMPrice::from(value);
+
+        Ok(tm_price)
     }
 
-    #[test]
-    fn header_success() {
-        let rom = [
-            vec![0u8; 0x100],             // padding
-            vec![0x00, 0xC3, 0x50, 0x01], // entry_point
-            vec![
-                // logo
-                0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73, 0x00, 0x83, 0x00, 0x0C,
-                0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 0xDC, 0xCC, 0x6E, 0xE6,
-                0xDD, 0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC,
-                0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E,
-            ],
-            "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(), // title
-            vec![0u8; 5],                                                // title padding
-            vec![0x30u8, 0x31u8],                                        // new_licensee_code
-            vec![0u8],                                                   // sgb_flag
-            vec![0u8],                                                   // cartridge_type
-            vec![0x05u8],                                                // rom_size
-            vec![0u8],                                                   // ram_size
-            vec![0x01u8],                                                // destination_code
-            vec![0x01u8],                                                // old_licensee_code
-            vec![0x01u8],                                                // mask_rom_version_number
-            vec![0x60],                                                  // header_checksum
-            vec![0x1A, 0x41],                                            // global_checksum
-        ]
-        .concat();
-        let db = PkmnapiDB::new(&rom).unwrap();
-        let header = PkmnapiDBHeader::from(&rom).unwrap();
+    /// Set TM price by TM ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::patch::*;
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x7BFA7],
+    /// #     vec![0x32]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let patch = db
+    ///     .set_tm_price_by_tm_id(1, PkmnapiDBTMPrice { value: 9000 })
+    ///     .unwrap();
+    ///
+    /// assert_eq!(
+    ///     patch,
+    ///     PkmnapiDBPatch {
+    ///         offset: 0x7BFA7,
+    ///         length: 0x01,
+    ///         data: vec![0x92]
+    ///     }
+    /// );
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn set_tm_price_by_tm_id<S: Into<PkmnapiDBTMID>>(
+        &self,
+        tm_id: S,
+        tm_price: PkmnapiDBTMPrice,
+    ) -> Result<PkmnapiDBPatch, String> {
+        let tm_id = tm_id.into();
 
-        assert_eq!(db.header, header);
-    }
+        let offset_base = ROM_PAGE * 0x3D;
+        let offset_base = offset_base + 0x1FA7;
 
-    #[test]
-    fn header_verify_success() {
-        let rom = [
-            vec![0u8; 0x100],             // padding
-            vec![0x00, 0xC3, 0x50, 0x01], // entry_point
-            vec![
-                // logo
-                0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73, 0x00, 0x83, 0x00, 0x0C,
-                0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 0xDC, 0xCC, 0x6E, 0xE6,
-                0xDD, 0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC,
-                0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E,
-            ],
-            "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(), // title
-            vec![0u8; 5],                                                // title padding
-            vec![0x30u8, 0x31u8],                                        // new_licensee_code
-            vec![0u8],                                                   // sgb_flag
-            vec![0u8],                                                   // cartridge_type
-            vec![0x05u8],                                                // rom_size
-            vec![0u8],                                                   // ram_size
-            vec![0x01u8],                                                // destination_code
-            vec![0x01u8],                                                // old_licensee_code
-            vec![0x01u8],                                                // mask_rom_version_number
-            vec![0x60],                                                  // header_checksum
-            vec![0x1A, 0x41],                                            // global_checksum
-        ]
-        .concat();
-        let db = PkmnapiDB::new(&rom).unwrap();
+        let max_id = 50;
 
-        assert_eq!(db.header.verify_checksum(), true);
-    }
+        if tm_id < 1 || tm_id > max_id {
+            return Err(format!("Invalid ID: valid range is 1-{}", max_id));
+        }
 
-    #[test]
-    fn header_verify_fail() {
-        let rom = [
-            vec![0u8; 0x100],             // padding
-            vec![0x00, 0xC3, 0x50, 0x01], // entry_point
-            vec![
-                // logo
-                0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73, 0x00, 0x83, 0x00, 0x0C,
-                0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 0xDC, 0xCC, 0x6E, 0xE6,
-                0xDD, 0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC,
-                0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E,
-            ],
-            "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(), // title
-            vec![0u8; 5],                                                // title padding
-            vec![0x30u8, 0x31u8],                                        // new_licensee_code
-            vec![0u8],                                                   // sgb_flag
-            vec![0u8],                                                   // cartridge_type
-            vec![0x05u8],                                                // rom_size
-            vec![0u8],                                                   // ram_size
-            vec![0x01u8],                                                // destination_code
-            vec![0x01u8],                                                // old_licensee_code
-            vec![0x01u8],                                                // mask_rom_version_number
-            vec![0x42],                                                  // (wrong) header_checksum
-            vec![0x1A, 0x41],                                            // global_checksum
-        ]
-        .concat();
-        let db = PkmnapiDB::new(&rom).unwrap();
+        let offset = (((tm_id - 1) as f32 / 2.0) as usize) + offset_base;
+        let value = {
+            if ((tm_id - 1) % 2) == 0 {
+                (self.rom[offset] & 0x0F) | (tm_price.to_raw()[0] << 0x04)
+            } else {
+                (self.rom[offset] & 0xF0) | (tm_price.to_raw()[0])
+            }
+        };
 
-        assert_eq!(db.header.verify_checksum(), false);
-    }
-
-    #[test]
-    fn verify_checksum_success() {
-        let rom = [
-            vec![0u8; 0x100],             // padding
-            vec![0x00, 0xC3, 0x50, 0x01], // entry_point
-            vec![
-                // logo
-                0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73, 0x00, 0x83, 0x00, 0x0C,
-                0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 0xDC, 0xCC, 0x6E, 0xE6,
-                0xDD, 0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC,
-                0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E,
-            ],
-            "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(), // title
-            vec![0u8; 5],                                                // title padding
-            vec![0x30u8, 0x31u8],                                        // new_licensee_code
-            vec![0u8],                                                   // sgb_flag
-            vec![0u8],                                                   // cartridge_type
-            vec![0x05u8],                                                // rom_size
-            vec![0u8],                                                   // ram_size
-            vec![0x01u8],                                                // destination_code
-            vec![0x01u8],                                                // old_licensee_code
-            vec![0x01u8],                                                // mask_rom_version_number
-            vec![0x60],                                                  // header_checksum
-            vec![0x1A, 0x41],                                            // global_checksum
-        ]
-        .concat();
-        let mut db = PkmnapiDB::new(&rom).unwrap();
-
-        db.header.global_checksum = 0x1A41;
-
-        assert_eq!(db.verify_checksum(), true);
-    }
-
-    #[test]
-    fn verify_checksum_fail() {
-        let rom = [
-            vec![0u8; 0x100],             // padding
-            vec![0x00, 0xC3, 0x50, 0x01], // entry_point
-            vec![
-                // logo
-                0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73, 0x00, 0x83, 0x00, 0x0C,
-                0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 0xDC, 0xCC, 0x6E, 0xE6,
-                0xDD, 0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC,
-                0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E,
-            ],
-            "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(), // title
-            vec![0u8; 5],                                                // title padding
-            vec![0x30u8, 0x31u8],                                        // new_licensee_code
-            vec![0u8],                                                   // sgb_flag
-            vec![0u8],                                                   // cartridge_type
-            vec![0x05u8],                                                // rom_size
-            vec![0u8],                                                   // ram_size
-            vec![0x01u8],                                                // destination_code
-            vec![0x01u8],                                                // old_licensee_code
-            vec![0x01u8],                                                // mask_rom_version_number
-            vec![0x60],                                                  // header_checksum
-            vec![0x1A, 0x41],                                            // global_checksum
-        ]
-        .concat();
-        let mut db = PkmnapiDB::new(&rom).unwrap();
-
-        db.header.global_checksum = 0x1234;
-
-        assert_eq!(db.verify_checksum(), false);
-    }
-
-    #[test]
-    fn verify_hash_success() {
-        let rom = [
-            vec![0u8; 0x100],             // padding
-            vec![0x00, 0xC3, 0x50, 0x01], // entry_point
-            vec![
-                // logo
-                0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73, 0x00, 0x83, 0x00, 0x0C,
-                0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 0xDC, 0xCC, 0x6E, 0xE6,
-                0xDD, 0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC,
-                0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E,
-            ],
-            "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(), // title
-            vec![0u8; 5],                                                // title padding
-            vec![0x30u8, 0x31u8],                                        // new_licensee_code
-            vec![0u8],                                                   // sgb_flag
-            vec![0u8],                                                   // cartridge_type
-            vec![0x05u8],                                                // rom_size
-            vec![0u8],                                                   // ram_size
-            vec![0x01u8],                                                // destination_code
-            vec![0x01u8],                                                // old_licensee_code
-            vec![0x01u8],                                                // mask_rom_version_number
-            vec![0x60],                                                  // header_checksum
-            vec![0x1A, 0x41],                                            // global_checksum
-        ]
-        .concat();
-        let db = PkmnapiDB::new(&rom).unwrap();
-
-        assert_eq!(db.verify_hash("b933af3d953bedd6ed3911ef6724cfa2"), true);
-    }
-
-    #[test]
-    fn verify_hash_fail() {
-        let rom = [
-            vec![0u8; 0x100],             // padding
-            vec![0x00, 0xC3, 0x50, 0x01], // entry_point
-            vec![
-                // logo
-                0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73, 0x00, 0x83, 0x00, 0x0C,
-                0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 0xDC, 0xCC, 0x6E, 0xE6,
-                0xDD, 0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC,
-                0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E,
-            ],
-            "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(), // title
-            vec![0u8; 5],                                                // title padding
-            vec![0x30u8, 0x31u8],                                        // new_licensee_code
-            vec![0u8],                                                   // sgb_flag
-            vec![0u8],                                                   // cartridge_type
-            vec![0x05u8],                                                // rom_size
-            vec![0u8],                                                   // ram_size
-            vec![0x01u8],                                                // destination_code
-            vec![0x01u8],                                                // old_licensee_code
-            vec![0x01u8],                                                // mask_rom_version_number
-            vec![0x60],                                                  // header_checksum
-            vec![0x1A, 0x41],                                            // global_checksum
-        ]
-        .concat();
-        let db = PkmnapiDB::new(&rom).unwrap();
-
-        assert_eq!(db.verify_hash("0123456789abcdef0123456789abcdef"), false);
+        Ok(PkmnapiDBPatch::new(offset, vec![value]))
     }
 }
