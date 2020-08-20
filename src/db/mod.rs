@@ -482,7 +482,7 @@ impl PkmnapiDB {
             return Err(format!("Invalid ID: valid range is 0-{}", max_id));
         }
 
-        let pointer = pointer + (type_effect_id * 3);
+        let pointer = pointer + (type_effect_id * 0x03);
 
         let type_effect = PkmnapiDBTypeEffect::from(&self.rom[pointer..(pointer + 3)]);
 
@@ -760,7 +760,7 @@ impl PkmnapiDB {
     ///     .set_pokemon_name_by_pokedex_id(
     ///         112,
     ///         PkmnapiDBPokemonName {
-    ///             name: PkmnapiDBString::from_string("ABC@"),
+    ///             name: PkmnapiDBString::from_string("ABC"),
     ///         },
     ///     )
     ///     .unwrap();
@@ -914,6 +914,297 @@ impl PkmnapiDB {
         let move_stats_raw = move_stats.to_raw();
 
         Ok(PkmnapiDBPatch::new(offset, move_stats_raw))
+    }
+
+    /// Get move name by move ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0xB0000],
+    /// #     vec![0x8F, 0x8E, 0x94, 0x8D, 0x83, 0x50, 0x8A, 0x80, 0x91, 0x80, 0x93, 0x84, 0x7F]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let move_name = db.get_move_name_by_move_id(1).unwrap();
+    ///
+    /// assert_eq!(
+    ///     move_name,
+    ///     PkmnapiDBMoveName {
+    ///         name: PkmnapiDBString::from_string("POUND@KARATE ")
+    ///     }
+    /// );
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn get_move_name_by_move_id<S: Into<PkmnapiDBMoveID>>(
+        &self,
+        move_id: S,
+    ) -> Result<PkmnapiDBMoveName, String> {
+        let move_id = move_id.into();
+
+        if move_id < 1 {
+            return Err(format!("Invalid move ID: {}", move_id));
+        }
+
+        let offset_base = ROM_PAGE * 0x58;
+        let offset = match {
+            if move_id == 1 {
+                Some(offset_base)
+            } else {
+                self.rom[offset_base..]
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, x)| {
+                        if *x == 0x50 {
+                            return Some(offset_base + i + 1);
+                        }
+
+                        None
+                    })
+                    .take(164)
+                    .enumerate()
+                    .filter_map(|(i, x)| {
+                        if move_id.clone() - 2 == i {
+                            return Some(x);
+                        }
+
+                        None
+                    })
+                    .next()
+            }
+        } {
+            Some(offset) => offset,
+            None => return Err(format!("Invalid move ID: {}", move_id)),
+        };
+
+        let move_name = PkmnapiDBMoveName::from(&self.rom[offset..(offset + 13)]);
+
+        Ok(move_name)
+    }
+
+    /// Set move name by move ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::patch::*;
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0xB0000],
+    /// #     vec![0x8F, 0x8E, 0x94, 0x8D, 0x83, 0x50, 0x8A, 0x80, 0x91, 0x80, 0x93, 0x84, 0x7F]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let patch = db
+    ///     .set_move_name_by_move_id(
+    ///         1,
+    ///         PkmnapiDBMoveName {
+    ///             name: PkmnapiDBString::from_string("ABCDE"),
+    ///         },
+    ///     )
+    ///     .unwrap();
+    ///
+    /// assert_eq!(
+    ///     patch,
+    ///     PkmnapiDBPatch {
+    ///         offset: 0xB0000,
+    ///         length: 0x05,
+    ///         data: vec![0x80, 0x81, 0x82, 0x83, 0x084]
+    ///     }
+    /// );
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn set_move_name_by_move_id<S: Into<PkmnapiDBMoveID>>(
+        &self,
+        move_id: S,
+        move_name: PkmnapiDBMoveName,
+    ) -> Result<PkmnapiDBPatch, String> {
+        let move_id = move_id.into();
+        let old_move_name = self.get_move_name_by_move_id(move_id.clone())?;
+        let old_move_name = old_move_name.name.decode_trimmed();
+        let old_move_name_len = old_move_name.len();
+        let move_name_raw = move_name.to_raw();
+        let move_name_len = move_name_raw.len();
+
+        if old_move_name_len < move_name_len {
+            return Err(format!(
+                "Length mismatch: should be exactly {} characters, found {}",
+                old_move_name_len, move_name_len
+            ));
+        }
+
+        if move_id < 1 {
+            return Err(format!("Invalid move ID: {}", move_id));
+        }
+
+        let offset_base = ROM_PAGE * 0x58;
+        let offset = match {
+            if move_id == 1 {
+                Some(offset_base)
+            } else {
+                self.rom[offset_base..]
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, x)| {
+                        if *x == 0x50 {
+                            return Some(offset_base + i + 1);
+                        }
+
+                        None
+                    })
+                    .take(164)
+                    .enumerate()
+                    .filter_map(|(i, x)| {
+                        if move_id.clone() - 2 == i {
+                            return Some(x);
+                        }
+
+                        None
+                    })
+                    .next()
+            }
+        } {
+            Some(offset) => offset,
+            None => return Err(format!("Invalid move ID: {}", move_id)),
+        };
+
+        Ok(PkmnapiDBPatch::new(offset, move_name_raw))
+    }
+
+    /// Get HM by HM ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x3052],
+    /// #     vec![0x0F, 0x13, 0x39, 0x46, 0x94, 0xFF]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let hm = db.get_hm_by_hm_id(1).unwrap();
+    ///
+    /// assert_eq!(
+    ///     hm,
+    ///     PkmnapiDBHM {
+    ///         move_id: PkmnapiDBMoveID::from(0x0F)
+    ///     }
+    /// );
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn get_hm_by_hm_id<S: Into<PkmnapiDBHMID>>(&self, hm_id: S) -> Result<PkmnapiDBHM, String> {
+        let hm_id = hm_id.into();
+
+        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = offset_base + 0x1052;
+
+        let max_id = (&self.rom[offset_base..])
+            .iter()
+            .position(|&r| r == 0xFF)
+            .unwrap();
+
+        if hm_id < 1 || hm_id > max_id as u8 {
+            return Err(format!("Invalid ID: valid range is 1-{}", max_id));
+        }
+
+        let offset = (hm_id - 1) + offset_base;
+
+        let hm = PkmnapiDBHM::from(self.rom[offset]);
+
+        Ok(hm)
+    }
+
+    /// Set HM by HM ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::patch::*;
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x3052],
+    /// #     vec![0x0F, 0x13, 0x39, 0x46, 0x94, 0xFF]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let patch = db
+    ///     .set_hm_by_hm_id(
+    ///         1,
+    ///         PkmnapiDBHM {
+    ///             move_id: PkmnapiDBMoveID::from(0x42),
+    ///         },
+    ///     )
+    ///     .unwrap();
+    ///
+    /// assert_eq!(
+    ///     patch,
+    ///     PkmnapiDBPatch {
+    ///         offset: 0x3052,
+    ///         length: 0x01,
+    ///         data: vec![0x42]
+    ///     }
+    /// );
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn set_hm_by_hm_id<S: Into<PkmnapiDBHMID>>(
+        &self,
+        hm_id: S,
+        hm: PkmnapiDBHM,
+    ) -> Result<PkmnapiDBPatch, String> {
+        let hm_id = hm_id.into();
+
+        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = offset_base + 0x1052;
+
+        let max_id = (&self.rom[offset_base..])
+            .iter()
+            .position(|&r| r == 0xFF)
+            .unwrap();
+
+        if hm_id < 1 || hm_id > max_id as u8 {
+            return Err(format!("Invalid ID: valid range is 1-{}", max_id));
+        }
+
+        let offset = (hm_id - 1) + offset_base;
+
+        Ok(PkmnapiDBPatch::new(offset, hm.to_raw()))
     }
 }
 

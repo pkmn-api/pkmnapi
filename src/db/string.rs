@@ -51,6 +51,7 @@ impl PkmnapiDBString {
             .chars()
             .map(|c| match c {
                 '@' => 0x50,
+                ' ' => 0x7F,
                 'A' => 0x80,
                 'B' => 0x81,
                 'C' => 0x82,
@@ -78,6 +79,7 @@ impl PkmnapiDBString {
                 'Y' => 0x98,
                 'Z' => 0x99,
                 '\'' => 0xE0,
+                '-' => 0xE3,
                 '.' => 0xE8,
                 '♂' => 0xEF,
                 '♀' => 0xF5,
@@ -106,6 +108,7 @@ impl PkmnapiDBString {
             .iter()
             .map(|c| match c {
                 0x50 => "@",
+                0x7F => " ",
                 0x80 => "A",
                 0x81 => "B",
                 0x82 => "C",
@@ -133,6 +136,7 @@ impl PkmnapiDBString {
                 0x98 => "Y",
                 0x99 => "Z",
                 0xE0 => "'",
+                0xE3 => "-",
                 0xE8 => ".",
                 0xEF => "♂",
                 0xF5 => "♀",
