@@ -333,12 +333,12 @@ impl PkmnapiDB {
     /// let rom = fs::read("rom.db").unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
-    /// let type_name = db.get_type_name_by_id(0).unwrap();
+    /// let type_name = db.get_type_name_by_type_id(0).unwrap();
     ///
     /// assert_eq!(type_name.name.decode_trimmed(), "NORMAL");
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_type_name_by_id<S: Into<PkmnapiDBTypeID>>(
+    pub fn get_type_name_by_type_id<S: Into<PkmnapiDBTypeID>>(
         &self,
         type_id: S,
     ) -> Result<PkmnapiDBTypeName, String> {
@@ -405,7 +405,7 @@ impl PkmnapiDB {
         type_name: PkmnapiDBTypeName,
     ) -> Result<PkmnapiDBPatch, String> {
         let type_id = type_id.into();
-        let old_type_name = self.get_type_name_by_id(type_id.clone())?;
+        let old_type_name = self.get_type_name_by_type_id(type_id.clone())?;
         let old_type_name = old_type_name.name.decode_trimmed();
         let old_type_name_len = old_type_name.len();
         let type_name_raw = type_name.to_raw();
