@@ -220,6 +220,65 @@ impl PkmnapiDB {
         self.rom = rom;
     }
 
+    /// Pokémon name to Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x1C21E],
+    /// #     vec![0x91, 0x87, 0x98, 0x83, 0x8E, 0x8D, 0x50, 0x50, 0x50, 0x50],
+    /// #     vec![0x00; 0x24DFC],
+    /// #     vec![0x70],
+    /// #     vec![0x00; 0xBD]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let pokemon_name = PkmnapiDBPokemonName {
+    ///     name: PkmnapiDBString::from_string("RHYDON"),
+    /// };
+    ///
+    /// let pokedex_id = db.pokemon_name_to_pokedex_id(pokemon_name).unwrap();
+    ///
+    /// assert_eq!(pokedex_id, PkmnapiDBPokedexID::from(112));
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn pokemon_name_to_pokedex_id(
+        &self,
+        pokemon_name: PkmnapiDBPokemonName,
+    ) -> Option<PkmnapiDBPokedexID> {
+        let offset_base = ROM_PAGE * 0x0E;
+        let offset = offset_base + 0x021E;
+
+        return (0..POKEMON_INTERNAL_MAX)
+            .map(|i| offset + (i * 0x0A))
+            .enumerate()
+            .filter_map(|(internal_id, offset)| {
+                let internal_id = internal_id as u8;
+                let name = PkmnapiDBPokemonName::from(&self.rom[offset..(offset + 0x0A)]);
+
+                if name == pokemon_name {
+                    let pokedex_id = self.internal_id_to_pokedex_id(internal_id).unwrap();
+
+                    return Some(pokedex_id);
+                }
+
+                None
+            })
+            .take(1)
+            .next();
+    }
+
     /// Pokédex ID to internal ID
     ///
     /// # Example
@@ -317,6 +376,7 @@ impl PkmnapiDB {
     ///
     /// ```
     /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
     /// use pkmnapi::db::*;
     /// use std::fs;
     /// # use std::fs::File;
@@ -326,7 +386,7 @@ impl PkmnapiDB {
     /// #     vec![0x00; 0x27DAE],
     /// #     vec![0xB0, 0x7D],
     /// #     vec![0x8D, 0x8E, 0x91, 0x8C, 0x80, 0x8B, 0x50],
-    /// #     vec![0x00; 0x03]
+    /// #     vec![0x50; 0x03]
     /// # ].concat();
     /// # file.write_all(&data).unwrap();
     ///
@@ -335,7 +395,12 @@ impl PkmnapiDB {
     ///
     /// let type_name = db.get_type_name(0).unwrap();
     ///
-    /// assert_eq!(type_name.name.decode_trimmed(), "NORMAL");
+    /// assert_eq!(
+    ///     type_name,
+    ///     PkmnapiDBTypeName {
+    ///         name: PkmnapiDBString::from_string("NORMAL")
+    ///     }
+    /// );
     /// # fs::remove_file("rom.db");
     /// ```
     pub fn get_type_name<S: Into<PkmnapiDBTypeID>>(
@@ -373,7 +438,7 @@ impl PkmnapiDB {
     /// #     vec![0x00; 0x27DAE],
     /// #     vec![0xB0, 0x7D],
     /// #     vec![0x8D, 0x8E, 0x91, 0x8C, 0x80, 0x8B, 0x50],
-    /// #     vec![0x00; 0x03]
+    /// #     vec![0x50; 0x03]
     /// # ].concat();
     /// # file.write_all(&data).unwrap();
     ///
@@ -393,7 +458,7 @@ impl PkmnapiDB {
     ///     patch,
     ///     PkmnapiDBPatch {
     ///         offset: 0x27DB0,
-    ///         length: 6,
+    ///         length: 0x06,
     ///         data: vec![0x81, 0x8E, 0x91, 0x88, 0x8D, 0x86]
     ///     }
     /// );
@@ -406,7 +471,7 @@ impl PkmnapiDB {
     ) -> Result<PkmnapiDBPatch, String> {
         let type_id = type_id.into();
         let old_type_name = self.get_type_name(type_id.clone())?;
-        let old_type_name = old_type_name.name.decode_trimmed();
+        let old_type_name = old_type_name.name.to_string();
         let old_type_name_len = old_type_name.len();
         let type_name_raw = type_name.to_raw();
         let type_name_len = type_name_raw.len();
@@ -688,6 +753,7 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
+    /// use pkmnapi::db::string::*;
     /// use pkmnapi::db::types::*;
     /// use pkmnapi::db::*;
     /// use std::fs;
@@ -708,7 +774,12 @@ impl PkmnapiDB {
     ///
     /// let pokemon_name = db.get_pokemon_name(112).unwrap();
     ///
-    /// assert_eq!(pokemon_name.name.decode_trimmed(), "RHYDON");
+    /// assert_eq!(
+    ///     pokemon_name,
+    ///     PkmnapiDBPokemonName {
+    ///         name: PkmnapiDBString::from_string("RHYDON")
+    ///     }
+    /// );
     /// # fs::remove_file("rom.db");
     /// ```
     pub fn get_pokemon_name<S: Into<PkmnapiDBPokedexID>>(
@@ -726,7 +797,7 @@ impl PkmnapiDB {
         let offset_base = ROM_PAGE * 0x0E;
         let offset = (offset_base + 0x021E) + (internal_id * 0x0A);
 
-        let pokemon_name = PkmnapiDBPokemonName::from(&self.rom[offset..(offset + 10)]);
+        let pokemon_name = PkmnapiDBPokemonName::from(&self.rom[offset..(offset + 0x0A)]);
 
         Ok(pokemon_name)
     }
@@ -942,7 +1013,7 @@ impl PkmnapiDB {
     /// assert_eq!(
     ///     move_name,
     ///     PkmnapiDBMoveName {
-    ///         name: PkmnapiDBString::from_string("POUND@KARATE ")
+    ///         name: PkmnapiDBString::from_string("POUND")
     ///     }
     /// );
     /// # fs::remove_file("rom.db");
@@ -1041,7 +1112,7 @@ impl PkmnapiDB {
     ) -> Result<PkmnapiDBPatch, String> {
         let move_id = move_id.into();
         let old_move_name = self.get_move_name(move_id.clone())?;
-        let old_move_name = old_move_name.name.decode_trimmed();
+        let old_move_name = old_move_name.name.to_string();
         let old_move_name_len = old_move_name.len();
         let move_name_raw = move_name.to_raw();
         let move_name_len = move_name_raw.len();

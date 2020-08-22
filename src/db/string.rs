@@ -91,8 +91,10 @@ impl PkmnapiDBString {
 
         PkmnapiDBString { value }
     }
+}
 
-    /// Decodes the ROM string
+impl fmt::Display for PkmnapiDBString {
+    /// Converts the internal string represnetation to a String
     ///
     /// # Example
     ///
@@ -100,11 +102,11 @@ impl PkmnapiDBString {
     /// use pkmnapi::db::string::*;
     ///
     /// let string = PkmnapiDBString::new(&[0x80, 0x81, 0x82, 0x50]);
-    /// let decoded = string.decode();
+    /// let decoded = string.to_string();
     ///
-    /// assert_eq!(decoded, "ABC@");
+    /// assert_eq!(decoded, "ABC");
     /// ```
-    pub fn decode(&self) -> String {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let value: String = self
             .value
             .iter()
@@ -146,54 +148,11 @@ impl PkmnapiDBString {
             })
             .collect();
 
-        value
-    }
-
-    /// Decodes the ROM string and trims after the terminator character (@)
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use pkmnapi::db::string::*;
-    ///
-    /// let string = PkmnapiDBString::new(&[0x80, 0x81, 0x82, 0x50]);
-    /// let decoded = string.decode_trimmed();
-    ///
-    /// assert_eq!(decoded, "ABC");
-    /// ```
-    pub fn decode_trimmed(&self) -> String {
-        let value = self.decode();
         let at_offset = value.find('@').unwrap_or(value.len());
         let mut value = String::from(&value);
 
         value.truncate(at_offset);
 
-        value
-    }
-}
-
-impl fmt::Display for PkmnapiDBString {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.decode_trimmed())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::db::string::*;
-
-    #[test]
-    fn string_iterop() {
-        let db_string = PkmnapiDBString::new(&[0x80, 0x81, 0x82, 0x50]);
-
-        assert_eq!(db_string.value, vec![0x80, 0x81, 0x82, 0x50]);
-
-        let string = db_string.decode();
-
-        assert_eq!(string, "ABC@");
-
-        let db_string_new = PkmnapiDBString::from_string(string);
-
-        assert_eq!(db_string.value, db_string_new.value);
+        write!(f, "{}", value)
     }
 }

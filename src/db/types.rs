@@ -235,7 +235,7 @@ impl Mul<usize> for PkmnapiDBTypeEffectID {
 /// assert_eq!(
 ///     type_name,
 ///     PkmnapiDBTypeName {
-///         name: PkmnapiDBString::from_string("ABC@")
+///         name: PkmnapiDBString::from_string("ABC")
 ///     }
 /// );
 /// ```
@@ -259,12 +259,14 @@ impl From<&[u8]> for PkmnapiDBTypeName {
     /// assert_eq!(
     ///     type_name,
     ///     PkmnapiDBTypeName {
-    ///         name: PkmnapiDBString::from_string("ABC@")
+    ///         name: PkmnapiDBString::from_string("ABC")
     ///     }
     /// );
     /// ```
     fn from(rom: &[u8]) -> Self {
-        let name = PkmnapiDBString::new(rom);
+        let name_end_index = rom.iter().position(|&r| r == 0x50).unwrap_or(rom.len());
+
+        let name = PkmnapiDBString::new(&rom[..name_end_index]);
 
         PkmnapiDBTypeName { name }
     }
@@ -280,35 +282,15 @@ impl PkmnapiDBTypeName {
     /// use pkmnapi::db::types::*;
     ///
     /// let type_name = PkmnapiDBTypeName {
-    ///     name: PkmnapiDBString::from_string("ABC@"),
+    ///     name: PkmnapiDBString::from_string("ABC"),
     /// };
     ///
     /// let raw = type_name.to_raw();
     ///
-    /// assert_eq!(raw, vec![0x80, 0x81, 0x82, 0x50]);
+    /// assert_eq!(raw, vec![0x80, 0x81, 0x82]);
     /// ```
     pub fn to_raw(&self) -> Vec<u8> {
         self.name.value[..].to_vec()
-    }
-
-    /// Type name to string (trimmed)
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    ///
-    /// let type_name = PkmnapiDBTypeName {
-    ///     name: PkmnapiDBString::from_string("ABC@"),
-    /// };
-    ///
-    /// let string = type_name.to_string();
-    ///
-    /// assert_eq!(string, "ABC");
-    /// ```
-    pub fn to_string(&self) -> String {
-        self.name.decode_trimmed()
     }
 }
 
@@ -561,7 +543,7 @@ impl PkmnapiDBStats {
 /// assert_eq!(
 ///     pokemon_name,
 ///     PkmnapiDBPokemonName {
-///         name: PkmnapiDBString::from_string("ABC@")
+///         name: PkmnapiDBString::from_string("ABC")
 ///     }
 /// );
 /// ```
@@ -585,12 +567,14 @@ impl From<&[u8]> for PkmnapiDBPokemonName {
     /// assert_eq!(
     ///     pokemon_name,
     ///     PkmnapiDBPokemonName {
-    ///         name: PkmnapiDBString::from_string("ABC@")
+    ///         name: PkmnapiDBString::from_string("ABC")
     ///     }
     /// );
     /// ```
     fn from(rom: &[u8]) -> Self {
-        let name = PkmnapiDBString::new(rom);
+        let name_end_index = rom.iter().position(|&r| r == 0x50).unwrap_or(rom.len());
+
+        let name = PkmnapiDBString::new(&rom[..name_end_index]);
 
         PkmnapiDBPokemonName { name }
     }
@@ -606,35 +590,15 @@ impl PkmnapiDBPokemonName {
     /// use pkmnapi::db::types::*;
     ///
     /// let pokemon_name = PkmnapiDBPokemonName {
-    ///     name: PkmnapiDBString::from_string("ABC@"),
+    ///     name: PkmnapiDBString::from_string("ABC"),
     /// };
     ///
     /// let raw = pokemon_name.to_raw();
     ///
-    /// assert_eq!(raw, vec![0x80, 0x81, 0x82, 0x50]);
+    /// assert_eq!(raw, vec![0x80, 0x81, 0x82]);
     /// ```
     pub fn to_raw(&self) -> Vec<u8> {
         self.name.value[..].to_vec()
-    }
-
-    /// Pokémon name to string (trimmed)
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    ///
-    /// let pokemon_name = PkmnapiDBPokemonName {
-    ///     name: PkmnapiDBString::from_string("ABC@"),
-    /// };
-    ///
-    /// let string = pokemon_name.to_string();
-    ///
-    /// assert_eq!(string, "ABC");
-    /// ```
-    pub fn to_string(&self) -> String {
-        self.name.decode_trimmed()
     }
 }
 
@@ -813,7 +777,7 @@ impl PkmnapiDBMoveStats {
 /// assert_eq!(
 ///     type_name,
 ///     PkmnapiDBMoveName {
-///         name: PkmnapiDBString::from_string("ABC@")
+///         name: PkmnapiDBString::from_string("ABC")
 ///     }
 /// );
 /// ```
@@ -837,12 +801,14 @@ impl From<&[u8]> for PkmnapiDBMoveName {
     /// assert_eq!(
     ///     move_name,
     ///     PkmnapiDBMoveName {
-    ///         name: PkmnapiDBString::from_string("ABC@")
+    ///         name: PkmnapiDBString::from_string("ABC")
     ///     }
     /// );
     /// ```
     fn from(rom: &[u8]) -> Self {
-        let name = PkmnapiDBString::new(rom);
+        let name_end_index = rom.iter().position(|&r| r == 0x50).unwrap_or(rom.len());
+
+        let name = PkmnapiDBString::new(&rom[..name_end_index]);
 
         PkmnapiDBMoveName { name }
     }
@@ -858,35 +824,15 @@ impl PkmnapiDBMoveName {
     /// use pkmnapi::db::types::*;
     ///
     /// let move_name = PkmnapiDBMoveName {
-    ///     name: PkmnapiDBString::from_string("ABC@"),
+    ///     name: PkmnapiDBString::from_string("ABC"),
     /// };
     ///
     /// let raw = move_name.to_raw();
     ///
-    /// assert_eq!(raw, vec![0x80, 0x81, 0x82, 0x50]);
+    /// assert_eq!(raw, vec![0x80, 0x81, 0x82]);
     /// ```
     pub fn to_raw(&self) -> Vec<u8> {
         self.name.value[..].to_vec()
-    }
-
-    /// Move name to string (trimmed)
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    ///
-    /// let move_name = PkmnapiDBMoveName {
-    ///     name: PkmnapiDBString::from_string("ABC@"),
-    /// };
-    ///
-    /// let string = move_name.to_string();
-    ///
-    /// assert_eq!(string, "ABC");
-    /// ```
-    pub fn to_string(&self) -> String {
-        self.name.decode_trimmed()
     }
 }
 
@@ -1217,7 +1163,7 @@ impl From<&[u8]> for PkmnapiDBPokedexEntry {
     /// );
     /// ```
     fn from(rom: &[u8]) -> Self {
-        let species_end_index = rom.iter().position(|&r| r == 0x50).unwrap();
+        let species_end_index = rom.iter().position(|&r| r == 0x50).unwrap_or(rom.len());
 
         let species = PkmnapiDBString::new(&rom[..species_end_index]);
 
@@ -1259,7 +1205,7 @@ impl PkmnapiDBPokedexEntry {
     /// );
     /// ```
     pub fn to_raw(&self) -> Vec<u8> {
-        let species_string = PkmnapiDBString::from_string(self.species.decode_trimmed());
+        let species_string = PkmnapiDBString::from_string(self.species.to_string());
         let height_ft = ((self.height as f32) / 12.0) as u32;
         let height_in = (self.height - (height_ft * 12)) as u32;
 
