@@ -1267,10 +1267,7 @@ impl PkmnapiDBPokedexEntry {
             species_string.value,
             vec![0x50],
             vec![height_ft as u8, height_in as u8],
-            vec![
-                (self.weight & 0xFF) as u8,
-                ((self.weight & 0xFF00) >> 0x08) as u8,
-            ],
+            (self.weight as u16).to_le_bytes().to_vec(),
         ]
         .concat()
     }
