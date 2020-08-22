@@ -11,7 +11,7 @@
 //! ```
 
 use crate::db::string::*;
-use byteorder::ReadBytesExt;
+use byteorder::{LittleEndian, ReadBytesExt};
 use std::cmp::{self, Ordering};
 use std::fmt;
 use std::io::{Cursor, Read};
@@ -1161,5 +1161,117 @@ impl PkmnapiDBTMPrice {
     /// ```
     pub fn to_raw(&self) -> Vec<u8> {
         vec![(self.value as f32 / 1000.0) as u8]
+    }
+}
+
+/// Pokédex entry
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi::db::string::*;
+/// use pkmnapi::db::types::*;
+///
+/// let rom = vec![
+///     0x83, 0x91, 0x88, 0x8B, 0x8B, 0x50, 0x06, 0x03, 0x5A, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00,
+/// ];
+/// let pokedex_entry = PkmnapiDBPokedexEntry::from(&rom[..]);
+///
+/// assert_eq!(
+///     pokedex_entry,
+///     PkmnapiDBPokedexEntry {
+///         species: PkmnapiDBString::from_string("DRILL"),
+///         height: 75,
+///         weight: 2650,
+///     }
+/// );
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct PkmnapiDBPokedexEntry {
+    pub species: PkmnapiDBString,
+    pub height: u32,
+    pub weight: u32,
+}
+
+impl From<&[u8]> for PkmnapiDBPokedexEntry {
+    /// Convert &[u8] to PkmnapiDBPokedexEntry
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let rom = vec![
+    ///     0x83, 0x91, 0x88, 0x8B, 0x8B, 0x50, 0x06, 0x03, 0x5A, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00,
+    /// ];
+    /// let pokedex_entry = PkmnapiDBPokedexEntry::from(&rom[..]);
+    ///
+    /// assert_eq!(
+    ///     pokedex_entry,
+    ///     PkmnapiDBPokedexEntry {
+    ///         species: PkmnapiDBString::from_string("DRILL"),
+    ///         height: 75,
+    ///         weight: 2650,
+    ///     }
+    /// );
+    /// ```
+    fn from(rom: &[u8]) -> Self {
+        let species_end_index = rom.iter().position(|&r| r == 0x50).unwrap();
+
+        let species = PkmnapiDBString::new(&rom[..species_end_index]);
+
+        let mut cursor = Cursor::new(&rom[(species_end_index + 1)..]);
+
+        let height_ft = cursor.read_u8().unwrap_or(0) as u32;
+        let height_in = cursor.read_u8().unwrap_or(0) as u32;
+        let height = (height_ft * 12) + height_in;
+        let weight = cursor.read_u16::<LittleEndian>().unwrap_or(0) as u32;
+
+        PkmnapiDBPokedexEntry {
+            species,
+            height,
+            weight,
+        }
+    }
+}
+
+impl PkmnapiDBPokedexEntry {
+    /// Pokédex entry to raw bytes
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let pokedex_entry = PkmnapiDBPokedexEntry {
+    ///     species: PkmnapiDBString::from_string("DRILL"),
+    ///     height: 75,
+    ///     weight: 2650,
+    /// };
+    ///
+    /// let raw = pokedex_entry.to_raw();
+    ///
+    /// assert_eq!(
+    ///     raw,
+    ///     vec![0x83, 0x91, 0x88, 0x8B, 0x8B, 0x50, 0x06, 0x03, 0x5A, 0x0A]
+    /// );
+    /// ```
+    pub fn to_raw(&self) -> Vec<u8> {
+        let species_string = PkmnapiDBString::from_string(self.species.decode_trimmed());
+        let height_ft = ((self.height as f32) / 12.0) as u32;
+        let height_in = (self.height - (height_ft * 12)) as u32;
+
+        [
+            species_string.value,
+            vec![0x50],
+            vec![height_ft as u8, height_in as u8],
+            vec![
+                (self.weight & 0xFF) as u8,
+                ((self.weight & 0xFF00) >> 0x08) as u8,
+            ],
+        ]
+        .concat()
     }
 }

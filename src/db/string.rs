@@ -10,6 +10,8 @@
 //! assert_eq!(string.value, vec![0x80, 0x81, 0x82, 0x50]);
 //! ```
 
+use std::fmt;
+
 /// Representation of a ROM string
 #[derive(Debug, PartialEq)]
 pub struct PkmnapiDBString {
@@ -167,6 +169,12 @@ impl PkmnapiDBString {
         value.truncate(at_offset);
 
         value
+    }
+}
+
+impl fmt::Display for PkmnapiDBString {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.decode_trimmed())
     }
 }
 

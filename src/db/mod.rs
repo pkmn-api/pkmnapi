@@ -1433,4 +1433,127 @@ impl PkmnapiDB {
 
         Ok(PkmnapiDBPatch::new(offset, vec![value]))
     }
+
+    /// Get Pokédex entry by Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x4047E],
+    /// #     vec![0xFA, 0x45],
+    /// #     vec![0x00; 0x17A],
+    /// #     vec![0x83, 0x91, 0x88, 0x8B, 0x8B, 0x50, 0x06, 0x03, 0x5A, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00],
+    /// #     vec![0x00; 0xA1B],
+    /// #     vec![0x70],
+    /// #     vec![0x00; 0xBE]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let pokedex_entry = db.get_pokedex_entry_by_pokedex_id(112).unwrap();
+    ///
+    /// assert_eq!(pokedex_entry, PkmnapiDBPokedexEntry {
+    ///     species: PkmnapiDBString::from_string("DRILL"),
+    ///     height: 75,
+    ///     weight: 2650
+    /// });
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn get_pokedex_entry_by_pokedex_id<S: Into<PkmnapiDBPokedexID>>(
+        &self,
+        pokedex_id: S,
+    ) -> Result<PkmnapiDBPokedexEntry, String> {
+        let pokedex_id = pokedex_id.into();
+
+        let internal_id = self.pokedex_id_to_internal_id(pokedex_id).unwrap();
+
+        let offset_base = ROM_PAGE * 0x1E;
+        let pointer_offset = (offset_base + 0x447E) + (internal_id * 2);
+
+        let pointer = offset_base + {
+            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
+
+            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
+        };
+
+        let pokedex_entry = PkmnapiDBPokedexEntry::from(&self.rom[pointer..(pointer + 15)]);
+
+        Ok(pokedex_entry)
+    }
+
+    /// Set Pokédex entry by Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::patch::*;
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x4047E],
+    /// #     vec![0xFA, 0x45],
+    /// #     vec![0x00; 0x17A],
+    /// #     vec![0x83, 0x91, 0x88, 0x8B, 0x8B, 0x50, 0x06, 0x03, 0x5A, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00],
+    /// #     vec![0x00; 0xA1B],
+    /// #     vec![0x70],
+    /// #     vec![0x00; 0xBE]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let patch = db
+    ///     .set_pokedex_entry_by_pokedex_id(112, PkmnapiDBPokedexEntry {
+    ///         species: PkmnapiDBString::from_string("BOBBY"),
+    ///         height: 100,
+    ///         weight: 300
+    ///     })
+    ///     .unwrap();
+    ///
+    /// assert_eq!(
+    ///     patch,
+    ///     PkmnapiDBPatch {
+    ///         offset: 0x405FA,
+    ///         length: 0x0A,
+    ///         data: vec![0x81, 0x8E, 0x81, 0x81, 0x98, 0x50, 0x08, 0x04, 0x2C, 0x01]
+    ///     }
+    /// );
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn set_pokedex_entry_by_pokedex_id<S: Into<PkmnapiDBPokedexID>>(
+        &self,
+        pokedex_id: S,
+        pokedex_entry: PkmnapiDBPokedexEntry,
+    ) -> Result<PkmnapiDBPatch, String> {
+        let pokedex_id = pokedex_id.into();
+
+        let internal_id = self.pokedex_id_to_internal_id(pokedex_id).unwrap();
+
+        let offset_base = ROM_PAGE * 0x1E;
+        let pointer_offset = (offset_base + 0x447E) + (internal_id * 2);
+
+        let pointer = offset_base + {
+            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
+
+            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
+        };
+
+        Ok(PkmnapiDBPatch::new(pointer, pokedex_entry.to_raw()))
+    }
 }
