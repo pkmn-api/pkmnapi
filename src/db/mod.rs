@@ -245,7 +245,7 @@ impl PkmnapiDB {
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let pokemon_name = PkmnapiDBPokemonName {
-    ///     name: PkmnapiDBString::from_string("RHYDON"),
+    ///     name: PkmnapiDBString::from("RHYDON"),
     /// };
     ///
     /// let pokedex_id = db.pokemon_name_to_pokedex_id(pokemon_name).unwrap();
@@ -398,7 +398,7 @@ impl PkmnapiDB {
     /// assert_eq!(
     ///     type_name,
     ///     PkmnapiDBTypeName {
-    ///         name: PkmnapiDBString::from_string("NORMAL")
+    ///         name: PkmnapiDBString::from("NORMAL")
     ///     }
     /// );
     /// # fs::remove_file("rom.db");
@@ -449,7 +449,7 @@ impl PkmnapiDB {
     ///     .set_type_name(
     ///         0,
     ///         PkmnapiDBTypeName {
-    ///             name: PkmnapiDBString::from_string("BORING"),
+    ///             name: PkmnapiDBString::from("BORING"),
     ///         },
     ///     )
     ///     .unwrap();
@@ -777,7 +777,7 @@ impl PkmnapiDB {
     /// assert_eq!(
     ///     pokemon_name,
     ///     PkmnapiDBPokemonName {
-    ///         name: PkmnapiDBString::from_string("RHYDON")
+    ///         name: PkmnapiDBString::from("RHYDON")
     ///     }
     /// );
     /// # fs::remove_file("rom.db");
@@ -831,7 +831,7 @@ impl PkmnapiDB {
     ///     .set_pokemon_name(
     ///         112,
     ///         PkmnapiDBPokemonName {
-    ///             name: PkmnapiDBString::from_string("ABC"),
+    ///             name: PkmnapiDBString::from("ABC"),
     ///         },
     ///     )
     ///     .unwrap();
@@ -1013,7 +1013,7 @@ impl PkmnapiDB {
     /// assert_eq!(
     ///     move_name,
     ///     PkmnapiDBMoveName {
-    ///         name: PkmnapiDBString::from_string("POUND")
+    ///         name: PkmnapiDBString::from("POUND")
     ///     }
     /// );
     /// # fs::remove_file("rom.db");
@@ -1090,7 +1090,7 @@ impl PkmnapiDB {
     ///     .set_move_name(
     ///         1,
     ///         PkmnapiDBMoveName {
-    ///             name: PkmnapiDBString::from_string("ABCDE"),
+    ///             name: PkmnapiDBString::from("ABCDE"),
     ///         },
     ///     )
     ///     .unwrap();
@@ -1534,7 +1534,7 @@ impl PkmnapiDB {
     /// let pokedex_entry = db.get_pokedex_entry(112).unwrap();
     ///
     /// assert_eq!(pokedex_entry, PkmnapiDBPokedexEntry {
-    ///     species: PkmnapiDBString::from_string("DRILL"),
+    ///     species: PkmnapiDBString::from("DRILL"),
     ///     height: 75,
     ///     weight: 2650
     /// });
@@ -1591,7 +1591,7 @@ impl PkmnapiDB {
     ///
     /// let patch = db
     ///     .set_pokedex_entry(112, PkmnapiDBPokedexEntry {
-    ///         species: PkmnapiDBString::from_string("BOBBY"),
+    ///         species: PkmnapiDBString::from("BOBBY"),
     ///         height: 100,
     ///         weight: 300
     ///     })
@@ -1626,5 +1626,71 @@ impl PkmnapiDB {
         };
 
         Ok(PkmnapiDBPatch::new(pointer, pokedex_entry.to_raw()))
+    }
+
+    /// Get Pokédex entry text by Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x4047E],
+    /// #     vec![0xFA, 0x45],
+    /// #     vec![0x00; 0x17A],
+    /// #     vec![0x83, 0x91, 0x88, 0x8B, 0x8B, 0x50, 0x06, 0x03, 0x5A, 0x0A, 0x17, 0x00, 0x40, 0x2B, 0x50],
+    /// #     vec![0x00; 0xA1B],
+    /// #     vec![0x70],
+    /// #     vec![0x00; 0xBE],
+    /// #     vec![0x00; 0x6AF1D],
+    /// #     vec![0x00, 0x8F, 0xB1, 0xAE, 0xB3, 0xA4, 0xA2, 0xB3, 0xA4, 0xA3, 0x5F]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let pokedex_entry_text = db.get_pokedex_entry_text(112).unwrap();
+    ///
+    /// assert_eq!(pokedex_entry_text, PkmnapiDBPokedexEntryText {
+    ///     text: PkmnapiDBString::from("Protected"),
+    /// });
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn get_pokedex_entry_text<S: Into<PkmnapiDBPokedexID>>(
+        &self,
+        pokedex_id: S,
+    ) -> Result<PkmnapiDBPokedexEntryText, String> {
+        let pokedex_id = pokedex_id.into();
+
+        let internal_id = self.pokedex_id_to_internal_id(pokedex_id).unwrap();
+
+        let offset_base = ROM_PAGE * 0x1E;
+        let pointer_offset = (offset_base + 0x447E) + (internal_id * 2);
+
+        let pointer = offset_base + {
+            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
+
+            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
+        };
+
+        let pointer_offset =
+            pointer + { self.rom[pointer..].iter().position(|&r| r == 0x50).unwrap() } + 0x06;
+
+        let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 3)]);
+
+        let pointer = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
+        let pointer_base = (ROM_PAGE * 2) * { cursor.read_u8().unwrap_or(0) as usize };
+        let pointer = pointer + pointer_base - (ROM_PAGE * 2);
+
+        let pokedex_entry_text = PkmnapiDBPokedexEntryText::from(&self.rom[pointer..]);
+
+        Ok(pokedex_entry_text)
     }
 }

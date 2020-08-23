@@ -235,7 +235,7 @@ impl Mul<usize> for PkmnapiDBTypeEffectID {
 /// assert_eq!(
 ///     type_name,
 ///     PkmnapiDBTypeName {
-///         name: PkmnapiDBString::from_string("ABC")
+///         name: PkmnapiDBString::from("ABC")
 ///     }
 /// );
 /// ```
@@ -259,7 +259,7 @@ impl From<&[u8]> for PkmnapiDBTypeName {
     /// assert_eq!(
     ///     type_name,
     ///     PkmnapiDBTypeName {
-    ///         name: PkmnapiDBString::from_string("ABC")
+    ///         name: PkmnapiDBString::from("ABC")
     ///     }
     /// );
     /// ```
@@ -282,7 +282,7 @@ impl PkmnapiDBTypeName {
     /// use pkmnapi::db::types::*;
     ///
     /// let type_name = PkmnapiDBTypeName {
-    ///     name: PkmnapiDBString::from_string("ABC"),
+    ///     name: PkmnapiDBString::from("ABC"),
     /// };
     ///
     /// let raw = type_name.to_raw();
@@ -543,7 +543,7 @@ impl PkmnapiDBStats {
 /// assert_eq!(
 ///     pokemon_name,
 ///     PkmnapiDBPokemonName {
-///         name: PkmnapiDBString::from_string("ABC")
+///         name: PkmnapiDBString::from("ABC")
 ///     }
 /// );
 /// ```
@@ -567,7 +567,7 @@ impl From<&[u8]> for PkmnapiDBPokemonName {
     /// assert_eq!(
     ///     pokemon_name,
     ///     PkmnapiDBPokemonName {
-    ///         name: PkmnapiDBString::from_string("ABC")
+    ///         name: PkmnapiDBString::from("ABC")
     ///     }
     /// );
     /// ```
@@ -590,7 +590,7 @@ impl PkmnapiDBPokemonName {
     /// use pkmnapi::db::types::*;
     ///
     /// let pokemon_name = PkmnapiDBPokemonName {
-    ///     name: PkmnapiDBString::from_string("ABC"),
+    ///     name: PkmnapiDBString::from("ABC"),
     /// };
     ///
     /// let raw = pokemon_name.to_raw();
@@ -777,7 +777,7 @@ impl PkmnapiDBMoveStats {
 /// assert_eq!(
 ///     type_name,
 ///     PkmnapiDBMoveName {
-///         name: PkmnapiDBString::from_string("ABC")
+///         name: PkmnapiDBString::from("ABC")
 ///     }
 /// );
 /// ```
@@ -801,7 +801,7 @@ impl From<&[u8]> for PkmnapiDBMoveName {
     /// assert_eq!(
     ///     move_name,
     ///     PkmnapiDBMoveName {
-    ///         name: PkmnapiDBString::from_string("ABC")
+    ///         name: PkmnapiDBString::from("ABC")
     ///     }
     /// );
     /// ```
@@ -824,7 +824,7 @@ impl PkmnapiDBMoveName {
     /// use pkmnapi::db::types::*;
     ///
     /// let move_name = PkmnapiDBMoveName {
-    ///     name: PkmnapiDBString::from_string("ABC"),
+    ///     name: PkmnapiDBString::from("ABC"),
     /// };
     ///
     /// let raw = move_name.to_raw();
@@ -1126,7 +1126,7 @@ impl PkmnapiDBTMPrice {
 /// assert_eq!(
 ///     pokedex_entry,
 ///     PkmnapiDBPokedexEntry {
-///         species: PkmnapiDBString::from_string("DRILL"),
+///         species: PkmnapiDBString::from("DRILL"),
 ///         height: 75,
 ///         weight: 2650,
 ///     }
@@ -1156,7 +1156,7 @@ impl From<&[u8]> for PkmnapiDBPokedexEntry {
     /// assert_eq!(
     ///     pokedex_entry,
     ///     PkmnapiDBPokedexEntry {
-    ///         species: PkmnapiDBString::from_string("DRILL"),
+    ///         species: PkmnapiDBString::from("DRILL"),
     ///         height: 75,
     ///         weight: 2650,
     ///     }
@@ -1192,7 +1192,7 @@ impl PkmnapiDBPokedexEntry {
     /// use pkmnapi::db::types::*;
     ///
     /// let pokedex_entry = PkmnapiDBPokedexEntry {
-    ///     species: PkmnapiDBString::from_string("DRILL"),
+    ///     species: PkmnapiDBString::from("DRILL"),
     ///     height: 75,
     ///     weight: 2650,
     /// };
@@ -1205,7 +1205,7 @@ impl PkmnapiDBPokedexEntry {
     /// );
     /// ```
     pub fn to_raw(&self) -> Vec<u8> {
-        let species_string = PkmnapiDBString::from_string(self.species.to_string());
+        let species_string = PkmnapiDBString::from(self.species.to_string());
         let height_ft = ((self.height as f32) / 12.0) as u32;
         let height_in = (self.height - (height_ft * 12)) as u32;
 
@@ -1216,5 +1216,78 @@ impl PkmnapiDBPokedexEntry {
             (self.weight as u16).to_le_bytes().to_vec(),
         ]
         .concat()
+    }
+}
+
+/// Pokédex entry text
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi::db::string::*;
+/// use pkmnapi::db::types::*;
+///
+/// let rom = vec![0x00, 0x83, 0x91, 0x88, 0x8B, 0x8B, 0x5F];
+/// let pokedex_entry_text = PkmnapiDBPokedexEntryText::from(&rom[..]);
+///
+/// assert_eq!(
+///     pokedex_entry_text,
+///     PkmnapiDBPokedexEntryText {
+///         text: PkmnapiDBString::from("DRILL"),
+///     }
+/// );
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct PkmnapiDBPokedexEntryText {
+    pub text: PkmnapiDBString,
+}
+
+impl From<&[u8]> for PkmnapiDBPokedexEntryText {
+    /// Convert &[u8] to PkmnapiDBPokedexEntryText
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let rom = vec![0x00, 0x83, 0x91, 0x88, 0x8B, 0x8B, 0x5F];
+    /// let pokedex_entry = PkmnapiDBPokedexEntryText::from(&rom[..]);
+    ///
+    /// assert_eq!(
+    ///     pokedex_entry,
+    ///     PkmnapiDBPokedexEntryText {
+    ///         text: PkmnapiDBString::from("DRILL"),
+    ///     }
+    /// );
+    /// ```
+    fn from(rom: &[u8]) -> Self {
+        let text_end_index = rom.iter().position(|&r| r == 0x5F).unwrap_or(rom.len());
+
+        let text = PkmnapiDBString::new(&rom[1..text_end_index]);
+
+        PkmnapiDBPokedexEntryText { text }
+    }
+}
+
+impl PkmnapiDBPokedexEntryText {
+    /// Pokédex entry text to raw bytes
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let pokedex_entry_text = PkmnapiDBPokedexEntryText {
+    ///     text: PkmnapiDBString::from("DRILL"),
+    /// };
+    ///
+    /// let raw = pokedex_entry_text.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x00, 0x83, 0x91, 0x88, 0x8B, 0x8B, 0x5F]);
+    /// ```
+    pub fn to_raw(&self) -> Vec<u8> {
+        [vec![0x00], self.text.value.to_vec(), vec![0x5F]].concat()
     }
 }
