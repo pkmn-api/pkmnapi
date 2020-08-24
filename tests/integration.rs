@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use pkmnapi::db::*;
     use pkmnapi::db::header::*;
+    use pkmnapi::db::*;
 
     #[test]
     fn new_success() {

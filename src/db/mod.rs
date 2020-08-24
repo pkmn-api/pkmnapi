@@ -672,8 +672,15 @@ impl PkmnapiDB {
             return Err(format!("Pokédex ID too low: {}", pokedex_id));
         }
 
-        let offset_base = ROM_PAGE * 0x1C;
-        let offset = (offset_base + 0x03DE) + ((pokedex_id - 1) * 0x1C);
+        let offset = {
+            if pokedex_id == 151 {
+                0x425B
+            } else {
+                let offset_base = ROM_PAGE * 0x1C;
+
+                (offset_base + 0x03DE) + ((pokedex_id - 1) * 0x1C)
+            }
+        };
 
         let stats = PkmnapiDBStats::from(&self.rom[offset..(offset + 0x1C)]);
 
