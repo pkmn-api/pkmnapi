@@ -8,15 +8,15 @@ macro_rules! set_pokedex_entry_test {
 
             match db.set_pokedex_entry(
                 $pokedex_id,
-                PkmnapiDBPokedexEntry {
-                    species: PkmnapiDBString::from($species),
+                PokedexEntry {
+                    species: ROMString::from($species),
                     height: $height,
                     weight: $weight,
                 },
             ) {
                 Ok(patch) => assert_eq!(
                     patch,
-                    PkmnapiDBPatch {
+                    Patch {
                         offset: $patch_offset,
                         length: $patch_data.len(),
                         data: $patch_data

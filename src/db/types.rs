@@ -5,7 +5,7 @@
 //! ```
 //! use pkmnapi::db::types::*;
 //!
-//! let pokedex_id = PkmnapiDBPokedexID::from(151);
+//! let pokedex_id = PokedexID::from(151);
 //!
 //! assert_eq!(pokedex_id, 151);
 //! ```
@@ -24,44 +24,44 @@ use std::ops::{Add, Mul, Sub};
 /// ```
 /// use pkmnapi::db::types::*;
 ///
-/// let pokedex_id = PkmnapiDBPokedexID::from(151);
+/// let pokedex_id = PokedexID::from(151);
 ///
 /// assert_eq!(pokedex_id, 151);
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct PkmnapiDBPokedexID(u8);
+pub struct PokedexID(u8);
 
-impl PkmnapiDBPokedexID {
+impl PokedexID {
     pub fn value(&self) -> u8 {
         self.0
     }
 }
 
-impl From<u8> for PkmnapiDBPokedexID {
+impl From<u8> for PokedexID {
     fn from(pokedex_id: u8) -> Self {
-        PkmnapiDBPokedexID(pokedex_id)
+        PokedexID(pokedex_id)
     }
 }
 
-impl PartialEq<u8> for PkmnapiDBPokedexID {
+impl PartialEq<u8> for PokedexID {
     fn eq(&self, other: &u8) -> bool {
         self.0 == *other
     }
 }
 
-impl PartialOrd<u8> for PkmnapiDBPokedexID {
+impl PartialOrd<u8> for PokedexID {
     fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
         self.0.partial_cmp(&other)
     }
 }
 
-impl fmt::Display for PkmnapiDBPokedexID {
+impl fmt::Display for PokedexID {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
-impl Sub<usize> for PkmnapiDBPokedexID {
+impl Sub<usize> for PokedexID {
     type Output = usize;
 
     fn sub(self, other: usize) -> usize {
@@ -76,44 +76,44 @@ impl Sub<usize> for PkmnapiDBPokedexID {
 /// ```
 /// use pkmnapi::db::types::*;
 ///
-/// let internal_id = PkmnapiDBInternalID::from(0x14);
+/// let internal_id = InternalID::from(0x14);
 ///
 /// assert_eq!(internal_id, 0x14);
 /// ```
 #[derive(Debug)]
-pub struct PkmnapiDBInternalID(u8);
+pub struct InternalID(u8);
 
-impl PkmnapiDBInternalID {
+impl InternalID {
     pub fn value(&self) -> u8 {
         self.0
     }
 }
 
-impl From<u8> for PkmnapiDBInternalID {
+impl From<u8> for InternalID {
     fn from(internal_id: u8) -> Self {
-        PkmnapiDBInternalID(internal_id)
+        InternalID(internal_id)
     }
 }
 
-impl fmt::Display for PkmnapiDBInternalID {
+impl fmt::Display for InternalID {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
-impl PartialEq<u8> for PkmnapiDBInternalID {
+impl PartialEq<u8> for InternalID {
     fn eq(&self, other: &u8) -> bool {
         self.0 == *other
     }
 }
 
-impl PartialOrd<u8> for PkmnapiDBInternalID {
+impl PartialOrd<u8> for InternalID {
     fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
         self.0.partial_cmp(&other)
     }
 }
 
-impl Add<usize> for PkmnapiDBInternalID {
+impl Add<usize> for InternalID {
     type Output = usize;
 
     fn add(self, other: usize) -> usize {
@@ -121,7 +121,7 @@ impl Add<usize> for PkmnapiDBInternalID {
     }
 }
 
-impl Mul<usize> for PkmnapiDBInternalID {
+impl Mul<usize> for InternalID {
     type Output = usize;
 
     fn mul(self, other: usize) -> usize {
@@ -136,38 +136,38 @@ impl Mul<usize> for PkmnapiDBInternalID {
 /// ```
 /// use pkmnapi::db::types::*;
 ///
-/// let type_id = PkmnapiDBTypeID::from(0x12);
+/// let type_id = TypeID::from(0x12);
 ///
 /// assert_eq!(type_id, 0x12);
 /// ```
 #[derive(Clone, Debug, PartialEq)]
-pub struct PkmnapiDBTypeID(u8);
+pub struct TypeID(u8);
 
-impl PkmnapiDBTypeID {
+impl TypeID {
     pub fn value(&self) -> u8 {
         self.0
     }
 }
 
-impl From<u8> for PkmnapiDBTypeID {
+impl From<u8> for TypeID {
     fn from(type_id: u8) -> Self {
-        PkmnapiDBTypeID(type_id)
+        TypeID(type_id)
     }
 }
 
-impl fmt::Display for PkmnapiDBTypeID {
+impl fmt::Display for TypeID {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
-impl PartialEq<u8> for PkmnapiDBTypeID {
+impl PartialEq<u8> for TypeID {
     fn eq(&self, other: &u8) -> bool {
         self.0 == *other
     }
 }
 
-impl Mul<usize> for PkmnapiDBTypeID {
+impl Mul<usize> for TypeID {
     type Output = usize;
 
     fn mul(self, other: usize) -> usize {
@@ -182,38 +182,38 @@ impl Mul<usize> for PkmnapiDBTypeID {
 /// ```
 /// use pkmnapi::db::types::*;
 ///
-/// let type_effect_id = PkmnapiDBTypeEffectID::from(0x12);
+/// let type_effect_id = TypeEffectID::from(0x12);
 ///
 /// assert_eq!(type_effect_id, 0x12);
 /// ```
 #[derive(Debug)]
-pub struct PkmnapiDBTypeEffectID(u8);
+pub struct TypeEffectID(u8);
 
-impl PkmnapiDBTypeEffectID {
+impl TypeEffectID {
     pub fn value(&self) -> u8 {
         self.0
     }
 }
 
-impl From<u8> for PkmnapiDBTypeEffectID {
+impl From<u8> for TypeEffectID {
     fn from(type_effect_id: u8) -> Self {
-        PkmnapiDBTypeEffectID(type_effect_id)
+        TypeEffectID(type_effect_id)
     }
 }
 
-impl PartialEq<u8> for PkmnapiDBTypeEffectID {
+impl PartialEq<u8> for TypeEffectID {
     fn eq(&self, other: &u8) -> bool {
         self.0 == *other
     }
 }
 
-impl PartialOrd<u8> for PkmnapiDBTypeEffectID {
+impl PartialOrd<u8> for TypeEffectID {
     fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
         self.0.partial_cmp(&other)
     }
 }
 
-impl Mul<usize> for PkmnapiDBTypeEffectID {
+impl Mul<usize> for TypeEffectID {
     type Output = usize;
 
     fn mul(self, other: usize) -> usize {
@@ -230,22 +230,22 @@ impl Mul<usize> for PkmnapiDBTypeEffectID {
 /// use pkmnapi::db::types::*;
 ///
 /// let rom = vec![0x80, 0x81, 0x82, 0x50];
-/// let type_name = PkmnapiDBTypeName::from(&rom[..]);
+/// let type_name = TypeName::from(&rom[..]);
 ///
 /// assert_eq!(
 ///     type_name,
-///     PkmnapiDBTypeName {
-///         name: PkmnapiDBString::from("ABC")
+///     TypeName {
+///         name: ROMString::from("ABC")
 ///     }
 /// );
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct PkmnapiDBTypeName {
-    pub name: PkmnapiDBString,
+pub struct TypeName {
+    pub name: ROMString,
 }
 
-impl From<&[u8]> for PkmnapiDBTypeName {
-    /// Convert &[u8] to PkmnapiDBTypeName
+impl From<&[u8]> for TypeName {
+    /// Convert &[u8] to TypeName
     ///
     /// # Example
     ///
@@ -254,25 +254,25 @@ impl From<&[u8]> for PkmnapiDBTypeName {
     /// use pkmnapi::db::types::*;
     ///
     /// let rom = vec![0x80, 0x81, 0x82, 0x50];
-    /// let type_name = PkmnapiDBTypeName::from(&rom[..]);
+    /// let type_name = TypeName::from(&rom[..]);
     ///
     /// assert_eq!(
     ///     type_name,
-    ///     PkmnapiDBTypeName {
-    ///         name: PkmnapiDBString::from("ABC")
+    ///     TypeName {
+    ///         name: ROMString::from("ABC")
     ///     }
     /// );
     /// ```
     fn from(rom: &[u8]) -> Self {
         let name_end_index = rom.iter().position(|&r| r == 0x50).unwrap_or(rom.len());
 
-        let name = PkmnapiDBString::new(&rom[..name_end_index]);
+        let name = ROMString::new(&rom[..name_end_index]);
 
-        PkmnapiDBTypeName { name }
+        TypeName { name }
     }
 }
 
-impl PkmnapiDBTypeName {
+impl TypeName {
     /// Type name to raw bytes
     ///
     /// # Example
@@ -281,8 +281,8 @@ impl PkmnapiDBTypeName {
     /// use pkmnapi::db::string::*;
     /// use pkmnapi::db::types::*;
     ///
-    /// let type_name = PkmnapiDBTypeName {
-    ///     name: PkmnapiDBString::from("ABC"),
+    /// let type_name = TypeName {
+    ///     name: ROMString::from("ABC"),
     /// };
     ///
     /// let raw = type_name.to_raw();
@@ -302,26 +302,26 @@ impl PkmnapiDBTypeName {
 /// use pkmnapi::db::types::*;
 ///
 /// let rom = vec![0x01, 0x02, 0x14];
-/// let type_effect = PkmnapiDBTypeEffect::from(&rom[..]);
+/// let type_effect = TypeEffect::from(&rom[..]);
 ///
 /// assert_eq!(
 ///     type_effect,
-///     PkmnapiDBTypeEffect {
-///         attacking_type_id: PkmnapiDBTypeID::from(0x01),
-///         defending_type_id: PkmnapiDBTypeID::from(0x02),
+///     TypeEffect {
+///         attacking_type_id: TypeID::from(0x01),
+///         defending_type_id: TypeID::from(0x02),
 ///         multiplier: 2.0
 ///     }
 /// );
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct PkmnapiDBTypeEffect {
-    pub attacking_type_id: PkmnapiDBTypeID,
-    pub defending_type_id: PkmnapiDBTypeID,
+pub struct TypeEffect {
+    pub attacking_type_id: TypeID,
+    pub defending_type_id: TypeID,
     pub multiplier: f32,
 }
 
-impl From<&[u8]> for PkmnapiDBTypeEffect {
-    /// Convert &[u8] to PkmnapiDBTypeEffect
+impl From<&[u8]> for TypeEffect {
+    /// Convert &[u8] to TypeEffect
     ///
     /// # Example
     ///
@@ -329,13 +329,13 @@ impl From<&[u8]> for PkmnapiDBTypeEffect {
     /// use pkmnapi::db::types::*;
     ///
     /// let rom = vec![0x01, 0x02, 0x14];
-    /// let type_effect = PkmnapiDBTypeEffect::from(&rom[..]);
+    /// let type_effect = TypeEffect::from(&rom[..]);
     ///
     /// assert_eq!(
     ///     type_effect,
-    ///     PkmnapiDBTypeEffect {
-    ///         attacking_type_id: PkmnapiDBTypeID::from(0x01),
-    ///         defending_type_id: PkmnapiDBTypeID::from(0x02),
+    ///     TypeEffect {
+    ///         attacking_type_id: TypeID::from(0x01),
+    ///         defending_type_id: TypeID::from(0x02),
     ///         multiplier: 2.0
     ///     }
     /// );
@@ -343,11 +343,11 @@ impl From<&[u8]> for PkmnapiDBTypeEffect {
     fn from(rom: &[u8]) -> Self {
         let mut cursor = Cursor::new(rom);
 
-        let attacking_type_id = PkmnapiDBTypeID::from(cursor.read_u8().unwrap_or(0));
-        let defending_type_id = PkmnapiDBTypeID::from(cursor.read_u8().unwrap_or(0));
+        let attacking_type_id = TypeID::from(cursor.read_u8().unwrap_or(0));
+        let defending_type_id = TypeID::from(cursor.read_u8().unwrap_or(0));
         let multiplier = (cursor.read_u8().unwrap_or(0) as f32) / 10.0;
 
-        PkmnapiDBTypeEffect {
+        TypeEffect {
             attacking_type_id,
             defending_type_id,
             multiplier,
@@ -355,7 +355,7 @@ impl From<&[u8]> for PkmnapiDBTypeEffect {
     }
 }
 
-impl PkmnapiDBTypeEffect {
+impl TypeEffect {
     /// Convert type effect to raw bytes
     ///
     /// # Example
@@ -363,9 +363,9 @@ impl PkmnapiDBTypeEffect {
     /// ```
     /// use pkmnapi::db::types::*;
     ///
-    /// let type_effect = PkmnapiDBTypeEffect {
-    ///     attacking_type_id: PkmnapiDBTypeID::from(0x01),
-    ///     defending_type_id: PkmnapiDBTypeID::from(0x02),
+    /// let type_effect = TypeEffect {
+    ///     attacking_type_id: TypeID::from(0x01),
+    ///     defending_type_id: TypeID::from(0x02),
     ///     multiplier: 2.0,
     /// };
     ///
@@ -390,38 +390,38 @@ impl PkmnapiDBTypeEffect {
 /// use pkmnapi::db::types::*;
 ///
 /// let rom = vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A];
-/// let stats = PkmnapiDBStats::from(&rom[..]);
+/// let stats = Stats::from(&rom[..]);
 ///
 /// assert_eq!(
 ///     stats,
-///     PkmnapiDBStats {
-///         pokedex_id: PkmnapiDBPokedexID::from(0x01),
+///     Stats {
+///         pokedex_id: PokedexID::from(0x01),
 ///         base_hp: 0x02,
 ///         base_attack: 0x03,
 ///         base_defence: 0x04,
 ///         base_speed: 0x05,
 ///         base_special: 0x06,
-///         type_ids: vec![PkmnapiDBTypeID::from(0x07), PkmnapiDBTypeID::from(0x08)],
+///         type_ids: vec![TypeID::from(0x07), TypeID::from(0x08)],
 ///         catch_rate: 0x09,
 ///         base_exp_yield: 0x0A
 ///     }
 /// );
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct PkmnapiDBStats {
-    pub pokedex_id: PkmnapiDBPokedexID,
+pub struct Stats {
+    pub pokedex_id: PokedexID,
     pub base_hp: u8,
     pub base_attack: u8,
     pub base_defence: u8,
     pub base_speed: u8,
     pub base_special: u8,
-    pub type_ids: Vec<PkmnapiDBTypeID>,
+    pub type_ids: Vec<TypeID>,
     pub catch_rate: u8,
     pub base_exp_yield: u8,
 }
 
-impl From<&[u8]> for PkmnapiDBStats {
-    /// Convert &[u8] to PkmnapiDBStats
+impl From<&[u8]> for Stats {
+    /// Convert &[u8] to Stats
     ///
     /// # Example
     ///
@@ -429,18 +429,18 @@ impl From<&[u8]> for PkmnapiDBStats {
     /// use pkmnapi::db::types::*;
     ///
     /// let rom = vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A];
-    /// let stats = PkmnapiDBStats::from(&rom[..]);
+    /// let stats = Stats::from(&rom[..]);
     ///
     /// assert_eq!(
     ///     stats,
-    ///     PkmnapiDBStats {
-    ///         pokedex_id: PkmnapiDBPokedexID::from(0x01),
+    ///     Stats {
+    ///         pokedex_id: PokedexID::from(0x01),
     ///         base_hp: 0x02,
     ///         base_attack: 0x03,
     ///         base_defence: 0x04,
     ///         base_speed: 0x05,
     ///         base_special: 0x06,
-    ///         type_ids: vec![PkmnapiDBTypeID::from(0x07), PkmnapiDBTypeID::from(0x08)],
+    ///         type_ids: vec![TypeID::from(0x07), TypeID::from(0x08)],
     ///         catch_rate: 0x09,
     ///         base_exp_yield: 0x0A
     ///     }
@@ -449,7 +449,7 @@ impl From<&[u8]> for PkmnapiDBStats {
     fn from(rom: &[u8]) -> Self {
         let mut cursor = Cursor::new(rom);
 
-        let pokedex_id = PkmnapiDBPokedexID::from(cursor.read_u8().unwrap_or(0));
+        let pokedex_id = PokedexID::from(cursor.read_u8().unwrap_or(0));
         let base_hp = cursor.read_u8().unwrap_or(0);
         let base_attack = cursor.read_u8().unwrap_or(0);
         let base_defence = cursor.read_u8().unwrap_or(0);
@@ -462,13 +462,13 @@ impl From<&[u8]> for PkmnapiDBStats {
 
             type_ids
                 .iter()
-                .map(|type_id| PkmnapiDBTypeID::from(*type_id))
+                .map(|type_id| TypeID::from(*type_id))
                 .collect()
         };
         let catch_rate = cursor.read_u8().unwrap_or(0);
         let base_exp_yield = cursor.read_u8().unwrap_or(0);
 
-        PkmnapiDBStats {
+        Stats {
             pokedex_id,
             base_hp,
             base_attack,
@@ -482,7 +482,7 @@ impl From<&[u8]> for PkmnapiDBStats {
     }
 }
 
-impl PkmnapiDBStats {
+impl Stats {
     /// Convert stats to raw bytes
     ///
     /// # Example
@@ -490,14 +490,14 @@ impl PkmnapiDBStats {
     /// ```
     /// use pkmnapi::db::types::*;
     ///
-    /// let stats = PkmnapiDBStats {
-    ///     pokedex_id: PkmnapiDBPokedexID::from(0x01),
+    /// let stats = Stats {
+    ///     pokedex_id: PokedexID::from(0x01),
     ///     base_hp: 0x02,
     ///     base_attack: 0x03,
     ///     base_defence: 0x04,
     ///     base_speed: 0x05,
     ///     base_special: 0x06,
-    ///     type_ids: vec![PkmnapiDBTypeID::from(0x07), PkmnapiDBTypeID::from(0x08)],
+    ///     type_ids: vec![TypeID::from(0x07), TypeID::from(0x08)],
     ///     catch_rate: 0x09,
     ///     base_exp_yield: 0x0A,
     /// };
@@ -538,22 +538,22 @@ impl PkmnapiDBStats {
 /// use pkmnapi::db::types::*;
 ///
 /// let rom = vec![0x80, 0x81, 0x82, 0x50];
-/// let pokemon_name = PkmnapiDBPokemonName::from(&rom[..]);
+/// let pokemon_name = PokemonName::from(&rom[..]);
 ///
 /// assert_eq!(
 ///     pokemon_name,
-///     PkmnapiDBPokemonName {
-///         name: PkmnapiDBString::from("ABC")
+///     PokemonName {
+///         name: ROMString::from("ABC")
 ///     }
 /// );
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct PkmnapiDBPokemonName {
-    pub name: PkmnapiDBString,
+pub struct PokemonName {
+    pub name: ROMString,
 }
 
-impl From<&[u8]> for PkmnapiDBPokemonName {
-    /// Convert &[u8] to PkmnapiDBPokemonName
+impl From<&[u8]> for PokemonName {
+    /// Convert &[u8] to PokemonName
     ///
     /// # Example
     ///
@@ -562,25 +562,25 @@ impl From<&[u8]> for PkmnapiDBPokemonName {
     /// use pkmnapi::db::types::*;
     ///
     /// let rom = vec![0x80, 0x81, 0x82, 0x50];
-    /// let pokemon_name = PkmnapiDBPokemonName::from(&rom[..]);
+    /// let pokemon_name = PokemonName::from(&rom[..]);
     ///
     /// assert_eq!(
     ///     pokemon_name,
-    ///     PkmnapiDBPokemonName {
-    ///         name: PkmnapiDBString::from("ABC")
+    ///     PokemonName {
+    ///         name: ROMString::from("ABC")
     ///     }
     /// );
     /// ```
     fn from(rom: &[u8]) -> Self {
         let name_end_index = rom.iter().position(|&r| r == 0x50).unwrap_or(rom.len());
 
-        let name = PkmnapiDBString::new(&rom[..name_end_index]);
+        let name = ROMString::new(&rom[..name_end_index]);
 
-        PkmnapiDBPokemonName { name }
+        PokemonName { name }
     }
 }
 
-impl PkmnapiDBPokemonName {
+impl PokemonName {
     /// Pokémon name to raw bytes
     ///
     /// # Example
@@ -589,8 +589,8 @@ impl PkmnapiDBPokemonName {
     /// use pkmnapi::db::string::*;
     /// use pkmnapi::db::types::*;
     ///
-    /// let pokemon_name = PkmnapiDBPokemonName {
-    ///     name: PkmnapiDBString::from("ABC"),
+    /// let pokemon_name = PokemonName {
+    ///     name: ROMString::from("ABC"),
     /// };
     ///
     /// let raw = pokemon_name.to_raw();
@@ -609,44 +609,44 @@ impl PkmnapiDBPokemonName {
 /// ```
 /// use pkmnapi::db::types::*;
 ///
-/// let move_id = PkmnapiDBMoveID::from(0x12);
+/// let move_id = MoveID::from(0x12);
 ///
 /// assert_eq!(move_id, 0x12);
 /// ```
 #[derive(Clone, Debug, PartialEq)]
-pub struct PkmnapiDBMoveID(u8);
+pub struct MoveID(u8);
 
-impl PkmnapiDBMoveID {
+impl MoveID {
     pub fn value(&self) -> u8 {
         self.0
     }
 }
 
-impl From<u8> for PkmnapiDBMoveID {
+impl From<u8> for MoveID {
     fn from(move_id: u8) -> Self {
-        PkmnapiDBMoveID(move_id)
+        MoveID(move_id)
     }
 }
 
-impl PartialEq<u8> for PkmnapiDBMoveID {
+impl PartialEq<u8> for MoveID {
     fn eq(&self, other: &u8) -> bool {
         self.0 == *other
     }
 }
 
-impl PartialOrd<u8> for PkmnapiDBMoveID {
+impl PartialOrd<u8> for MoveID {
     fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
         self.0.partial_cmp(&other)
     }
 }
 
-impl fmt::Display for PkmnapiDBMoveID {
+impl fmt::Display for MoveID {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
-impl Sub<usize> for PkmnapiDBMoveID {
+impl Sub<usize> for MoveID {
     type Output = usize;
 
     fn sub(self, other: usize) -> usize {
@@ -662,32 +662,32 @@ impl Sub<usize> for PkmnapiDBMoveID {
 /// use pkmnapi::db::types::*;
 ///
 /// let rom = vec![0x01, 0x00, 0x28, 0x00, 0xFF, 0x23];
-/// let type_name = PkmnapiDBMoveStats::from(&rom[..]);
+/// let type_name = MoveStats::from(&rom[..]);
 ///
 /// assert_eq!(
 ///     type_name,
-///     PkmnapiDBMoveStats {
-///         move_id: PkmnapiDBMoveID::from(0x01),
+///     MoveStats {
+///         move_id: MoveID::from(0x01),
 ///         effect: 0x00,
 ///         power: 0x28,
-///         type_id: PkmnapiDBTypeID::from(0x00),
+///         type_id: TypeID::from(0x00),
 ///         accuracy: 1.0,
 ///         pp: 0x23
 ///     }
 /// );
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct PkmnapiDBMoveStats {
-    pub move_id: PkmnapiDBMoveID,
+pub struct MoveStats {
+    pub move_id: MoveID,
     pub effect: u8,
     pub power: u8,
-    pub type_id: PkmnapiDBTypeID,
+    pub type_id: TypeID,
     pub accuracy: f32,
     pub pp: u8,
 }
 
-impl From<&[u8]> for PkmnapiDBMoveStats {
-    /// Convert &[u8] to PkmnapiDBMoveStats
+impl From<&[u8]> for MoveStats {
+    /// Convert &[u8] to MoveStats
     ///
     /// # Example
     ///
@@ -695,15 +695,15 @@ impl From<&[u8]> for PkmnapiDBMoveStats {
     /// use pkmnapi::db::types::*;
     ///
     /// let rom = vec![0x01, 0x00, 0x28, 0x00, 0xFF, 0x23];
-    /// let move_stats = PkmnapiDBMoveStats::from(&rom[..]);
+    /// let move_stats = MoveStats::from(&rom[..]);
     ///
     /// assert_eq!(
     ///     move_stats,
-    ///     PkmnapiDBMoveStats {
-    ///         move_id: PkmnapiDBMoveID::from(0x01),
+    ///     MoveStats {
+    ///         move_id: MoveID::from(0x01),
     ///         effect: 0x00,
     ///         power: 0x28,
-    ///         type_id: PkmnapiDBTypeID::from(0x00),
+    ///         type_id: TypeID::from(0x00),
     ///         accuracy: 1.0,
     ///         pp: 0x23
     ///     }
@@ -712,14 +712,14 @@ impl From<&[u8]> for PkmnapiDBMoveStats {
     fn from(rom: &[u8]) -> Self {
         let mut cursor = Cursor::new(rom);
 
-        let move_id = PkmnapiDBMoveID::from(cursor.read_u8().unwrap_or(0));
+        let move_id = MoveID::from(cursor.read_u8().unwrap_or(0));
         let effect = cursor.read_u8().unwrap_or(0);
         let power = cursor.read_u8().unwrap_or(0);
-        let type_id = PkmnapiDBTypeID::from(cursor.read_u8().unwrap_or(0));
+        let type_id = TypeID::from(cursor.read_u8().unwrap_or(0));
         let accuracy = (cursor.read_u8().unwrap_or(0) as f32) / 255.0;
         let pp = cursor.read_u8().unwrap_or(0);
 
-        PkmnapiDBMoveStats {
+        MoveStats {
             move_id,
             effect,
             power,
@@ -730,7 +730,7 @@ impl From<&[u8]> for PkmnapiDBMoveStats {
     }
 }
 
-impl PkmnapiDBMoveStats {
+impl MoveStats {
     /// Pokémon name to raw bytes
     ///
     /// # Example
@@ -738,11 +738,11 @@ impl PkmnapiDBMoveStats {
     /// ```
     /// use pkmnapi::db::types::*;
     ///
-    /// let move_stats = PkmnapiDBMoveStats {
-    ///     move_id: PkmnapiDBMoveID::from(0x01),
+    /// let move_stats = MoveStats {
+    ///     move_id: MoveID::from(0x01),
     ///     effect: 0x00,
     ///     power: 0x28,
-    ///     type_id: PkmnapiDBTypeID::from(0x00),
+    ///     type_id: TypeID::from(0x00),
     ///     accuracy: 1.0,
     ///     pp: 0x23,
     /// };
@@ -772,22 +772,22 @@ impl PkmnapiDBMoveStats {
 /// use pkmnapi::db::types::*;
 ///
 /// let rom = vec![0x80, 0x81, 0x82, 0x50];
-/// let type_name = PkmnapiDBMoveName::from(&rom[..]);
+/// let type_name = MoveName::from(&rom[..]);
 ///
 /// assert_eq!(
 ///     type_name,
-///     PkmnapiDBMoveName {
-///         name: PkmnapiDBString::from("ABC")
+///     MoveName {
+///         name: ROMString::from("ABC")
 ///     }
 /// );
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct PkmnapiDBMoveName {
-    pub name: PkmnapiDBString,
+pub struct MoveName {
+    pub name: ROMString,
 }
 
-impl From<&[u8]> for PkmnapiDBMoveName {
-    /// Convert &[u8] to PkmnapiDBMoveName
+impl From<&[u8]> for MoveName {
+    /// Convert &[u8] to MoveName
     ///
     /// # Example
     ///
@@ -796,25 +796,25 @@ impl From<&[u8]> for PkmnapiDBMoveName {
     /// use pkmnapi::db::types::*;
     ///
     /// let rom = vec![0x80, 0x81, 0x82, 0x50];
-    /// let move_name = PkmnapiDBMoveName::from(&rom[..]);
+    /// let move_name = MoveName::from(&rom[..]);
     ///
     /// assert_eq!(
     ///     move_name,
-    ///     PkmnapiDBMoveName {
-    ///         name: PkmnapiDBString::from("ABC")
+    ///     MoveName {
+    ///         name: ROMString::from("ABC")
     ///     }
     /// );
     /// ```
     fn from(rom: &[u8]) -> Self {
         let name_end_index = rom.iter().position(|&r| r == 0x50).unwrap_or(rom.len());
 
-        let name = PkmnapiDBString::new(&rom[..name_end_index]);
+        let name = ROMString::new(&rom[..name_end_index]);
 
-        PkmnapiDBMoveName { name }
+        MoveName { name }
     }
 }
 
-impl PkmnapiDBMoveName {
+impl MoveName {
     /// Move name to raw bytes
     ///
     /// # Example
@@ -823,8 +823,8 @@ impl PkmnapiDBMoveName {
     /// use pkmnapi::db::string::*;
     /// use pkmnapi::db::types::*;
     ///
-    /// let move_name = PkmnapiDBMoveName {
-    ///     name: PkmnapiDBString::from("ABC"),
+    /// let move_name = MoveName {
+    ///     name: ROMString::from("ABC"),
     /// };
     ///
     /// let raw = move_name.to_raw();
@@ -843,38 +843,38 @@ impl PkmnapiDBMoveName {
 /// ```
 /// use pkmnapi::db::types::*;
 ///
-/// let hm_id = PkmnapiDBHMID::from(0x12);
+/// let hm_id = HMID::from(0x12);
 ///
 /// assert_eq!(hm_id, 0x12);
 /// ```
 #[derive(Clone, Debug, PartialEq)]
-pub struct PkmnapiDBHMID(u8);
+pub struct HMID(u8);
 
-impl From<u8> for PkmnapiDBHMID {
+impl From<u8> for HMID {
     fn from(move_id: u8) -> Self {
-        PkmnapiDBHMID(move_id)
+        HMID(move_id)
     }
 }
 
-impl PartialEq<u8> for PkmnapiDBHMID {
+impl PartialEq<u8> for HMID {
     fn eq(&self, other: &u8) -> bool {
         self.0 == *other
     }
 }
 
-impl PartialOrd<u8> for PkmnapiDBHMID {
+impl PartialOrd<u8> for HMID {
     fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
         self.0.partial_cmp(&other)
     }
 }
 
-impl fmt::Display for PkmnapiDBHMID {
+impl fmt::Display for HMID {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
-impl Sub<usize> for PkmnapiDBHMID {
+impl Sub<usize> for HMID {
     type Output = usize;
 
     fn sub(self, other: usize) -> usize {
@@ -889,45 +889,45 @@ impl Sub<usize> for PkmnapiDBHMID {
 /// ```
 /// use pkmnapi::db::types::*;
 ///
-/// let hm = PkmnapiDBHM::from(0x01);
+/// let hm = HM::from(0x01);
 ///
 /// assert_eq!(
 ///     hm,
-///     PkmnapiDBHM {
-///         move_id: PkmnapiDBMoveID::from(0x01)
+///     HM {
+///         move_id: MoveID::from(0x01)
 ///     }
 /// );
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct PkmnapiDBHM {
-    pub move_id: PkmnapiDBMoveID,
+pub struct HM {
+    pub move_id: MoveID,
 }
 
-impl From<u8> for PkmnapiDBHM {
-    /// Convert u8 to PkmnapiDBHM
+impl From<u8> for HM {
+    /// Convert u8 to HM
     ///
     /// # Example
     ///
     /// ```
     /// use pkmnapi::db::types::*;
     ///
-    /// let hm = PkmnapiDBHM::from(0x01);
+    /// let hm = HM::from(0x01);
     ///
     /// assert_eq!(
     ///     hm,
-    ///     PkmnapiDBHM {
-    ///         move_id: PkmnapiDBMoveID::from(0x01)
+    ///     HM {
+    ///         move_id: MoveID::from(0x01)
     ///     }
     /// );
     /// ```
     fn from(move_id: u8) -> Self {
-        PkmnapiDBHM {
-            move_id: PkmnapiDBMoveID::from(move_id),
+        HM {
+            move_id: MoveID::from(move_id),
         }
     }
 }
 
-impl PkmnapiDBHM {
+impl HM {
     /// HM to raw bytes
     ///
     /// # Example
@@ -935,7 +935,7 @@ impl PkmnapiDBHM {
     /// ```
     /// use pkmnapi::db::types::*;
     ///
-    /// let hm = PkmnapiDBHM::from(0x01);
+    /// let hm = HM::from(0x01);
     ///
     /// let raw = hm.to_raw();
     ///
@@ -953,38 +953,38 @@ impl PkmnapiDBHM {
 /// ```
 /// use pkmnapi::db::types::*;
 ///
-/// let tm_id = PkmnapiDBTMID::from(0x12);
+/// let tm_id = TMID::from(0x12);
 ///
 /// assert_eq!(tm_id, 0x12);
 /// ```
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct PkmnapiDBTMID(u8);
+pub struct TMID(u8);
 
-impl From<u8> for PkmnapiDBTMID {
+impl From<u8> for TMID {
     fn from(move_id: u8) -> Self {
-        PkmnapiDBTMID(move_id)
+        TMID(move_id)
     }
 }
 
-impl PartialEq<u8> for PkmnapiDBTMID {
+impl PartialEq<u8> for TMID {
     fn eq(&self, other: &u8) -> bool {
         self.0 == *other
     }
 }
 
-impl PartialOrd<u8> for PkmnapiDBTMID {
+impl PartialOrd<u8> for TMID {
     fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
         self.0.partial_cmp(&other)
     }
 }
 
-impl fmt::Display for PkmnapiDBTMID {
+impl fmt::Display for TMID {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
-impl Sub<usize> for PkmnapiDBTMID {
+impl Sub<usize> for TMID {
     type Output = usize;
 
     fn sub(self, other: usize) -> usize {
@@ -999,45 +999,45 @@ impl Sub<usize> for PkmnapiDBTMID {
 /// ```
 /// use pkmnapi::db::types::*;
 ///
-/// let tm = PkmnapiDBTM::from(0x01);
+/// let tm = TM::from(0x01);
 ///
 /// assert_eq!(
 ///     tm,
-///     PkmnapiDBTM {
-///         move_id: PkmnapiDBMoveID::from(0x01)
+///     TM {
+///         move_id: MoveID::from(0x01)
 ///     }
 /// );
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct PkmnapiDBTM {
-    pub move_id: PkmnapiDBMoveID,
+pub struct TM {
+    pub move_id: MoveID,
 }
 
-impl From<u8> for PkmnapiDBTM {
-    /// Convert u8 to PkmnapiDBTM
+impl From<u8> for TM {
+    /// Convert u8 to TM
     ///
     /// # Example
     ///
     /// ```
     /// use pkmnapi::db::types::*;
     ///
-    /// let tm = PkmnapiDBTM::from(0x01);
+    /// let tm = TM::from(0x01);
     ///
     /// assert_eq!(
     ///     tm,
-    ///     PkmnapiDBTM {
-    ///         move_id: PkmnapiDBMoveID::from(0x01)
+    ///     TM {
+    ///         move_id: MoveID::from(0x01)
     ///     }
     /// );
     /// ```
     fn from(move_id: u8) -> Self {
-        PkmnapiDBTM {
-            move_id: PkmnapiDBMoveID::from(move_id),
+        TM {
+            move_id: MoveID::from(move_id),
         }
     }
 }
 
-impl PkmnapiDBTM {
+impl TM {
     /// TM to raw bytes
     ///
     /// # Example
@@ -1045,7 +1045,7 @@ impl PkmnapiDBTM {
     /// ```
     /// use pkmnapi::db::types::*;
     ///
-    /// let tm = PkmnapiDBTM::from(0x01);
+    /// let tm = TM::from(0x01);
     ///
     /// let raw = tm.to_raw();
     ///
@@ -1063,35 +1063,35 @@ impl PkmnapiDBTM {
 /// ```
 /// use pkmnapi::db::types::*;
 ///
-/// let tm = PkmnapiDBTMPrice::from(0x01);
+/// let tm = TMPrice::from(0x01);
 ///
-/// assert_eq!(tm, PkmnapiDBTMPrice { value: 1000 });
+/// assert_eq!(tm, TMPrice { value: 1000 });
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct PkmnapiDBTMPrice {
+pub struct TMPrice {
     pub value: u32,
 }
 
-impl From<u8> for PkmnapiDBTMPrice {
-    /// Convert u8 to PkmnapiDBTMPrice
+impl From<u8> for TMPrice {
+    /// Convert u8 to TMPrice
     ///
     /// # Example
     ///
     /// ```
     /// use pkmnapi::db::types::*;
     ///
-    /// let tm = PkmnapiDBTMPrice::from(0x01);
+    /// let tm = TMPrice::from(0x01);
     ///
-    /// assert_eq!(tm, PkmnapiDBTMPrice { value: 1000 });
+    /// assert_eq!(tm, TMPrice { value: 1000 });
     /// ```
     fn from(tm_price: u8) -> Self {
-        PkmnapiDBTMPrice {
+        TMPrice {
             value: (tm_price as u32) * 1000,
         }
     }
 }
 
-impl PkmnapiDBTMPrice {
+impl TMPrice {
     /// TM price to raw bytes
     ///
     /// # Example
@@ -1099,7 +1099,7 @@ impl PkmnapiDBTMPrice {
     /// ```
     /// use pkmnapi::db::types::*;
     ///
-    /// let tm_price = PkmnapiDBTMPrice::from(0x01);
+    /// let tm_price = TMPrice::from(0x01);
     ///
     /// let raw = tm_price.to_raw();
     ///
@@ -1121,26 +1121,26 @@ impl PkmnapiDBTMPrice {
 /// let rom = vec![
 ///     0x83, 0x91, 0x88, 0x8B, 0x8B, 0x50, 0x06, 0x03, 0x5A, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00,
 /// ];
-/// let pokedex_entry = PkmnapiDBPokedexEntry::from(&rom[..]);
+/// let pokedex_entry = PokedexEntry::from(&rom[..]);
 ///
 /// assert_eq!(
 ///     pokedex_entry,
-///     PkmnapiDBPokedexEntry {
-///         species: PkmnapiDBString::from("DRILL"),
+///     PokedexEntry {
+///         species: ROMString::from("DRILL"),
 ///         height: 75,
 ///         weight: 2650,
 ///     }
 /// );
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct PkmnapiDBPokedexEntry {
-    pub species: PkmnapiDBString,
+pub struct PokedexEntry {
+    pub species: ROMString,
     pub height: u32,
     pub weight: u32,
 }
 
-impl From<&[u8]> for PkmnapiDBPokedexEntry {
-    /// Convert &[u8] to PkmnapiDBPokedexEntry
+impl From<&[u8]> for PokedexEntry {
+    /// Convert &[u8] to PokedexEntry
     ///
     /// # Example
     ///
@@ -1151,12 +1151,12 @@ impl From<&[u8]> for PkmnapiDBPokedexEntry {
     /// let rom = vec![
     ///     0x83, 0x91, 0x88, 0x8B, 0x8B, 0x50, 0x06, 0x03, 0x5A, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00,
     /// ];
-    /// let pokedex_entry = PkmnapiDBPokedexEntry::from(&rom[..]);
+    /// let pokedex_entry = PokedexEntry::from(&rom[..]);
     ///
     /// assert_eq!(
     ///     pokedex_entry,
-    ///     PkmnapiDBPokedexEntry {
-    ///         species: PkmnapiDBString::from("DRILL"),
+    ///     PokedexEntry {
+    ///         species: ROMString::from("DRILL"),
     ///         height: 75,
     ///         weight: 2650,
     ///     }
@@ -1165,7 +1165,7 @@ impl From<&[u8]> for PkmnapiDBPokedexEntry {
     fn from(rom: &[u8]) -> Self {
         let species_end_index = rom.iter().position(|&r| r == 0x50).unwrap_or(rom.len());
 
-        let species = PkmnapiDBString::new(&rom[..species_end_index]);
+        let species = ROMString::new(&rom[..species_end_index]);
 
         let mut cursor = Cursor::new(&rom[(species_end_index + 1)..]);
 
@@ -1174,7 +1174,7 @@ impl From<&[u8]> for PkmnapiDBPokedexEntry {
         let height = (height_ft * 12) + height_in;
         let weight = cursor.read_u16::<LittleEndian>().unwrap_or(0) as u32;
 
-        PkmnapiDBPokedexEntry {
+        PokedexEntry {
             species,
             height,
             weight,
@@ -1182,7 +1182,7 @@ impl From<&[u8]> for PkmnapiDBPokedexEntry {
     }
 }
 
-impl PkmnapiDBPokedexEntry {
+impl PokedexEntry {
     /// Pokédex entry to raw bytes
     ///
     /// # Example
@@ -1191,8 +1191,8 @@ impl PkmnapiDBPokedexEntry {
     /// use pkmnapi::db::string::*;
     /// use pkmnapi::db::types::*;
     ///
-    /// let pokedex_entry = PkmnapiDBPokedexEntry {
-    ///     species: PkmnapiDBString::from("DRILL"),
+    /// let pokedex_entry = PokedexEntry {
+    ///     species: ROMString::from("DRILL"),
     ///     height: 75,
     ///     weight: 2650,
     /// };
@@ -1205,7 +1205,7 @@ impl PkmnapiDBPokedexEntry {
     /// );
     /// ```
     pub fn to_raw(&self) -> Vec<u8> {
-        let species_string = PkmnapiDBString::from(self.species.to_string());
+        let species_string = ROMString::from(self.species.to_string());
         let height_ft = ((self.height as f32) / 12.0) as u32;
         let height_in = (self.height - (height_ft * 12)) as u32;
 
@@ -1228,22 +1228,22 @@ impl PkmnapiDBPokedexEntry {
 /// use pkmnapi::db::types::*;
 ///
 /// let rom = vec![0x00, 0x83, 0x91, 0x88, 0x8B, 0x8B, 0x5F];
-/// let pokedex_entry_text = PkmnapiDBPokedexEntryText::from(&rom[..]);
+/// let pokedex_entry_text = PokedexEntryText::from(&rom[..]);
 ///
 /// assert_eq!(
 ///     pokedex_entry_text,
-///     PkmnapiDBPokedexEntryText {
-///         text: PkmnapiDBString::from("DRILL"),
+///     PokedexEntryText {
+///         text: ROMString::from("DRILL"),
 ///     }
 /// );
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct PkmnapiDBPokedexEntryText {
-    pub text: PkmnapiDBString,
+pub struct PokedexEntryText {
+    pub text: ROMString,
 }
 
-impl From<&[u8]> for PkmnapiDBPokedexEntryText {
-    /// Convert &[u8] to PkmnapiDBPokedexEntryText
+impl From<&[u8]> for PokedexEntryText {
+    /// Convert &[u8] to PokedexEntryText
     ///
     /// # Example
     ///
@@ -1252,25 +1252,25 @@ impl From<&[u8]> for PkmnapiDBPokedexEntryText {
     /// use pkmnapi::db::types::*;
     ///
     /// let rom = vec![0x00, 0x83, 0x91, 0x88, 0x8B, 0x8B, 0x5F];
-    /// let pokedex_entry = PkmnapiDBPokedexEntryText::from(&rom[..]);
+    /// let pokedex_entry = PokedexEntryText::from(&rom[..]);
     ///
     /// assert_eq!(
     ///     pokedex_entry,
-    ///     PkmnapiDBPokedexEntryText {
-    ///         text: PkmnapiDBString::from("DRILL"),
+    ///     PokedexEntryText {
+    ///         text: ROMString::from("DRILL"),
     ///     }
     /// );
     /// ```
     fn from(rom: &[u8]) -> Self {
         let text_end_index = rom.iter().position(|&r| r == 0x5F).unwrap_or(rom.len());
 
-        let text = PkmnapiDBString::new(&rom[1..text_end_index]);
+        let text = ROMString::new(&rom[1..text_end_index]);
 
-        PkmnapiDBPokedexEntryText { text }
+        PokedexEntryText { text }
     }
 }
 
-impl PkmnapiDBPokedexEntryText {
+impl PokedexEntryText {
     /// Pokédex entry text to raw bytes
     ///
     /// # Example
@@ -1279,8 +1279,8 @@ impl PkmnapiDBPokedexEntryText {
     /// use pkmnapi::db::string::*;
     /// use pkmnapi::db::types::*;
     ///
-    /// let pokedex_entry_text = PkmnapiDBPokedexEntryText {
-    ///     text: PkmnapiDBString::from("DRILL"),
+    /// let pokedex_entry_text = PokedexEntryText {
+    ///     text: ROMString::from("DRILL"),
     /// };
     ///
     /// let raw = pokedex_entry_text.to_raw();

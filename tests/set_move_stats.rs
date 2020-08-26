@@ -8,18 +8,18 @@ macro_rules! set_move_stats_test {
 
             match db.set_move_stats(
                 $move_id,
-                PkmnapiDBMoveStats {
-                    move_id: PkmnapiDBMoveID::from($move_id),
+                MoveStats {
+                    move_id: MoveID::from($move_id),
                     effect: $effect,
                     power: $power,
-                    type_id: PkmnapiDBTypeID::from($type_id),
+                    type_id: TypeID::from($type_id),
                     accuracy: $accuracy,
                     pp: $pp,
                 },
             ) {
                 Ok(patch) => assert_eq!(
                     patch,
-                    PkmnapiDBPatch {
+                    Patch {
                         offset: $patch_offset,
                         length: $patch_data.len(),
                         data: $patch_data

@@ -9,8 +9,8 @@ macro_rules! get_hm_test {
             match db.get_hm($hm_id) {
                 Ok(hm) => assert_eq!(
                     hm,
-                    PkmnapiDBHM {
-                        move_id: PkmnapiDBMoveID::from($move_id)
+                    HM {
+                        move_id: MoveID::from($move_id)
                     },
                     "Searched for HM ID: {}",
                     $hm_id

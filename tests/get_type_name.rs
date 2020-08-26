@@ -9,8 +9,8 @@ macro_rules! get_type_name_test {
             match db.get_type_name($type_id) {
                 Ok(type_name) => assert_eq!(
                     type_name,
-                    PkmnapiDBTypeName {
-                        name: PkmnapiDBString::from($type_name)
+                    TypeName {
+                        name: ROMString::from($type_name)
                     },
                     "Searched for type ID: {}",
                     $type_id

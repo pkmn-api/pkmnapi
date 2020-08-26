@@ -9,7 +9,7 @@ macro_rules! get_tm_price_test {
             match db.get_tm_price($tm_id) {
                 Ok(tm_price) => assert_eq!(
                     tm_price,
-                    PkmnapiDBTMPrice { value: $tm_price },
+                    TMPrice { value: $tm_price },
                     "Searched for TM ID: {}",
                     $tm_id
                 ),

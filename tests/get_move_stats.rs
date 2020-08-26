@@ -9,11 +9,11 @@ macro_rules! get_move_stats_test {
             match db.get_move_stats($move_id) {
                 Ok(move_stats) => assert_eq!(
                     move_stats,
-                    PkmnapiDBMoveStats {
-                        move_id: PkmnapiDBMoveID::from($move_id),
+                    MoveStats {
+                        move_id: MoveID::from($move_id),
                         effect: $effect,
                         power: $power,
-                        type_id: PkmnapiDBTypeID::from($type_id),
+                        type_id: TypeID::from($type_id),
                         accuracy: $accuracy,
                         pp: $pp
                     },

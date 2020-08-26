@@ -14,7 +14,7 @@
 //! # file.write_all(&data).unwrap();
 //!
 //! let rom = fs::read("rom.db").unwrap();
-//! let header = PkmnapiDBHeader::from(&rom).unwrap();
+//! let header = Header::from(&rom).unwrap();
 //!
 //! assert_eq!(header.title, "GAMEBOYGAME");
 //! # fs::remove_file("rom.db");
@@ -27,7 +27,7 @@ use std::str;
 
 /// Representation of a ROM header
 #[derive(Debug, PartialEq)]
-pub struct PkmnapiDBHeader {
+pub struct Header {
     raw: Vec<u8>,
     entry_point: Vec<u8>,
     logo: Vec<u8>,
@@ -46,7 +46,7 @@ pub struct PkmnapiDBHeader {
     pub global_checksum: u16,
 }
 
-impl PkmnapiDBHeader {
+impl Header {
     /// Create header from an array of bytes
     ///
     /// # Example
@@ -65,12 +65,12 @@ impl PkmnapiDBHeader {
     /// # file.write_all(&data).unwrap();
     ///
     /// let rom = fs::read("rom.db").unwrap();
-    /// let header = PkmnapiDBHeader::from(&rom).unwrap();
+    /// let header = Header::from(&rom).unwrap();
     ///
     /// assert_eq!(header.title, "GAMEBOYGAME");
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn from(rom: &[u8]) -> Result<PkmnapiDBHeader, String> {
+    pub fn from(rom: &[u8]) -> Result<Header, String> {
         if rom.len() < 0x150 {
             return Err("Header too small".to_string());
         }
@@ -99,7 +99,7 @@ impl PkmnapiDBHeader {
             cursor.read_u16::<BigEndian>().unwrap_or(0)
         };
 
-        Ok(PkmnapiDBHeader {
+        Ok(Header {
             raw,
             entry_point,
             logo,
@@ -139,7 +139,7 @@ impl PkmnapiDBHeader {
     /// # file.write_all(&data).unwrap();
     ///
     /// let rom = fs::read("rom.db").unwrap();
-    /// let header = PkmnapiDBHeader::from(&rom).unwrap();
+    /// let header = Header::from(&rom).unwrap();
     ///
     /// assert_eq!(header.verify_checksum(), true);
     /// # fs::remove_file("rom.db");

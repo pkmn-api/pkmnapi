@@ -9,8 +9,8 @@ macro_rules! get_move_name_test {
             match db.get_move_name($move_id) {
                 Ok(move_name) => assert_eq!(
                     move_name,
-                    PkmnapiDBMoveName {
-                        name: PkmnapiDBString::from($move_name)
+                    MoveName {
+                        name: ROMString::from($move_name)
                     },
                     "Searched for move ID: {}",
                     $move_id

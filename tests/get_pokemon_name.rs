@@ -9,8 +9,8 @@ macro_rules! get_pokemon_name_test {
             match db.get_pokemon_name($pokedex_id) {
                 Ok(pokemon_name) => assert_eq!(
                     pokemon_name,
-                    PkmnapiDBPokemonName {
-                        name: PkmnapiDBString::from($pokemon_name),
+                    PokemonName {
+                        name: ROMString::from($pokemon_name),
                     },
                     "Searched for Pokédex ID: {}",
                     $pokedex_id

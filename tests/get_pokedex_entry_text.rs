@@ -9,8 +9,8 @@ macro_rules! get_pokedex_entry_text_test {
             match db.get_pokedex_entry_text($pokedex_id) {
                 Ok(pokedex_entry_text) => assert_eq!(
                     pokedex_entry_text,
-                    PkmnapiDBPokedexEntryText {
-                        text: PkmnapiDBString::from($pokedex_entry_text),
+                    PokedexEntryText {
+                        text: ROMString::from($pokedex_entry_text),
                     },
                     "Searched for Pokédex ID: {}",
                     $pokedex_id

@@ -8,13 +8,13 @@ macro_rules! set_move_name_test {
 
             match db.set_move_name(
                 $move_id,
-                PkmnapiDBMoveName {
-                    name: PkmnapiDBString::from($move_name),
+                MoveName {
+                    name: ROMString::from($move_name),
                 },
             ) {
                 Ok(patch) => assert_eq!(
                     patch,
-                    PkmnapiDBPatch {
+                    Patch {
                         offset: $patch_offset,
                         length: $patch_data.len(),
                         data: $patch_data

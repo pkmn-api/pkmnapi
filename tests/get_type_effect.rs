@@ -9,9 +9,9 @@ macro_rules! get_type_effect_test {
             match db.get_type_effect($type_effect_id) {
                 Ok(type_effect) => assert_eq!(
                     type_effect,
-                    PkmnapiDBTypeEffect {
-                        attacking_type_id: PkmnapiDBTypeID::from($attacking_type_id),
-                        defending_type_id: PkmnapiDBTypeID::from($defending_type_id),
+                    TypeEffect {
+                        attacking_type_id: TypeID::from($attacking_type_id),
+                        defending_type_id: TypeID::from($defending_type_id),
                         multiplier: $multiplier
                     },
                     "Searched for type effect ID: {}",

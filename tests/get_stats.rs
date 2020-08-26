@@ -9,8 +9,8 @@ macro_rules! get_stats_test {
             match db.get_stats($pokedex_id) {
                 Ok(stats) => assert_eq!(
                     stats,
-                    PkmnapiDBStats {
-                        pokedex_id: PkmnapiDBPokedexID::from($pokedex_id),
+                    Stats {
+                        pokedex_id: PokedexID::from($pokedex_id),
                         base_hp: $base_hp,
                         base_attack: $base_attack,
                         base_defence: $base_defence,
@@ -18,7 +18,7 @@ macro_rules! get_stats_test {
                         base_special: $base_special,
                         type_ids: $type_ids
                             .iter()
-                            .map(|type_id| { PkmnapiDBTypeID::from(*type_id as u8) })
+                            .map(|type_id| { TypeID::from(*type_id as u8) })
                             .collect(),
                         catch_rate: $catch_rate,
                         base_exp_yield: $base_exp_yield

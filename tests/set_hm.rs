@@ -8,13 +8,13 @@ macro_rules! set_hm_test {
 
             match db.set_hm(
                 $hm_id,
-                PkmnapiDBHM {
-                    move_id: PkmnapiDBMoveID::from($move_id),
+                HM {
+                    move_id: MoveID::from($move_id),
                 },
             ) {
                 Ok(patch) => assert_eq!(
                     patch,
-                    PkmnapiDBPatch {
+                    Patch {
                         offset: $patch_offset,
                         length: $patch_data.len(),
                         data: $patch_data

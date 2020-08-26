@@ -47,7 +47,7 @@ mod tests {
         ]
         .concat();
         let db = PkmnapiDB::new(&rom).unwrap();
-        let header = PkmnapiDBHeader::from(&rom).unwrap();
+        let header = Header::from(&rom).unwrap();
 
         assert_eq!(db.header, header);
     }

@@ -5,7 +5,7 @@
 //! ```
 //! use pkmnapi::db::string::*;
 //!
-//! let string = PkmnapiDBString::new(&[0x80, 0x81, 0x82, 0x50]);
+//! let string = ROMString::new(&[0x80, 0x81, 0x82, 0x50]);
 //!
 //! assert_eq!(string.value, vec![0x80, 0x81, 0x82, 0x50]);
 //! ```
@@ -14,11 +14,11 @@ use std::fmt;
 
 /// Representation of a ROM string
 #[derive(Debug, PartialEq)]
-pub struct PkmnapiDBString {
+pub struct ROMString {
     pub value: Vec<u8>,
 }
 
-impl PkmnapiDBString {
+impl ROMString {
     /// Creates a new ROM string from an array of bytes
     ///
     /// # Example
@@ -26,14 +26,14 @@ impl PkmnapiDBString {
     /// ```
     /// use pkmnapi::db::string::*;
     ///
-    /// let string = PkmnapiDBString::new(&[0x80, 0x81, 0x82, 0x50]);
+    /// let string = ROMString::new(&[0x80, 0x81, 0x82, 0x50]);
     ///
     /// assert_eq!(string.value, vec![0x80, 0x81, 0x82, 0x50]);
     /// ```
-    pub fn new(dbstr: &[u8]) -> PkmnapiDBString {
+    pub fn new(dbstr: &[u8]) -> ROMString {
         let value = dbstr.to_vec();
 
-        PkmnapiDBString { value }
+        ROMString { value }
     }
 
     /// Creates a ROM string from a &str or String
@@ -43,7 +43,7 @@ impl PkmnapiDBString {
     /// ```
     /// use pkmnapi::db::string::*;
     ///
-    /// let string = PkmnapiDBString::from("ABC@");
+    /// let string = ROMString::from("ABC@");
     ///
     /// assert_eq!(string.value, vec![0x80, 0x81, 0x82, 0x50]);
     /// ```
@@ -156,11 +156,11 @@ impl PkmnapiDBString {
             value.push(chr);
         }
 
-        PkmnapiDBString { value }
+        ROMString { value }
     }
 }
 
-impl fmt::Display for PkmnapiDBString {
+impl fmt::Display for ROMString {
     /// Converts the internal string represnetation to a String
     ///
     /// # Example
@@ -168,7 +168,7 @@ impl fmt::Display for PkmnapiDBString {
     /// ```
     /// use pkmnapi::db::string::*;
     ///
-    /// let string = PkmnapiDBString::new(&[0x80, 0x81, 0x82, 0x50]);
+    /// let string = ROMString::new(&[0x80, 0x81, 0x82, 0x50]);
     /// let decoded = string.to_string();
     ///
     /// assert_eq!(decoded, "ABC");

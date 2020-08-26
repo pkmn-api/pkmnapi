@@ -52,7 +52,7 @@ const POKEMON_INTERNAL_MAX: usize = 190;
 pub struct PkmnapiDB {
     pub rom: Vec<u8>,
     pub hash: String,
-    pub header: PkmnapiDBHeader,
+    pub header: Header,
 }
 
 impl PkmnapiDB {
@@ -75,7 +75,7 @@ impl PkmnapiDB {
     /// ```
     pub fn new(rom: &Vec<u8>) -> Result<PkmnapiDB, String> {
         let hash = format!("{:x}", md5::compute(&rom));
-        let header = PkmnapiDBHeader::from(&rom)?;
+        let header = Header::from(&rom)?;
 
         Ok(PkmnapiDB {
             rom: rom[..].to_vec(),
@@ -137,7 +137,7 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(
     ///     patch,
-    ///     PkmnapiDBPatch {
+    ///     Patch {
     ///         offset: 0x014E,
     ///         length: 0x02,
     ///         data: vec![0x00, 0x42]
@@ -147,7 +147,7 @@ impl PkmnapiDB {
     /// assert_eq!(db.verify_checksum(), true);
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn generate_checksum(&mut self) -> PkmnapiDBPatch {
+    pub fn generate_checksum(&mut self) -> Patch {
         let rom = [&self.rom[..0x014E], &self.rom[0x0150..]].concat();
         let checksum = rom
             .iter()
@@ -157,7 +157,7 @@ impl PkmnapiDB {
 
         let checksum = checksum.0.to_be_bytes().to_vec();
 
-        PkmnapiDBPatch::new(0x014E, checksum)
+        Patch::new(0x014E, checksum)
     }
 
     /// Verify ROM hash
@@ -202,14 +202,14 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(db.rom[..4], [0x00, 0x00, 0x00, 0x00]);
     ///
-    /// let patch = PkmnapiDBPatch::new(0x00, vec![0x13, 0x37]);
+    /// let patch = Patch::new(0x00, vec![0x13, 0x37]);
     ///
     /// db.apply_patch(patch);
     ///
     /// assert_eq!(db.rom[..4], [0x13, 0x37, 0x00, 0x00]);
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn apply_patch(&mut self, patch: PkmnapiDBPatch) {
+    pub fn apply_patch(&mut self, patch: Patch) {
         let rom = [
             &self.rom[..patch.offset],
             &patch.data[..],
@@ -244,19 +244,19 @@ impl PkmnapiDB {
     /// let rom = fs::read("rom.db").unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
-    /// let pokemon_name = PkmnapiDBPokemonName {
-    ///     name: PkmnapiDBString::from("RHYDON"),
+    /// let pokemon_name = PokemonName {
+    ///     name: ROMString::from("RHYDON"),
     /// };
     ///
     /// let pokedex_id = db.pokemon_name_to_pokedex_id(pokemon_name).unwrap();
     ///
-    /// assert_eq!(pokedex_id, PkmnapiDBPokedexID::from(112));
+    /// assert_eq!(pokedex_id, PokedexID::from(112));
     /// # fs::remove_file("rom.db");
     /// ```
     pub fn pokemon_name_to_pokedex_id(
         &self,
-        pokemon_name: PkmnapiDBPokemonName,
-    ) -> Option<PkmnapiDBPokedexID> {
+        pokemon_name: PokemonName,
+    ) -> Option<PokedexID> {
         let offset_base = ROM_PAGE * 0x0E;
         let offset = offset_base + 0x021E;
 
@@ -265,7 +265,7 @@ impl PkmnapiDB {
             .enumerate()
             .filter_map(|(internal_id, offset)| {
                 let internal_id = internal_id as u8;
-                let name = PkmnapiDBPokemonName::from(&self.rom[offset..(offset + 0x0A)]);
+                let name = PokemonName::from(&self.rom[offset..(offset + 0x0A)]);
 
                 if name == pokemon_name {
                     let pokedex_id = self.internal_id_to_pokedex_id(internal_id).unwrap();
@@ -305,10 +305,10 @@ impl PkmnapiDB {
     /// assert_eq!(internal_id, 0x14);
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn pokedex_id_to_internal_id<S: Into<PkmnapiDBPokedexID>>(
+    pub fn pokedex_id_to_internal_id<S: Into<PokedexID>>(
         &self,
         pokedex_id: S,
-    ) -> Result<PkmnapiDBInternalID, String> {
+    ) -> Result<InternalID, String> {
         let pokedex_id = pokedex_id.into();
 
         if pokedex_id < 1 {
@@ -326,7 +326,7 @@ impl PkmnapiDB {
             None => return Err(format!("Invalid Pokédex ID: {}", pokedex_id)),
         };
 
-        Ok(PkmnapiDBInternalID::from(internal_id as u8))
+        Ok(InternalID::from(internal_id as u8))
     }
 
     /// Internal ID to Pokédex ID
@@ -354,10 +354,10 @@ impl PkmnapiDB {
     /// assert_eq!(pokedex_id, 151);
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn internal_id_to_pokedex_id<S: Into<PkmnapiDBInternalID>>(
+    pub fn internal_id_to_pokedex_id<S: Into<InternalID>>(
         &self,
         internal_id: S,
-    ) -> Result<PkmnapiDBPokedexID, String> {
+    ) -> Result<PokedexID, String> {
         let internal_id = internal_id.into();
 
         if internal_id >= POKEMON_INTERNAL_MAX as u8 {
@@ -367,7 +367,7 @@ impl PkmnapiDB {
         let offset_base = ROM_PAGE * 0x20;
         let offset = internal_id + (offset_base + 0x1024);
 
-        Ok(PkmnapiDBPokedexID::from(self.rom[offset]))
+        Ok(PokedexID::from(self.rom[offset]))
     }
 
     /// Get type name by type ID
@@ -397,16 +397,16 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(
     ///     type_name,
-    ///     PkmnapiDBTypeName {
-    ///         name: PkmnapiDBString::from("NORMAL")
+    ///     TypeName {
+    ///         name: ROMString::from("NORMAL")
     ///     }
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_type_name<S: Into<PkmnapiDBTypeID>>(
+    pub fn get_type_name<S: Into<TypeID>>(
         &self,
         type_id: S,
-    ) -> Result<PkmnapiDBTypeName, String> {
+    ) -> Result<TypeName, String> {
         let type_id = type_id.into();
         let offset_base = ROM_PAGE * 0x10;
         let pointer_offset = (offset_base + 0x7DAE) + (type_id * 2);
@@ -416,7 +416,7 @@ impl PkmnapiDB {
             cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
         };
 
-        let type_name = PkmnapiDBTypeName::from(&self.rom[pointer..=(pointer + 9)]);
+        let type_name = TypeName::from(&self.rom[pointer..=(pointer + 9)]);
 
         Ok(type_name)
     }
@@ -448,15 +448,15 @@ impl PkmnapiDB {
     /// let patch = db
     ///     .set_type_name(
     ///         0,
-    ///         PkmnapiDBTypeName {
-    ///             name: PkmnapiDBString::from("BORING"),
+    ///         TypeName {
+    ///             name: ROMString::from("BORING"),
     ///         },
     ///     )
     ///     .unwrap();
     ///
     /// assert_eq!(
     ///     patch,
-    ///     PkmnapiDBPatch {
+    ///     Patch {
     ///         offset: 0x27DB0,
     ///         length: 0x06,
     ///         data: vec![0x81, 0x8E, 0x91, 0x88, 0x8D, 0x86]
@@ -464,11 +464,11 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn set_type_name<S: Into<PkmnapiDBTypeID>>(
+    pub fn set_type_name<S: Into<TypeID>>(
         &self,
         type_id: S,
-        type_name: PkmnapiDBTypeName,
-    ) -> Result<PkmnapiDBPatch, String> {
+        type_name: TypeName,
+    ) -> Result<Patch, String> {
         let type_id = type_id.into();
         let old_type_name = self.get_type_name(type_id.clone())?;
         let old_type_name = old_type_name.name.to_string();
@@ -493,7 +493,7 @@ impl PkmnapiDB {
 
         let data = [type_name_raw, vec![0x50; old_type_name_len - type_name_len]].concat();
 
-        Ok(PkmnapiDBPatch::new(pointer, data))
+        Ok(Patch::new(pointer, data))
     }
 
     /// Get type effect by type effect ID
@@ -521,18 +521,18 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(
     ///     type_effect,
-    ///     PkmnapiDBTypeEffect {
-    ///         attacking_type_id: PkmnapiDBTypeID::from(0x01),
-    ///         defending_type_id: PkmnapiDBTypeID::from(0x02),
+    ///     TypeEffect {
+    ///         attacking_type_id: TypeID::from(0x01),
+    ///         defending_type_id: TypeID::from(0x02),
     ///         multiplier: 2.0
     ///     }
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_type_effect<S: Into<PkmnapiDBTypeEffectID>>(
+    pub fn get_type_effect<S: Into<TypeEffectID>>(
         &self,
         type_effect_id: S,
-    ) -> Result<PkmnapiDBTypeEffect, String> {
+    ) -> Result<TypeEffect, String> {
         let type_effect_id = type_effect_id.into();
         let offset_base = ROM_PAGE * 0x1F;
         let pointer = offset_base + 0x0474;
@@ -549,7 +549,7 @@ impl PkmnapiDB {
 
         let pointer = pointer + (type_effect_id * 0x03);
 
-        let type_effect = PkmnapiDBTypeEffect::from(&self.rom[pointer..(pointer + 3)]);
+        let type_effect = TypeEffect::from(&self.rom[pointer..(pointer + 3)]);
 
         Ok(type_effect)
     }
@@ -579,9 +579,9 @@ impl PkmnapiDB {
     /// let patch = db
     ///     .set_type_effect(
     ///         0,
-    ///         PkmnapiDBTypeEffect {
-    ///             attacking_type_id: PkmnapiDBTypeID::from(0x13),
-    ///             defending_type_id: PkmnapiDBTypeID::from(0x37),
+    ///         TypeEffect {
+    ///             attacking_type_id: TypeID::from(0x13),
+    ///             defending_type_id: TypeID::from(0x37),
     ///             multiplier: 0.5,
     ///         },
     ///     )
@@ -589,7 +589,7 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(
     ///     patch,
-    ///     PkmnapiDBPatch {
+    ///     Patch {
     ///         offset: 0x3E474,
     ///         length: 0x03,
     ///         data: vec![0x13, 0x37, 0x05]
@@ -597,11 +597,11 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn set_type_effect<S: Into<PkmnapiDBTypeEffectID>>(
+    pub fn set_type_effect<S: Into<TypeEffectID>>(
         &self,
         type_effect_id: S,
-        type_effect: PkmnapiDBTypeEffect,
-    ) -> Result<PkmnapiDBPatch, String> {
+        type_effect: TypeEffect,
+    ) -> Result<Patch, String> {
         let type_effect_id = type_effect_id.into();
         let offset_base = ROM_PAGE * 0x1F;
         let pointer = offset_base + 0x0474;
@@ -620,7 +620,7 @@ impl PkmnapiDB {
 
         let type_effect_raw = type_effect.to_raw();
 
-        Ok(PkmnapiDBPatch::new(pointer, type_effect_raw))
+        Ok(Patch::new(pointer, type_effect_raw))
     }
 
     /// Get stats by Pokédex ID
@@ -648,24 +648,24 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(
     ///     type_effect,
-    ///     PkmnapiDBStats {
-    ///         pokedex_id: PkmnapiDBPokedexID::from(0x01),
+    ///     Stats {
+    ///         pokedex_id: PokedexID::from(0x01),
     ///         base_hp: 0x02,
     ///         base_attack: 0x03,
     ///         base_defence: 0x04,
     ///         base_speed: 0x05,
     ///         base_special: 0x06,
-    ///         type_ids: vec![PkmnapiDBTypeID::from(0x07), PkmnapiDBTypeID::from(0x08)],
+    ///         type_ids: vec![TypeID::from(0x07), TypeID::from(0x08)],
     ///         catch_rate: 0x09,
     ///         base_exp_yield: 0x0A
     ///     }
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_stats<S: Into<PkmnapiDBPokedexID>>(
+    pub fn get_stats<S: Into<PokedexID>>(
         &self,
         pokedex_id: S,
-    ) -> Result<PkmnapiDBStats, String> {
+    ) -> Result<Stats, String> {
         let pokedex_id = pokedex_id.into();
 
         if pokedex_id < 1 {
@@ -682,7 +682,7 @@ impl PkmnapiDB {
             }
         };
 
-        let stats = PkmnapiDBStats::from(&self.rom[offset..(offset + 0x1C)]);
+        let stats = Stats::from(&self.rom[offset..(offset + 0x1C)]);
 
         Ok(stats)
     }
@@ -712,14 +712,14 @@ impl PkmnapiDB {
     /// let patch = db
     ///     .set_stats(
     ///         1,
-    ///         PkmnapiDBStats {
-    ///             pokedex_id: PkmnapiDBPokedexID::from(0x01),
+    ///         Stats {
+    ///             pokedex_id: PokedexID::from(0x01),
     ///             base_hp: 0x42,
     ///             base_attack: 0x13,
     ///             base_defence: 0x37,
     ///             base_speed: 0x13,
     ///             base_special: 0x37,
-    ///             type_ids: vec![PkmnapiDBTypeID::from(0x13), PkmnapiDBTypeID::from(0x37)],
+    ///             type_ids: vec![TypeID::from(0x13), TypeID::from(0x37)],
     ///             catch_rate: 0x13,
     ///             base_exp_yield: 0x37,
     ///         },
@@ -728,7 +728,7 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(
     ///     patch,
-    ///     PkmnapiDBPatch {
+    ///     Patch {
     ///         offset: 0x383DE,
     ///         length: 0x0A,
     ///         data: vec![0x01, 0x42, 0x13, 0x37, 0x13, 0x37, 0x13, 0x37, 0x13, 0x37]
@@ -736,11 +736,11 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn set_stats<S: Into<PkmnapiDBPokedexID>>(
+    pub fn set_stats<S: Into<PokedexID>>(
         &self,
         pokedex_id: S,
-        stats: PkmnapiDBStats,
-    ) -> Result<PkmnapiDBPatch, String> {
+        stats: Stats,
+    ) -> Result<Patch, String> {
         let pokedex_id = pokedex_id.into();
 
         if pokedex_id < 1 {
@@ -752,7 +752,7 @@ impl PkmnapiDB {
 
         let stats_raw = stats.to_raw();
 
-        Ok(PkmnapiDBPatch::new(offset, stats_raw))
+        Ok(Patch::new(offset, stats_raw))
     }
 
     /// Get Pokémon name by Pokédex ID
@@ -783,16 +783,16 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(
     ///     pokemon_name,
-    ///     PkmnapiDBPokemonName {
-    ///         name: PkmnapiDBString::from("RHYDON")
+    ///     PokemonName {
+    ///         name: ROMString::from("RHYDON")
     ///     }
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_pokemon_name<S: Into<PkmnapiDBPokedexID>>(
+    pub fn get_pokemon_name<S: Into<PokedexID>>(
         &self,
         pokedex_id: S,
-    ) -> Result<PkmnapiDBPokemonName, String> {
+    ) -> Result<PokemonName, String> {
         let pokedex_id = pokedex_id.into();
 
         if pokedex_id < 1 {
@@ -804,7 +804,7 @@ impl PkmnapiDB {
         let offset_base = ROM_PAGE * 0x0E;
         let offset = (offset_base + 0x021E) + (internal_id * 0x0A);
 
-        let pokemon_name = PkmnapiDBPokemonName::from(&self.rom[offset..(offset + 0x0A)]);
+        let pokemon_name = PokemonName::from(&self.rom[offset..(offset + 0x0A)]);
 
         Ok(pokemon_name)
     }
@@ -837,15 +837,15 @@ impl PkmnapiDB {
     /// let patch = db
     ///     .set_pokemon_name(
     ///         112,
-    ///         PkmnapiDBPokemonName {
-    ///             name: PkmnapiDBString::from("ABC"),
+    ///         PokemonName {
+    ///             name: ROMString::from("ABC"),
     ///         },
     ///     )
     ///     .unwrap();
     ///
     /// assert_eq!(
     ///     patch,
-    ///     PkmnapiDBPatch {
+    ///     Patch {
     ///         offset: 0x1C21E,
     ///         length: 0x0A,
     ///         data: vec![0x80, 0x81, 0x82, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50]
@@ -853,11 +853,11 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn set_pokemon_name<S: Into<PkmnapiDBPokedexID>>(
+    pub fn set_pokemon_name<S: Into<PokedexID>>(
         &self,
         pokedex_id: S,
-        pokemon_name: PkmnapiDBPokemonName,
-    ) -> Result<PkmnapiDBPatch, String> {
+        pokemon_name: PokemonName,
+    ) -> Result<Patch, String> {
         let pokedex_id = pokedex_id.into();
 
         if pokedex_id < 1 {
@@ -874,7 +874,7 @@ impl PkmnapiDB {
 
         let data = [pokemon_name_raw, vec![0x50; 0x0A - pokemon_name_len]].concat();
 
-        Ok(PkmnapiDBPatch::new(offset, data))
+        Ok(Patch::new(offset, data))
     }
 
     /// Get move stats by move ID
@@ -901,21 +901,21 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(
     ///     move_stats,
-    ///     PkmnapiDBMoveStats {
-    ///         move_id: PkmnapiDBMoveID::from(0x01),
+    ///     MoveStats {
+    ///         move_id: MoveID::from(0x01),
     ///         effect: 0x00,
     ///         power: 0x28,
-    ///         type_id: PkmnapiDBTypeID::from(0x00),
+    ///         type_id: TypeID::from(0x00),
     ///         accuracy: 1.0,
     ///         pp: 0x23
     ///     }
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_move_stats<S: Into<PkmnapiDBMoveID>>(
+    pub fn get_move_stats<S: Into<MoveID>>(
         &self,
         move_id: S,
-    ) -> Result<PkmnapiDBMoveStats, String> {
+    ) -> Result<MoveStats, String> {
         let move_id = move_id.into();
 
         if move_id < 1 {
@@ -925,7 +925,7 @@ impl PkmnapiDB {
         let offset_base = ROM_PAGE * 0x1C;
         let offset = offset_base + ((move_id - 1) * 0x06);
 
-        let move_stats = PkmnapiDBMoveStats::from(&self.rom[offset..(offset + 6)]);
+        let move_stats = MoveStats::from(&self.rom[offset..(offset + 6)]);
 
         Ok(move_stats)
     }
@@ -954,11 +954,11 @@ impl PkmnapiDB {
     /// let patch = db
     ///     .set_move_stats(
     ///         1,
-    ///         PkmnapiDBMoveStats {
-    ///             move_id: PkmnapiDBMoveID::from(0x01),
+    ///         MoveStats {
+    ///             move_id: MoveID::from(0x01),
     ///             effect: 0x00,
     ///             power: 0xFF,
-    ///             type_id: PkmnapiDBTypeID::from(0x01),
+    ///             type_id: TypeID::from(0x01),
     ///             accuracy: 0.0,
     ///             pp: 0xFF,
     ///         },
@@ -967,7 +967,7 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(
     ///     patch,
-    ///     PkmnapiDBPatch {
+    ///     Patch {
     ///         offset: 0x38000,
     ///         length: 0x06,
     ///         data: vec![0x01, 0x00, 0xFF, 0x01, 0x00, 0xFF]
@@ -975,11 +975,11 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn set_move_stats<S: Into<PkmnapiDBMoveID>>(
+    pub fn set_move_stats<S: Into<MoveID>>(
         &self,
         move_id: S,
-        move_stats: PkmnapiDBMoveStats,
-    ) -> Result<PkmnapiDBPatch, String> {
+        move_stats: MoveStats,
+    ) -> Result<Patch, String> {
         let move_id = move_id.into();
 
         if move_id < 1 {
@@ -991,7 +991,7 @@ impl PkmnapiDB {
 
         let move_stats_raw = move_stats.to_raw();
 
-        Ok(PkmnapiDBPatch::new(offset, move_stats_raw))
+        Ok(Patch::new(offset, move_stats_raw))
     }
 
     /// Get move name by move ID
@@ -1019,16 +1019,16 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(
     ///     move_name,
-    ///     PkmnapiDBMoveName {
-    ///         name: PkmnapiDBString::from("POUND")
+    ///     MoveName {
+    ///         name: ROMString::from("POUND")
     ///     }
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_move_name<S: Into<PkmnapiDBMoveID>>(
+    pub fn get_move_name<S: Into<MoveID>>(
         &self,
         move_id: S,
-    ) -> Result<PkmnapiDBMoveName, String> {
+    ) -> Result<MoveName, String> {
         let move_id = move_id.into();
 
         if move_id < 1 {
@@ -1066,7 +1066,7 @@ impl PkmnapiDB {
             None => return Err(format!("Invalid move ID: {}", move_id)),
         };
 
-        let move_name = PkmnapiDBMoveName::from(&self.rom[offset..(offset + 13)]);
+        let move_name = MoveName::from(&self.rom[offset..(offset + 13)]);
 
         Ok(move_name)
     }
@@ -1096,15 +1096,15 @@ impl PkmnapiDB {
     /// let patch = db
     ///     .set_move_name(
     ///         1,
-    ///         PkmnapiDBMoveName {
-    ///             name: PkmnapiDBString::from("ABCDE"),
+    ///         MoveName {
+    ///             name: ROMString::from("ABCDE"),
     ///         },
     ///     )
     ///     .unwrap();
     ///
     /// assert_eq!(
     ///     patch,
-    ///     PkmnapiDBPatch {
+    ///     Patch {
     ///         offset: 0xB0000,
     ///         length: 0x05,
     ///         data: vec![0x80, 0x81, 0x82, 0x83, 0x084]
@@ -1112,11 +1112,11 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn set_move_name<S: Into<PkmnapiDBMoveID>>(
+    pub fn set_move_name<S: Into<MoveID>>(
         &self,
         move_id: S,
-        move_name: PkmnapiDBMoveName,
-    ) -> Result<PkmnapiDBPatch, String> {
+        move_name: MoveName,
+    ) -> Result<Patch, String> {
         let move_id = move_id.into();
         let old_move_name = self.get_move_name(move_id.clone())?;
         let old_move_name = old_move_name.name.to_string();
@@ -1166,7 +1166,7 @@ impl PkmnapiDB {
             None => return Err(format!("Invalid move ID: {}", move_id)),
         };
 
-        Ok(PkmnapiDBPatch::new(offset, move_name_raw))
+        Ok(Patch::new(offset, move_name_raw))
     }
 
     /// Get HM by HM ID
@@ -1193,13 +1193,13 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(
     ///     hm,
-    ///     PkmnapiDBHM {
-    ///         move_id: PkmnapiDBMoveID::from(0x0F)
+    ///     HM {
+    ///         move_id: MoveID::from(0x0F)
     ///     }
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_hm<S: Into<PkmnapiDBHMID>>(&self, hm_id: S) -> Result<PkmnapiDBHM, String> {
+    pub fn get_hm<S: Into<HMID>>(&self, hm_id: S) -> Result<HM, String> {
         let hm_id = hm_id.into();
 
         let offset_base = ROM_PAGE * 0x01;
@@ -1216,7 +1216,7 @@ impl PkmnapiDB {
 
         let offset = (hm_id - 1) + offset_base;
 
-        let hm = PkmnapiDBHM::from(self.rom[offset]);
+        let hm = HM::from(self.rom[offset]);
 
         Ok(hm)
     }
@@ -1245,15 +1245,15 @@ impl PkmnapiDB {
     /// let patch = db
     ///     .set_hm(
     ///         1,
-    ///         PkmnapiDBHM {
-    ///             move_id: PkmnapiDBMoveID::from(0x42),
+    ///         HM {
+    ///             move_id: MoveID::from(0x42),
     ///         },
     ///     )
     ///     .unwrap();
     ///
     /// assert_eq!(
     ///     patch,
-    ///     PkmnapiDBPatch {
+    ///     Patch {
     ///         offset: 0x3052,
     ///         length: 0x01,
     ///         data: vec![0x42]
@@ -1261,11 +1261,11 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn set_hm<S: Into<PkmnapiDBHMID>>(
+    pub fn set_hm<S: Into<HMID>>(
         &self,
         hm_id: S,
-        hm: PkmnapiDBHM,
-    ) -> Result<PkmnapiDBPatch, String> {
+        hm: HM,
+    ) -> Result<Patch, String> {
         let hm_id = hm_id.into();
 
         let offset_base = ROM_PAGE * 0x01;
@@ -1282,7 +1282,7 @@ impl PkmnapiDB {
 
         let offset = (hm_id - 1) + offset_base;
 
-        Ok(PkmnapiDBPatch::new(offset, hm.to_raw()))
+        Ok(Patch::new(offset, hm.to_raw()))
     }
 
     /// Get TM by TM ID
@@ -1309,13 +1309,13 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(
     ///     tm,
-    ///     PkmnapiDBTM {
-    ///         move_id: PkmnapiDBMoveID::from(0x05),
+    ///     TM {
+    ///         move_id: MoveID::from(0x05),
     ///     }
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_tm<S: Into<PkmnapiDBTMID>>(&self, tm_id: S) -> Result<PkmnapiDBTM, String> {
+    pub fn get_tm<S: Into<TMID>>(&self, tm_id: S) -> Result<TM, String> {
         let tm_id = tm_id.into();
 
         let offset_base = ROM_PAGE * 0x09;
@@ -1329,7 +1329,7 @@ impl PkmnapiDB {
 
         let offset = (tm_id - 1) + offset_base;
 
-        let tm = PkmnapiDBTM::from(self.rom[offset]);
+        let tm = TM::from(self.rom[offset]);
 
         Ok(tm)
     }
@@ -1358,15 +1358,15 @@ impl PkmnapiDB {
     /// let patch = db
     ///     .set_tm(
     ///         1,
-    ///         PkmnapiDBTM {
-    ///             move_id: PkmnapiDBMoveID::from(0x42),
+    ///         TM {
+    ///             move_id: MoveID::from(0x42),
     ///         },
     ///     )
     ///     .unwrap();
     ///
     /// assert_eq!(
     ///     patch,
-    ///     PkmnapiDBPatch {
+    ///     Patch {
     ///         offset: 0x13773,
     ///         length: 0x01,
     ///         data: vec![0x42]
@@ -1374,11 +1374,11 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn set_tm<S: Into<PkmnapiDBTMID>>(
+    pub fn set_tm<S: Into<TMID>>(
         &self,
         tm_id: S,
-        tm: PkmnapiDBTM,
-    ) -> Result<PkmnapiDBPatch, String> {
+        tm: TM,
+    ) -> Result<Patch, String> {
         let tm_id = tm_id.into();
 
         let offset_base = ROM_PAGE * 0x09;
@@ -1392,7 +1392,7 @@ impl PkmnapiDB {
 
         let offset = (tm_id - 1) + offset_base;
 
-        Ok(PkmnapiDBPatch::new(offset, tm.to_raw()))
+        Ok(Patch::new(offset, tm.to_raw()))
     }
 
     /// Get TM price by TM ID
@@ -1417,13 +1417,13 @@ impl PkmnapiDB {
     ///
     /// let tm_price = db.get_tm_price(1).unwrap();
     ///
-    /// assert_eq!(tm_price, PkmnapiDBTMPrice { value: 3000 });
+    /// assert_eq!(tm_price, TMPrice { value: 3000 });
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_tm_price<S: Into<PkmnapiDBTMID>>(
+    pub fn get_tm_price<S: Into<TMID>>(
         &self,
         tm_id: S,
-    ) -> Result<PkmnapiDBTMPrice, String> {
+    ) -> Result<TMPrice, String> {
         let tm_id = tm_id.into();
 
         let offset_base = ROM_PAGE * 0x3D;
@@ -1444,7 +1444,7 @@ impl PkmnapiDB {
             }
         };
 
-        let tm_price = PkmnapiDBTMPrice::from(value);
+        let tm_price = TMPrice::from(value);
 
         Ok(tm_price)
     }
@@ -1471,12 +1471,12 @@ impl PkmnapiDB {
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db
-    ///     .set_tm_price(1, PkmnapiDBTMPrice { value: 9000 })
+    ///     .set_tm_price(1, TMPrice { value: 9000 })
     ///     .unwrap();
     ///
     /// assert_eq!(
     ///     patch,
-    ///     PkmnapiDBPatch {
+    ///     Patch {
     ///         offset: 0x7BFA7,
     ///         length: 0x01,
     ///         data: vec![0x92]
@@ -1484,11 +1484,11 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn set_tm_price<S: Into<PkmnapiDBTMID>>(
+    pub fn set_tm_price<S: Into<TMID>>(
         &self,
         tm_id: S,
-        tm_price: PkmnapiDBTMPrice,
-    ) -> Result<PkmnapiDBPatch, String> {
+        tm_price: TMPrice,
+    ) -> Result<Patch, String> {
         let tm_id = tm_id.into();
 
         let offset_base = ROM_PAGE * 0x3D;
@@ -1509,7 +1509,7 @@ impl PkmnapiDB {
             }
         };
 
-        Ok(PkmnapiDBPatch::new(offset, vec![value]))
+        Ok(Patch::new(offset, vec![value]))
     }
 
     /// Get Pokédex entry by Pokédex ID
@@ -1540,17 +1540,17 @@ impl PkmnapiDB {
     ///
     /// let pokedex_entry = db.get_pokedex_entry(112).unwrap();
     ///
-    /// assert_eq!(pokedex_entry, PkmnapiDBPokedexEntry {
-    ///     species: PkmnapiDBString::from("DRILL"),
+    /// assert_eq!(pokedex_entry, PokedexEntry {
+    ///     species: ROMString::from("DRILL"),
     ///     height: 75,
     ///     weight: 2650
     /// });
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_pokedex_entry<S: Into<PkmnapiDBPokedexID>>(
+    pub fn get_pokedex_entry<S: Into<PokedexID>>(
         &self,
         pokedex_id: S,
-    ) -> Result<PkmnapiDBPokedexEntry, String> {
+    ) -> Result<PokedexEntry, String> {
         let pokedex_id = pokedex_id.into();
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id).unwrap();
@@ -1564,7 +1564,7 @@ impl PkmnapiDB {
             cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
         };
 
-        let pokedex_entry = PkmnapiDBPokedexEntry::from(&self.rom[pointer..(pointer + 15)]);
+        let pokedex_entry = PokedexEntry::from(&self.rom[pointer..(pointer + 15)]);
 
         Ok(pokedex_entry)
     }
@@ -1597,8 +1597,8 @@ impl PkmnapiDB {
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db
-    ///     .set_pokedex_entry(112, PkmnapiDBPokedexEntry {
-    ///         species: PkmnapiDBString::from("BOBBY"),
+    ///     .set_pokedex_entry(112, PokedexEntry {
+    ///         species: ROMString::from("BOBBY"),
     ///         height: 100,
     ///         weight: 300
     ///     })
@@ -1606,7 +1606,7 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(
     ///     patch,
-    ///     PkmnapiDBPatch {
+    ///     Patch {
     ///         offset: 0x405FA,
     ///         length: 0x0A,
     ///         data: vec![0x81, 0x8E, 0x81, 0x81, 0x98, 0x50, 0x08, 0x04, 0x2C, 0x01]
@@ -1614,11 +1614,11 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn set_pokedex_entry<S: Into<PkmnapiDBPokedexID>>(
+    pub fn set_pokedex_entry<S: Into<PokedexID>>(
         &self,
         pokedex_id: S,
-        pokedex_entry: PkmnapiDBPokedexEntry,
-    ) -> Result<PkmnapiDBPatch, String> {
+        pokedex_entry: PokedexEntry,
+    ) -> Result<Patch, String> {
         let pokedex_id = pokedex_id.into();
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id).unwrap();
@@ -1632,7 +1632,7 @@ impl PkmnapiDB {
             cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
         };
 
-        Ok(PkmnapiDBPatch::new(pointer, pokedex_entry.to_raw()))
+        Ok(Patch::new(pointer, pokedex_entry.to_raw()))
     }
 
     /// Get Pokédex entry text by Pokédex ID
@@ -1665,15 +1665,15 @@ impl PkmnapiDB {
     ///
     /// let pokedex_entry_text = db.get_pokedex_entry_text(112).unwrap();
     ///
-    /// assert_eq!(pokedex_entry_text, PkmnapiDBPokedexEntryText {
-    ///     text: PkmnapiDBString::from("Protected"),
+    /// assert_eq!(pokedex_entry_text, PokedexEntryText {
+    ///     text: ROMString::from("Protected"),
     /// });
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_pokedex_entry_text<S: Into<PkmnapiDBPokedexID>>(
+    pub fn get_pokedex_entry_text<S: Into<PokedexID>>(
         &self,
         pokedex_id: S,
-    ) -> Result<PkmnapiDBPokedexEntryText, String> {
+    ) -> Result<PokedexEntryText, String> {
         let pokedex_id = pokedex_id.into();
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id).unwrap();
@@ -1696,7 +1696,7 @@ impl PkmnapiDB {
         let pointer_base = (ROM_PAGE * 2) * { cursor.read_u8().unwrap_or(0) as usize };
         let pointer = pointer + pointer_base - (ROM_PAGE * 2);
 
-        let pokedex_entry_text = PkmnapiDBPokedexEntryText::from(&self.rom[pointer..]);
+        let pokedex_entry_text = PokedexEntryText::from(&self.rom[pointer..]);
 
         Ok(pokedex_entry_text)
     }

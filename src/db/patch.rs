@@ -5,7 +5,7 @@
 //! ```
 //! use pkmnapi::db::patch::*;
 //!
-//! let patch = PkmnapiDBPatch::new(0x123456, vec![0x13, 0x37]);
+//! let patch = Patch::new(0x123456, vec![0x13, 0x37]);
 //!
 //! assert_eq!(patch.offset, 0x123456);
 //! assert_eq!(patch.length, 0x02);
@@ -22,35 +22,35 @@ use std::io::Cursor;
 /// ```
 /// use pkmnapi::db::patch::*;
 ///
-/// let patch = PkmnapiDBPatch::new(0x123456, vec![0x13, 0x37]);
+/// let patch = Patch::new(0x123456, vec![0x13, 0x37]);
 ///
 /// assert_eq!(patch.offset, 0x123456);
 /// assert_eq!(patch.length, 0x02);
 /// assert_eq!(patch.data, vec![0x13, 0x37]);
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct PkmnapiDBPatch {
+pub struct Patch {
     pub offset: usize,
     pub length: usize,
     pub data: Vec<u8>,
 }
 
-impl PkmnapiDBPatch {
+impl Patch {
     /// # Example
     ///
     /// ```
     /// use pkmnapi::db::patch::*;
     ///
-    /// let patch = PkmnapiDBPatch::new(0x123456, vec![0x13, 0x37]);
+    /// let patch = Patch::new(0x123456, vec![0x13, 0x37]);
     ///
     /// assert_eq!(patch.offset, 0x123456);
     /// assert_eq!(patch.length, 0x02);
     /// assert_eq!(patch.data, vec![0x13, 0x37]);
     /// ```
-    pub fn new(offset: usize, data: Vec<u8>) -> PkmnapiDBPatch {
+    pub fn new(offset: usize, data: Vec<u8>) -> Patch {
         let length = data.len();
 
-        PkmnapiDBPatch {
+        Patch {
             offset,
             length,
             data,
@@ -62,7 +62,7 @@ impl PkmnapiDBPatch {
     /// ```
     /// use pkmnapi::db::patch::*;
     ///
-    /// let patch = PkmnapiDBPatch::new(0x123456, vec![0x13, 0x37]);
+    /// let patch = Patch::new(0x123456, vec![0x13, 0x37]);
     ///
     /// assert_eq!(
     ///     patch.to_raw(),
@@ -84,13 +84,13 @@ impl PkmnapiDBPatch {
     }
 }
 
-impl From<Vec<u8>> for PkmnapiDBPatch {
+impl From<Vec<u8>> for Patch {
     /// # Example
     ///
     /// ```
     /// use pkmnapi::db::patch::*;
     ///
-    /// let patch = PkmnapiDBPatch::from(vec![0x12, 0x34, 0x56, 0x00, 0x02, 0x13, 0x37]);
+    /// let patch = Patch::from(vec![0x12, 0x34, 0x56, 0x00, 0x02, 0x13, 0x37]);
     ///
     /// assert_eq!(patch.offset, 0x123456);
     /// assert_eq!(patch.length, 0x02);
@@ -103,7 +103,7 @@ impl From<Vec<u8>> for PkmnapiDBPatch {
         let length = cursor.read_u16::<BigEndian>().unwrap_or(0) as usize;
         let data = patch[5..].to_vec();
 
-        PkmnapiDBPatch {
+        Patch {
             offset,
             length,
             data,
@@ -117,11 +117,11 @@ mod tests {
 
     #[test]
     fn patch_interop() {
-        let patch_obj = PkmnapiDBPatch::new(0x123456, vec![0x13, 0x37]);
+        let patch_obj = Patch::new(0x123456, vec![0x13, 0x37]);
 
         assert_eq!(
             patch_obj,
-            PkmnapiDBPatch {
+            Patch {
                 offset: 0x123456usize,
                 length: 0x02usize,
                 data: vec![0x13, 0x37]
@@ -132,7 +132,7 @@ mod tests {
 
         assert_eq!(patch_raw, vec![0x12, 0x34, 0x56, 0x00, 0x02, 0x13, 0x37]);
 
-        let patch_reobj = PkmnapiDBPatch::from(patch_raw);
+        let patch_reobj = Patch::from(patch_raw);
 
         assert_eq!(patch_obj, patch_reobj);
     }
