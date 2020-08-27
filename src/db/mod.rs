@@ -127,11 +127,7 @@ impl PkmnapiDB {
     /// # file.write_all(&data).unwrap();
     ///
     /// let rom = fs::read("rom.db").unwrap();
-    /// let mut db = PkmnapiDB::new(&rom).unwrap();
-    ///
-    /// db.rom[0x100] = 0x42;
-    ///
-    /// assert_eq!(db.verify_checksum(), false);
+    /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db.generate_checksum();
     ///
@@ -140,20 +136,16 @@ impl PkmnapiDB {
     ///     Patch {
     ///         offset: 0x014E,
     ///         length: 0x02,
-    ///         data: vec![0x00, 0x42]
+    ///         data: vec![0x00, 0x00]
     ///     }
     /// );
-    ///
-    /// assert_eq!(db.verify_checksum(), true);
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn generate_checksum(&mut self) -> Patch {
+    pub fn generate_checksum(&self) -> Patch {
         let rom = [&self.rom[..0x014E], &self.rom[0x0150..]].concat();
         let checksum = rom
             .iter()
             .fold(Wrapping(0u16), |acc, x| acc + Wrapping(*x as u16));
-
-        self.header.global_checksum = checksum.0;
 
         let checksum = checksum.0.to_be_bytes().to_vec();
 
@@ -198,26 +190,24 @@ impl PkmnapiDB {
     /// # file.write_all(&data).unwrap();
     ///
     /// let rom = fs::read("rom.db").unwrap();
-    /// let mut db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// assert_eq!(db.rom[..4], [0x00, 0x00, 0x00, 0x00]);
     ///
     /// let patch = Patch::new(0x00, vec![0x13, 0x37]);
     ///
-    /// db.apply_patch(patch);
+    /// let new_rom = db.apply_patch(patch);
     ///
-    /// assert_eq!(db.rom[..4], [0x13, 0x37, 0x00, 0x00]);
+    /// assert_eq!(new_rom[..4], [0x13, 0x37, 0x00, 0x00]);
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn apply_patch(&mut self, patch: Patch) {
-        let rom = [
+    pub fn apply_patch(&self, patch: Patch) -> Vec<u8> {
+        [
             &self.rom[..patch.offset],
             &patch.data[..],
             &self.rom[(patch.offset + patch.length)..],
         ]
-        .concat();
-
-        self.rom = rom;
+        .concat()
     }
 
     /// Pokémon name to Pokédex ID
@@ -799,7 +789,7 @@ impl PkmnapiDB {
             return Err(format!("Pokédex ID too low: {}", pokedex_id));
         }
 
-        let internal_id = self.pokedex_id_to_internal_id(pokedex_id).unwrap();
+        let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x0E;
         let offset = (offset_base + 0x021E) + (internal_id * 0x0A);
@@ -864,7 +854,7 @@ impl PkmnapiDB {
             return Err(format!("Pokédex ID too low: {}", pokedex_id));
         }
 
-        let internal_id = self.pokedex_id_to_internal_id(pokedex_id).unwrap();
+        let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x0E;
         let offset = (offset_base + 0x021E) + (internal_id * 0x0A);
@@ -1553,7 +1543,7 @@ impl PkmnapiDB {
     ) -> Result<PokedexEntry, String> {
         let pokedex_id = pokedex_id.into();
 
-        let internal_id = self.pokedex_id_to_internal_id(pokedex_id).unwrap();
+        let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x1E;
         let pointer_offset = (offset_base + 0x447E) + (internal_id * 2);
@@ -1621,7 +1611,7 @@ impl PkmnapiDB {
     ) -> Result<Patch, String> {
         let pokedex_id = pokedex_id.into();
 
-        let internal_id = self.pokedex_id_to_internal_id(pokedex_id).unwrap();
+        let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x1E;
         let pointer_offset = (offset_base + 0x447E) + (internal_id * 2);
@@ -1676,7 +1666,7 @@ impl PkmnapiDB {
     ) -> Result<PokedexEntryText, String> {
         let pokedex_id = pokedex_id.into();
 
-        let internal_id = self.pokedex_id_to_internal_id(pokedex_id).unwrap();
+        let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x1E;
         let pointer_offset = (offset_base + 0x447E) + (internal_id * 2);
