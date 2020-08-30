@@ -28,7 +28,7 @@ use std::ops::{Add, Mul, Sub};
 ///
 /// assert_eq!(pokedex_id, 151);
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct PokedexID(u8);
 
 impl PokedexID {
@@ -1289,5 +1289,33 @@ impl PokedexEntryText {
     /// ```
     pub fn to_raw(&self) -> Vec<u8> {
         [vec![0x00], self.text.value.to_vec(), vec![0x5F]].concat()
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub enum PokemonPicFace {
+    FRONT,
+    BACK,
+}
+
+impl From<bool> for PokemonPicFace {
+    /// Convert bool to PokemonPicFace
+    ///
+    /// ```
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let pokemon_pic_face = PokemonPicFace::from(true);
+    ///
+    /// assert_eq!(pokemon_pic_face, PokemonPicFace::FRONT);
+    ///
+    /// let pokemon_pic_face = PokemonPicFace::from(false);
+    ///
+    /// assert_eq!(pokemon_pic_face, PokemonPicFace::BACK);
+    /// ```
+    fn from(pokemon_pic_face: bool) -> PokemonPicFace {
+        match pokemon_pic_face {
+            true => PokemonPicFace::FRONT,
+            false => PokemonPicFace::BACK,
+        }
     }
 }

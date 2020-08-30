@@ -18,12 +18,14 @@
 
 pub mod header;
 pub mod patch;
+pub mod pic;
 pub mod string;
 pub mod types;
 
 use byteorder::{LittleEndian, ReadBytesExt};
 use header::*;
 use patch::*;
+use pic::*;
 use std::io::Cursor;
 use std::num::Wrapping;
 use types::*;
@@ -243,10 +245,7 @@ impl PkmnapiDB {
     /// assert_eq!(pokedex_id, PokedexID::from(112));
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn pokemon_name_to_pokedex_id(
-        &self,
-        pokemon_name: PokemonName,
-    ) -> Option<PokedexID> {
+    pub fn pokemon_name_to_pokedex_id(&self, pokemon_name: PokemonName) -> Option<PokedexID> {
         let offset_base = ROM_PAGE * 0x0E;
         let offset = offset_base + 0x021E;
 
@@ -393,10 +392,7 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_type_name<S: Into<TypeID>>(
-        &self,
-        type_id: S,
-    ) -> Result<TypeName, String> {
+    pub fn get_type_name<S: Into<TypeID>>(&self, type_id: S) -> Result<TypeName, String> {
         let type_id = type_id.into();
         let offset_base = ROM_PAGE * 0x10;
         let pointer_offset = (offset_base + 0x7DAE) + (type_id * 2);
@@ -652,10 +648,7 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_stats<S: Into<PokedexID>>(
-        &self,
-        pokedex_id: S,
-    ) -> Result<Stats, String> {
+    pub fn get_stats<S: Into<PokedexID>>(&self, pokedex_id: S) -> Result<Stats, String> {
         let pokedex_id = pokedex_id.into();
 
         if pokedex_id < 1 {
@@ -902,10 +895,7 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_move_stats<S: Into<MoveID>>(
-        &self,
-        move_id: S,
-    ) -> Result<MoveStats, String> {
+    pub fn get_move_stats<S: Into<MoveID>>(&self, move_id: S) -> Result<MoveStats, String> {
         let move_id = move_id.into();
 
         if move_id < 1 {
@@ -1015,10 +1005,7 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_move_name<S: Into<MoveID>>(
-        &self,
-        move_id: S,
-    ) -> Result<MoveName, String> {
+    pub fn get_move_name<S: Into<MoveID>>(&self, move_id: S) -> Result<MoveName, String> {
         let move_id = move_id.into();
 
         if move_id < 1 {
@@ -1251,11 +1238,7 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn set_hm<S: Into<HMID>>(
-        &self,
-        hm_id: S,
-        hm: HM,
-    ) -> Result<Patch, String> {
+    pub fn set_hm<S: Into<HMID>>(&self, hm_id: S, hm: HM) -> Result<Patch, String> {
         let hm_id = hm_id.into();
 
         let offset_base = ROM_PAGE * 0x01;
@@ -1364,11 +1347,7 @@ impl PkmnapiDB {
     /// );
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn set_tm<S: Into<TMID>>(
-        &self,
-        tm_id: S,
-        tm: TM,
-    ) -> Result<Patch, String> {
+    pub fn set_tm<S: Into<TMID>>(&self, tm_id: S, tm: TM) -> Result<Patch, String> {
         let tm_id = tm_id.into();
 
         let offset_base = ROM_PAGE * 0x09;
@@ -1410,10 +1389,7 @@ impl PkmnapiDB {
     /// assert_eq!(tm_price, TMPrice { value: 3000 });
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn get_tm_price<S: Into<TMID>>(
-        &self,
-        tm_id: S,
-    ) -> Result<TMPrice, String> {
+    pub fn get_tm_price<S: Into<TMID>>(&self, tm_id: S) -> Result<TMPrice, String> {
         let tm_id = tm_id.into();
 
         let offset_base = ROM_PAGE * 0x3D;
@@ -1460,9 +1436,7 @@ impl PkmnapiDB {
     /// let rom = fs::read("rom.db").unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
-    /// let patch = db
-    ///     .set_tm_price(1, TMPrice { value: 9000 })
-    ///     .unwrap();
+    /// let patch = db.set_tm_price(1, TMPrice { value: 9000 }).unwrap();
     ///
     /// assert_eq!(
     ///     patch,
@@ -1689,5 +1663,149 @@ impl PkmnapiDB {
         let pokedex_entry_text = PokedexEntryText::from(&self.rom[pointer..]);
 
         Ok(pokedex_entry_text)
+    }
+
+    /// Set Pokédex entry text by Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::patch::*;
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x4047E],
+    /// #     vec![0xFA, 0x45],
+    /// #     vec![0x00; 0x17A],
+    /// #     vec![0x83, 0x91, 0x88, 0x8B, 0x8B, 0x50, 0x06, 0x03, 0x5A, 0x0A, 0x17, 0x00, 0x40, 0x2B, 0x50],
+    /// #     vec![0x00; 0xA1B],
+    /// #     vec![0x70],
+    /// #     vec![0x00; 0xBE],
+    /// #     vec![0x00; 0x6AF1D],
+    /// #     vec![0x00, 0x8F, 0xB1, 0xAE, 0xB3, 0xA4, 0xA2, 0xB3, 0xA4, 0xA3, 0x5F]
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let patch = db
+    ///     .set_pokedex_entry_text(112, PokedexEntryText {
+    ///         text: ROMString::from("ABCDE"),
+    ///     })
+    ///     .unwrap();
+    ///
+    /// assert_eq!(
+    ///     patch,
+    ///     Patch {
+    ///         offset: 0xAC000,
+    ///         length: 0x07,
+    ///         data: vec![0x00, 0x80, 0x81, 0x82, 0x83, 0x84, 0x5F]
+    ///     }
+    /// );
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn set_pokedex_entry_text<S: Into<PokedexID>>(
+        &self,
+        pokedex_id: S,
+        pokedex_entry_text: PokedexEntryText,
+    ) -> Result<Patch, String> {
+        let pokedex_id = pokedex_id.into();
+
+        let old_pokedex_entry_text = self.get_pokedex_entry_text(pokedex_id.clone())?;
+        let old_pokedex_entry_text = old_pokedex_entry_text.text.to_string();
+        let old_pokedex_entry_text_len = old_pokedex_entry_text.len();
+        let pokedex_entry_text_raw = pokedex_entry_text.text.to_string();
+        let pokedex_entry_text_len = pokedex_entry_text_raw.len();
+
+        if pokedex_entry_text_len >= old_pokedex_entry_text_len {
+            return Err(format!(
+                "Length mismatch: should be less than {} characters, found {}",
+                old_pokedex_entry_text_len, pokedex_entry_text_len
+            ));
+        }
+
+        let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
+
+        let offset_base = ROM_PAGE * 0x1E;
+        let pointer_offset = (offset_base + 0x447E) + (internal_id * 2);
+
+        let pointer = offset_base + {
+            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
+
+            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
+        };
+
+        let pointer_offset =
+            pointer + { self.rom[pointer..].iter().position(|&r| r == 0x50).unwrap() } + 0x06;
+
+        let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 3)]);
+
+        let pointer = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
+        let pointer_base = (ROM_PAGE * 2) * { cursor.read_u8().unwrap_or(0) as usize };
+        let pointer = pointer + pointer_base - (ROM_PAGE * 2);
+
+        Ok(Patch::new(pointer, pokedex_entry_text.to_raw()))
+    }
+
+    pub fn get_pokemon_pic<S: Into<PokedexID>, T: Into<PokemonPicFace>>(
+        &self,
+        pokedex_id: S,
+        pokemon_pic_face: T,
+    ) -> Result<Pic, String> {
+        let pokedex_id = pokedex_id.into();
+
+        if pokedex_id < 1 {
+            return Err(format!("Pokédex ID too low: {}", pokedex_id));
+        }
+
+        let internal_id = self.pokedex_id_to_internal_id(pokedex_id.clone())?;
+
+        let (offset, bank_offset) = {
+            if pokedex_id == 151 {
+                let offset_base = ROM_PAGE * 0x02;
+                let offset = offset_base + 0x025B;
+                let bank_offset = (self.rom[0x163A] - 1) * 0x02;
+
+                (offset, bank_offset as usize)
+            } else {
+                let offset_base = ROM_PAGE * 0x1C;
+                let offset = (offset_base + 0x03DE) + ((pokedex_id.clone() - 1) * 0x1C);
+
+                let bank_offset = match internal_id {
+                    _ if internal_id < self.rom[0x1646] - 1 => self.rom[0x1648],
+                    _ if internal_id < self.rom[0x164D] - 1 => self.rom[0x164F],
+                    _ if internal_id < self.rom[0x1654] - 1 => self.rom[0x1656],
+                    _ if internal_id < self.rom[0x165B] - 1 => self.rom[0x165D],
+                    _ => self.rom[0x1661],
+                };
+                let bank_offset = (bank_offset - 1) * 0x02;
+
+                (offset, bank_offset as usize)
+            }
+        };
+
+        let mut cursor = Cursor::new(&self.rom[(offset + 11)..(offset + 15)]);
+
+        let pointer_front = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
+        let pointer_back = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
+
+        let offset_base = ROM_PAGE * bank_offset;
+        let offset_front = offset_base + pointer_front;
+        let offset_back = offset_base + pointer_back;
+
+        let pointer = match pokemon_pic_face.into() {
+            PokemonPicFace::FRONT => offset_front,
+            PokemonPicFace::BACK => offset_back,
+        };
+
+        let pic = Pic::new(&self.rom[pointer..])?;
+
+        Ok(pic)
     }
 }
