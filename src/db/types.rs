@@ -1372,6 +1372,14 @@ impl Sub<usize> for TrainerID {
     }
 }
 
+impl Mul<usize> for TrainerID {
+    type Output = usize;
+
+    fn mul(self, other: usize) -> usize {
+        self.0 as usize * other
+    }
+}
+
 /// Trainer name
 ///
 /// # Example

@@ -1971,4 +1971,25 @@ impl PkmnapiDB {
 
         Ok(Patch::new(offset, trainer_name_raw))
     }
+
+    pub fn get_trainer_pic<S: Into<TrainerID>>(&self, trainer_id: S) -> Result<Pic, String> {
+        let trainer_id = trainer_id.into();
+
+        let offset_base = ROM_PAGE * 0x1C;
+        let offset = (offset_base + 0x1914) + (trainer_id * 0x05);
+
+        let pointer_base = ROM_PAGE * 0x24;
+        let pointer = pointer_base + {
+            let mut cursor = Cursor::new(&self.rom[offset..(offset + 2)]);
+
+            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
+        };
+
+        let pic = Pic::new(&self.rom[pointer..])?;
+
+        Ok(pic)
+    }
+
+    //POINTERS: 0x39914
+    //PICS: 0x4C000
 }
