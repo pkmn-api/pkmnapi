@@ -3,7 +3,7 @@
 //! # Example
 //!
 //! ```
-//! use pkmnapi::db::*;
+//! use pkmnapi_db::*;
 //! use std::fs;
 //! # use std::fs::File;
 //! # use std::io::prelude::*;
@@ -38,7 +38,7 @@ const POKEMON_INTERNAL_MAX: usize = 190;
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::*;
+/// use pkmnapi_db::*;
 /// use std::fs;
 /// # use std::fs::File;
 /// # use std::io::prelude::*;
@@ -63,7 +63,7 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -91,7 +91,7 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -119,8 +119,8 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -159,7 +159,7 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -182,8 +182,8 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -217,9 +217,9 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -274,7 +274,7 @@ impl PkmnapiDB {
     ///
     /// ```
     /// use std::fs;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::*;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
     /// # let mut file = File::create("rom.db").unwrap();
@@ -324,7 +324,7 @@ impl PkmnapiDB {
     ///
     /// ```
     /// use std::fs;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::*;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
     /// # let mut file = File::create("rom.db").unwrap();
@@ -364,9 +364,9 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -412,10 +412,10 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -486,8 +486,8 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -544,9 +544,9 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -613,8 +613,8 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -674,9 +674,9 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -742,9 +742,9 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -796,10 +796,10 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -864,8 +864,8 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -914,9 +914,9 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -978,9 +978,9 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -1052,10 +1052,10 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -1149,8 +1149,8 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -1201,9 +1201,9 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -1261,8 +1261,8 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -1310,9 +1310,9 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -1367,8 +1367,8 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -1418,9 +1418,9 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -1479,9 +1479,9 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -1536,10 +1536,10 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -1602,9 +1602,9 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -1668,10 +1668,10 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -1811,9 +1811,9 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -1884,10 +1884,10 @@ impl PkmnapiDB {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
-    /// use pkmnapi::db::*;
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -1989,7 +1989,4 @@ impl PkmnapiDB {
 
         Ok(pic)
     }
-
-    //POINTERS: 0x39914
-    //PICS: 0x4C000
 }

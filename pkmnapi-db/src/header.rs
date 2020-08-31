@@ -1,7 +1,7 @@
 //! Pkmnapi database header module
 //!
 //! ```
-//! use pkmnapi::db::header::*;
+//! use pkmnapi_db::header::*;
 //! use std::fs;
 //! # use std::fs::File;
 //! # use std::io::prelude::*;
@@ -52,7 +52,7 @@ impl Header {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::header::*;
+    /// use pkmnapi_db::header::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -124,7 +124,7 @@ impl Header {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::header::*;
+    /// use pkmnapi_db::header::*;
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
@@ -158,7 +158,7 @@ impl Header {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::header::*;
+/// use pkmnapi_db::header::*;
 ///
 /// let flag = PkmnapiCGBFlag::NONE;
 /// ```
@@ -175,7 +175,7 @@ impl From<u8> for PkmnapiCGBFlag {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::header::*;
+    /// use pkmnapi_db::header::*;
     ///
     /// let flag = PkmnapiCGBFlag::from(0x80);
     ///
@@ -203,7 +203,7 @@ impl From<u8> for PkmnapiCGBFlag {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::header::*;
+/// use pkmnapi_db::header::*;
 ///
 /// let code = PkmnapiNewLicenseeCode::NINTENDO_RND1;
 /// ```
@@ -279,7 +279,7 @@ impl From<Vec<u8>> for PkmnapiNewLicenseeCode {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::header::*;
+    /// use pkmnapi_db::header::*;
     ///
     /// let code = PkmnapiNewLicenseeCode::from(vec![0x30, 0x31]);
     ///
@@ -359,7 +359,7 @@ impl From<Vec<u8>> for PkmnapiNewLicenseeCode {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::header::*;
+/// use pkmnapi_db::header::*;
 ///
 /// let flag = PkmnapiSGBFlag::YES(0x03);
 /// ```
@@ -375,7 +375,7 @@ impl From<u8> for PkmnapiSGBFlag {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::header::*;
+    /// use pkmnapi_db::header::*;
     ///
     /// let flag = PkmnapiSGBFlag::from(0x03);
     ///
@@ -398,7 +398,7 @@ impl From<u8> for PkmnapiSGBFlag {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::header::*;
+/// use pkmnapi_db::header::*;
 ///
 /// let cartridge_type = PkmnapiCartridgeType::ROM_ONLY;
 /// ```
@@ -441,7 +441,7 @@ impl From<u8> for PkmnapiCartridgeType {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::header::*;
+    /// use pkmnapi_db::header::*;
     ///
     /// let cartridge_type = PkmnapiCartridgeType::from(0x01);
     ///
@@ -486,7 +486,7 @@ impl From<u8> for PkmnapiCartridgeType {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::header::*;
+/// use pkmnapi_db::header::*;
 ///
 /// let size = PkmnapiRomSize::MBYTE_1;
 /// ```
@@ -513,7 +513,7 @@ impl From<u8> for PkmnapiRomSize {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::header::*;
+    /// use pkmnapi_db::header::*;
     ///
     /// let size = PkmnapiRomSize::from(0x05);
     ///
@@ -542,7 +542,7 @@ impl From<u8> for PkmnapiRomSize {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::header::*;
+/// use pkmnapi_db::header::*;
 ///
 /// let size = PkmnapiRamSize::KBYTES_32;
 /// ```
@@ -563,7 +563,7 @@ impl From<u8> for PkmnapiRamSize {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::header::*;
+    /// use pkmnapi_db::header::*;
     ///
     /// let size = PkmnapiRamSize::from(0x03);
     ///
@@ -586,7 +586,7 @@ impl From<u8> for PkmnapiRamSize {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::header::*;
+/// use pkmnapi_db::header::*;
 ///
 /// let code = PkmnapiDestinationCode::NON_JAPANESE;
 /// ```
@@ -603,7 +603,7 @@ impl From<u8> for PkmnapiDestinationCode {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::header::*;
+    /// use pkmnapi_db::header::*;
     ///
     /// let code = PkmnapiDestinationCode::from(0x01);
     ///
@@ -622,7 +622,7 @@ impl From<u8> for PkmnapiDestinationCode {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::header::*;
+/// use pkmnapi_db::header::*;
 ///
 /// let code = PkmnapiOldLicenseeCode::NINTENDO;
 /// ```
@@ -784,7 +784,7 @@ impl From<u8> for PkmnapiOldLicenseeCode {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::header::*;
+    /// use pkmnapi_db::header::*;
     ///
     /// let code = PkmnapiOldLicenseeCode::from(0x01);
     ///

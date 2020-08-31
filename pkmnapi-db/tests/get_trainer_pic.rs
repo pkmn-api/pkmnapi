@@ -1,5 +1,3 @@
-use pkmnapi::db::types::*;
-
 mod common;
 
 macro_rules! get_trainer_pic_test {

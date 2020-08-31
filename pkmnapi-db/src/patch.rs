@@ -3,7 +3,7 @@
 //! # Example
 //!
 //! ```
-//! use pkmnapi::db::patch::*;
+//! use pkmnapi_db::patch::*;
 //!
 //! let patch = Patch::new(0x123456, vec![0x13, 0x37]);
 //!
@@ -20,7 +20,7 @@ use std::io::Cursor;
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::patch::*;
+/// use pkmnapi_db::patch::*;
 ///
 /// let patch = Patch::new(0x123456, vec![0x13, 0x37]);
 ///
@@ -39,7 +39,7 @@ impl Patch {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
+    /// use pkmnapi_db::patch::*;
     ///
     /// let patch = Patch::new(0x123456, vec![0x13, 0x37]);
     ///
@@ -60,7 +60,7 @@ impl Patch {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
+    /// use pkmnapi_db::patch::*;
     ///
     /// let patch = Patch::new(0x123456, vec![0x13, 0x37]);
     ///
@@ -88,7 +88,7 @@ impl From<Vec<u8>> for Patch {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::patch::*;
+    /// use pkmnapi_db::patch::*;
     ///
     /// let patch = Patch::from(vec![0x12, 0x34, 0x56, 0x00, 0x02, 0x13, 0x37]);
     ///
@@ -113,7 +113,7 @@ impl From<Vec<u8>> for Patch {
 
 #[cfg(test)]
 mod tests {
-    use crate::db::*;
+    use crate::patch::*;
 
     #[test]
     fn patch_interop() {

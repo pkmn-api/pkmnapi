@@ -3,14 +3,14 @@
 //! # Example
 //!
 //! ```
-//! use pkmnapi::db::types::*;
+//! use pkmnapi_db::types::*;
 //!
 //! let pokedex_id = PokedexID::from(151);
 //!
 //! assert_eq!(pokedex_id, 151);
 //! ```
 
-use crate::db::string::*;
+use crate::string::*;
 use byteorder::{LittleEndian, ReadBytesExt};
 use std::cmp::{self, Ordering};
 use std::fmt;
@@ -22,7 +22,7 @@ use std::ops::{Add, Mul, Sub};
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let pokedex_id = PokedexID::from(151);
 ///
@@ -74,7 +74,7 @@ impl Sub<usize> for PokedexID {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let internal_id = InternalID::from(0x14);
 ///
@@ -134,7 +134,7 @@ impl Mul<usize> for InternalID {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let type_id = TypeID::from(0x12);
 ///
@@ -180,7 +180,7 @@ impl Mul<usize> for TypeID {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let type_effect_id = TypeEffectID::from(0x12);
 ///
@@ -226,8 +226,8 @@ impl Mul<usize> for TypeEffectID {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::string::*;
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::string::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let rom = vec![0x80, 0x81, 0x82, 0x50];
 /// let type_name = TypeName::from(&rom[..]);
@@ -250,8 +250,8 @@ impl From<&[u8]> for TypeName {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let rom = vec![0x80, 0x81, 0x82, 0x50];
     /// let type_name = TypeName::from(&rom[..]);
@@ -278,8 +278,8 @@ impl TypeName {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let type_name = TypeName {
     ///     name: ROMString::from("ABC"),
@@ -299,7 +299,7 @@ impl TypeName {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let rom = vec![0x01, 0x02, 0x14];
 /// let type_effect = TypeEffect::from(&rom[..]);
@@ -326,7 +326,7 @@ impl From<&[u8]> for TypeEffect {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let rom = vec![0x01, 0x02, 0x14];
     /// let type_effect = TypeEffect::from(&rom[..]);
@@ -361,7 +361,7 @@ impl TypeEffect {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let type_effect = TypeEffect {
     ///     attacking_type_id: TypeID::from(0x01),
@@ -387,7 +387,7 @@ impl TypeEffect {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let rom = vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A];
 /// let stats = Stats::from(&rom[..]);
@@ -426,7 +426,7 @@ impl From<&[u8]> for Stats {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let rom = vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A];
     /// let stats = Stats::from(&rom[..]);
@@ -488,7 +488,7 @@ impl Stats {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let stats = Stats {
     ///     pokedex_id: PokedexID::from(0x01),
@@ -534,8 +534,8 @@ impl Stats {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::string::*;
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::string::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let rom = vec![0x80, 0x81, 0x82, 0x50];
 /// let pokemon_name = PokemonName::from(&rom[..]);
@@ -558,8 +558,8 @@ impl From<&[u8]> for PokemonName {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let rom = vec![0x80, 0x81, 0x82, 0x50];
     /// let pokemon_name = PokemonName::from(&rom[..]);
@@ -586,8 +586,8 @@ impl PokemonName {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let pokemon_name = PokemonName {
     ///     name: ROMString::from("ABC"),
@@ -607,7 +607,7 @@ impl PokemonName {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let move_id = MoveID::from(0x12);
 ///
@@ -659,7 +659,7 @@ impl Sub<usize> for MoveID {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let rom = vec![0x01, 0x00, 0x28, 0x00, 0xFF, 0x23];
 /// let type_name = MoveStats::from(&rom[..]);
@@ -692,7 +692,7 @@ impl From<&[u8]> for MoveStats {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let rom = vec![0x01, 0x00, 0x28, 0x00, 0xFF, 0x23];
     /// let move_stats = MoveStats::from(&rom[..]);
@@ -736,7 +736,7 @@ impl MoveStats {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let move_stats = MoveStats {
     ///     move_id: MoveID::from(0x01),
@@ -768,8 +768,8 @@ impl MoveStats {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::string::*;
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::string::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let rom = vec![0x80, 0x81, 0x82, 0x50];
 /// let move_name = MoveName::from(&rom[..]);
@@ -792,8 +792,8 @@ impl From<&[u8]> for MoveName {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let rom = vec![0x80, 0x81, 0x82, 0x50];
     /// let move_name = MoveName::from(&rom[..]);
@@ -820,8 +820,8 @@ impl MoveName {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let move_name = MoveName {
     ///     name: ROMString::from("ABC"),
@@ -841,7 +841,7 @@ impl MoveName {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let hm_id = HMID::from(0x12);
 ///
@@ -887,7 +887,7 @@ impl Sub<usize> for HMID {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let hm = HM::from(0x01);
 ///
@@ -909,7 +909,7 @@ impl From<u8> for HM {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let hm = HM::from(0x01);
     ///
@@ -933,7 +933,7 @@ impl HM {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let hm = HM::from(0x01);
     ///
@@ -951,7 +951,7 @@ impl HM {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let tm_id = TMID::from(0x12);
 ///
@@ -997,7 +997,7 @@ impl Sub<usize> for TMID {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let tm = TM::from(0x01);
 ///
@@ -1019,7 +1019,7 @@ impl From<u8> for TM {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let tm = TM::from(0x01);
     ///
@@ -1043,7 +1043,7 @@ impl TM {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let tm = TM::from(0x01);
     ///
@@ -1061,7 +1061,7 @@ impl TM {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let tm = TMPrice::from(0x01);
 ///
@@ -1078,7 +1078,7 @@ impl From<u8> for TMPrice {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let tm = TMPrice::from(0x01);
     ///
@@ -1097,7 +1097,7 @@ impl TMPrice {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let tm_price = TMPrice::from(0x01);
     ///
@@ -1115,8 +1115,8 @@ impl TMPrice {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::string::*;
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::string::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let rom = vec![
 ///     0x83, 0x91, 0x88, 0x8B, 0x8B, 0x50, 0x06, 0x03, 0x5A, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -1145,8 +1145,8 @@ impl From<&[u8]> for PokedexEntry {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let rom = vec![
     ///     0x83, 0x91, 0x88, 0x8B, 0x8B, 0x50, 0x06, 0x03, 0x5A, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -1188,8 +1188,8 @@ impl PokedexEntry {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let pokedex_entry = PokedexEntry {
     ///     species: ROMString::from("DRILL"),
@@ -1224,8 +1224,8 @@ impl PokedexEntry {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::string::*;
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::string::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let rom = vec![0x00, 0x83, 0x91, 0x88, 0x8B, 0x8B, 0x5F];
 /// let pokedex_entry_text = PokedexEntryText::from(&rom[..]);
@@ -1248,8 +1248,8 @@ impl From<&[u8]> for PokedexEntryText {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let rom = vec![0x00, 0x83, 0x91, 0x88, 0x8B, 0x8B, 0x5F];
     /// let pokedex_entry = PokedexEntryText::from(&rom[..]);
@@ -1276,8 +1276,8 @@ impl PokedexEntryText {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let pokedex_entry_text = PokedexEntryText {
     ///     text: ROMString::from("DRILL"),
@@ -1302,7 +1302,7 @@ impl From<bool> for PokemonPicFace {
     /// Convert bool to PokemonPicFace
     ///
     /// ```
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let pokemon_pic_face = PokemonPicFace::from(true);
     ///
@@ -1325,7 +1325,7 @@ impl From<bool> for PokemonPicFace {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let trainer_id = TrainerID::from(0x12);
 ///
@@ -1385,8 +1385,8 @@ impl Mul<usize> for TrainerID {
 /// # Example
 ///
 /// ```
-/// use pkmnapi::db::string::*;
-/// use pkmnapi::db::types::*;
+/// use pkmnapi_db::string::*;
+/// use pkmnapi_db::types::*;
 ///
 /// let rom = vec![0x80, 0x81, 0x82, 0x50];
 /// let trainer_name = TrainerName::from(&rom[..]);
@@ -1409,8 +1409,8 @@ impl From<&[u8]> for TrainerName {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let rom = vec![0x80, 0x81, 0x82, 0x50];
     /// let trainer_name = TrainerName::from(&rom[..]);
@@ -1437,8 +1437,8 @@ impl TrainerName {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
-    /// use pkmnapi::db::types::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
     ///
     /// let trainer_name = TrainerName {
     ///     name: ROMString::from("ABC"),

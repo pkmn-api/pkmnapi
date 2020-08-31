@@ -1,6 +1,6 @@
-use pkmnapi::db::patch::*;
-use pkmnapi::db::string::*;
-use pkmnapi::db::types::*;
+use pkmnapi_db::patch::*;
+use pkmnapi_db::string::*;
+use pkmnapi_db::types::*;
 
 mod common;
 

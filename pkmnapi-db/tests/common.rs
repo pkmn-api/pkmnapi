@@ -1,4 +1,4 @@
-use pkmnapi::db::*;
+use pkmnapi_db::*;
 use std::env;
 use std::fs;
 

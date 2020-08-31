@@ -1,4 +1,4 @@
-use pkmnapi::db::types::*;
+use pkmnapi_db::types::*;
 
 mod common;
 

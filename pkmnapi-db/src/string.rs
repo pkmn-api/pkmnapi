@@ -3,7 +3,7 @@
 //! # Example
 //!
 //! ```
-//! use pkmnapi::db::string::*;
+//! use pkmnapi_db::string::*;
 //!
 //! let string = ROMString::new(&[0x80, 0x81, 0x82, 0x50]);
 //!
@@ -24,7 +24,7 @@ impl ROMString {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
+    /// use pkmnapi_db::string::*;
     ///
     /// let string = ROMString::new(&[0x80, 0x81, 0x82, 0x50]);
     ///
@@ -41,7 +41,7 @@ impl ROMString {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
+    /// use pkmnapi_db::string::*;
     ///
     /// let string = ROMString::from("ABC@");
     ///
@@ -167,7 +167,7 @@ impl fmt::Display for ROMString {
     /// # Example
     ///
     /// ```
-    /// use pkmnapi::db::string::*;
+    /// use pkmnapi_db::string::*;
     ///
     /// let string = ROMString::new(&[0x80, 0x81, 0x82, 0x50]);
     /// let decoded = string.to_string();

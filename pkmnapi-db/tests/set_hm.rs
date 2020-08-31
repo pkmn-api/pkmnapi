@@ -1,5 +1,5 @@
-use pkmnapi::db::patch::*;
-use pkmnapi::db::types::*;
+use pkmnapi_db::patch::*;
+use pkmnapi_db::types::*;
 
 mod common;
 

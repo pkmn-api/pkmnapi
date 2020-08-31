@@ -1,5 +1,5 @@
-use pkmnapi::db::header::*;
-use pkmnapi::db::*;
+use pkmnapi_db::header::*;
+use pkmnapi_db::*;
 
 #[test]
 fn new_success() {
