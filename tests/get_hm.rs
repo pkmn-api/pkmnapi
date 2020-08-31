@@ -1,3 +1,7 @@
+use pkmnapi::db::types::*;
+
+mod common;
+
 macro_rules! get_hm_test {
     ($test_name: ident, $hm_id: expr, $move_id: expr) => {
         #[test]
@@ -21,16 +25,10 @@ macro_rules! get_hm_test {
     };
 }
 
-#[cfg(test)]
 #[rustfmt::skip::macros(get_hm_test)]
-mod tests {
-    use pkmnapi::db::types::*;
 
-    mod common;
-
-    get_hm_test!(get_hm_1, 1, 15);
-    get_hm_test!(get_hm_2, 2, 19);
-    get_hm_test!(get_hm_3, 3, 57);
-    get_hm_test!(get_hm_4, 4, 70);
-    get_hm_test!(get_hm_5, 5, 148);
-}
+get_hm_test!(get_hm_1, 1, 15);
+get_hm_test!(get_hm_2, 2, 19);
+get_hm_test!(get_hm_3, 3, 57);
+get_hm_test!(get_hm_4, 4, 70);
+get_hm_test!(get_hm_5, 5, 148);

@@ -2,7 +2,6 @@ use pkmnapi::db::*;
 use std::env;
 use std::fs;
 
-#[cfg(test)]
 #[allow(non_snake_case)]
 pub fn load_rom() -> PkmnapiDB {
     let PKMN_ROM = match env::var("PKMN_ROM") {
