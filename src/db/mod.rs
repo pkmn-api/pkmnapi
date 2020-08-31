@@ -457,8 +457,7 @@ impl PkmnapiDB {
     ) -> Result<Patch, String> {
         let type_id = type_id.into();
         let old_type_name = self.get_type_name(type_id.clone())?;
-        let old_type_name = old_type_name.name.to_string();
-        let old_type_name_len = old_type_name.len();
+        let old_type_name_len = old_type_name.name.value.len();
         let type_name_raw = type_name.to_raw();
         let type_name_len = type_name_raw.len();
 
@@ -1096,12 +1095,11 @@ impl PkmnapiDB {
     ) -> Result<Patch, String> {
         let move_id = move_id.into();
         let old_move_name = self.get_move_name(move_id.clone())?;
-        let old_move_name = old_move_name.name.to_string();
-        let old_move_name_len = old_move_name.len();
+        let old_move_name_len = old_move_name.name.value.len();
         let move_name_raw = move_name.to_raw();
         let move_name_len = move_name_raw.len();
 
-        if old_move_name_len < move_name_len {
+        if old_move_name_len != move_name_len {
             return Err(format!(
                 "Length mismatch: should be exactly {} characters, found {}",
                 old_move_name_len, move_name_len
@@ -1718,8 +1716,7 @@ impl PkmnapiDB {
         let pokedex_id = pokedex_id.into();
 
         let old_pokedex_entry_text = self.get_pokedex_entry_text(pokedex_id.clone())?;
-        let old_pokedex_entry_text = old_pokedex_entry_text.text.to_string();
-        let old_pokedex_entry_text_len = old_pokedex_entry_text.len();
+        let old_pokedex_entry_text_len = old_pokedex_entry_text.text.value.len();
         let pokedex_entry_text_raw = pokedex_entry_text.text.to_string();
         let pokedex_entry_text_len = pokedex_entry_text_raw.len();
 
@@ -1807,5 +1804,171 @@ impl PkmnapiDB {
         let pic = Pic::new(&self.rom[pointer..])?;
 
         Ok(pic)
+    }
+
+    /// Get trainer name by trainer ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x399FF],
+    /// #     vec![0x98, 0x8E, 0x94, 0x8D, 0x86, 0x92, 0x93, 0x84, 0x91, 0x50, 0x50, 0x50, 0x50],
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let trainer_name = db.get_trainer_name(0).unwrap();
+    ///
+    /// assert_eq!(
+    ///     trainer_name,
+    ///     TrainerName {
+    ///         name: ROMString::from("YOUNGSTER")
+    ///     }
+    /// );
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn get_trainer_name<S: Into<TrainerID>>(
+        &self,
+        trainer_id: S,
+    ) -> Result<TrainerName, String> {
+        let trainer_id = trainer_id.into();
+
+        let offset_base = (ROM_PAGE * 0x1C) + 0x19FF;
+        let offset = match {
+            if trainer_id == 0 {
+                Some(offset_base)
+            } else {
+                self.rom[offset_base..]
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, x)| {
+                        if *x == 0x50 {
+                            return Some(offset_base + i + 1);
+                        }
+
+                        None
+                    })
+                    .take(46)
+                    .enumerate()
+                    .filter_map(|(i, x)| {
+                        if trainer_id.clone() - 1 == i {
+                            return Some(x);
+                        }
+
+                        None
+                    })
+                    .next()
+            }
+        } {
+            Some(offset) => offset,
+            None => return Err(format!("Invalid trainer ID: {}", trainer_id)),
+        };
+
+        let trainer_name = TrainerName::from(&self.rom[offset..(offset + 13)]);
+
+        Ok(trainer_name)
+    }
+
+    /// Set trainer name by trainer ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::patch::*;
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    /// use pkmnapi::db::*;
+    /// use std::fs;
+    /// # use std::fs::File;
+    /// # use std::io::prelude::*;
+    /// # let mut file = File::create("rom.db").unwrap();
+    /// # let data: Vec<u8> = [
+    /// #     vec![0x00; 0x399FF],
+    /// #     vec![0x98, 0x8E, 0x94, 0x8D, 0x86, 0x92, 0x93, 0x84, 0x91, 0x50, 0x50, 0x50, 0x50],
+    /// # ].concat();
+    /// # file.write_all(&data).unwrap();
+    ///
+    /// let rom = fs::read("rom.db").unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let patch = db
+    ///     .set_trainer_name(
+    ///         0,
+    ///         TrainerName {
+    ///             name: ROMString::from("ABCDEFGHI"),
+    ///         },
+    ///     )
+    ///     .unwrap();
+    ///
+    /// assert_eq!(
+    ///     patch,
+    ///     Patch {
+    ///         offset: 0x399FF,
+    ///         length: 0x09,
+    ///         data: vec![0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88]
+    ///     }
+    /// );
+    /// # fs::remove_file("rom.db");
+    /// ```
+    pub fn set_trainer_name<S: Into<TrainerID>>(
+        &self,
+        trainer_id: S,
+        trainer_name: TrainerName,
+    ) -> Result<Patch, String> {
+        let trainer_id = trainer_id.into();
+        let old_trainer_name = self.get_trainer_name(trainer_id.clone())?;
+        let old_trainer_name_len = old_trainer_name.name.value.len();
+        let trainer_name_raw = trainer_name.to_raw();
+        let trainer_name_len = trainer_name_raw.len();
+
+        if old_trainer_name_len != trainer_name_len {
+            return Err(format!(
+                "Length mismatch: should be exactly {} characters, found {}",
+                old_trainer_name_len, trainer_name_len
+            ));
+        }
+
+        let offset_base = (ROM_PAGE * 0x1C) + 0x19FF;
+        let offset = match {
+            if trainer_id == 0 {
+                Some(offset_base)
+            } else {
+                self.rom[offset_base..]
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, x)| {
+                        if *x == 0x50 {
+                            return Some(offset_base + i + 1);
+                        }
+
+                        None
+                    })
+                    .take(46)
+                    .enumerate()
+                    .filter_map(|(i, x)| {
+                        if trainer_id.clone() - 1 == i {
+                            return Some(x);
+                        }
+
+                        None
+                    })
+                    .next()
+            }
+        } {
+            Some(offset) => offset,
+            None => return Err(format!("Invalid trainer ID: {}", trainer_id)),
+        };
+
+        Ok(Patch::new(offset, trainer_name_raw))
     }
 }

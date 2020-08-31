@@ -772,10 +772,10 @@ impl MoveStats {
 /// use pkmnapi::db::types::*;
 ///
 /// let rom = vec![0x80, 0x81, 0x82, 0x50];
-/// let type_name = MoveName::from(&rom[..]);
+/// let move_name = MoveName::from(&rom[..]);
 ///
 /// assert_eq!(
-///     type_name,
+///     move_name,
 ///     MoveName {
 ///         name: ROMString::from("ABC")
 ///     }
@@ -1317,5 +1317,130 @@ impl From<bool> for PokemonPicFace {
             true => PokemonPicFace::FRONT,
             false => PokemonPicFace::BACK,
         }
+    }
+}
+
+/// Trainer ID
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi::db::types::*;
+///
+/// let trainer_id = TrainerID::from(0x12);
+///
+/// assert_eq!(trainer_id, 0x12);
+/// ```
+#[derive(Clone, Debug, PartialEq)]
+pub struct TrainerID(u8);
+
+impl TrainerID {
+    pub fn value(&self) -> u8 {
+        self.0
+    }
+}
+
+impl From<u8> for TrainerID {
+    fn from(trainer_id: u8) -> Self {
+        TrainerID(trainer_id)
+    }
+}
+
+impl PartialEq<u8> for TrainerID {
+    fn eq(&self, other: &u8) -> bool {
+        self.0 == *other
+    }
+}
+
+impl PartialOrd<u8> for TrainerID {
+    fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
+        self.0.partial_cmp(&other)
+    }
+}
+
+impl fmt::Display for TrainerID {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl Sub<usize> for TrainerID {
+    type Output = usize;
+
+    fn sub(self, other: usize) -> usize {
+        self.0 as usize - other
+    }
+}
+
+/// Trainer name
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi::db::string::*;
+/// use pkmnapi::db::types::*;
+///
+/// let rom = vec![0x80, 0x81, 0x82, 0x50];
+/// let trainer_name = TrainerName::from(&rom[..]);
+///
+/// assert_eq!(
+///     trainer_name,
+///     TrainerName {
+///         name: ROMString::from("ABC")
+///     }
+/// );
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct TrainerName {
+    pub name: ROMString,
+}
+
+impl From<&[u8]> for TrainerName {
+    /// Convert &[u8] to TrainerName
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let rom = vec![0x80, 0x81, 0x82, 0x50];
+    /// let trainer_name = TrainerName::from(&rom[..]);
+    ///
+    /// assert_eq!(
+    ///     trainer_name,
+    ///     TrainerName {
+    ///         name: ROMString::from("ABC")
+    ///     }
+    /// );
+    /// ```
+    fn from(rom: &[u8]) -> Self {
+        let name_end_index = rom.iter().position(|&r| r == 0x50).unwrap_or(rom.len());
+
+        let name = ROMString::new(&rom[..name_end_index]);
+
+        TrainerName { name }
+    }
+}
+
+impl TrainerName {
+    /// Trainer name to raw bytes
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi::db::string::*;
+    /// use pkmnapi::db::types::*;
+    ///
+    /// let trainer_name = TrainerName {
+    ///     name: ROMString::from("ABC"),
+    /// };
+    ///
+    /// let raw = trainer_name.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x80, 0x81, 0x82]);
+    /// ```
+    pub fn to_raw(&self) -> Vec<u8> {
+        self.name.value[..].to_vec()
     }
 }
