@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 pkmnapi-db = { path = "../pkmnapi-db" }
+pkmnapi-sql = { path = "../pkmnapi-sql" }
 rocket = "0.4.5"
 rocket_contrib = { version = "0.4.5", default-features = false, features = ["json"] }
 serde = { version = "1.0.115", features = ["derive"] }
