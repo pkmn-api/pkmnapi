@@ -1,18 +1,18 @@
 use serde::Serialize;
 
-use crate::responses::links::*;
+use crate::responses::links::Links;
 
 #[derive(Serialize)]
-pub struct Rom {
+pub struct RomResponse {
     pub id: String,
     #[serde(rename = "type")]
     pub _type: String,
-    pub attributes: RomAttributes,
+    pub attributes: RomResponseAttributes,
     pub links: Links,
 }
 
 #[derive(Serialize)]
-pub struct RomAttributes {
+pub struct RomResponseAttributes {
     pub name: String,
     pub hash: String,
     pub valid: bool,
