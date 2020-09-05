@@ -4,7 +4,8 @@ use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
 
 use crate::requests::access_tokens::AccessTokenRequest;
-use crate::responses::access_tokens::AccessTokenInvalid;
+use crate::responses::access_tokens::AccessTokenErrorInvalid;
+use crate::responses::errors::ResponseError;
 use crate::utils::HostHeader;
 
 #[post("/access_tokens", data = "<data>")]
@@ -12,22 +13,33 @@ pub fn post_access_token(
     sql: State<PkmnapiSQL>,
     host: HostHeader,
     data: Result<Json<AccessTokenRequest>, JsonError>,
-) -> Result<status::Created<JsonValue>, status::BadRequest<Json<AccessTokenInvalid>>> {
+) -> Result<status::Created<JsonValue>, ResponseError> {
     let data = match data {
         Ok(data) => data,
         Err(JsonError::Parse(_, e)) => {
             let message = format!("{}", e);
-            let response = AccessTokenInvalid::new(&message);
+            let response = AccessTokenErrorInvalid::new(&message);
 
-            return Err(status::BadRequest(Some(Json(response))));
+            return Err(ResponseError::AccessTokenErrorInvalid(status::BadRequest(
+                Some(Json(response)),
+            )));
         }
-        _ => return Err(status::BadRequest(None)),
+        _ => {
+            let response = AccessTokenErrorInvalid::new(&String::from("an unknown error occurred"));
+
+            return Err(ResponseError::AccessTokenErrorInvalid(status::BadRequest(
+                Some(Json(response)),
+            )));
+        }
     };
 
     let data = data.into_inner();
     let email_address = data.get_email_address();
 
-    let (user, access_token) = sql.insert_user(&email_address).unwrap();
+    let connection = sql.get_connection().unwrap();
+    let (_user, access_token) = sql.insert_user(&connection, &email_address).unwrap();
+
+    // TODO: Check if email is valid
 
     println!("SEND EMAIL: {}", access_token);
     println!("{}", host);

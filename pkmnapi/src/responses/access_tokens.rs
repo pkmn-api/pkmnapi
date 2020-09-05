@@ -1,17 +1,17 @@
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
-pub struct AccessTokenInvalid {
-    pub data: AccessTokenInvalidData,
+pub struct AccessTokenErrorInvalid {
+    pub data: AccessTokenErrorInvalidData,
 }
 
-impl AccessTokenInvalid {
+impl AccessTokenErrorInvalid {
     pub fn new(message: &String) -> Self {
-        AccessTokenInvalid {
-            data: AccessTokenInvalidData {
-                id: String::from("error_access_tokens_invalid_data"),
+        AccessTokenErrorInvalid {
+            data: AccessTokenErrorInvalidData {
+                id: String::from("error_access_tokens_invalid"),
                 _type: AccessTokenRequestDataType::errors,
-                attributes: AccessTokenInvalidDataAttributes {
+                attributes: AccessTokenErrorInvalidDataAttributes {
                     message: message.to_string(),
                 },
             },
@@ -20,11 +20,11 @@ impl AccessTokenInvalid {
 }
 
 #[derive(Debug, Serialize)]
-pub struct AccessTokenInvalidData {
+pub struct AccessTokenErrorInvalidData {
     pub id: String,
     #[serde(rename = "type")]
     pub _type: AccessTokenRequestDataType,
-    pub attributes: AccessTokenInvalidDataAttributes,
+    pub attributes: AccessTokenErrorInvalidDataAttributes,
 }
 
 #[derive(Debug, Serialize)]
@@ -34,6 +34,6 @@ pub enum AccessTokenRequestDataType {
 }
 
 #[derive(Debug, Serialize)]
-pub struct AccessTokenInvalidDataAttributes {
+pub struct AccessTokenErrorInvalidDataAttributes {
     pub message: String,
 }

@@ -6,6 +6,7 @@ extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
 
+pub mod guards;
 pub mod requests;
 pub mod responses;
 pub mod routes;
@@ -28,6 +29,8 @@ impl Pkmnapi {
                 routes![
                     routes::access_tokens::post_access_token,
                     routes::roms::post_rom,
+                    routes::roms::get_rom,
+                    routes::roms::delete_rom
                 ],
             )
     }
