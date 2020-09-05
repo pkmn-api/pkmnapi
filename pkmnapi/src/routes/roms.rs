@@ -5,10 +5,8 @@ use rocket::{Data, State};
 use rocket_contrib::json::Json;
 
 use crate::guards::access_tokens::AccessToken;
-use crate::responses::errors::ResponseError;
-use crate::responses::roms::{
-    RomResponse, RomResponseErrorInvalidRom, RomResponseErrorNoRom, RomResponseErrorRomExists,
-};
+use crate::responses::errors::*;
+use crate::responses::roms::*;
 
 #[post("/roms", data = "<data>")]
 pub fn post_rom(
@@ -48,7 +46,7 @@ pub fn post_rom(
         &rom,
     ) {
         Ok(rom_sql) => rom_sql,
-        Err() => {
+        Err(_) => {
             let response = RomResponseErrorRomExists::new();
 
             return Err(ResponseError::RomResponseErrorRomExists(status::Forbidden(

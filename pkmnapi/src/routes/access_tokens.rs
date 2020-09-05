@@ -4,8 +4,7 @@ use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
 
 use crate::requests::access_tokens::AccessTokenRequest;
-use crate::responses::access_tokens::AccessTokenErrorInvalid;
-use crate::responses::errors::ResponseError;
+use crate::responses::errors::*;
 use crate::utils::HostHeader;
 
 #[post("/access_tokens", data = "<data>")]
