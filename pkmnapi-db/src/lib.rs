@@ -192,24 +192,26 @@ impl PkmnapiDB {
     /// # file.write_all(&data).unwrap();
     ///
     /// let rom = fs::read("rom.db").unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let mut db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// assert_eq!(db.rom[..4], [0x00, 0x00, 0x00, 0x00]);
     ///
     /// let patch = Patch::new(0x00, vec![0x13, 0x37]);
     ///
-    /// let new_rom = db.apply_patch(patch);
+    /// db.apply_patch(patch);
     ///
-    /// assert_eq!(new_rom[..4], [0x13, 0x37, 0x00, 0x00]);
+    /// assert_eq!(db.rom[..4], [0x13, 0x37, 0x00, 0x00]);
     /// # fs::remove_file("rom.db");
     /// ```
-    pub fn apply_patch(&self, patch: Patch) -> Vec<u8> {
-        [
+    pub fn apply_patch<S: Into<Patch>>(&mut self, patch: S) {
+        let patch = patch.into();
+
+        self.rom = [
             &self.rom[..patch.offset],
             &patch.data[..],
             &self.rom[(patch.offset + patch.length)..],
         ]
-        .concat()
+        .concat();
     }
 
     /// Pokémon name to Pokédex ID
@@ -395,12 +397,23 @@ impl PkmnapiDB {
     pub fn get_type_name<S: Into<TypeID>>(&self, type_id: S) -> Result<TypeName, String> {
         let type_id = type_id.into();
         let offset_base = ROM_PAGE * 0x10;
-        let pointer_offset = (offset_base + 0x7DAE) + (type_id * 2);
+        let pointer_base = offset_base + 0x7DAE;
+        let pointer_offset = pointer_base + (type_id.clone() * 2);
         let pointer = offset_base + {
             let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
 
             cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
         };
+
+        let max_index = (&self.rom[pointer_base..])
+            .iter()
+            .position(|&r| r == 0x8D)
+            .unwrap();
+        let max_id = ((max_index as f32) / 2.0) as u8;
+
+        if type_id >= max_id {
+            return Err(format!("Invalid ID: valid range is 0-{}", max_id - 1));
+        }
 
         let type_name = TypeName::from(&self.rom[pointer..=(pointer + 9)]);
 

@@ -167,6 +167,12 @@ impl PartialEq<u8> for TypeID {
     }
 }
 
+impl PartialOrd<u8> for TypeID {
+    fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
+        self.0.partial_cmp(&other)
+    }
+}
+
 impl Mul<usize> for TypeID {
     type Output = usize;
 
