@@ -542,7 +542,7 @@ impl PkmnapiDB {
         let max_id = ((max_index as f32) / 3.0) as u8;
 
         if type_effect_id >= max_id {
-            return Err(format!("Invalid ID: valid range is 0-{}", max_id));
+            return Err(format!("Invalid ID: valid range is 0-{}", max_id - 1));
         }
 
         let pointer = pointer + (type_effect_id * 0x03);

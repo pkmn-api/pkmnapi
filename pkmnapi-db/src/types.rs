@@ -319,7 +319,7 @@ impl TypeName {
 ///     }
 /// );
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct TypeEffect {
     pub attacking_type_id: TypeID,
     pub defending_type_id: TypeID,
