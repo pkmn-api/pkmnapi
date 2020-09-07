@@ -1,6 +1,6 @@
 //! Models module
 
-use crate::schema::{rom_data, roms, users};
+use crate::schema::{patches, rom_data, roms, users};
 use crate::utils;
 use chrono::{prelude::*, Duration};
 
@@ -109,7 +109,6 @@ pub struct NewUser {
     pub date_create: String,
     pub date_expire: String,
     pub access_token_hash: String,
-    pub patch: Option<Vec<u8>>,
     pub rom_id: Option<String>,
 }
 
@@ -133,7 +132,6 @@ impl NewUser {
     /// assert_eq!(new_user.date_create.len(), 32);
     /// assert_eq!(new_user.date_expire.len(), 32);
     /// assert_eq!(new_user.access_token_hash.len(), 64);
-    /// assert_eq!(new_user.patch, None);
     /// assert_eq!(new_user.rom_id, None);
     /// assert_eq!(access_token.len(), 64);
     /// ```
@@ -141,7 +139,6 @@ impl NewUser {
         let date_create = Utc::now().to_rfc3339();
         let date_expire = (Utc::now() + Duration::days(1)).to_rfc3339();
         let access_token = utils::random_id(64);
-        let patch = None;
         let rom_id = None;
 
         let access_token_hash = utils::hmac(&access_token);
@@ -151,10 +148,50 @@ impl NewUser {
             date_create,
             date_expire,
             access_token_hash,
-            patch,
             rom_id,
         };
 
         (new_user, access_token)
+    }
+}
+
+/// Queryable struct of data from `patches`
+#[derive(Debug, Queryable, PartialEq)]
+pub struct Patch {
+    pub id: String,
+    pub data: Vec<u8>,
+}
+
+/// Insertable struct of data into `patches`
+#[derive(Debug, Insertable, PartialEq)]
+#[table_name = "patches"]
+pub struct NewPatch {
+    pub id: String,
+    pub user_id: String,
+    pub data: Vec<u8>,
+}
+
+impl NewPatch {
+    /// Create new patch entry
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_sql::models::*;
+    ///
+    /// let new_patch = NewPatch::new(&String::from("foo"), &vec![0x01, 0x02, 0x03, 0x04]);
+    ///
+    /// assert_eq!(new_patch.id.len(), 32);
+    /// assert_eq!(new_patch.user_id, String::from("foo"));
+    /// assert_eq!(new_patch.data, vec![0x01, 0x02, 0x03, 0x04]);
+    /// ```
+    pub fn new(user_id: &String, data: &Vec<u8>) -> Self {
+        let id = utils::random_id(32);
+
+        NewPatch {
+            id,
+            user_id: user_id.to_string(),
+            data: data.to_vec(),
+        }
     }
 }

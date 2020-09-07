@@ -279,12 +279,10 @@ impl PkmnapiSQL {
     ) -> Result<(), diesel::result::Error> {
         use crate::schema::roms;
 
-        connection.transaction::<_, diesel::result::Error, _>(|| {
-            match diesel::delete(roms::table.filter(roms::id.eq(id))).execute(connection) {
-                Ok(_) => Ok(()),
-                Err(e) => Err(e),
-            }
-        })
+        match diesel::delete(roms::table.filter(roms::id.eq(id))).execute(connection) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(e),
+        }
     }
 
     /// Select row from `users` by access_token
@@ -601,5 +599,132 @@ impl PkmnapiSQL {
             .inner_join(roms::table.inner_join(rom_data::table))
             .select((rom_data::id, rom_data::name, rom_data::data))
             .first::<RomData>(connection)
+    }
+
+    /// Select row in `patches` by ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use std::process::Command;
+    /// # use std::fs;
+    /// # use std::env;
+    /// use pkmnapi_sql::*;
+    /// # env::set_var("DATABASE_URL", "test.db");
+    /// # Command::new("diesel").args(&["migration", "run"]).output();
+    ///
+    /// let sql = PkmnapiSQL::new();
+    ///
+    /// let connection = sql.get_connection().unwrap();
+    /// # let (new_user, access_token) = sql.insert_user(&connection, &String::from("foo@bar.com")).unwrap();
+    /// # let new_patch = sql.insert_patch(&connection, &access_token, &vec![0x01, 0x02, 0x03, 0x04]).unwrap();
+    /// # let id = new_patch.id;
+    /// let patch = sql.select_patch_by_id(&connection, &id).unwrap();
+    ///
+    /// assert_eq!(patch.id.len(), 32);
+    /// assert_eq!(patch.data, vec![0x01, 0x02, 0x03, 0x04]);
+    /// # fs::remove_file("test.db");
+    /// ```
+    pub fn select_patch_by_id(
+        &self,
+        connection: &SqlitePooledConnection,
+        id: &String,
+    ) -> Result<Patch, diesel::result::Error> {
+        use crate::schema::patches;
+
+        patches::table
+            .filter(patches::id.eq(id))
+            .select((patches::id, patches::data))
+            .first::<Patch>(connection)
+    }
+
+    /// Select rows in `patches` by access token
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # use std::process::Command;
+    /// # use std::fs;
+    /// # use std::env;
+    /// use pkmnapi_sql::*;
+    /// # env::set_var("DATABASE_URL", "test.db");
+    /// # Command::new("diesel").args(&["migration", "run"]).output();
+    ///
+    /// let sql = PkmnapiSQL::new();
+    ///
+    /// let connection = sql.get_connection().unwrap();
+    /// # let (new_user, access_token) = sql.insert_user(&connection, &String::from("foo@bar.com")).unwrap();
+    /// # sql.insert_patch(&connection, &access_token, &vec![0x01, 0x02, 0x03, 0x04]).unwrap();
+    /// let patches = sql.select_patches_by_access_token(&connection, &access_token).unwrap();
+    /// let patch = &patches[0];
+    ///
+    /// assert_eq!(patch.id.len(), 32);
+    /// assert_eq!(patch.data, vec![0x01, 0x02, 0x03, 0x04]);
+    /// # fs::remove_file("test.db");
+    /// ```
+    pub fn select_patches_by_access_token(
+        &self,
+        connection: &SqlitePooledConnection,
+        access_token: &String,
+    ) -> Result<Vec<Patch>, diesel::result::Error> {
+        use crate::schema::patches;
+        use crate::schema::users;
+
+        let access_token_hash = utils::hmac(&access_token);
+
+        users::table
+            .filter(users::access_token_hash.eq(access_token_hash))
+            .inner_join(patches::table)
+            .select((patches::id, patches::data))
+            .get_results::<Patch>(connection)
+    }
+
+    /// Insert new row into `patches`
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_sql::*;
+    /// # use std::process::Command;
+    /// # use std::fs;
+    /// # use std::env;
+    /// # env::set_var("DATABASE_URL", "test.db");
+    /// # Command::new("diesel").args(&["migration", "run"]).output();
+    ///
+    /// let sql = PkmnapiSQL::new();
+    ///
+    /// let connection = sql.get_connection().unwrap();
+    /// # let (new_user, access_token) = sql.insert_user(&connection, &String::from("foo@bar.com")).unwrap();
+    /// let new_patch = sql
+    ///     .insert_patch(
+    ///         &connection,
+    ///         &access_token,
+    ///         &vec![0x01, 0x02, 0x03, 0x04],
+    ///     )
+    ///     .unwrap();
+    ///
+    /// assert_eq!(new_patch.id.len(), 32);
+    /// assert_eq!(new_patch.data, vec![0x01, 0x02, 0x03, 0x04]);
+    /// # fs::remove_file("test.db");
+    /// ```
+    pub fn insert_patch(
+        &self,
+        connection: &SqlitePooledConnection,
+        access_token: &String,
+        data: &Vec<u8>,
+    ) -> Result<Patch, diesel::result::Error> {
+        use crate::schema::patches;
+
+        let user = self.select_user_by_access_token(&connection, &access_token)?;
+
+        let new_patch = NewPatch::new(&user.id, &data);
+
+        match diesel::insert_or_ignore_into(patches::table)
+            .values(&new_patch)
+            .execute(connection)
+        {
+            Ok(_) => self.select_patch_by_id(connection, &new_patch.id),
+            Err(e) => return Err(e),
+        }
     }
 }
