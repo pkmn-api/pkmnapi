@@ -12,6 +12,8 @@ pub enum ResponseError {
     RomResponseErrorRomExists(status::Forbidden<Json<RomResponseErrorRomExists>>),
     TypeResponseError(status::NotFound<Json<TypeResponseError>>),
     TypeResponseErrorInvalid(status::BadRequest<Json<TypeResponseErrorInvalid>>),
+    TypeEffectResponseError(status::NotFound<Json<TypeEffectResponseError>>),
+    TypeEffectResponseErrorInvalid(status::BadRequest<Json<TypeEffectResponseErrorInvalid>>),
 }
 
 #[derive(Debug, Serialize)]
@@ -31,6 +33,8 @@ pub enum ResponseErrorId {
     error_roms_rom_exists,
     error_types,
     error_types_invalid,
+    error_type_effects,
+    error_type_effects_invalid,
 }
 
 #[derive(Debug, Serialize)]
@@ -302,5 +306,73 @@ pub struct TypeResponseErrorInvalidData {
 
 #[derive(Debug, Serialize)]
 pub struct TypeResponseErrorInvalidDataAttributes {
+    pub message: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct TypeEffectResponseError {
+    pub data: TypeEffectResponseErrorData,
+}
+
+impl TypeEffectResponseError {
+    pub fn new(message: &String) -> ResponseError {
+        let response = TypeEffectResponseError {
+            data: TypeEffectResponseErrorData {
+                id: ResponseErrorId::error_type_effects,
+                _type: ResponseErrorType::errors,
+                attributes: TypeEffectResponseErrorDataAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::TypeEffectResponseError(status::NotFound(Json(response)))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct TypeEffectResponseErrorData {
+    pub id: ResponseErrorId,
+    #[serde(rename = "type")]
+    pub _type: ResponseErrorType,
+    pub attributes: TypeEffectResponseErrorDataAttributes,
+}
+
+#[derive(Debug, Serialize)]
+pub struct TypeEffectResponseErrorDataAttributes {
+    pub message: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct TypeEffectResponseErrorInvalid {
+    pub data: TypeEffectResponseErrorInvalidData,
+}
+
+impl TypeEffectResponseErrorInvalid {
+    pub fn new(message: &String) -> ResponseError {
+        let response = TypeEffectResponseErrorInvalid {
+            data: TypeEffectResponseErrorInvalidData {
+                id: ResponseErrorId::error_type_effects_invalid,
+                _type: ResponseErrorType::errors,
+                attributes: TypeEffectResponseErrorInvalidDataAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::TypeEffectResponseErrorInvalid(status::BadRequest(Some(Json(response))))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct TypeEffectResponseErrorInvalidData {
+    pub id: ResponseErrorId,
+    #[serde(rename = "type")]
+    pub _type: ResponseErrorType,
+    pub attributes: TypeEffectResponseErrorInvalidDataAttributes,
+}
+
+#[derive(Debug, Serialize)]
+pub struct TypeEffectResponseErrorInvalidDataAttributes {
     pub message: String,
 }

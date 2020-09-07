@@ -4,7 +4,7 @@ use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
 use validator;
 
-use crate::guards::access_tokens::*;
+use crate::guards::*;
 use crate::requests::access_tokens::*;
 use crate::responses::errors::*;
 

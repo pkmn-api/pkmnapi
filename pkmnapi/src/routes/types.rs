@@ -6,7 +6,7 @@ use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
 
-use crate::guards::access_tokens::*;
+use crate::guards::*;
 use crate::requests::types::*;
 use crate::responses::errors::*;
 use crate::responses::types::*;
@@ -74,7 +74,7 @@ pub fn post_type(
     };
 
     let patch = match db.set_type_name(type_id, type_name) {
-        Ok(type_name) => type_name,
+        Ok(patch) => patch,
         Err(e) => return Err(TypeResponseError::new(&e.to_string())),
     };
 

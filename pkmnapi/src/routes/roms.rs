@@ -4,7 +4,7 @@ use rocket::response::status;
 use rocket::{Data, State};
 use rocket_contrib::json::Json;
 
-use crate::guards::access_tokens::*;
+use crate::guards::*;
 use crate::responses::errors::*;
 use crate::responses::roms::*;
 

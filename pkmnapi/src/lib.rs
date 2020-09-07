@@ -32,7 +32,9 @@ impl Pkmnapi {
                     routes::roms::get_rom,
                     routes::roms::delete_rom,
                     routes::types::get_type,
-                    routes::types::post_type
+                    routes::types::post_type,
+                    routes::type_effects::get_type_effect,
+                    routes::type_effects::post_type_effect
                 ],
             )
     }
