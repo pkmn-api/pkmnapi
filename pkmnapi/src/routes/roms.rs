@@ -4,7 +4,7 @@ use rocket::response::status;
 use rocket::{Data, State};
 use rocket_contrib::json::Json;
 
-use crate::guards::access_tokens::AccessToken;
+use crate::guards::access_tokens::*;
 use crate::responses::errors::*;
 use crate::responses::roms::*;
 
@@ -12,8 +12,13 @@ use crate::responses::roms::*;
 pub fn post_rom(
     sql: State<PkmnapiSQL>,
     data: Data,
-    access_token: AccessToken,
+    access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<status::Created<Json<RomResponse>>, ResponseError> {
+    let access_token = match access_token {
+        Ok(access_token) => access_token.into_inner(),
+        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
+    };
+
     let rom = {
         let mut rom = Vec::new();
 
@@ -24,21 +29,10 @@ pub fn post_rom(
 
     let db = match PkmnapiDB::new(&rom) {
         Ok(db) => db,
-        Err(_) => {
-            let response = RomResponseErrorInvalidRom::new();
-
-            return Err(ResponseError::RomResponseErrorInvalidRom(
-                status::BadRequest(Some(Json(response))),
-            ));
-        }
+        Err(_) => return Err(RomResponseErrorInvalidRom::new()),
     };
 
-    let access_token = access_token.into_inner();
-
-    let connection = match sql.get_connection() {
-        Ok(connection) => connection,
-        Err(e) => panic!("FAILED: {:?}", e),
-    };
+    let connection = sql.get_connection().unwrap();
     let rom_sql = match sql.update_user_rom_by_access_token(
         &connection,
         &access_token,
@@ -46,13 +40,7 @@ pub fn post_rom(
         &rom,
     ) {
         Ok(rom_sql) => rom_sql,
-        Err(_) => {
-            let response = RomResponseErrorRomExists::new();
-
-            return Err(ResponseError::RomResponseErrorRomExists(status::Forbidden(
-                Some(Json(response)),
-            )));
-        }
+        Err(_) => return Err(RomResponseErrorRomExists::new()),
     };
 
     let response = RomResponse::new(&rom_sql);
@@ -63,20 +51,17 @@ pub fn post_rom(
 #[get("/roms")]
 pub fn get_rom(
     sql: State<PkmnapiSQL>,
-    access_token: AccessToken,
+    access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Json<RomResponse>, ResponseError> {
-    let access_token = access_token.into_inner();
+    let access_token = match access_token {
+        Ok(access_token) => access_token.into_inner(),
+        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
+    };
 
     let connection = sql.get_connection().unwrap();
     let rom_sql = match sql.select_user_rom_by_access_token(&connection, &access_token) {
         Ok(rom_sql) => rom_sql,
-        Err(_) => {
-            let response = RomResponseErrorNoRom::new();
-
-            return Err(ResponseError::RomResponseErrorNoRom(status::BadRequest(
-                Some(Json(response)),
-            )));
-        }
+        Err(_) => return Err(RomResponseErrorNoRom::new()),
     };
 
     let response = RomResponse::new(&rom_sql);
@@ -87,20 +72,17 @@ pub fn get_rom(
 #[delete("/roms")]
 pub fn delete_rom(
     sql: State<PkmnapiSQL>,
-    access_token: AccessToken,
+    access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<status::NoContent, ResponseError> {
-    let access_token = access_token.into_inner();
+    let access_token = match access_token {
+        Ok(access_token) => access_token.into_inner(),
+        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
+    };
 
     let connection = sql.get_connection().unwrap();
     match sql.delete_user_rom_by_access_token(&connection, &access_token) {
         Ok(_) => {}
-        Err(_) => {
-            let response = RomResponseErrorNoRom::new();
-
-            return Err(ResponseError::RomResponseErrorNoRom(status::BadRequest(
-                Some(Json(response)),
-            )));
-        }
+        Err(_) => return Err(RomResponseErrorNoRom::new()),
     }
 
     Ok(status::NoContent)

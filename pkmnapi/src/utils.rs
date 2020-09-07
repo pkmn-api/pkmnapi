@@ -1,21 +1,32 @@
-use rocket::request::{FromRequest, Outcome, Request};
-use std::fmt;
+use pkmnapi_db::*;
+use pkmnapi_sql::*;
+use rocket::State;
 
-pub struct HostHeader<'a>(pub &'a str);
+use crate::responses::errors::*;
 
-impl<'a, 'r> FromRequest<'a, 'r> for HostHeader<'a> {
-    type Error = ();
+pub fn get_db_with_applied_patches(
+    sql: State<PkmnapiSQL>,
+    access_token: &String,
+) -> Result<PkmnapiDB, ResponseError> {
+    let connection = sql.get_connection().unwrap();
+    let rom_data_sql = match sql.select_user_rom_data_by_access_token(&connection, &access_token) {
+        Ok(rom_sql) => rom_sql,
+        Err(_) => return Err(RomResponseErrorNoRom::new()),
+    };
 
-    fn from_request(request: &'a Request) -> Outcome<Self, Self::Error> {
-        match request.headers().get_one("Host") {
-            Some(h) => Outcome::Success(HostHeader(h)),
-            None => Outcome::Forward(()),
-        }
+    let patches = match sql.select_patches_by_access_token(&connection, &access_token) {
+        Ok(patches) => patches,
+        Err(_) => vec![],
+    };
+
+    let mut db = match PkmnapiDB::new(&rom_data_sql.data) {
+        Ok(db) => db,
+        Err(_) => return Err(RomResponseErrorInvalidRom::new()),
+    };
+
+    for patch in patches {
+        db.apply_patch(patch.data);
     }
-}
 
-impl<'a> fmt::Display for HostHeader<'a> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
+    Ok(db)
 }

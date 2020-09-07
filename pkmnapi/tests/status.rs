@@ -1,14 +1,18 @@
-use rocket::local::Client;
 use rocket::http::{ContentType, Status};
-use pkmnapi::*;
+
+mod common;
 
 #[test]
-fn ok() {
-    let api = Pkmnapi::init();
-    let client = Client::new(api).unwrap();
+fn status_ok() {
+    let client = common::setup();
 
-    let response = client.get("/status").dispatch();
+    let request = client.get("/status");
+
+    let mut response = request.dispatch();
 
     assert_eq!(response.status(), Status::Ok);
     assert_eq!(response.content_type(), Some(ContentType::Plain));
+    assert_eq!(response.body_string(), Some("OK".to_string()));
+
+    common::teardown();
 }

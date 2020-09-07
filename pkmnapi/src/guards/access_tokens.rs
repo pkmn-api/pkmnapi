@@ -25,11 +25,11 @@ impl<'a, 'r> FromRequest<'a, 'r> for AccessToken {
 
         let access_token = match access_tokens.get(0) {
             Some(access_token) => access_token.to_string(),
-            None => return Outcome::Failure((Status::BadRequest, AccessTokenError::Missing)),
+            None => return Outcome::Failure((Status::Unauthorized, AccessTokenError::Missing)),
         };
 
         if access_token.find("Bearer ") != Some(0) {
-            return Outcome::Failure((Status::BadRequest, AccessTokenError::Invalid));
+            return Outcome::Failure((Status::Unauthorized, AccessTokenError::Invalid));
         }
 
         let access_token = access_token.replace("Bearer ", "");

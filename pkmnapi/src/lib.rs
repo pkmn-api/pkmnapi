@@ -30,7 +30,9 @@ impl Pkmnapi {
                     routes::access_tokens::post_access_token,
                     routes::roms::post_rom,
                     routes::roms::get_rom,
-                    routes::roms::delete_rom
+                    routes::roms::delete_rom,
+                    routes::types::get_type,
+                    routes::types::post_type
                 ],
             )
     }
