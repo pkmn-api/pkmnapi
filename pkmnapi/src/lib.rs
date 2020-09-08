@@ -34,7 +34,10 @@ impl Pkmnapi {
                     routes::types::get_type,
                     routes::types::post_type,
                     routes::type_effects::get_type_effect,
-                    routes::type_effects::post_type_effect
+                    routes::type_effects::post_type_effect,
+                    routes::patches::get_patches,
+                    routes::patches::get_patches_raw,
+                    routes::patches::get_patch
                 ],
             )
     }

@@ -7,6 +7,7 @@ pub enum ResponseError {
     AccessTokenErrorInvalid(status::BadRequest<Json<AccessTokenErrorInvalid>>),
     AccessTokenErrorUnauthorized(status::Unauthorized<Json<AccessTokenErrorUnauthorized>>),
     AccessTokenErrorForbidden(status::Forbidden<Json<AccessTokenErrorForbidden>>),
+    PatchResponseError(status::NotFound<Json<PatchResponseError>>),
     RomResponseErrorInvalidRom(status::BadRequest<Json<RomResponseErrorInvalidRom>>),
     RomResponseErrorNoRom(status::Forbidden<Json<RomResponseErrorNoRom>>),
     RomResponseErrorRomExists(status::Forbidden<Json<RomResponseErrorRomExists>>),
@@ -28,6 +29,7 @@ pub enum ResponseErrorId {
     error_access_tokens_invalid,
     error_access_tokens_unauthorized,
     error_access_tokens_forbidden,
+    error_patches,
     error_roms_invalid_rom,
     error_roms_no_rom,
     error_roms_rom_exists,
@@ -136,6 +138,40 @@ pub struct AccessTokenErrorForbiddenData {
 
 #[derive(Debug, Serialize)]
 pub struct AccessTokenErrorForbiddenDataAttributes {
+    pub message: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PatchResponseError {
+    pub data: PatchResponseErrorData,
+}
+
+impl PatchResponseError {
+    pub fn new() -> ResponseError {
+        let response = PatchResponseError {
+            data: PatchResponseErrorData {
+                id: ResponseErrorId::error_patches,
+                _type: ResponseErrorType::errors,
+                attributes: PatchResponseErrorDataAttributes {
+                    message: "No patch found".to_owned(),
+                },
+            },
+        };
+
+        ResponseError::PatchResponseError(status::NotFound(Json(response)))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct PatchResponseErrorData {
+    pub id: ResponseErrorId,
+    #[serde(rename = "type")]
+    pub _type: ResponseErrorType,
+    pub attributes: PatchResponseErrorDataAttributes,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PatchResponseErrorDataAttributes {
     pub message: String,
 }
 
