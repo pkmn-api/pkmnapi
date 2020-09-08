@@ -160,6 +160,7 @@ impl NewUser {
 pub struct Patch {
     pub id: String,
     pub data: Vec<u8>,
+    pub description: Option<String>
 }
 
 /// Insertable struct of data into `patches`
@@ -169,6 +170,7 @@ pub struct NewPatch {
     pub id: String,
     pub user_id: String,
     pub data: Vec<u8>,
+    pub description: Option<String>
 }
 
 impl NewPatch {
@@ -184,14 +186,16 @@ impl NewPatch {
     /// assert_eq!(new_patch.id.len(), 32);
     /// assert_eq!(new_patch.user_id, String::from("foo"));
     /// assert_eq!(new_patch.data, vec![0x01, 0x02, 0x03, 0x04]);
+    /// assert_eq!(new_patch.description, None);
     /// ```
-    pub fn new(user_id: &String, data: &Vec<u8>) -> Self {
+    pub fn new(user_id: &String, data: &Vec<u8>, description: Option<String>) -> Self {
         let id = utils::random_id(32);
 
         NewPatch {
             id,
             user_id: user_id.to_string(),
             data: data.to_vec(),
+            description
         }
     }
 }

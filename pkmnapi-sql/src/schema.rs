@@ -37,4 +37,9 @@ joinable!(patches -> users (user_id));
 joinable!(roms -> rom_data (rom_data_id));
 joinable!(users -> roms (rom_id));
 
-allow_tables_to_appear_in_same_query!(patches, rom_data, roms, users,);
+allow_tables_to_appear_in_same_query!(
+    patches,
+    rom_data,
+    roms,
+    users,
+);
