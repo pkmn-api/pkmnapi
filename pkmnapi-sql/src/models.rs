@@ -160,7 +160,7 @@ impl NewUser {
 pub struct Patch {
     pub id: String,
     pub data: Vec<u8>,
-    pub description: Option<String>
+    pub description: Option<String>,
 }
 
 /// Insertable struct of data into `patches`
@@ -170,7 +170,7 @@ pub struct NewPatch {
     pub id: String,
     pub user_id: String,
     pub data: Vec<u8>,
-    pub description: Option<String>
+    pub description: Option<String>,
 }
 
 impl NewPatch {
@@ -181,7 +181,7 @@ impl NewPatch {
     /// ```
     /// use pkmnapi_sql::models::*;
     ///
-    /// let new_patch = NewPatch::new(&String::from("foo"), &vec![0x01, 0x02, 0x03, 0x04]);
+    /// let new_patch = NewPatch::new(&String::from("foo"), &vec![0x01, 0x02, 0x03, 0x04], None);
     ///
     /// assert_eq!(new_patch.id.len(), 32);
     /// assert_eq!(new_patch.user_id, String::from("foo"));
@@ -195,7 +195,7 @@ impl NewPatch {
             id,
             user_id: user_id.to_string(),
             data: data.to_vec(),
-            description
+            description,
         }
     }
 }

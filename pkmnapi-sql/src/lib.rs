@@ -665,7 +665,7 @@ impl PkmnapiSQL {
     ///
     /// let connection = sql.get_connection().unwrap();
     /// # let (new_user, access_token) = sql.insert_user(&connection, &String::from("foo@bar.com")).unwrap();
-    /// # let new_patch = sql.insert_patch(&connection, &access_token, &vec![0x01, 0x02, 0x03, 0x04]).unwrap();
+    /// # let new_patch = sql.insert_patch(&connection, &access_token, &vec![0x01, 0x02, 0x03, 0x04], None).unwrap();
     /// # let id = new_patch.id;
     /// let patch = sql.select_patch_by_id(&connection, &access_token, &id).unwrap().unwrap();
     ///
@@ -713,7 +713,7 @@ impl PkmnapiSQL {
     ///
     /// let connection = sql.get_connection().unwrap();
     /// # let (new_user, access_token) = sql.insert_user(&connection, &String::from("foo@bar.com")).unwrap();
-    /// # sql.insert_patch(&connection, &access_token, &vec![0x01, 0x02, 0x03, 0x04]).unwrap();
+    /// # sql.insert_patch(&connection, &access_token, &vec![0x01, 0x02, 0x03, 0x04], None).unwrap();
     /// let patches = sql.select_patches_by_access_token(&connection, &access_token).unwrap();
     /// let patch = &patches[0];
     ///
@@ -759,6 +759,7 @@ impl PkmnapiSQL {
     ///         &connection,
     ///         &access_token,
     ///         &vec![0x01, 0x02, 0x03, 0x04],
+    ///         None
     ///     )
     ///     .unwrap();
     ///
@@ -771,7 +772,7 @@ impl PkmnapiSQL {
         connection: &SqlitePooledConnection,
         access_token: &String,
         data: &Vec<u8>,
-        description: Option<String>
+        description: Option<String>,
     ) -> Result<Patch, diesel::result::Error> {
         use crate::schema::patches;
 
@@ -794,5 +795,54 @@ impl PkmnapiSQL {
             },
             Err(e) => return Err(e),
         }
+    }
+
+    /// Delete patch from `patches` by ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_sql::*;
+    /// # use std::process::Command;
+    /// # use std::fs;
+    /// # use std::env;
+    /// # env::set_var("DATABASE_URL", "test.db");
+    /// # Command::new("diesel").args(&["migration", "run"]).output();
+    ///
+    /// let sql = PkmnapiSQL::new();
+    ///
+    /// let connection = sql.get_connection().unwrap();
+    /// # let (new_user, access_token) = sql.insert_user(&connection, &String::from("foo@bar.com")).unwrap();
+    /// # let new_patch = sql.insert_patch(&connection, &access_token, &vec![0x01, 0x02, 0x03, 0x04], None).unwrap();
+    /// # let id = new_patch.id;
+    /// sql.delete_patch_by_id(&connection, &access_token, &id).unwrap();
+    /// # fs::remove_file("test.db");
+    /// ```
+    pub fn delete_patch_by_id(
+        &self,
+        connection: &SqlitePooledConnection,
+        access_token: &String,
+        id: &String,
+    ) -> Result<(), diesel::result::Error> {
+        use crate::schema::patches;
+
+        connection.transaction::<_, diesel::result::Error, _>(|| {
+            let user = match self.select_user_by_access_token(connection, &access_token) {
+                Ok(Some(user)) => user,
+                Ok(None) => return Err(diesel::result::Error::NotFound),
+                Err(e) => return Err(e),
+            };
+
+            match diesel::delete(
+                patches::table
+                    .filter(patches::user_id.eq(user.id))
+                    .filter(patches::id.eq(id)),
+            )
+            .execute(connection)
+            {
+                Ok(_) => Ok(()),
+                Err(e) => Err(e),
+            }
+        })
     }
 }
