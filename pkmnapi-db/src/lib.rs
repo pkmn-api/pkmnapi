@@ -662,10 +662,7 @@ impl PkmnapiDB {
     /// ```
     pub fn get_stats<S: Into<PokedexID>>(&self, pokedex_id: S) -> Result<Stats, String> {
         let pokedex_id = pokedex_id.into();
-
-        if pokedex_id < 1 {
-            return Err(format!("Pokédex ID too low: {}", pokedex_id));
-        }
+        let _internal_id = self.pokedex_id_to_internal_id(pokedex_id.clone())?;
 
         let offset = {
             if pokedex_id == 151 {
@@ -737,10 +734,7 @@ impl PkmnapiDB {
         stats: Stats,
     ) -> Result<Patch, String> {
         let pokedex_id = pokedex_id.into();
-
-        if pokedex_id < 1 {
-            return Err(format!("Pokédex ID too low: {}", pokedex_id));
-        }
+        let _internal_id = self.pokedex_id_to_internal_id(pokedex_id.clone())?;
 
         let offset_base = ROM_PAGE * 0x1C;
         let offset = (offset_base + 0x03DE) + ((pokedex_id - 1) * 0x1C);
@@ -789,11 +783,6 @@ impl PkmnapiDB {
         pokedex_id: S,
     ) -> Result<PokemonName, String> {
         let pokedex_id = pokedex_id.into();
-
-        if pokedex_id < 1 {
-            return Err(format!("Pokédex ID too low: {}", pokedex_id));
-        }
-
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x0E;
@@ -854,11 +843,6 @@ impl PkmnapiDB {
         pokemon_name: PokemonName,
     ) -> Result<Patch, String> {
         let pokedex_id = pokedex_id.into();
-
-        if pokedex_id < 1 {
-            return Err(format!("Pokédex ID too low: {}", pokedex_id));
-        }
-
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x0E;
@@ -1527,7 +1511,6 @@ impl PkmnapiDB {
         pokedex_id: S,
     ) -> Result<PokedexEntry, String> {
         let pokedex_id = pokedex_id.into();
-
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x1E;
@@ -1595,7 +1578,6 @@ impl PkmnapiDB {
         pokedex_entry: PokedexEntry,
     ) -> Result<Patch, String> {
         let pokedex_id = pokedex_id.into();
-
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x1E;
@@ -1650,7 +1632,6 @@ impl PkmnapiDB {
         pokedex_id: S,
     ) -> Result<PokedexEntryText, String> {
         let pokedex_id = pokedex_id.into();
-
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x1E;
@@ -1769,11 +1750,6 @@ impl PkmnapiDB {
         pokemon_pic_face: T,
     ) -> Result<Pic, String> {
         let pokedex_id = pokedex_id.into();
-
-        if pokedex_id < 1 {
-            return Err(format!("Pokédex ID too low: {}", pokedex_id));
-        }
-
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id.clone())?;
 
         let (offset, bank_offset) = {
