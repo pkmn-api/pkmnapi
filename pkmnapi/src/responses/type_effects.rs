@@ -19,8 +19,7 @@ impl TypeEffectResponse {
     pub fn new(
         type_effect_id: &u8,
         type_effect: &TypeEffect,
-        attacking_type_name: &TypeName,
-        defending_type_name: &TypeName,
+        type_names: Vec<&TypeName>,
     ) -> TypeEffectResponse {
         TypeEffectResponse {
             id: type_effect_id.to_string(),
@@ -28,11 +27,11 @@ impl TypeEffectResponse {
             attributes: TypeEffectResponseAttributes {
                 attacking_type: TypeResponse::new(
                     &type_effect.attacking_type_id.value(),
-                    attacking_type_name,
+                    type_names[0],
                 ),
                 defending_type: TypeResponse::new(
                     &type_effect.defending_type_id.value(),
-                    defending_type_name,
+                    type_names[1],
                 ),
                 multiplier: type_effect.multiplier,
             },

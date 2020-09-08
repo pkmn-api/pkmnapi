@@ -29,16 +29,18 @@ impl Pkmnapi {
                 "/v1",
                 routes![
                     routes::access_tokens::post_access_token,
-                    routes::roms::post_rom,
-                    routes::roms::get_rom,
+                    routes::patches::get_patch,
+                    routes::patches::get_patches_raw,
+                    routes::patches::get_patches,
                     routes::roms::delete_rom,
-                    routes::types::get_type,
-                    routes::types::post_type,
+                    routes::roms::get_rom,
+                    routes::roms::post_rom,
+                    routes::stats::get_stats,
+                    routes::stats::post_stats,
                     routes::type_effects::get_type_effect,
                     routes::type_effects::post_type_effect,
-                    routes::patches::get_patches,
-                    routes::patches::get_patches_raw,
-                    routes::patches::get_patch
+                    routes::types::get_type,
+                    routes::types::post_type,
                 ],
             )
             .attach(AdHoc::on_response("Update Server Name", |_, res| {

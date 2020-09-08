@@ -11,6 +11,8 @@ pub enum ResponseError {
     RomResponseErrorInvalidRom(status::BadRequest<Json<RomResponseErrorInvalidRom>>),
     RomResponseErrorNoRom(status::Forbidden<Json<RomResponseErrorNoRom>>),
     RomResponseErrorRomExists(status::Forbidden<Json<RomResponseErrorRomExists>>),
+    StatsResponseError(status::NotFound<Json<StatsResponseError>>),
+    StatsResponseErrorInvalid(status::BadRequest<Json<StatsResponseErrorInvalid>>),
     TypeResponseError(status::NotFound<Json<TypeResponseError>>),
     TypeResponseErrorInvalid(status::BadRequest<Json<TypeResponseErrorInvalid>>),
     TypeEffectResponseError(status::NotFound<Json<TypeEffectResponseError>>),
@@ -33,6 +35,8 @@ pub enum ResponseErrorId {
     error_roms_invalid_rom,
     error_roms_no_rom,
     error_roms_rom_exists,
+    error_stats,
+    error_stats_invalid,
     error_types,
     error_types_invalid,
     error_type_effects,
@@ -274,6 +278,74 @@ pub struct RomResponseErrorRomExistsData {
 
 #[derive(Debug, Serialize)]
 pub struct RomResponseErrorRomExistsDataAttributes {
+    pub message: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct StatsResponseError {
+    pub data: StatsResponseErrorData,
+}
+
+impl StatsResponseError {
+    pub fn new(message: &String) -> ResponseError {
+        let response = StatsResponseError {
+            data: StatsResponseErrorData {
+                id: ResponseErrorId::error_stats,
+                _type: ResponseErrorType::errors,
+                attributes: StatsResponseErrorDataAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::StatsResponseError(status::NotFound(Json(response)))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct StatsResponseErrorData {
+    pub id: ResponseErrorId,
+    #[serde(rename = "type")]
+    pub _type: ResponseErrorType,
+    pub attributes: StatsResponseErrorDataAttributes,
+}
+
+#[derive(Debug, Serialize)]
+pub struct StatsResponseErrorDataAttributes {
+    pub message: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct StatsResponseErrorInvalid {
+    pub data: StatsResponseErrorInvalidData,
+}
+
+impl StatsResponseErrorInvalid {
+    pub fn new(message: &String) -> ResponseError {
+        let response = StatsResponseErrorInvalid {
+            data: StatsResponseErrorInvalidData {
+                id: ResponseErrorId::error_stats_invalid,
+                _type: ResponseErrorType::errors,
+                attributes: StatsResponseErrorInvalidDataAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::StatsResponseErrorInvalid(status::BadRequest(Some(Json(response))))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct StatsResponseErrorInvalidData {
+    pub id: ResponseErrorId,
+    #[serde(rename = "type")]
+    pub _type: ResponseErrorType,
+    pub attributes: StatsResponseErrorInvalidDataAttributes,
+}
+
+#[derive(Debug, Serialize)]
+pub struct StatsResponseErrorInvalidDataAttributes {
     pub message: String,
 }
 

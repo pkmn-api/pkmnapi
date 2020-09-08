@@ -6,17 +6,17 @@ use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
 
 use crate::guards::*;
-use crate::requests::type_effects::*;
+use crate::requests::stats::*;
 use crate::responses::errors::*;
-use crate::responses::type_effects::*;
+use crate::responses::stats::*;
 use crate::utils;
 
-#[get("/type_effects/<type_effect_id>")]
-pub fn get_type_effect(
+#[get("/stats/<pokedex_id>")]
+pub fn get_stats(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
-    type_effect_id: u8,
-) -> Result<Json<TypeEffectResponse>, ResponseError> {
+    pokedex_id: u8,
+) -> Result<Json<StatsResponse>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
@@ -24,43 +24,37 @@ pub fn get_type_effect(
 
     let db = utils::get_db_with_applied_patches(sql, &access_token)?;
 
-    let type_effect = match db.get_type_effect(type_effect_id) {
-        Ok(type_effect) => type_effect,
-        Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
+    let stats = match db.get_stats(pokedex_id) {
+        Ok(stats) => stats,
+        Err(e) => return Err(StatsResponseError::new(&e.to_string())),
     };
 
-    let old_type_effect = type_effect.clone();
+    let type_names: Result<Vec<TypeName>, _> = stats
+        .type_ids
+        .iter()
+        .map(|type_id| match db.get_type_name(type_id.value()) {
+            Ok(type_name) => Ok(type_name),
+            Err(e) => return Err(StatsResponseError::new(&e.to_string())),
+        })
+        .collect();
 
-    let attacking_type_name = match db.get_type_name(old_type_effect.attacking_type_id) {
-        Ok(attacking_type_name) => attacking_type_name,
-        Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
+    let type_names = match type_names {
+        Ok(type_names) => type_names,
+        Err(e) => return Err(e),
     };
 
-    let defending_type_name = match db.get_type_name(old_type_effect.defending_type_id) {
-        Ok(defending_type_name) => defending_type_name,
-        Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
-    };
-
-    let response = TypeEffectResponse::new(
-        &type_effect_id,
-        &type_effect,
-        vec![&attacking_type_name, &defending_type_name],
-    );
+    let response = StatsResponse::new(&pokedex_id, &stats, type_names);
 
     Ok(Json(response))
 }
 
-#[post(
-    "/type_effects/<type_effect_id>",
-    format = "application/json",
-    data = "<data>"
-)]
-pub fn post_type_effect(
+#[post("/stats/<pokedex_id>", format = "application/json", data = "<data>")]
+pub fn post_stats(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
-    data: Result<Json<TypeEffectRequest>, JsonError>,
-    type_effect_id: u8,
+    data: Result<Json<StatsRequest>, JsonError>,
+    pokedex_id: u8,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
@@ -70,10 +64,10 @@ pub fn post_type_effect(
     let data = match data {
         Ok(data) => data.into_inner(),
         Err(JsonError::Parse(_, e)) => {
-            return Err(TypeEffectResponseErrorInvalid::new(&e.to_string()));
+            return Err(StatsResponseErrorInvalid::new(&e.to_string()));
         }
         _ => {
-            return Err(TypeEffectResponseErrorInvalid::new(
+            return Err(StatsResponseErrorInvalid::new(
                 &"An unknown error occurred".to_string(),
             ));
         }
@@ -90,15 +84,25 @@ pub fn post_type_effect(
         Err(_) => return Err(RomResponseErrorInvalidRom::new()),
     };
 
-    let type_effect = TypeEffect {
-        attacking_type_id: TypeID::from(data.get_attacking_type_id().parse::<u8>().unwrap()),
-        defending_type_id: TypeID::from(data.get_defending_type_id().parse::<u8>().unwrap()),
-        multiplier: data.get_multiplier(),
+    let stats = Stats {
+        pokedex_id: PokedexID::from(pokedex_id),
+        base_hp: data.get_base_hp(),
+        base_attack: data.get_base_attack(),
+        base_defence: data.get_base_defence(),
+        base_speed: data.get_base_speed(),
+        base_special: data.get_base_special(),
+        type_ids: data
+            .get_type_ids()
+            .into_iter()
+            .map(|type_id| TypeID::from(type_id.parse::<u8>().unwrap()))
+            .collect(),
+        catch_rate: data.get_catch_rate(),
+        base_exp_yield: data.get_base_exp_yield(),
     };
 
-    let patch = match db.set_type_effect(type_effect_id, type_effect) {
+    let patch = match db.set_stats(pokedex_id, stats) {
         Ok(patch) => patch,
-        Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
+        Err(e) => return Err(StatsResponseError::new(&e.to_string())),
     };
 
     let patch_description = match patch_description {
@@ -113,7 +117,7 @@ pub fn post_type_effect(
         patch_description,
     ) {
         Ok(_) => {}
-        Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
+        Err(e) => return Err(StatsResponseError::new(&e.to_string())),
     };
 
     Ok(status::Accepted(Some(json!({}))))

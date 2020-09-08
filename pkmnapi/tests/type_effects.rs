@@ -40,6 +40,31 @@ fn get_type_effect_401() {
 }
 
 #[test]
+fn get_type_effect_404() {
+    let (client, access_token) = common::setup_with_access_token();
+
+    common::post_rom(&client, &access_token);
+
+    let request = client
+        .get("/v1/type_effects/200")
+        .header(common::auth_header(&access_token));
+
+    let mut response = request.dispatch();
+
+    assert_eq!(response.status(), Status::NotFound);
+    assert_eq!(response.content_type(), Some(ContentType::JSON));
+    assert_eq!(
+        response.body_string(),
+        Some(
+            r#"{"data":{"id":"error_type_effects","type":"errors","attributes":{"message":"Invalid ID: valid range is 0-81"}}}"#
+                .to_string()
+        )
+    );
+
+    common::teardown();
+}
+
+#[test]
 fn post_type_effect_202() {
     let (client, access_token) = common::setup_with_access_token();
 
