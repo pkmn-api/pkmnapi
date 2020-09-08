@@ -3,6 +3,7 @@ table! {
         id -> Text,
         user_id -> Text,
         data -> Binary,
+        description -> Nullable<Text>,
     }
 }
 

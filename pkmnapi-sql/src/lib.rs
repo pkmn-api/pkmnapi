@@ -619,7 +619,7 @@ impl PkmnapiSQL {
     /// # let (new_user, access_token) = sql.insert_user(&connection, &String::from("foo@bar.com")).unwrap();
     /// # let new_patch = sql.insert_patch(&connection, &access_token, &vec![0x01, 0x02, 0x03, 0x04]).unwrap();
     /// # let id = new_patch.id;
-    /// let patch = sql.select_patch_by_id(&connection, &id).unwrap();
+    /// let patch = sql.select_patch_by_id(&connection, &access_token, &id).unwrap().unwrap();
     ///
     /// assert_eq!(patch.id.len(), 32);
     /// assert_eq!(patch.data, vec![0x01, 0x02, 0x03, 0x04]);
@@ -628,14 +628,25 @@ impl PkmnapiSQL {
     pub fn select_patch_by_id(
         &self,
         connection: &SqlitePooledConnection,
+        access_token: &String,
         id: &String,
-    ) -> Result<Patch, diesel::result::Error> {
+    ) -> Result<Option<Patch>, diesel::result::Error> {
         use crate::schema::patches;
+        use crate::schema::users;
 
-        patches::table
+        let access_token_hash = utils::hmac(&access_token);
+
+        match users::table
+            .filter(users::access_token_hash.eq(access_token_hash))
+            .inner_join(patches::table)
             .filter(patches::id.eq(id))
             .select((patches::id, patches::data))
             .first::<Patch>(connection)
+        {
+            Ok(patch) => Ok(Some(patch)),
+            Err(diesel::result::Error::NotFound) => Ok(None),
+            Err(e) => Err(e),
+        }
     }
 
     /// Select rows in `patches` by access token
@@ -723,7 +734,11 @@ impl PkmnapiSQL {
             .values(&new_patch)
             .execute(connection)
         {
-            Ok(_) => self.select_patch_by_id(connection, &new_patch.id),
+            Ok(_) => match self.select_patch_by_id(connection, &access_token, &new_patch.id) {
+                Ok(Some(patch)) => Ok(patch),
+                Ok(None) => Err(diesel::result::Error::NotFound),
+                Err(e) => return Err(e),
+            },
             Err(e) => return Err(e),
         }
     }
