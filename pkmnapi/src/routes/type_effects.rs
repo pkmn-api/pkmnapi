@@ -59,6 +59,7 @@ pub fn get_type_effect(
 pub fn post_type_effect(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
+    patch_description: Result<PatchDescription, PatchDescriptionError>,
     data: Result<Json<TypeEffectRequest>, JsonError>,
     type_effect_id: u8,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
@@ -81,8 +82,8 @@ pub fn post_type_effect(
 
     let connection = sql.get_connection().unwrap();
     let rom_data_sql = match sql.select_user_rom_data_by_access_token(&connection, &access_token) {
-        Ok(rom_sql) => rom_sql,
-        Err(_) => return Err(RomResponseErrorNoRom::new()),
+        Ok(Some(rom_sql)) => rom_sql,
+        _ => return Err(RomResponseErrorNoRom::new()),
     };
 
     let db = match PkmnapiDB::new(&rom_data_sql.data) {
@@ -101,7 +102,17 @@ pub fn post_type_effect(
         Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
     };
 
-    match sql.insert_patch(&connection, &access_token, &patch.to_raw()) {
+    let patch_description = match patch_description {
+        Ok(patch_description) => patch_description.into_inner(),
+        Err(_) => None,
+    };
+
+    match sql.insert_patch(
+        &connection,
+        &access_token,
+        &patch.to_raw(),
+        patch_description,
+    ) {
         Ok(_) => {}
         Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
     };

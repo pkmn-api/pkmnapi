@@ -10,8 +10,8 @@ pub fn get_db_with_applied_patches(
 ) -> Result<PkmnapiDB, ResponseError> {
     let connection = sql.get_connection().unwrap();
     let rom_data_sql = match sql.select_user_rom_data_by_access_token(&connection, &access_token) {
-        Ok(rom_sql) => rom_sql,
-        Err(_) => return Err(RomResponseErrorNoRom::new()),
+        Ok(Some(rom_sql)) => rom_sql,
+        _ => return Err(RomResponseErrorNoRom::new()),
     };
 
     let patches = match sql.select_patches_by_access_token(&connection, &access_token) {

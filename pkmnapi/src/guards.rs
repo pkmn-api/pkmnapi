@@ -38,3 +38,35 @@ impl<'a, 'r> FromRequest<'a, 'r> for AccessToken {
         return Outcome::Success(access_token);
     }
 }
+
+#[derive(Debug, PartialEq)]
+pub struct PatchDescription(Option<String>);
+
+impl PatchDescription {
+    pub fn into_inner(self) -> Option<String> {
+        self.0
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub enum PatchDescriptionError {
+    Missing,
+}
+
+impl<'a, 'r> FromRequest<'a, 'r> for PatchDescription {
+    type Error = PatchDescriptionError;
+
+    fn from_request(request: &'a Request<'r>) -> request::Outcome<Self, Self::Error> {
+        let patch_descriptions: Vec<&'a str> =
+            request.headers().get("x-patch-description").collect();
+
+        let patch_description = match patch_descriptions.get(0) {
+            Some(patch_description) => Some(patch_description.to_string()),
+            None => None,
+        };
+
+        let patch_description = PatchDescription(patch_description);
+
+        return Outcome::Success(patch_description);
+    }
+}

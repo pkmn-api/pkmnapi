@@ -60,8 +60,8 @@ pub fn get_rom(
 
     let connection = sql.get_connection().unwrap();
     let rom_sql = match sql.select_user_rom_by_access_token(&connection, &access_token) {
-        Ok(rom_sql) => rom_sql,
-        Err(_) => return Err(RomResponseErrorNoRom::new()),
+        Ok(Some(rom_sql)) => rom_sql,
+        _ => return Err(RomResponseErrorNoRom::new()),
     };
 
     let response = RomResponse::new(&rom_sql);

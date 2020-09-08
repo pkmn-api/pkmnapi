@@ -39,7 +39,12 @@ impl PatchResponse {
         PatchResponse {
             id: patch.id.to_owned(),
             _type: PatchResponseType::patches,
-            attributes: PatchResponseAttributes {},
+            attributes: PatchResponseAttributes {
+                description: match &patch.description {
+                    Some(description) => Some(description.to_owned()),
+                    None => None,
+                },
+            },
             links: Links {
                 _self: "foo".to_string(),
             },
@@ -54,4 +59,7 @@ pub enum PatchResponseType {
 }
 
 #[derive(Debug, Serialize)]
-pub struct PatchResponseAttributes {}
+pub struct PatchResponseAttributes {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    description: Option<String>,
+}

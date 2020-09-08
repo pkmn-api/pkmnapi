@@ -7,6 +7,8 @@ use std::fs;
 use std::process::Command;
 
 pub fn setup() -> Client {
+    teardown();
+
     env::set_var("DATABASE_URL", "test.db");
     Command::new("diesel")
         .args(&[
@@ -81,5 +83,5 @@ pub fn assert_unauthorized(response: &mut Response) {
 }
 
 pub fn teardown() {
-    fs::remove_file("test.db").unwrap();
+    let _ = fs::remove_file("test.db");
 }
