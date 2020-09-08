@@ -29,6 +29,7 @@ impl Pkmnapi {
                 "/v1",
                 routes![
                     routes::access_tokens::post_access_token,
+                    routes::patches::delete_patch,
                     routes::patches::get_patch,
                     routes::patches::get_patches_raw,
                     routes::patches::get_patches,

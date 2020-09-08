@@ -1,5 +1,6 @@
 use pkmnapi_sql::*;
 use rocket::http::{ContentType, Header};
+use rocket::response::status;
 use rocket::response::Response;
 use rocket::State;
 use rocket_contrib::json::Json;
@@ -90,4 +91,24 @@ pub fn get_patch(
     let response = PatchResponse::new(&patch);
 
     Ok(Json(response))
+}
+
+#[delete("/patches/<patch_id>")]
+pub fn delete_patch(
+    sql: State<PkmnapiSQL>,
+    access_token: Result<AccessToken, AccessTokenError>,
+    patch_id: String,
+) -> Result<status::NoContent, ResponseError> {
+    let access_token = match access_token {
+        Ok(access_token) => access_token.into_inner(),
+        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
+    };
+
+    let connection = sql.get_connection().unwrap();
+    match sql.delete_patch_by_id(&connection, &access_token, &patch_id) {
+        Ok(_) => {}
+        Err(_) => return Err(RomResponseErrorNoRom::new()),
+    }
+
+    Ok(status::NoContent)
 }

@@ -206,3 +206,41 @@ fn get_patch_404() {
 
     common::teardown();
 }
+
+#[test]
+fn delete_patch_204() {
+    let (client, access_token) = common::setup_with_access_token();
+
+    common::post_rom(&client, &access_token);
+
+    client
+        .post("/v1/types/0")
+        .body(r#"{"data":{"type":"types","attributes":{"name":"BORING"}}}"#)
+        .header(ContentType::JSON)
+        .header(common::auth_header(&access_token))
+        .dispatch();
+
+    let request = client
+        .get("/v1/patches")
+        .header(common::auth_header(&access_token));
+
+    let mut response = request.dispatch();
+
+    assert_eq!(response.status(), Status::Ok);
+    assert_eq!(response.content_type(), Some(ContentType::JSON));
+
+    let body = response.body_string().unwrap();
+    let patch_id = (&body[16..48]).to_string();
+
+    let request = client
+        .delete(format!("/v1/patches/{}", patch_id))
+        .header(common::auth_header(&access_token));
+
+    let mut response = request.dispatch();
+
+    assert_eq!(response.status(), Status::NoContent);
+    assert_eq!(response.content_type(), None);
+    assert_eq!(response.body_string(), None);
+
+    common::teardown();
+}
