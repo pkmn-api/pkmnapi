@@ -22,7 +22,10 @@ fn post_access_token_201() {
 
     let headers = response.headers();
 
-    assert_eq!(headers.get("Location").next(), Some("foo"));
+    assert_eq!(
+        headers.get("Location").next(),
+        Some("http://localhost:8080/v1/access_tokens")
+    );
 
     common::teardown();
 }

@@ -1,6 +1,7 @@
 use pkmnapi_db::*;
 use pkmnapi_sql::*;
 use rocket::State;
+use std::env;
 
 use crate::responses::errors::*;
 
@@ -29,4 +30,24 @@ pub fn get_db_with_applied_patches(
     }
 
     Ok(db)
+}
+
+pub fn generate_url(route: &str, resource: Option<&String>) -> String {
+    let version = env::var("API_VERSION").unwrap_or("1".to_string());
+    let port = env::var("ROCKET_PORT").unwrap_or("80".to_string());
+    let protocol = match port.as_str() {
+        "433" => "https".to_string(),
+        _ => "http".to_string(),
+    };
+    let address = env::var("ROCKET_ADDRESS").unwrap_or("localhost".to_string());
+    let host = match address.as_str() {
+        "localhost" => format!("{}:{}", address, port),
+        _ => address,
+    };
+    let resource = match &resource {
+        Some(resource) => format!("/{}", resource),
+        None => "".to_string(),
+    };
+
+    format!("{}://{}/v{}/{}{}", protocol, host, version, route, resource)
 }

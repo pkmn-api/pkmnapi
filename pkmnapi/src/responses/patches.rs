@@ -2,6 +2,7 @@ use pkmnapi_sql::models::Patch;
 use serde::Serialize;
 
 use crate::responses::links::Links;
+use crate::utils;
 
 #[derive(Debug, Serialize)]
 pub struct PatchesResponse {
@@ -18,7 +19,7 @@ impl PatchesResponse {
                 .map(|patch| PatchResponse::new(patch))
                 .collect(),
             links: Links {
-                _self: "foo".to_string(),
+                _self: utils::generate_url("patches", None),
             },
         }
     }
@@ -46,7 +47,7 @@ impl PatchResponse {
                 },
             },
             links: Links {
-                _self: "foo".to_string(),
+                _self: utils::generate_url("patches", Some(&patch.id)),
             },
         }
     }

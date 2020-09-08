@@ -7,6 +7,7 @@ use validator;
 use crate::guards::*;
 use crate::requests::access_tokens::*;
 use crate::responses::errors::*;
+use crate::utils;
 
 #[post("/access_tokens", format = "application/json", data = "<data>")]
 pub fn post_access_token(
@@ -51,5 +52,8 @@ pub fn post_access_token(
     #[cfg(not(debug_assertions))]
     let response = json!({});
 
-    Ok(status::Created(String::from("foo"), Some(response)))
+    Ok(status::Created(
+        utils::generate_url("access_tokens", None),
+        Some(response),
+    ))
 }

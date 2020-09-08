@@ -90,7 +90,7 @@ pub fn post_type(
         &patch.to_raw(),
         patch_description,
     ) {
-        Ok(patch) => println!("{:?}", patch),
+        Ok(_) => {}
         Err(e) => return Err(TypeResponseError::new(&e.to_string())),
     };
 

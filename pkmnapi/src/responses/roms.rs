@@ -1,7 +1,9 @@
-use crate::responses::links::Links;
 use pkmnapi_sql::models::Rom;
 use serde::Serialize;
 use std::env;
+
+use crate::responses::links::Links;
+use crate::utils;
 
 #[derive(Debug, Serialize)]
 pub struct RomResponse {
@@ -30,7 +32,7 @@ impl RomResponse {
                 valid: valid_hashes.find(&rom.rom_data_id) != None,
             },
             links: Links {
-                _self: "foo".to_string(),
+                _self: utils::generate_url("roms", Some(&rom.id)),
             },
         }
     }

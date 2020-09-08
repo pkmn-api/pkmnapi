@@ -19,15 +19,18 @@ fn post_rom_201() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
 
     let body = response.body_string().unwrap();
-    let body_a = (&body[..6]).to_string();
-    let body_b = (&body[6..40]).to_string();
-    let body_c = (&body[40..]).to_string();
+    let body_a = (&body[..7]).to_string();
+    let body_b = (&body[7..39]).to_string();
+    let body_c = (&body[39..]).to_string();
 
-    assert_eq!(body_a, r#"{"id":"#);
-    assert_eq!(body_b.len(), 34);
+    assert_eq!(body_a, r#"{"id":""#);
+    assert_eq!(body_b.len(), 32);
     assert_eq!(
         body_c,
-        r#","type":"roms","attributes":{"name":"POKEMON RED","hash":"3d45c1ee9abd5738df46d2bdda8b57dc","valid":true},"links":{"self":"foo"}}"#
+        format!(
+            r#"","type":"roms","attributes":{{"name":"POKEMON RED","hash":"3d45c1ee9abd5738df46d2bdda8b57dc","valid":true}},"links":{{"self":"http://localhost:8080/v1/roms/{}"}}}}"#,
+            body_b
+        )
     );
 
     common::teardown();
@@ -105,15 +108,18 @@ fn get_rom_200() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
 
     let body = response.body_string().unwrap();
-    let body_a = (&body[..6]).to_string();
-    let body_b = (&body[6..40]).to_string();
-    let body_c = (&body[40..]).to_string();
+    let body_a = (&body[..7]).to_string();
+    let body_b = (&body[7..39]).to_string();
+    let body_c = (&body[39..]).to_string();
 
-    assert_eq!(body_a, r#"{"id":"#);
-    assert_eq!(body_b.len(), 34);
+    assert_eq!(body_a, r#"{"id":""#);
+    assert_eq!(body_b.len(), 32);
     assert_eq!(
         body_c,
-        r#","type":"roms","attributes":{"name":"POKEMON RED","hash":"3d45c1ee9abd5738df46d2bdda8b57dc","valid":true},"links":{"self":"foo"}}"#
+        format!(
+            r#"","type":"roms","attributes":{{"name":"POKEMON RED","hash":"3d45c1ee9abd5738df46d2bdda8b57dc","valid":true}},"links":{{"self":"http://localhost:8080/v1/roms/{}"}}}}"#,
+            body_b
+        )
     );
 
     common::teardown();

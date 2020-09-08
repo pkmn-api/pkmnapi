@@ -13,6 +13,7 @@ pub mod routes;
 pub mod utils;
 
 use pkmnapi_sql::*;
+use rocket::fairing::AdHoc;
 use rocket::Rocket;
 
 pub struct Pkmnapi {}
@@ -40,5 +41,8 @@ impl Pkmnapi {
                     routes::patches::get_patch
                 ],
             )
+            .attach(AdHoc::on_response("Update Server Name", |_, res| {
+                res.set_raw_header("Server", "pkmnapi");
+            }))
     }
 }

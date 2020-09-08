@@ -7,6 +7,7 @@ use rocket_contrib::json::Json;
 use crate::guards::*;
 use crate::responses::errors::*;
 use crate::responses::roms::*;
+use crate::utils;
 
 #[post("/roms", data = "<data>")]
 pub fn post_rom(
@@ -45,7 +46,10 @@ pub fn post_rom(
 
     let response = RomResponse::new(&rom_sql);
 
-    Ok(status::Created("foo".to_string(), Some(Json(response))))
+    Ok(status::Created(
+        utils::generate_url("roms", Some(&rom_sql.id)),
+        Some(Json(response)),
+    ))
 }
 
 #[get("/roms")]

@@ -3,6 +3,7 @@ use serde::Serialize;
 
 use crate::responses::links::Links;
 use crate::responses::types::TypeResponse;
+use crate::utils;
 
 #[derive(Debug, Serialize)]
 pub struct TypeEffectResponse {
@@ -22,7 +23,7 @@ impl TypeEffectResponse {
         defending_type_name: &TypeName,
     ) -> TypeEffectResponse {
         TypeEffectResponse {
-            id: format!("{}", type_effect_id),
+            id: type_effect_id.to_string(),
             _type: TypeEffectResponseType::type_effects,
             attributes: TypeEffectResponseAttributes {
                 attacking_type: TypeResponse::new(
@@ -36,7 +37,7 @@ impl TypeEffectResponse {
                 multiplier: type_effect.multiplier,
             },
             links: Links {
-                _self: "foo".to_string(),
+                _self: utils::generate_url("type_effects", Some(&type_effect_id.to_string())),
             },
         }
     }

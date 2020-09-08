@@ -19,7 +19,7 @@ fn get_type_200() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"id":"0","type":"types","attributes":{"name":"NORMAL"},"links":{"self":"foo"}}"#
+            r#"{"id":"0","type":"types","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/0"}}"#
                 .to_string()
         )
     );
@@ -68,7 +68,7 @@ fn post_type_202() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"id":"0","type":"types","attributes":{"name":"BORING"},"links":{"self":"foo"}}"#
+            r#"{"id":"0","type":"types","attributes":{"name":"BORING"},"links":{"self":"http://localhost:8080/v1/types/0"}}"#
                 .to_string()
         )
     );

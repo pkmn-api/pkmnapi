@@ -19,7 +19,7 @@ fn get_type_effect_200() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"id":"0","type":"type_effects","attributes":{"attacking_type":{"id":"21","type":"types","attributes":{"name":"WATER"},"links":{"self":"foo"}},"defending_type":{"id":"20","type":"types","attributes":{"name":"FIRE"},"links":{"self":"foo"}},"multiplier":2.0},"links":{"self":"foo"}}"#
+            r#"{"id":"0","type":"type_effects","attributes":{"attacking_type":{"id":"21","type":"types","attributes":{"name":"WATER"},"links":{"self":"http://localhost:8080/v1/types/21"}},"defending_type":{"id":"20","type":"types","attributes":{"name":"FIRE"},"links":{"self":"http://localhost:8080/v1/types/20"}},"multiplier":2.0},"links":{"self":"http://localhost:8080/v1/type_effects/0"}}"#
                 .to_string()
         )
     );
@@ -68,7 +68,7 @@ fn post_type_effect_202() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"id":"0","type":"type_effects","attributes":{"attacking_type":{"id":"0","type":"types","attributes":{"name":"NORMAL"},"links":{"self":"foo"}},"defending_type":{"id":"0","type":"types","attributes":{"name":"NORMAL"},"links":{"self":"foo"}},"multiplier":0.0},"links":{"self":"foo"}}"#
+            r#"{"id":"0","type":"type_effects","attributes":{"attacking_type":{"id":"0","type":"types","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/0"}},"defending_type":{"id":"0","type":"types","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/0"}},"multiplier":0.0},"links":{"self":"http://localhost:8080/v1/type_effects/0"}}"#
                 .to_string()
         )
     );

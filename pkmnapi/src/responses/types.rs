@@ -1,6 +1,8 @@
-use crate::responses::links::Links;
 use pkmnapi_db::types::TypeName;
 use serde::Serialize;
+
+use crate::responses::links::Links;
+use crate::utils;
 
 #[derive(Debug, Serialize)]
 pub struct TypeResponse {
@@ -15,13 +17,13 @@ impl TypeResponse {
     /// Create a new `TypeResponse`
     pub fn new(type_id: &u8, type_name: &TypeName) -> TypeResponse {
         TypeResponse {
-            id: format!("{}", type_id),
+            id: type_id.to_string(),
             _type: TypeResponseType::types,
             attributes: TypeResponseAttributes {
                 name: type_name.name.to_string(),
             },
             links: Links {
-                _self: "foo".to_string(),
+                _self: utils::generate_url("types", Some(&type_id.to_string())),
             },
         }
     }
