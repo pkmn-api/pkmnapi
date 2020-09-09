@@ -5,19 +5,13 @@
 //! use std::fs;
 //! # use std::fs::File;
 //! # use std::io::prelude::*;
-//! # let mut file = File::create("rom.db").unwrap();
-//! # let data: Vec<u8> = [
-//! #     vec![0x00; 0x134],
-//! #     "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(),
-//! #     vec![0x00; 0x012],
-//! # ].concat();
-//! # file.write_all(&data).unwrap();
+//! # use std::env;
+//! # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
 //!
-//! let rom = fs::read("rom.db").unwrap();
+//! let rom = fs::read(rom_path).unwrap();
 //! let header = Header::from(&rom).unwrap();
 //!
-//! assert_eq!(header.title, "GAMEBOYGAME");
-//! # fs::remove_file("rom.db");
+//! assert_eq!(header.title, "POKEMON RED");
 //! ```
 
 use byteorder::{BigEndian, ReadBytesExt};
@@ -56,19 +50,13 @@ impl Header {
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x134],
-    /// #     "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(),
-    /// #     vec![0x00; 0x012],
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let header = Header::from(&rom).unwrap();
     ///
-    /// assert_eq!(header.title, "GAMEBOYGAME");
-    /// # fs::remove_file("rom.db");
+    /// assert_eq!(header.title, "POKEMON RED");
     /// ```
     pub fn from(rom: &[u8]) -> Result<Header, String> {
         if rom.len() < 0x150 {
@@ -128,21 +116,13 @@ impl Header {
     /// use std::fs;
     /// # use std::fs::File;
     /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #   vec![0x00; 0x134],
-    /// #   "GAMEBOYGAME".chars().map(|c| c as u8).collect::<Vec<u8>>(),
-    /// #   vec![0x00; 0x00E],
-    /// #   vec![0xC9], // header checksum
-    /// #   vec![0x00; 0x003],
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let header = Header::from(&rom).unwrap();
     ///
     /// assert_eq!(header.verify_checksum(), true);
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn verify_checksum(&self) -> bool {
         let checksum = self.raw[0x034..=0x04C]

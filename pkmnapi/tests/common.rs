@@ -56,10 +56,8 @@ pub fn auth_header(access_token: &String) -> Header<'static> {
 #[allow(dead_code)]
 #[allow(non_snake_case)]
 pub fn load_rom() -> Vec<u8> {
-    let PKMN_ROM = match env::var("PKMN_ROM") {
-        Ok(PKMN_ROM) => PKMN_ROM,
-        Err(_) => panic!("Set the PKMN_ROM environment variable to point to the ROM location"),
-    };
+    let PKMN_ROM = env::var("PKMN_ROM")
+        .expect("Set the PKMN_ROM environment variable to point to the ROM location");
 
     fs::read(PKMN_ROM).unwrap()
 }

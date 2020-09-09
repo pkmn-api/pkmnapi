@@ -5,15 +5,11 @@
 //! ```
 //! use pkmnapi_db::*;
 //! use std::fs;
-//! # use std::fs::File;
-//! # use std::io::prelude::*;
-//! # let mut file = File::create("rom.db").unwrap();
-//! # let data = vec![0x00; 0x150];
-//! # file.write_all(&data).unwrap();
+//! # use std::env;
+//! # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
 //!
-//! let rom = fs::read("rom.db").unwrap();
+//! let rom = fs::read(rom_path).unwrap();
 //! let db = PkmnapiDB::new(&rom).unwrap();
-//! # fs::remove_file("rom.db");
 //! ```
 
 pub mod header;
@@ -40,15 +36,11 @@ const POKEMON_INTERNAL_MAX: usize = 190;
 /// ```
 /// use pkmnapi_db::*;
 /// use std::fs;
-/// # use std::fs::File;
-/// # use std::io::prelude::*;
-/// # let mut file = File::create("rom.db").unwrap();
-/// # let data = vec![0x00; 0x150];
-/// # file.write_all(&data).unwrap();
+/// # use std::env;
+/// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
 ///
-/// let rom = fs::read("rom.db").unwrap();
+/// let rom = fs::read(rom_path).unwrap();
 /// let db = PkmnapiDB::new(&rom).unwrap();
-/// # fs::remove_file("rom.db");
 /// ```
 #[derive(Debug)]
 pub struct PkmnapiDB {
@@ -65,15 +57,11 @@ impl PkmnapiDB {
     /// ```
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data = vec![0x00; 0x150];
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn new(rom: &Vec<u8>) -> Result<PkmnapiDB, String> {
         let hash = format!("{:x}", md5::compute(&rom));
@@ -93,17 +81,13 @@ impl PkmnapiDB {
     /// ```
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data = vec![0x00; 0x150];
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// assert_eq!(db.verify_checksum(), true);
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn verify_checksum(&self) -> bool {
         let rom = [&self.rom[..0x014E], &self.rom[0x0150..]].concat();
@@ -122,13 +106,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::patch::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data = vec![0x00; 0x150];
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db.generate_checksum();
@@ -138,10 +119,9 @@ impl PkmnapiDB {
     ///     Patch {
     ///         offset: 0x014E,
     ///         length: 0x02,
-    ///         data: vec![0x00, 0x00]
+    ///         data: vec![0x91, 0xE6]
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn generate_checksum(&self) -> Patch {
         let rom = [&self.rom[..0x014E], &self.rom[0x0150..]].concat();
@@ -161,17 +141,13 @@ impl PkmnapiDB {
     /// ```
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data = vec![0x00; 0x150];
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
-    /// assert_eq!(db.verify_hash("6923685781779ac0b69c77ec08ce0479"), true);
-    /// # fs::remove_file("rom.db");
+    /// assert_eq!(db.verify_hash("3d45c1ee9abd5738df46d2bdda8b57dc"), true);
     /// ```
     pub fn verify_hash<S: Into<String>>(&self, hash: S) -> bool {
         self.hash == hash.into()
@@ -185,23 +161,19 @@ impl PkmnapiDB {
     /// use pkmnapi_db::patch::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data = vec![0x00; 0x150];
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let mut db = PkmnapiDB::new(&rom).unwrap();
     ///
-    /// assert_eq!(db.rom[..4], [0x00, 0x00, 0x00, 0x00]);
+    /// assert_eq!(db.rom[..4], [0xFF, 0x00, 0x00, 0x00]);
     ///
     /// let patch = Patch::new(&0x00, &vec![0x13, 0x37]);
     ///
     /// db.apply_patch(patch);
     ///
     /// assert_eq!(db.rom[..4], [0x13, 0x37, 0x00, 0x00]);
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn apply_patch<S: Into<Patch>>(&mut self, patch: S) {
         let patch = patch.into();
@@ -223,29 +195,19 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x1C21E],
-    /// #     vec![0x91, 0x87, 0x98, 0x83, 0x8E, 0x8D, 0x50, 0x50, 0x50, 0x50],
-    /// #     vec![0x00; 0x24DFC],
-    /// #     vec![0x70],
-    /// #     vec![0x00; 0xBD]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let pokemon_name = PokemonName {
-    ///     name: ROMString::from("RHYDON"),
+    ///     name: ROMString::from("BULBASAUR"),
     /// };
     ///
     /// let pokedex_id = db.pokemon_name_to_pokedex_id(&pokemon_name).unwrap();
     ///
-    /// assert_eq!(pokedex_id, 112);
-    /// # fs::remove_file("rom.db");
+    /// assert_eq!(pokedex_id, 1);
     /// ```
     pub fn pokemon_name_to_pokedex_id(&self, pokemon_name: &PokemonName) -> Option<u8> {
         let offset_base = ROM_PAGE * 0x0E;
@@ -277,24 +239,16 @@ impl PkmnapiDB {
     /// ```
     /// use std::fs;
     /// use pkmnapi_db::*;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x41024],
-    /// #     vec![0x70, 0x73, 0x20, 0x23, 0x15, 0x64, 0x22, 0x50, 0x02, 0x67, 0x6C, 0x66, 0x58, 0x5E, 0x1D, 0x1F, 0x68, 0x6F, 0x83, 0x3B, 0x97],
-    /// #     vec![0x00; 0xA9]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let pokedex_id = 151;
     /// let internal_id = db.pokedex_id_to_internal_id(&pokedex_id).unwrap();
     ///
     /// assert_eq!(internal_id, 0x14);
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn pokedex_id_to_internal_id(&self, pokedex_id: &u8) -> Result<u8, String> {
         if pokedex_id < &1 {
@@ -322,23 +276,16 @@ impl PkmnapiDB {
     /// ```
     /// use std::fs;
     /// use pkmnapi_db::*;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x41024],
-    /// #     vec![0x70, 0x73, 0x20, 0x23, 0x15, 0x64, 0x22, 0x50, 0x02, 0x67, 0x6C, 0x66, 0x58, 0x5E, 0x1D, 0x1F, 0x68, 0x6F, 0x83, 0x3B, 0x97],
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let internal_id = 0x14;
     /// let pokedex_id = db.internal_id_to_pokedex_id(&internal_id).unwrap();
     ///
     /// assert_eq!(pokedex_id, 151);
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn internal_id_to_pokedex_id(&self, internal_id: &u8) -> Result<u8, String> {
         if internal_id >= &(POKEMON_INTERNAL_MAX as u8) {
@@ -360,18 +307,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x27DAE],
-    /// #     vec![0xB0, 0x7D],
-    /// #     vec![0x8D, 0x8E, 0x91, 0x8C, 0x80, 0x8B, 0x50],
-    /// #     vec![0x50; 0x03]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let type_name = db.get_type_name(&0).unwrap();
@@ -382,7 +321,6 @@ impl PkmnapiDB {
     ///         name: ROMString::from("NORMAL")
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn get_type_name(&self, type_id: &u8) -> Result<TypeName, String> {
         let offset_base = ROM_PAGE * 0x10;
@@ -419,18 +357,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x27DAE],
-    /// #     vec![0xB0, 0x7D],
-    /// #     vec![0x8D, 0x8E, 0x91, 0x8C, 0x80, 0x8B, 0x50],
-    /// #     vec![0x50; 0x03]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db
@@ -445,12 +375,11 @@ impl PkmnapiDB {
     /// assert_eq!(
     ///     patch,
     ///     Patch {
-    ///         offset: 0x27DB0,
+    ///         offset: 0x27DE4,
     ///         length: 0x06,
     ///         data: vec![0x81, 0x8E, 0x91, 0x88, 0x8D, 0x86]
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn set_type_name(&self, type_id: &u8, type_name: &TypeName) -> Result<Patch, String> {
         let old_type_name = self.get_type_name(type_id)?;
@@ -486,17 +415,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x3E474],
-    /// #     vec![0x01, 0x02, 0x14],
-    /// #     vec![0xFF]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let type_effect = db.get_type_effect(&0).unwrap();
@@ -504,12 +426,11 @@ impl PkmnapiDB {
     /// assert_eq!(
     ///     type_effect,
     ///     TypeEffect {
-    ///         attacking_type_id: 0x01,
-    ///         defending_type_id: 0x02,
+    ///         attacking_type_id: 0x15,
+    ///         defending_type_id: 0x14,
     ///         multiplier: 2.0
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn get_type_effect(&self, type_effect_id: &u8) -> Result<TypeEffect, String> {
         let offset_base = ROM_PAGE * 0x1F;
@@ -541,17 +462,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x3E474],
-    /// #     vec![0x01, 0x02, 0x14],
-    /// #     vec![0xFF]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db
@@ -573,7 +487,6 @@ impl PkmnapiDB {
     ///         data: vec![0x13, 0x37, 0x05]
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn set_type_effect(
         &self,
@@ -608,17 +521,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x383DE],
-    /// #     vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A],
-    /// #     vec![0x00; 0x12]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let type_effect = db.get_stats(&1).unwrap();
@@ -626,18 +532,17 @@ impl PkmnapiDB {
     /// assert_eq!(
     ///     type_effect,
     ///     Stats {
-    ///         pokedex_id: 0x01,
-    ///         base_hp: 0x02,
-    ///         base_attack: 0x03,
-    ///         base_defence: 0x04,
-    ///         base_speed: 0x05,
-    ///         base_special: 0x06,
-    ///         type_ids: vec![0x07, 0x08],
-    ///         catch_rate: 0x09,
-    ///         base_exp_yield: 0x0A
+    ///         pokedex_id: 1,
+    ///         base_hp: 45,
+    ///         base_attack: 49,
+    ///         base_defence: 49,
+    ///         base_speed: 45,
+    ///         base_special: 65,
+    ///         type_ids: vec![22, 3],
+    ///         catch_rate: 45,
+    ///         base_exp_yield: 64
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn get_stats(&self, pokedex_id: &u8) -> Result<Stats, String> {
         let _internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
@@ -666,17 +571,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x383DE],
-    /// #     vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A],
-    /// #     vec![0x00; 0x12]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db
@@ -704,7 +602,6 @@ impl PkmnapiDB {
     ///         data: vec![0x01, 0x42, 0x13, 0x37, 0x13, 0x37, 0x13, 0x37, 0x13, 0x37]
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn set_stats(&self, pokedex_id: &u8, stats: &Stats) -> Result<Patch, String> {
         let _internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
@@ -726,30 +623,20 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x1C21E],
-    /// #     vec![0x91, 0x87, 0x98, 0x83, 0x8E, 0x8D, 0x50, 0x50, 0x50, 0x50],
-    /// #     vec![0x00; 0x24DFC],
-    /// #     vec![0x70],
-    /// #     vec![0x00; 0xBD]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
-    /// let pokemon_name = db.get_pokemon_name(&112).unwrap();
+    /// let pokemon_name = db.get_pokemon_name(&1).unwrap();
     ///
     /// assert_eq!(
     ///     pokemon_name,
     ///     PokemonName {
-    ///         name: ROMString::from("RHYDON")
+    ///         name: ROMString::from("BULBASAUR")
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn get_pokemon_name(&self, pokedex_id: &u8) -> Result<PokemonName, String> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
@@ -772,24 +659,15 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x1C21E],
-    /// #     vec![0x91, 0x87, 0x98, 0x83, 0x8E, 0x8D, 0x50, 0x50, 0x50, 0x50],
-    /// #     vec![0x00; 0x24DFC],
-    /// #     vec![0x70],
-    /// #     vec![0x00; 0xBD]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db
     ///     .set_pokemon_name(
-    ///         &112,
+    ///         &1,
     ///         &PokemonName {
     ///             name: ROMString::from("ABC"),
     ///         },
@@ -799,12 +677,11 @@ impl PkmnapiDB {
     /// assert_eq!(
     ///     patch,
     ///     Patch {
-    ///         offset: 0x1C21E,
+    ///         offset: 0x1C80E,
     ///         length: 0x0A,
     ///         data: vec![0x80, 0x81, 0x82, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50, 0x50]
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn set_pokemon_name(
         &self,
@@ -832,16 +709,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x38000],
-    /// #     vec![0x01, 0x00, 0x28, 0x00, 0xFF, 0x23],
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let move_stats = db.get_move_stats(&1).unwrap();
@@ -857,7 +728,6 @@ impl PkmnapiDB {
     ///         pp: 0x23
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn get_move_stats(&self, move_id: &u8) -> Result<MoveStats, String> {
         if move_id < &1 {
@@ -881,16 +751,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x38000],
-    /// #     vec![0x01, 0x00, 0x28, 0x00, 0xFF, 0x23],
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db
@@ -915,7 +779,6 @@ impl PkmnapiDB {
     ///         data: vec![0x01, 0x00, 0xFF, 0x01, 0x00, 0xFF]
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn set_move_stats(&self, move_id: &u8, move_stats: &MoveStats) -> Result<Patch, String> {
         if move_id < &1 {
@@ -939,16 +802,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0xB0000],
-    /// #     vec![0x8F, 0x8E, 0x94, 0x8D, 0x83, 0x50, 0x8A, 0x80, 0x91, 0x80, 0x93, 0x84, 0x7F]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let move_name = db.get_move_name(&1).unwrap();
@@ -959,7 +816,6 @@ impl PkmnapiDB {
     ///         name: ROMString::from("POUND")
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn get_move_name(&self, move_id: &u8) -> Result<MoveName, String> {
         if move_id < &1 {
@@ -1012,16 +868,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0xB0000],
-    /// #     vec![0x8F, 0x8E, 0x94, 0x8D, 0x83, 0x50, 0x8A, 0x80, 0x91, 0x80, 0x93, 0x84, 0x7F]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db
@@ -1041,7 +891,6 @@ impl PkmnapiDB {
     ///         data: vec![0x80, 0x81, 0x82, 0x83, 0x084]
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn set_move_name(&self, move_id: &u8, move_name: &MoveName) -> Result<Patch, String> {
         let old_move_name = self.get_move_name(move_id)?;
@@ -1102,22 +951,15 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x3052],
-    /// #     vec![0x0F, 0x13, 0x39, 0x46, 0x94, 0xFF]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let hm = db.get_hm(&1).unwrap();
     ///
     /// assert_eq!(hm, HM { move_id: 0x0F });
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn get_hm(&self, hm_id: &u8) -> Result<HM, String> {
         let offset_base = ROM_PAGE * 0x01;
@@ -1148,16 +990,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x3052],
-    /// #     vec![0x0F, 0x13, 0x39, 0x46, 0x94, 0xFF]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db.set_hm(&1, &HM { move_id: 0x42 }).unwrap();
@@ -1170,7 +1006,6 @@ impl PkmnapiDB {
     ///         data: vec![0x42]
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn set_hm(&self, hm_id: &u8, hm: &HM) -> Result<Patch, String> {
         let offset_base = ROM_PAGE * 0x01;
@@ -1198,22 +1033,15 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x13773],
-    /// #     vec![0x05]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let tm = db.get_tm(&1).unwrap();
     ///
     /// assert_eq!(tm, TM { move_id: 0x05 });
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn get_tm(&self, tm_id: &u8) -> Result<TM, String> {
         let offset_base = ROM_PAGE * 0x09;
@@ -1241,16 +1069,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x13773],
-    /// #     vec![0x05]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db.set_tm(&1, &TM { move_id: 0x42 }).unwrap();
@@ -1263,7 +1085,6 @@ impl PkmnapiDB {
     ///         data: vec![0x42]
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn set_tm(&self, tm_id: &u8, tm: &TM) -> Result<Patch, String> {
         let offset_base = ROM_PAGE * 0x09;
@@ -1288,22 +1109,15 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x7BFA7],
-    /// #     vec![0x32]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let tm_price = db.get_tm_price(&1).unwrap();
     ///
     /// assert_eq!(tm_price, TMPrice { value: 3000 });
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn get_tm_price(&self, tm_id: &u8) -> Result<TMPrice, String> {
         let offset_base = ROM_PAGE * 0x3D;
@@ -1338,16 +1152,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x7BFA7],
-    /// #     vec![0x32]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db.set_tm_price(&1, &TMPrice { value: 9000 }).unwrap();
@@ -1360,7 +1168,6 @@ impl PkmnapiDB {
     ///         data: vec![0x92]
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn set_tm_price(&self, tm_id: &u8, tm_price: &TMPrice) -> Result<Patch, String> {
         let offset_base = ROM_PAGE * 0x3D;
@@ -1393,31 +1200,19 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x4047E],
-    /// #     vec![0xFA, 0x45],
-    /// #     vec![0x00; 0x17A],
-    /// #     vec![0x83, 0x91, 0x88, 0x8B, 0x8B, 0x50, 0x06, 0x03, 0x5A, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00],
-    /// #     vec![0x00; 0xA1B],
-    /// #     vec![0x70],
-    /// #     vec![0x00; 0xBE]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
-    /// let pokedex_entry = db.get_pokedex_entry(&112).unwrap();
+    /// let pokedex_entry = db.get_pokedex_entry(&1).unwrap();
     ///
     /// assert_eq!(pokedex_entry, PokedexEntry {
-    ///     species: ROMString::from("DRILL"),
-    ///     height: 75,
-    ///     weight: 2650
+    ///     species: ROMString::from("SEED"),
+    ///     height: 28,
+    ///     weight: 150
     /// });
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn get_pokedex_entry(&self, pokedex_id: &u8) -> Result<PokedexEntry, String> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
@@ -1446,25 +1241,14 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x4047E],
-    /// #     vec![0xFA, 0x45],
-    /// #     vec![0x00; 0x17A],
-    /// #     vec![0x83, 0x91, 0x88, 0x8B, 0x8B, 0x50, 0x06, 0x03, 0x5A, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00],
-    /// #     vec![0x00; 0xA1B],
-    /// #     vec![0x70],
-    /// #     vec![0x00; 0xBE]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db
-    ///     .set_pokedex_entry(&112, &PokedexEntry {
+    ///     .set_pokedex_entry(&1, &PokedexEntry {
     ///         species: ROMString::from("BOBBY"),
     ///         height: 100,
     ///         weight: 300
@@ -1474,12 +1258,11 @@ impl PkmnapiDB {
     /// assert_eq!(
     ///     patch,
     ///     Patch {
-    ///         offset: 0x405FA,
+    ///         offset: 0x40E33,
     ///         length: 0x0A,
     ///         data: vec![0x81, 0x8E, 0x81, 0x81, 0x98, 0x50, 0x08, 0x04, 0x2C, 0x01]
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn set_pokedex_entry(
         &self,
@@ -1509,31 +1292,17 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x4047E],
-    /// #     vec![0xFA, 0x45],
-    /// #     vec![0x00; 0x17A],
-    /// #     vec![0x83, 0x91, 0x88, 0x8B, 0x8B, 0x50, 0x06, 0x03, 0x5A, 0x0A, 0x17, 0x00, 0x40, 0x2B, 0x50],
-    /// #     vec![0x00; 0xA1B],
-    /// #     vec![0x70],
-    /// #     vec![0x00; 0xBE],
-    /// #     vec![0x00; 0x6AF1D],
-    /// #     vec![0x00, 0x8F, 0xB1, 0xAE, 0xB3, 0xA4, 0xA2, 0xB3, 0xA4, 0xA3, 0x5F]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
-    /// let pokedex_entry_text = db.get_pokedex_entry_text(&112).unwrap();
+    /// let pokedex_entry_text = db.get_pokedex_entry_text(&1).unwrap();
     ///
     /// assert_eq!(pokedex_entry_text, PokedexEntryText {
-    ///     text: ROMString::from("Protected"),
+    ///     text: ROMString::from("A strange seed was\nplanted on its\nback at birth.¶The plant sprouts\nand grows with\nthis #MON"),
     /// });
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn get_pokedex_entry_text(&self, pokedex_id: &u8) -> Result<PokedexEntryText, String> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
@@ -1571,27 +1340,14 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x4047E],
-    /// #     vec![0xFA, 0x45],
-    /// #     vec![0x00; 0x17A],
-    /// #     vec![0x83, 0x91, 0x88, 0x8B, 0x8B, 0x50, 0x06, 0x03, 0x5A, 0x0A, 0x17, 0x00, 0x40, 0x2B, 0x50],
-    /// #     vec![0x00; 0xA1B],
-    /// #     vec![0x70],
-    /// #     vec![0x00; 0xBE],
-    /// #     vec![0x00; 0x6AF1D],
-    /// #     vec![0x00, 0x8F, 0xB1, 0xAE, 0xB3, 0xA4, 0xA2, 0xB3, 0xA4, 0xA3, 0x5F]
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db
-    ///     .set_pokedex_entry_text(&112, &PokedexEntryText {
+    ///     .set_pokedex_entry_text(&1, &PokedexEntryText {
     ///         text: ROMString::from("ABCDE"),
     ///     })
     ///     .unwrap();
@@ -1599,12 +1355,11 @@ impl PkmnapiDB {
     /// assert_eq!(
     ///     patch,
     ///     Patch {
-    ///         offset: 0xAC000,
+    ///         offset: 0xAEE81,
     ///         length: 0x07,
     ///         data: vec![0x00, 0x80, 0x81, 0x82, 0x83, 0x84, 0x5F]
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn set_pokedex_entry_text(
         &self,
@@ -1705,16 +1460,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x399FF],
-    /// #     vec![0x98, 0x8E, 0x94, 0x8D, 0x86, 0x92, 0x93, 0x84, 0x91, 0x50, 0x50, 0x50, 0x50],
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let trainer_name = db.get_trainer_name(&0).unwrap();
@@ -1725,7 +1474,6 @@ impl PkmnapiDB {
     ///         name: ROMString::from("YOUNGSTER")
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn get_trainer_name(&self, trainer_id: &u8) -> Result<TrainerName, String> {
         let offset_base = (ROM_PAGE * 0x1C) + 0x19FF;
@@ -1774,16 +1522,10 @@ impl PkmnapiDB {
     /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
-    /// # let mut file = File::create("rom.db").unwrap();
-    /// # let data: Vec<u8> = [
-    /// #     vec![0x00; 0x399FF],
-    /// #     vec![0x98, 0x8E, 0x94, 0x8D, 0x86, 0x92, 0x93, 0x84, 0x91, 0x50, 0x50, 0x50, 0x50],
-    /// # ].concat();
-    /// # file.write_all(&data).unwrap();
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
-    /// let rom = fs::read("rom.db").unwrap();
+    /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom).unwrap();
     ///
     /// let patch = db
@@ -1803,7 +1545,6 @@ impl PkmnapiDB {
     ///         data: vec![0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88]
     ///     }
     /// );
-    /// # fs::remove_file("rom.db");
     /// ```
     pub fn set_trainer_name(
         &self,
