@@ -65,3 +65,18 @@ pub fn hmac(value: &String) -> String {
 
     hex::encode(result.into_bytes())
 }
+
+/// Generate hash string
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi_sql::utils;
+///
+/// let hash = utils::hash(&"bar".to_owned().into_bytes());
+///
+/// assert_eq!(hash, "37b51d194a7513e45b56f6524f2d51f2");
+/// ```
+pub fn hash(value: &Vec<u8>) -> String {
+    format!("{:02x}", md5::compute(value))
+}

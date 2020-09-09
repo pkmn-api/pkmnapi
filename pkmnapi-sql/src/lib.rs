@@ -189,6 +189,7 @@ impl PkmnapiSQL {
     /// let rom = sql.select_rom_by_id(&connection, &id).unwrap().unwrap();
     ///
     /// assert_eq!(rom.id.len(), 32);
+    /// assert_eq!(rom.date_create.len(), 32);
     /// assert_eq!(rom.name, String::from("foo"));
     /// assert_eq!(rom.rom_data_id.len(), 32);
     /// # fs::remove_file("test.db");
@@ -204,7 +205,7 @@ impl PkmnapiSQL {
         match roms::table
             .filter(roms::id.eq(id))
             .inner_join(rom_data::table)
-            .select((roms::id, roms::name, rom_data::id))
+            .select((roms::id, roms::date_create, roms::name, rom_data::id))
             .first::<Rom>(connection)
         {
             Ok(rom) => Ok(Some(rom)),
@@ -453,6 +454,7 @@ impl PkmnapiSQL {
     /// let rom = sql.select_user_rom_by_access_token(&connection, &access_token).unwrap().unwrap();
     ///
     /// assert_eq!(rom.id.len(), 32);
+    /// assert_eq!(rom.date_create.len(), 32);
     /// assert_eq!(rom.name, String::from("foo"));
     /// assert_eq!(rom.rom_data_id.len(), 32);
     /// # fs::remove_file("test.db");
@@ -470,7 +472,7 @@ impl PkmnapiSQL {
         match users::table
             .filter(users::access_token_hash.eq(access_token_hash))
             .inner_join(roms::table)
-            .select((roms::id, roms::name, roms::rom_data_id))
+            .select((roms::id, roms::date_create, roms::name, roms::rom_data_id))
             .first::<Rom>(connection)
         {
             Ok(rom) => Ok(Some(rom)),
@@ -670,7 +672,9 @@ impl PkmnapiSQL {
     /// let patch = sql.select_patch_by_id(&connection, &access_token, &id).unwrap().unwrap();
     ///
     /// assert_eq!(patch.id.len(), 32);
+    /// assert_eq!(patch.date_create.len(), 32);
     /// assert_eq!(patch.data, vec![0x01, 0x02, 0x03, 0x04]);
+    /// assert_eq!(patch.description, None);
     /// # fs::remove_file("test.db");
     /// ```
     pub fn select_patch_by_id(
@@ -688,7 +692,12 @@ impl PkmnapiSQL {
             .filter(users::access_token_hash.eq(access_token_hash))
             .inner_join(patches::table)
             .filter(patches::id.eq(id))
-            .select((patches::id, patches::data, patches::description))
+            .select((
+                patches::id,
+                patches::date_create,
+                patches::data,
+                patches::description,
+            ))
             .first::<Patch>(connection)
         {
             Ok(patch) => Ok(Some(patch)),
@@ -718,7 +727,9 @@ impl PkmnapiSQL {
     /// let patch = &patches[0];
     ///
     /// assert_eq!(patch.id.len(), 32);
+    /// assert_eq!(patch.date_create.len(), 32);
     /// assert_eq!(patch.data, vec![0x01, 0x02, 0x03, 0x04]);
+    /// assert_eq!(patch.description, None);
     /// # fs::remove_file("test.db");
     /// ```
     pub fn select_patches_by_access_token(
@@ -734,7 +745,12 @@ impl PkmnapiSQL {
         users::table
             .filter(users::access_token_hash.eq(access_token_hash))
             .inner_join(patches::table)
-            .select((patches::id, patches::data, patches::description))
+            .select((
+                patches::id,
+                patches::date_create,
+                patches::data,
+                patches::description,
+            ))
             .get_results::<Patch>(connection)
     }
 

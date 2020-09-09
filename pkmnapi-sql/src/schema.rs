@@ -1,6 +1,7 @@
 table! {
     patches (id) {
         id -> Text,
+        date_create -> Text,
         user_id -> Text,
         data -> Binary,
         description -> Nullable<Text>,
@@ -18,6 +19,7 @@ table! {
 table! {
     roms (id) {
         id -> Text,
+        date_create -> Text,
         name -> Text,
         rom_data_id -> Text,
     }

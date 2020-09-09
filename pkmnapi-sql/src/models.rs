@@ -1,8 +1,9 @@
 //! Models module
 
+use chrono::{prelude::*, Duration};
+
 use crate::schema::{patches, rom_data, roms, users};
 use crate::utils;
-use chrono::{prelude::*, Duration};
 
 /// Queryable struct of data from `rom_data`
 #[derive(Debug, PartialEq, Queryable)]
@@ -39,7 +40,7 @@ impl NewRomData {
     /// assert_eq!(new_rom_data.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// ```
     pub fn new(name: &String, data: &Vec<u8>) -> Self {
-        let id = format!("{:02x}", md5::compute(&data));
+        let id = utils::hash(&data);
 
         NewRomData {
             id,
@@ -53,6 +54,7 @@ impl NewRomData {
 #[derive(Debug, Queryable)]
 pub struct Rom {
     pub id: String,
+    pub date_create: String,
     pub name: String,
     pub rom_data_id: String,
 }
@@ -62,6 +64,7 @@ pub struct Rom {
 #[table_name = "roms"]
 pub struct NewRom {
     pub id: String,
+    pub date_create: String,
     pub name: String,
     pub rom_data_id: String,
 }
@@ -77,14 +80,17 @@ impl NewRom {
     /// let new_rom = NewRom::new(&String::from("foo"), &String::from("bar"));
     ///
     /// assert_eq!(new_rom.id.len(), 32);
+    /// assert_eq!(new_rom.date_create.len(), 32);
     /// assert_eq!(new_rom.name, String::from("foo"));
     /// assert_eq!(new_rom.rom_data_id, String::from("bar"));
     /// ```
     pub fn new(name: &String, rom_data_id: &String) -> Self {
         let id = utils::random_id(32);
+        let date_create = Utc::now().to_rfc3339();
 
         NewRom {
             id,
+            date_create,
             name: name.to_string(),
             rom_data_id: rom_data_id.to_string(),
         }
@@ -159,6 +165,7 @@ impl NewUser {
 #[derive(Debug, Queryable, PartialEq)]
 pub struct Patch {
     pub id: String,
+    pub date_create: String,
     pub data: Vec<u8>,
     pub description: Option<String>,
 }
@@ -168,6 +175,7 @@ pub struct Patch {
 #[table_name = "patches"]
 pub struct NewPatch {
     pub id: String,
+    pub date_create: String,
     pub user_id: String,
     pub data: Vec<u8>,
     pub description: Option<String>,
@@ -184,15 +192,18 @@ impl NewPatch {
     /// let new_patch = NewPatch::new(&String::from("foo"), &vec![0x01, 0x02, 0x03, 0x04], None);
     ///
     /// assert_eq!(new_patch.id.len(), 32);
+    /// assert_eq!(new_patch.date_create.len(), 32);
     /// assert_eq!(new_patch.user_id, String::from("foo"));
     /// assert_eq!(new_patch.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(new_patch.description, None);
     /// ```
     pub fn new(user_id: &String, data: &Vec<u8>, description: Option<String>) -> Self {
         let id = utils::random_id(32);
+        let date_create = Utc::now().to_rfc3339();
 
         NewPatch {
             id,
+            date_create,
             user_id: user_id.to_string(),
             data: data.to_vec(),
             description,
