@@ -1,7 +1,10 @@
 pub mod access_tokens;
+pub mod moves;
 pub mod patches;
+pub mod pokemon_pics;
 pub mod roms;
 pub mod stats;
 pub mod status;
+pub mod tms;
 pub mod type_effects;
 pub mod types;

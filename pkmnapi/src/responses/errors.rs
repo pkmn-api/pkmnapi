@@ -4,19 +4,24 @@ use serde::Serialize;
 
 #[derive(Debug, Responder)]
 pub enum ResponseError {
+    AccessTokenErrorForbidden(status::Forbidden<Json<AccessTokenErrorForbidden>>),
     AccessTokenErrorInvalid(status::BadRequest<Json<AccessTokenErrorInvalid>>),
     AccessTokenErrorUnauthorized(status::Unauthorized<Json<AccessTokenErrorUnauthorized>>),
-    AccessTokenErrorForbidden(status::Forbidden<Json<AccessTokenErrorForbidden>>),
+    MoveResponseError(status::NotFound<Json<MoveResponseError>>),
+    MoveResponseErrorInvalid(status::BadRequest<Json<MoveResponseErrorInvalid>>),
     PatchResponseError(status::NotFound<Json<PatchResponseError>>),
+    PokemonPicResponseError(status::NotFound<Json<PokemonPicResponseError>>),
     RomResponseErrorInvalidRom(status::BadRequest<Json<RomResponseErrorInvalidRom>>),
     RomResponseErrorNoRom(status::Forbidden<Json<RomResponseErrorNoRom>>),
     RomResponseErrorRomExists(status::Forbidden<Json<RomResponseErrorRomExists>>),
     StatsResponseError(status::NotFound<Json<StatsResponseError>>),
     StatsResponseErrorInvalid(status::BadRequest<Json<StatsResponseErrorInvalid>>),
-    TypeResponseError(status::NotFound<Json<TypeResponseError>>),
-    TypeResponseErrorInvalid(status::BadRequest<Json<TypeResponseErrorInvalid>>),
+    TMResponseError(status::NotFound<Json<TMResponseError>>),
+    TMResponseErrorInvalid(status::BadRequest<Json<TMResponseErrorInvalid>>),
     TypeEffectResponseError(status::NotFound<Json<TypeEffectResponseError>>),
     TypeEffectResponseErrorInvalid(status::BadRequest<Json<TypeEffectResponseErrorInvalid>>),
+    TypeResponseError(status::NotFound<Json<TypeResponseError>>),
+    TypeResponseErrorInvalid(status::BadRequest<Json<TypeResponseErrorInvalid>>),
 }
 
 #[derive(Debug, Serialize)]
@@ -28,19 +33,24 @@ pub enum ResponseErrorType {
 #[derive(Debug, Serialize)]
 #[allow(non_camel_case_types)]
 pub enum ResponseErrorId {
+    error_access_tokens_forbidden,
     error_access_tokens_invalid,
     error_access_tokens_unauthorized,
-    error_access_tokens_forbidden,
+    error_moves_invalid,
+    error_moves,
     error_patches,
+    error_pokemon_pics,
     error_roms_invalid_rom,
     error_roms_no_rom,
     error_roms_rom_exists,
-    error_stats,
     error_stats_invalid,
-    error_types,
-    error_types_invalid,
-    error_type_effects,
+    error_stats,
+    error_tms_invalid,
+    error_tms,
     error_type_effects_invalid,
+    error_type_effects,
+    error_types_invalid,
+    error_types,
 }
 
 #[derive(Debug, Serialize)]
@@ -146,6 +156,74 @@ pub struct AccessTokenErrorForbiddenDataAttributes {
 }
 
 #[derive(Debug, Serialize)]
+pub struct MoveResponseError {
+    pub data: MoveResponseErrorData,
+}
+
+impl MoveResponseError {
+    pub fn new(message: &String) -> ResponseError {
+        let response = MoveResponseError {
+            data: MoveResponseErrorData {
+                id: ResponseErrorId::error_moves,
+                _type: ResponseErrorType::errors,
+                attributes: MoveResponseErrorDataAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::MoveResponseError(status::NotFound(Json(response)))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct MoveResponseErrorData {
+    pub id: ResponseErrorId,
+    #[serde(rename = "type")]
+    pub _type: ResponseErrorType,
+    pub attributes: MoveResponseErrorDataAttributes,
+}
+
+#[derive(Debug, Serialize)]
+pub struct MoveResponseErrorDataAttributes {
+    pub message: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct MoveResponseErrorInvalid {
+    pub data: MoveResponseErrorInvalidData,
+}
+
+impl MoveResponseErrorInvalid {
+    pub fn new(message: &String) -> ResponseError {
+        let response = MoveResponseErrorInvalid {
+            data: MoveResponseErrorInvalidData {
+                id: ResponseErrorId::error_moves_invalid,
+                _type: ResponseErrorType::errors,
+                attributes: MoveResponseErrorInvalidDataAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::MoveResponseErrorInvalid(status::BadRequest(Some(Json(response))))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct MoveResponseErrorInvalidData {
+    pub id: ResponseErrorId,
+    #[serde(rename = "type")]
+    pub _type: ResponseErrorType,
+    pub attributes: MoveResponseErrorInvalidDataAttributes,
+}
+
+#[derive(Debug, Serialize)]
+pub struct MoveResponseErrorInvalidDataAttributes {
+    pub message: String,
+}
+
+#[derive(Debug, Serialize)]
 pub struct PatchResponseError {
     pub data: PatchResponseErrorData,
 }
@@ -176,6 +254,40 @@ pub struct PatchResponseErrorData {
 
 #[derive(Debug, Serialize)]
 pub struct PatchResponseErrorDataAttributes {
+    pub message: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PokemonPicResponseError {
+    pub data: PokemonPicResponseErrorData,
+}
+
+impl PokemonPicResponseError {
+    pub fn new(message: &String) -> ResponseError {
+        let response = PokemonPicResponseError {
+            data: PokemonPicResponseErrorData {
+                id: ResponseErrorId::error_pokemon_pics,
+                _type: ResponseErrorType::errors,
+                attributes: PokemonPicResponseErrorDataAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::PokemonPicResponseError(status::NotFound(Json(response)))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct PokemonPicResponseErrorData {
+    pub id: ResponseErrorId,
+    #[serde(rename = "type")]
+    pub _type: ResponseErrorType,
+    pub attributes: PokemonPicResponseErrorDataAttributes,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PokemonPicResponseErrorDataAttributes {
     pub message: String,
 }
 
@@ -346,6 +458,74 @@ pub struct StatsResponseErrorInvalidData {
 
 #[derive(Debug, Serialize)]
 pub struct StatsResponseErrorInvalidDataAttributes {
+    pub message: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct TMResponseError {
+    pub data: TMResponseErrorData,
+}
+
+impl TMResponseError {
+    pub fn new(message: &String) -> ResponseError {
+        let response = TMResponseError {
+            data: TMResponseErrorData {
+                id: ResponseErrorId::error_tms,
+                _type: ResponseErrorType::errors,
+                attributes: TMResponseErrorDataAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::TMResponseError(status::NotFound(Json(response)))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct TMResponseErrorData {
+    pub id: ResponseErrorId,
+    #[serde(rename = "type")]
+    pub _type: ResponseErrorType,
+    pub attributes: TMResponseErrorDataAttributes,
+}
+
+#[derive(Debug, Serialize)]
+pub struct TMResponseErrorDataAttributes {
+    pub message: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct TMResponseErrorInvalid {
+    pub data: TMResponseErrorInvalidData,
+}
+
+impl TMResponseErrorInvalid {
+    pub fn new(message: &String) -> ResponseError {
+        let response = TMResponseErrorInvalid {
+            data: TMResponseErrorInvalidData {
+                id: ResponseErrorId::error_tms_invalid,
+                _type: ResponseErrorType::errors,
+                attributes: TMResponseErrorInvalidDataAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::TMResponseErrorInvalid(status::BadRequest(Some(Json(response))))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct TMResponseErrorInvalidData {
+    pub id: ResponseErrorId,
+    #[serde(rename = "type")]
+    pub _type: ResponseErrorType,
+    pub attributes: TMResponseErrorInvalidDataAttributes,
+}
+
+#[derive(Debug, Serialize)]
+pub struct TMResponseErrorInvalidDataAttributes {
     pub message: String,
 }
 
