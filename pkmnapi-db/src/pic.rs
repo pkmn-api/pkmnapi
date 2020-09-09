@@ -1,3 +1,22 @@
+//! Pkmnapi pic module
+//!
+//! # Example
+//!
+//! ```
+//! use pkmnapi_db::pic::*;
+//!
+//! let pic = Pic::new(&[0x55]).unwrap();
+//!
+//! assert_eq!(
+//!     pic,
+//!     Pic {
+//!         width: 5,
+//!         height: 5,
+//!         pixels: vec![0x00; 1600]
+//!     }
+//! );
+//! ```
+
 use image::{self, DynamicImage, ImageBuffer, ImageFormat, Luma};
 use std::ops::{Add, BitXor};
 
@@ -123,6 +142,24 @@ impl From<u8> for PicEncodingMethod {
     }
 }
 
+/// Representation of an image
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi_db::pic::*;
+///
+/// let pic = Pic::new(&[0x55]).unwrap();
+///
+/// assert_eq!(
+///     pic,
+///     Pic {
+///         width: 5,
+///         height: 5,
+///         pixels: vec![0x00; 1600]
+///     }
+/// );
+/// ```
 #[derive(Debug, PartialEq)]
 pub struct Pic {
     pub width: u8,
@@ -131,6 +168,24 @@ pub struct Pic {
 }
 
 impl Pic {
+    /// Creates a new pic
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::pic::*;
+    ///
+    /// let pic = Pic::new(&[0x55]).unwrap();
+    ///
+    /// assert_eq!(
+    ///     pic,
+    ///     Pic {
+    ///         width: 5,
+    ///         height: 5,
+    ///         pixels: vec![0x00; 1600]
+    ///     }
+    /// );
+    /// ```
     pub fn new(data: &[u8]) -> Result<Self, String> {
         let mut bitstream = PicBitstream::from(data);
 
@@ -294,5 +349,9 @@ impl Pic {
 
     pub fn to_png(&self) -> Result<Vec<u8>, String> {
         self.to_img(ImageFormat::Png)
+    }
+
+    pub fn to_jpeg(&self) -> Result<Vec<u8>, String> {
+        self.to_img(ImageFormat::Jpeg)
     }
 }

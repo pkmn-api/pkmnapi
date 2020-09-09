@@ -908,6 +908,42 @@ pub enum PokemonPicFace {
     BACK,
 }
 
+impl From<Option<String>> for PokemonPicFace {
+    /// Convert String to PokemonPicFace
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let pic_face = PokemonPicFace::from(Some("front".to_string()));
+    ///
+    /// assert_eq!(pic_face, PokemonPicFace::FRONT);
+    ///
+    /// let pic_face = PokemonPicFace::from(Some("back".to_string()));
+    ///
+    /// assert_eq!(pic_face, PokemonPicFace::BACK);
+    ///
+    /// let pic_face = PokemonPicFace::from(Some("BACK".to_string()));
+    ///
+    /// assert_eq!(pic_face, PokemonPicFace::BACK);
+    ///
+    /// let pic_face = PokemonPicFace::from(Some("UnKnOwN".to_string()));
+    ///
+    /// assert_eq!(pic_face, PokemonPicFace::FRONT);
+    ///
+    /// let pic_face = PokemonPicFace::from(None);
+    ///
+    /// assert_eq!(pic_face, PokemonPicFace::FRONT);
+    /// ```
+    fn from(face: Option<String>) -> Self {
+        match face {
+            Some(face) if face.to_lowercase() == "back" => PokemonPicFace::BACK,
+            _ => PokemonPicFace::FRONT,
+        }
+    }
+}
+
 /// Trainer name
 ///
 /// # Example
