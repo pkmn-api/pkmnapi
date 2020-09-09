@@ -8,7 +8,7 @@ macro_rules! get_trainer_pic_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.get_trainer_pic($trainer_id) {
+            match db.get_trainer_pic(&$trainer_id) {
                 Ok(pic) => assert_eq!(
                     pic.to_png().unwrap(),
                     $pic_data,

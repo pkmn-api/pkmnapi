@@ -10,7 +10,7 @@ macro_rules! get_tm_price_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.get_tm_price($tm_id) {
+            match db.get_tm_price(&$tm_id) {
                 Ok(tm_price) => assert_eq!(
                     tm_price,
                     TMPrice { value: $tm_price },

@@ -11,7 +11,7 @@ macro_rules! get_type_name_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.get_type_name($type_id) {
+            match db.get_type_name(&$type_id) {
                 Ok(type_name) => assert_eq!(
                     type_name,
                     TypeName {

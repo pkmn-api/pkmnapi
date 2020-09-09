@@ -11,7 +11,7 @@ macro_rules! get_pokedex_entry_text_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.get_pokedex_entry_text($pokedex_id) {
+            match db.get_pokedex_entry_text(&$pokedex_id) {
                 Ok(pokedex_entry_text) => assert_eq!(
                     pokedex_entry_text,
                     PokedexEntryText {

@@ -11,7 +11,7 @@ macro_rules! get_pokemon_name_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.get_pokemon_name($pokedex_id) {
+            match db.get_pokemon_name(&$pokedex_id) {
                 Ok(pokemon_name) => assert_eq!(
                     pokemon_name,
                     PokemonName {

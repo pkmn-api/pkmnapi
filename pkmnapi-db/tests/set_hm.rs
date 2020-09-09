@@ -11,12 +11,7 @@ macro_rules! set_hm_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.set_hm(
-                $hm_id,
-                HM {
-                    move_id: MoveID::from($move_id),
-                },
-            ) {
+            match db.set_hm(&$hm_id, &HM { move_id: $move_id }) {
                 Ok(patch) => assert_eq!(
                     patch,
                     Patch {

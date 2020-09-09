@@ -10,7 +10,7 @@ macro_rules! get_pokemon_pic_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.get_pokemon_pic($pokedex_id, $pic_face) {
+            match db.get_pokemon_pic(&$pokedex_id, &$pic_face) {
                 Ok(pic) => assert_eq!(
                     pic.to_png().unwrap(),
                     $pic_data,

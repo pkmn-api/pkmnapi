@@ -5,7 +5,7 @@
 //! ```
 //! use pkmnapi_db::patch::*;
 //!
-//! let patch = Patch::new(0x123456, vec![0x13, 0x37]);
+//! let patch = Patch::new(&0x123456, &vec![0x13, 0x37]);
 //!
 //! assert_eq!(patch.offset, 0x123456);
 //! assert_eq!(patch.length, 0x02);
@@ -22,7 +22,7 @@ use std::io::Cursor;
 /// ```
 /// use pkmnapi_db::patch::*;
 ///
-/// let patch = Patch::new(0x123456, vec![0x13, 0x37]);
+/// let patch = Patch::new(&0x123456, &vec![0x13, 0x37]);
 ///
 /// assert_eq!(patch.offset, 0x123456);
 /// assert_eq!(patch.length, 0x02);
@@ -41,13 +41,15 @@ impl Patch {
     /// ```
     /// use pkmnapi_db::patch::*;
     ///
-    /// let patch = Patch::new(0x123456, vec![0x13, 0x37]);
+    /// let patch = Patch::new(&0x123456, &vec![0x13, 0x37]);
     ///
     /// assert_eq!(patch.offset, 0x123456);
     /// assert_eq!(patch.length, 0x02);
     /// assert_eq!(patch.data, vec![0x13, 0x37]);
     /// ```
-    pub fn new(offset: usize, data: Vec<u8>) -> Patch {
+    pub fn new(offset: &usize, data: &Vec<u8>) -> Patch {
+        let offset = *offset;
+        let data = data.to_vec();
         let length = data.len();
 
         Patch {
@@ -62,7 +64,7 @@ impl Patch {
     /// ```
     /// use pkmnapi_db::patch::*;
     ///
-    /// let patch = Patch::new(0x123456, vec![0x13, 0x37]);
+    /// let patch = Patch::new(&0x123456, &vec![0x13, 0x37]);
     ///
     /// assert_eq!(
     ///     patch.to_raw(),
@@ -117,7 +119,7 @@ mod tests {
 
     #[test]
     fn patch_interop() {
-        let patch_obj = Patch::new(0x123456, vec![0x13, 0x37]);
+        let patch_obj = Patch::new(&0x123456, &vec![0x13, 0x37]);
 
         assert_eq!(
             patch_obj,

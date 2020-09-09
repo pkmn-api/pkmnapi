@@ -13,8 +13,8 @@ macro_rules! set_move_name_test {
             let db = common::load_rom();
 
             match db.set_move_name(
-                $move_id,
-                MoveName {
+                &$move_id,
+                &MoveName {
                     name: ROMString::from($move_name),
                 },
             ) {

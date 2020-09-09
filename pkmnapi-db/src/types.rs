@@ -1,231 +1,9 @@
 //! Pkmnapi types module
-//!
-//! # Example
-//!
-//! ```
-//! use pkmnapi_db::types::*;
-//!
-//! let pokedex_id = PokedexID::from(151);
-//!
-//! assert_eq!(pokedex_id, 151);
-//! ```
 
 use crate::string::*;
 use byteorder::{LittleEndian, ReadBytesExt};
-use std::cmp::{self, Ordering};
-use std::fmt;
+use std::cmp;
 use std::io::{Cursor, Read};
-use std::ops::{Add, Mul, Sub};
-
-/// Pokédex ID
-///
-/// # Example
-///
-/// ```
-/// use pkmnapi_db::types::*;
-///
-/// let pokedex_id = PokedexID::from(151);
-///
-/// assert_eq!(pokedex_id, 151);
-/// ```
-#[derive(Clone, Debug, PartialEq)]
-pub struct PokedexID(u8);
-
-impl PokedexID {
-    pub fn value(&self) -> u8 {
-        self.0
-    }
-}
-
-impl From<u8> for PokedexID {
-    fn from(pokedex_id: u8) -> Self {
-        PokedexID(pokedex_id)
-    }
-}
-
-impl PartialEq<u8> for PokedexID {
-    fn eq(&self, other: &u8) -> bool {
-        self.0 == *other
-    }
-}
-
-impl PartialOrd<u8> for PokedexID {
-    fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
-        self.0.partial_cmp(&other)
-    }
-}
-
-impl fmt::Display for PokedexID {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl Sub<usize> for PokedexID {
-    type Output = usize;
-
-    fn sub(self, other: usize) -> usize {
-        self.0 as usize - other
-    }
-}
-
-/// Internal ID
-///
-/// # Example
-///
-/// ```
-/// use pkmnapi_db::types::*;
-///
-/// let internal_id = InternalID::from(0x14);
-///
-/// assert_eq!(internal_id, 0x14);
-/// ```
-#[derive(Debug)]
-pub struct InternalID(u8);
-
-impl InternalID {
-    pub fn value(&self) -> u8 {
-        self.0
-    }
-}
-
-impl From<u8> for InternalID {
-    fn from(internal_id: u8) -> Self {
-        InternalID(internal_id)
-    }
-}
-
-impl fmt::Display for InternalID {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl PartialEq<u8> for InternalID {
-    fn eq(&self, other: &u8) -> bool {
-        self.0 == *other
-    }
-}
-
-impl PartialOrd<u8> for InternalID {
-    fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
-        self.0.partial_cmp(&other)
-    }
-}
-
-impl Add<usize> for InternalID {
-    type Output = usize;
-
-    fn add(self, other: usize) -> usize {
-        self.0 as usize + other
-    }
-}
-
-impl Mul<usize> for InternalID {
-    type Output = usize;
-
-    fn mul(self, other: usize) -> usize {
-        self.0 as usize * other
-    }
-}
-
-/// Type ID
-///
-/// # Example
-///
-/// ```
-/// use pkmnapi_db::types::*;
-///
-/// let type_id = TypeID::from(0x12);
-///
-/// assert_eq!(type_id, 0x12);
-/// ```
-#[derive(Clone, Debug, PartialEq)]
-pub struct TypeID(u8);
-
-impl TypeID {
-    pub fn value(&self) -> u8 {
-        self.0
-    }
-}
-
-impl From<u8> for TypeID {
-    fn from(type_id: u8) -> Self {
-        TypeID(type_id)
-    }
-}
-
-impl fmt::Display for TypeID {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl PartialEq<u8> for TypeID {
-    fn eq(&self, other: &u8) -> bool {
-        self.0 == *other
-    }
-}
-
-impl PartialOrd<u8> for TypeID {
-    fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
-        self.0.partial_cmp(&other)
-    }
-}
-
-impl Mul<usize> for TypeID {
-    type Output = usize;
-
-    fn mul(self, other: usize) -> usize {
-        self.0 as usize * other
-    }
-}
-
-/// Type effect ID
-///
-/// # Example
-///
-/// ```
-/// use pkmnapi_db::types::*;
-///
-/// let type_effect_id = TypeEffectID::from(0x12);
-///
-/// assert_eq!(type_effect_id, 0x12);
-/// ```
-#[derive(Debug)]
-pub struct TypeEffectID(u8);
-
-impl TypeEffectID {
-    pub fn value(&self) -> u8 {
-        self.0
-    }
-}
-
-impl From<u8> for TypeEffectID {
-    fn from(type_effect_id: u8) -> Self {
-        TypeEffectID(type_effect_id)
-    }
-}
-
-impl PartialEq<u8> for TypeEffectID {
-    fn eq(&self, other: &u8) -> bool {
-        self.0 == *other
-    }
-}
-
-impl PartialOrd<u8> for TypeEffectID {
-    fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
-        self.0.partial_cmp(&other)
-    }
-}
-
-impl Mul<usize> for TypeEffectID {
-    type Output = usize;
-
-    fn mul(self, other: usize) -> usize {
-        self.0 as usize * other
-    }
-}
 
 /// Type name
 ///
@@ -313,16 +91,16 @@ impl TypeName {
 /// assert_eq!(
 ///     type_effect,
 ///     TypeEffect {
-///         attacking_type_id: TypeID::from(0x01),
-///         defending_type_id: TypeID::from(0x02),
+///         attacking_type_id: 0x01,
+///         defending_type_id: 0x02,
 ///         multiplier: 2.0
 ///     }
 /// );
 /// ```
 #[derive(Debug, Clone, PartialEq)]
 pub struct TypeEffect {
-    pub attacking_type_id: TypeID,
-    pub defending_type_id: TypeID,
+    pub attacking_type_id: u8,
+    pub defending_type_id: u8,
     pub multiplier: f32,
 }
 
@@ -340,8 +118,8 @@ impl From<&[u8]> for TypeEffect {
     /// assert_eq!(
     ///     type_effect,
     ///     TypeEffect {
-    ///         attacking_type_id: TypeID::from(0x01),
-    ///         defending_type_id: TypeID::from(0x02),
+    ///         attacking_type_id: 0x01,
+    ///         defending_type_id: 0x02,
     ///         multiplier: 2.0
     ///     }
     /// );
@@ -349,8 +127,8 @@ impl From<&[u8]> for TypeEffect {
     fn from(rom: &[u8]) -> Self {
         let mut cursor = Cursor::new(rom);
 
-        let attacking_type_id = TypeID::from(cursor.read_u8().unwrap_or(0));
-        let defending_type_id = TypeID::from(cursor.read_u8().unwrap_or(0));
+        let attacking_type_id = cursor.read_u8().unwrap_or(0);
+        let defending_type_id = cursor.read_u8().unwrap_or(0);
         let multiplier = (cursor.read_u8().unwrap_or(0) as f32) / 10.0;
 
         TypeEffect {
@@ -370,8 +148,8 @@ impl TypeEffect {
     /// use pkmnapi_db::types::*;
     ///
     /// let type_effect = TypeEffect {
-    ///     attacking_type_id: TypeID::from(0x01),
-    ///     defending_type_id: TypeID::from(0x02),
+    ///     attacking_type_id: 0x01,
+    ///     defending_type_id: 0x02,
     ///     multiplier: 2.0,
     /// };
     ///
@@ -381,8 +159,8 @@ impl TypeEffect {
     /// ```
     pub fn to_raw(&self) -> Vec<u8> {
         vec![
-            self.attacking_type_id.value(),
-            self.defending_type_id.value(),
+            self.attacking_type_id,
+            self.defending_type_id,
             cmp::min((self.multiplier * 10.0) as u8, 254),
         ]
     }
@@ -401,13 +179,13 @@ impl TypeEffect {
 /// assert_eq!(
 ///     stats,
 ///     Stats {
-///         pokedex_id: PokedexID::from(0x01),
+///         pokedex_id: 0x01,
 ///         base_hp: 0x02,
 ///         base_attack: 0x03,
 ///         base_defence: 0x04,
 ///         base_speed: 0x05,
 ///         base_special: 0x06,
-///         type_ids: vec![TypeID::from(0x07), TypeID::from(0x08)],
+///         type_ids: vec![0x07, 0x08],
 ///         catch_rate: 0x09,
 ///         base_exp_yield: 0x0A
 ///     }
@@ -415,13 +193,13 @@ impl TypeEffect {
 /// ```
 #[derive(Debug, PartialEq)]
 pub struct Stats {
-    pub pokedex_id: PokedexID,
+    pub pokedex_id: u8,
     pub base_hp: u8,
     pub base_attack: u8,
     pub base_defence: u8,
     pub base_speed: u8,
     pub base_special: u8,
-    pub type_ids: Vec<TypeID>,
+    pub type_ids: Vec<u8>,
     pub catch_rate: u8,
     pub base_exp_yield: u8,
 }
@@ -440,13 +218,13 @@ impl From<&[u8]> for Stats {
     /// assert_eq!(
     ///     stats,
     ///     Stats {
-    ///         pokedex_id: PokedexID::from(0x01),
+    ///         pokedex_id: 0x01,
     ///         base_hp: 0x02,
     ///         base_attack: 0x03,
     ///         base_defence: 0x04,
     ///         base_speed: 0x05,
     ///         base_special: 0x06,
-    ///         type_ids: vec![TypeID::from(0x07), TypeID::from(0x08)],
+    ///         type_ids: vec![0x07, 0x08],
     ///         catch_rate: 0x09,
     ///         base_exp_yield: 0x0A
     ///     }
@@ -455,7 +233,7 @@ impl From<&[u8]> for Stats {
     fn from(rom: &[u8]) -> Self {
         let mut cursor = Cursor::new(rom);
 
-        let pokedex_id = PokedexID::from(cursor.read_u8().unwrap_or(0));
+        let pokedex_id = cursor.read_u8().unwrap_or(0);
         let base_hp = cursor.read_u8().unwrap_or(0);
         let base_attack = cursor.read_u8().unwrap_or(0);
         let base_defence = cursor.read_u8().unwrap_or(0);
@@ -467,9 +245,6 @@ impl From<&[u8]> for Stats {
             cursor.read_exact(&mut type_ids).unwrap();
 
             type_ids
-                .iter()
-                .map(|type_id| TypeID::from(*type_id))
-                .collect()
         };
         let catch_rate = cursor.read_u8().unwrap_or(0);
         let base_exp_yield = cursor.read_u8().unwrap_or(0);
@@ -497,13 +272,13 @@ impl Stats {
     /// use pkmnapi_db::types::*;
     ///
     /// let stats = Stats {
-    ///     pokedex_id: PokedexID::from(0x01),
+    ///     pokedex_id: 0x01,
     ///     base_hp: 0x02,
     ///     base_attack: 0x03,
     ///     base_defence: 0x04,
     ///     base_speed: 0x05,
     ///     base_special: 0x06,
-    ///     type_ids: vec![TypeID::from(0x07), TypeID::from(0x08)],
+    ///     type_ids: vec![0x07, 0x08],
     ///     catch_rate: 0x09,
     ///     base_exp_yield: 0x0A,
     /// };
@@ -518,17 +293,14 @@ impl Stats {
     pub fn to_raw(&self) -> Vec<u8> {
         [
             vec![
-                self.pokedex_id.value(),
+                self.pokedex_id,
                 self.base_hp,
                 self.base_attack,
                 self.base_defence,
                 self.base_speed,
                 self.base_special,
             ],
-            self.type_ids
-                .iter()
-                .map(|type_id| type_id.value())
-                .collect::<Vec<u8>>(),
+            self.type_ids.to_vec(),
             vec![self.catch_rate, self.base_exp_yield],
         ]
         .concat()
@@ -608,58 +380,6 @@ impl PokemonName {
     }
 }
 
-/// Move ID
-///
-/// # Example
-///
-/// ```
-/// use pkmnapi_db::types::*;
-///
-/// let move_id = MoveID::from(0x12);
-///
-/// assert_eq!(move_id, 0x12);
-/// ```
-#[derive(Clone, Debug, PartialEq)]
-pub struct MoveID(u8);
-
-impl MoveID {
-    pub fn value(&self) -> u8 {
-        self.0
-    }
-}
-
-impl From<u8> for MoveID {
-    fn from(move_id: u8) -> Self {
-        MoveID(move_id)
-    }
-}
-
-impl PartialEq<u8> for MoveID {
-    fn eq(&self, other: &u8) -> bool {
-        self.0 == *other
-    }
-}
-
-impl PartialOrd<u8> for MoveID {
-    fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
-        self.0.partial_cmp(&other)
-    }
-}
-
-impl fmt::Display for MoveID {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl Sub<usize> for MoveID {
-    type Output = usize;
-
-    fn sub(self, other: usize) -> usize {
-        self.0 as usize - other
-    }
-}
-
 /// Move stats
 ///
 /// # Example
@@ -673,10 +393,10 @@ impl Sub<usize> for MoveID {
 /// assert_eq!(
 ///     type_name,
 ///     MoveStats {
-///         move_id: MoveID::from(0x01),
+///         move_id: 0x01,
 ///         effect: 0x00,
 ///         power: 0x28,
-///         type_id: TypeID::from(0x00),
+///         type_id: 0x00,
 ///         accuracy: 1.0,
 ///         pp: 0x23
 ///     }
@@ -684,10 +404,10 @@ impl Sub<usize> for MoveID {
 /// ```
 #[derive(Debug, PartialEq)]
 pub struct MoveStats {
-    pub move_id: MoveID,
+    pub move_id: u8,
     pub effect: u8,
     pub power: u8,
-    pub type_id: TypeID,
+    pub type_id: u8,
     pub accuracy: f32,
     pub pp: u8,
 }
@@ -706,10 +426,10 @@ impl From<&[u8]> for MoveStats {
     /// assert_eq!(
     ///     move_stats,
     ///     MoveStats {
-    ///         move_id: MoveID::from(0x01),
+    ///         move_id: 0x01,
     ///         effect: 0x00,
     ///         power: 0x28,
-    ///         type_id: TypeID::from(0x00),
+    ///         type_id: 0x00,
     ///         accuracy: 1.0,
     ///         pp: 0x23
     ///     }
@@ -718,10 +438,10 @@ impl From<&[u8]> for MoveStats {
     fn from(rom: &[u8]) -> Self {
         let mut cursor = Cursor::new(rom);
 
-        let move_id = MoveID::from(cursor.read_u8().unwrap_or(0));
+        let move_id = cursor.read_u8().unwrap_or(0);
         let effect = cursor.read_u8().unwrap_or(0);
         let power = cursor.read_u8().unwrap_or(0);
-        let type_id = TypeID::from(cursor.read_u8().unwrap_or(0));
+        let type_id = cursor.read_u8().unwrap_or(0);
         let accuracy = (cursor.read_u8().unwrap_or(0) as f32) / 255.0;
         let pp = cursor.read_u8().unwrap_or(0);
 
@@ -745,10 +465,10 @@ impl MoveStats {
     /// use pkmnapi_db::types::*;
     ///
     /// let move_stats = MoveStats {
-    ///     move_id: MoveID::from(0x01),
+    ///     move_id: 0x01,
     ///     effect: 0x00,
     ///     power: 0x28,
-    ///     type_id: TypeID::from(0x00),
+    ///     type_id: 0x00,
     ///     accuracy: 1.0,
     ///     pp: 0x23,
     /// };
@@ -759,10 +479,10 @@ impl MoveStats {
     /// ```
     pub fn to_raw(&self) -> Vec<u8> {
         vec![
-            self.move_id.value(),
+            self.move_id,
             self.effect,
             self.power,
-            self.type_id.value(),
+            self.type_id,
             (self.accuracy * 255.0) as u8,
             self.pp,
         ]
@@ -842,52 +562,6 @@ impl MoveName {
     }
 }
 
-/// HM ID
-///
-/// # Example
-///
-/// ```
-/// use pkmnapi_db::types::*;
-///
-/// let hm_id = HMID::from(0x12);
-///
-/// assert_eq!(hm_id, 0x12);
-/// ```
-#[derive(Clone, Debug, PartialEq)]
-pub struct HMID(u8);
-
-impl From<u8> for HMID {
-    fn from(move_id: u8) -> Self {
-        HMID(move_id)
-    }
-}
-
-impl PartialEq<u8> for HMID {
-    fn eq(&self, other: &u8) -> bool {
-        self.0 == *other
-    }
-}
-
-impl PartialOrd<u8> for HMID {
-    fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
-        self.0.partial_cmp(&other)
-    }
-}
-
-impl fmt::Display for HMID {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl Sub<usize> for HMID {
-    type Output = usize;
-
-    fn sub(self, other: usize) -> usize {
-        self.0 as usize - other
-    }
-}
-
 /// HM
 ///
 /// # Example
@@ -897,16 +571,11 @@ impl Sub<usize> for HMID {
 ///
 /// let hm = HM::from(0x01);
 ///
-/// assert_eq!(
-///     hm,
-///     HM {
-///         move_id: MoveID::from(0x01)
-///     }
-/// );
+/// assert_eq!(hm, HM { move_id: 0x01 });
 /// ```
 #[derive(Debug, PartialEq)]
 pub struct HM {
-    pub move_id: MoveID,
+    pub move_id: u8,
 }
 
 impl From<u8> for HM {
@@ -919,17 +588,10 @@ impl From<u8> for HM {
     ///
     /// let hm = HM::from(0x01);
     ///
-    /// assert_eq!(
-    ///     hm,
-    ///     HM {
-    ///         move_id: MoveID::from(0x01)
-    ///     }
-    /// );
+    /// assert_eq!(hm, HM { move_id: 0x01 });
     /// ```
     fn from(move_id: u8) -> Self {
-        HM {
-            move_id: MoveID::from(move_id),
-        }
+        HM { move_id }
     }
 }
 
@@ -948,53 +610,7 @@ impl HM {
     /// assert_eq!(raw, vec![0x01]);
     /// ```
     pub fn to_raw(&self) -> Vec<u8> {
-        vec![self.move_id.value()]
-    }
-}
-
-/// TM ID
-///
-/// # Example
-///
-/// ```
-/// use pkmnapi_db::types::*;
-///
-/// let tm_id = TMID::from(0x12);
-///
-/// assert_eq!(tm_id, 0x12);
-/// ```
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub struct TMID(u8);
-
-impl From<u8> for TMID {
-    fn from(move_id: u8) -> Self {
-        TMID(move_id)
-    }
-}
-
-impl PartialEq<u8> for TMID {
-    fn eq(&self, other: &u8) -> bool {
-        self.0 == *other
-    }
-}
-
-impl PartialOrd<u8> for TMID {
-    fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
-        self.0.partial_cmp(&other)
-    }
-}
-
-impl fmt::Display for TMID {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl Sub<usize> for TMID {
-    type Output = usize;
-
-    fn sub(self, other: usize) -> usize {
-        self.0 as usize - other
+        vec![self.move_id]
     }
 }
 
@@ -1007,16 +623,11 @@ impl Sub<usize> for TMID {
 ///
 /// let tm = TM::from(0x01);
 ///
-/// assert_eq!(
-///     tm,
-///     TM {
-///         move_id: MoveID::from(0x01)
-///     }
-/// );
+/// assert_eq!(tm, TM { move_id: 0x01 });
 /// ```
 #[derive(Debug, PartialEq)]
 pub struct TM {
-    pub move_id: MoveID,
+    pub move_id: u8,
 }
 
 impl From<u8> for TM {
@@ -1029,17 +640,10 @@ impl From<u8> for TM {
     ///
     /// let tm = TM::from(0x01);
     ///
-    /// assert_eq!(
-    ///     tm,
-    ///     TM {
-    ///         move_id: MoveID::from(0x01)
-    ///     }
-    /// );
+    /// assert_eq!(tm, TM { move_id: 0x01 });
     /// ```
     fn from(move_id: u8) -> Self {
-        TM {
-            move_id: MoveID::from(move_id),
-        }
+        TM { move_id }
     }
 }
 
@@ -1058,7 +662,7 @@ impl TM {
     /// assert_eq!(raw, vec![0x01]);
     /// ```
     pub fn to_raw(&self) -> Vec<u8> {
-        vec![self.move_id.value()]
+        vec![self.move_id]
     }
 }
 
@@ -1302,88 +906,6 @@ impl PokedexEntryText {
 pub enum PokemonPicFace {
     FRONT,
     BACK,
-}
-
-impl From<bool> for PokemonPicFace {
-    /// Convert bool to PokemonPicFace
-    ///
-    /// ```
-    /// use pkmnapi_db::types::*;
-    ///
-    /// let pokemon_pic_face = PokemonPicFace::from(true);
-    ///
-    /// assert_eq!(pokemon_pic_face, PokemonPicFace::FRONT);
-    ///
-    /// let pokemon_pic_face = PokemonPicFace::from(false);
-    ///
-    /// assert_eq!(pokemon_pic_face, PokemonPicFace::BACK);
-    /// ```
-    fn from(pokemon_pic_face: bool) -> PokemonPicFace {
-        match pokemon_pic_face {
-            true => PokemonPicFace::FRONT,
-            false => PokemonPicFace::BACK,
-        }
-    }
-}
-
-/// Trainer ID
-///
-/// # Example
-///
-/// ```
-/// use pkmnapi_db::types::*;
-///
-/// let trainer_id = TrainerID::from(0x12);
-///
-/// assert_eq!(trainer_id, 0x12);
-/// ```
-#[derive(Clone, Debug, PartialEq)]
-pub struct TrainerID(u8);
-
-impl TrainerID {
-    pub fn value(&self) -> u8 {
-        self.0
-    }
-}
-
-impl From<u8> for TrainerID {
-    fn from(trainer_id: u8) -> Self {
-        TrainerID(trainer_id)
-    }
-}
-
-impl PartialEq<u8> for TrainerID {
-    fn eq(&self, other: &u8) -> bool {
-        self.0 == *other
-    }
-}
-
-impl PartialOrd<u8> for TrainerID {
-    fn partial_cmp(&self, other: &u8) -> Option<Ordering> {
-        self.0.partial_cmp(&other)
-    }
-}
-
-impl fmt::Display for TrainerID {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl Sub<usize> for TrainerID {
-    type Output = usize;
-
-    fn sub(self, other: usize) -> usize {
-        self.0 as usize - other
-    }
-}
-
-impl Mul<usize> for TrainerID {
-    type Output = usize;
-
-    fn mul(self, other: usize) -> usize {
-        self.0 as usize * other
-    }
 }
 
 /// Trainer name

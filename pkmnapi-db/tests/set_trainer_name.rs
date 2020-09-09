@@ -13,8 +13,8 @@ macro_rules! set_trainer_name_test {
             let db = common::load_rom();
 
             match db.set_trainer_name(
-                $trainer_id,
-                TrainerName {
+                &$trainer_id,
+                &TrainerName {
                     name: ROMString::from($trainer_name),
                 },
             ) {

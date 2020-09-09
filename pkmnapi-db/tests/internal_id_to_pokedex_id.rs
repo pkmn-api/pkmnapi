@@ -8,7 +8,7 @@ macro_rules! internal_id_to_pokedex_id_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.internal_id_to_pokedex_id($internal_id) {
+            match db.internal_id_to_pokedex_id(&$internal_id) {
                 Ok(pokedex_id) => assert_eq!(
                     pokedex_id, $pokedex_id,
                     "Searched for internal ID: {}",

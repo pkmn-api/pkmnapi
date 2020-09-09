@@ -11,7 +11,7 @@ macro_rules! get_trainer_name_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.get_trainer_name($trainer_id) {
+            match db.get_trainer_name(&$trainer_id) {
                 Ok(trainer_name) => assert_eq!(
                     trainer_name,
                     TrainerName {

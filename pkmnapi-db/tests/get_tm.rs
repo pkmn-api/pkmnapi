@@ -10,12 +10,10 @@ macro_rules! get_tm_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.get_tm($tm_id) {
+            match db.get_tm(&$tm_id) {
                 Ok(tm) => assert_eq!(
                     tm,
-                    TM {
-                        move_id: MoveID::from($move_id)
-                    },
+                    TM { move_id: $move_id },
                     "Searched for TM ID: {}",
                     $tm_id
                 ),

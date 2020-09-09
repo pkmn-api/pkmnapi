@@ -10,20 +10,17 @@ macro_rules! get_stats_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.get_stats($pokedex_id) {
+            match db.get_stats(&$pokedex_id) {
                 Ok(stats) => assert_eq!(
                     stats,
                     Stats {
-                        pokedex_id: PokedexID::from($pokedex_id),
+                        pokedex_id: $pokedex_id,
                         base_hp: $base_hp,
                         base_attack: $base_attack,
                         base_defence: $base_defence,
                         base_speed: $base_speed,
                         base_special: $base_special,
-                        type_ids: $type_ids
-                            .iter()
-                            .map(|type_id| { TypeID::from(*type_id as u8) })
-                            .collect(),
+                        type_ids: $type_ids,
                         catch_rate: $catch_rate,
                         base_exp_yield: $base_exp_yield
                     },

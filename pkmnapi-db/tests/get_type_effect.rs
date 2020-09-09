@@ -10,12 +10,12 @@ macro_rules! get_type_effect_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.get_type_effect($type_effect_id) {
+            match db.get_type_effect(&$type_effect_id) {
                 Ok(type_effect) => assert_eq!(
                     type_effect,
                     TypeEffect {
-                        attacking_type_id: TypeID::from($attacking_type_id),
-                        defending_type_id: TypeID::from($defending_type_id),
+                        attacking_type_id: $attacking_type_id,
+                        defending_type_id: $defending_type_id,
                         multiplier: $multiplier
                     },
                     "Searched for type effect ID: {}",

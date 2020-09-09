@@ -11,7 +11,7 @@ macro_rules! get_move_name_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.get_move_name($move_id) {
+            match db.get_move_name(&$move_id) {
                 Ok(move_name) => assert_eq!(
                     move_name,
                     MoveName {

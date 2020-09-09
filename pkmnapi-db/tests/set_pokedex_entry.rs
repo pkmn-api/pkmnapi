@@ -13,8 +13,8 @@ macro_rules! set_pokedex_entry_test {
             let db = common::load_rom();
 
             match db.set_pokedex_entry(
-                $pokedex_id,
-                PokedexEntry {
+                &$pokedex_id,
+                &PokedexEntry {
                     species: ROMString::from($species),
                     height: $height,
                     weight: $weight,

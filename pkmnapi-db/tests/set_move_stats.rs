@@ -12,12 +12,12 @@ macro_rules! set_move_stats_test {
             let db = common::load_rom();
 
             match db.set_move_stats(
-                $move_id,
-                MoveStats {
-                    move_id: MoveID::from($move_id),
+                &$move_id,
+                &MoveStats {
+                    move_id: $move_id,
                     effect: $effect,
                     power: $power,
-                    type_id: TypeID::from($type_id),
+                    type_id: $type_id,
                     accuracy: $accuracy,
                     pp: $pp,
                 },

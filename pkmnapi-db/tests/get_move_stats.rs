@@ -10,14 +10,14 @@ macro_rules! get_move_stats_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.get_move_stats($move_id) {
+            match db.get_move_stats(&$move_id) {
                 Ok(move_stats) => assert_eq!(
                     move_stats,
                     MoveStats {
-                        move_id: MoveID::from($move_id),
+                        move_id: $move_id,
                         effect: $effect,
                         power: $power,
-                        type_id: TypeID::from($type_id),
+                        type_id: $type_id,
                         accuracy: $accuracy,
                         pp: $pp
                     },

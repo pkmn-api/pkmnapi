@@ -11,7 +11,7 @@ macro_rules! pokemon_name_to_pokedex_id_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.pokemon_name_to_pokedex_id(PokemonName {
+            match db.pokemon_name_to_pokedex_id(&PokemonName {
                 name: ROMString::from($pokemon_name),
             }) {
                 Some(pokedex_id) => assert_eq!(

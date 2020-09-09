@@ -10,12 +10,10 @@ macro_rules! get_hm_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.get_hm($hm_id) {
+            match db.get_hm(&$hm_id) {
                 Ok(hm) => assert_eq!(
                     hm,
-                    HM {
-                        move_id: MoveID::from($move_id)
-                    },
+                    HM { move_id: $move_id },
                     "Searched for HM ID: {}",
                     $hm_id
                 ),
