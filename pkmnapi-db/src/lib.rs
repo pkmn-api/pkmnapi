@@ -1249,7 +1249,7 @@ impl PkmnapiDB {
     ///
     /// let patch = db
     ///     .set_pokedex_entry(&1, &PokedexEntry {
-    ///         species: ROMString::from("BOBBY"),
+    ///         species: ROMString::from("BLAH"),
     ///         height: 100,
     ///         weight: 300
     ///     })
@@ -1259,8 +1259,8 @@ impl PkmnapiDB {
     ///     patch,
     ///     Patch {
     ///         offset: 0x40E33,
-    ///         length: 0x0A,
-    ///         data: vec![0x81, 0x8E, 0x81, 0x81, 0x98, 0x50, 0x08, 0x04, 0x2C, 0x01]
+    ///         length: 0x09,
+    ///         data: vec![0x81, 0x8B, 0x80, 0x87, 0x50, 0x08, 0x04, 0x2C, 0x01]
     ///     }
     /// );
     /// ```
@@ -1269,6 +1269,17 @@ impl PkmnapiDB {
         pokedex_id: &u8,
         pokedex_entry: &PokedexEntry,
     ) -> Result<Patch, String> {
+        let old_pokedex_entry_species = self.get_pokedex_entry(pokedex_id)?;
+        let old_pokedex_entry_species_len = old_pokedex_entry_species.species.value.len();
+        let pokedex_entry_species_len = pokedex_entry.species.value.len();
+
+        if old_pokedex_entry_species_len != pokedex_entry_species_len {
+            return Err(format!(
+                "Length mismatch: species should be exactly {} characters, found {}",
+                old_pokedex_entry_species_len, pokedex_entry_species_len
+            ));
+        }
+
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x1E;
