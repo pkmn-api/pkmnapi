@@ -24,19 +24,17 @@ pub fn get_type_effect(
 
     let db = utils::get_db_with_applied_patches(sql, &access_token)?;
 
-    let type_effect = match db.get_type_effect(type_effect_id) {
+    let type_effect = match db.get_type_effect(&type_effect_id) {
         Ok(type_effect) => type_effect,
         Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
     };
 
-    let old_type_effect = type_effect.clone();
-
-    let attacking_type_name = match db.get_type_name(old_type_effect.attacking_type_id) {
+    let attacking_type_name = match db.get_type_name(&type_effect.attacking_type_id) {
         Ok(attacking_type_name) => attacking_type_name,
         Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
     };
 
-    let defending_type_name = match db.get_type_name(old_type_effect.defending_type_id) {
+    let defending_type_name = match db.get_type_name(&type_effect.defending_type_id) {
         Ok(defending_type_name) => defending_type_name,
         Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
     };
@@ -91,12 +89,12 @@ pub fn post_type_effect(
     };
 
     let type_effect = TypeEffect {
-        attacking_type_id: TypeID::from(data.get_attacking_type_id().parse::<u8>().unwrap()),
-        defending_type_id: TypeID::from(data.get_defending_type_id().parse::<u8>().unwrap()),
+        attacking_type_id: data.get_attacking_type_id().parse::<u8>().unwrap(),
+        defending_type_id: data.get_defending_type_id().parse::<u8>().unwrap(),
         multiplier: data.get_multiplier(),
     };
 
-    let patch = match db.set_type_effect(type_effect_id, type_effect) {
+    let patch = match db.set_type_effect(&type_effect_id, &type_effect) {
         Ok(patch) => patch,
         Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
     };

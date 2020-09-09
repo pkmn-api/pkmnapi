@@ -30,7 +30,7 @@ impl StatsResponse {
                     .type_ids
                     .iter()
                     .enumerate()
-                    .map(|(i, type_id)| TypeResponse::new(&type_id.value(), &type_names[i]))
+                    .map(|(i, type_id)| TypeResponse::new(&type_id, &type_names[i]))
                     .collect(),
                 catch_rate: stats.catch_rate,
                 base_exp_yield: stats.base_exp_yield,

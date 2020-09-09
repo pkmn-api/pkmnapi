@@ -24,7 +24,7 @@ pub fn get_stats(
 
     let db = utils::get_db_with_applied_patches(sql, &access_token)?;
 
-    let stats = match db.get_stats(pokedex_id) {
+    let stats = match db.get_stats(&pokedex_id) {
         Ok(stats) => stats,
         Err(e) => return Err(StatsResponseError::new(&e.to_string())),
     };
@@ -32,7 +32,7 @@ pub fn get_stats(
     let type_names: Result<Vec<TypeName>, _> = stats
         .type_ids
         .iter()
-        .map(|type_id| match db.get_type_name(type_id.value()) {
+        .map(|type_id| match db.get_type_name(type_id) {
             Ok(type_name) => Ok(type_name),
             Err(e) => return Err(StatsResponseError::new(&e.to_string())),
         })
@@ -85,7 +85,7 @@ pub fn post_stats(
     };
 
     let stats = Stats {
-        pokedex_id: PokedexID::from(pokedex_id),
+        pokedex_id: pokedex_id,
         base_hp: data.get_base_hp(),
         base_attack: data.get_base_attack(),
         base_defence: data.get_base_defence(),
@@ -93,14 +93,14 @@ pub fn post_stats(
         base_special: data.get_base_special(),
         type_ids: data
             .get_type_ids()
-            .into_iter()
-            .map(|type_id| TypeID::from(type_id.parse::<u8>().unwrap()))
+            .iter()
+            .map(|type_id| type_id.parse::<u8>().unwrap())
             .collect(),
         catch_rate: data.get_catch_rate(),
         base_exp_yield: data.get_base_exp_yield(),
     };
 
-    let patch = match db.set_stats(pokedex_id, stats) {
+    let patch = match db.set_stats(&pokedex_id, &stats) {
         Ok(patch) => patch,
         Err(e) => return Err(StatsResponseError::new(&e.to_string())),
     };

@@ -25,14 +25,8 @@ impl TypeEffectResponse {
             id: type_effect_id.to_string(),
             _type: TypeEffectResponseType::type_effects,
             attributes: TypeEffectResponseAttributes {
-                attacking_type: TypeResponse::new(
-                    &type_effect.attacking_type_id.value(),
-                    type_names[0],
-                ),
-                defending_type: TypeResponse::new(
-                    &type_effect.defending_type_id.value(),
-                    type_names[1],
-                ),
+                attacking_type: TypeResponse::new(&type_effect.attacking_type_id, type_names[0]),
+                defending_type: TypeResponse::new(&type_effect.defending_type_id, type_names[1]),
                 multiplier: type_effect.multiplier,
             },
             links: Links {

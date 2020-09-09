@@ -25,7 +25,7 @@ pub fn get_type(
 
     let db = utils::get_db_with_applied_patches(sql, &access_token)?;
 
-    let type_name = match db.get_type_name(type_id) {
+    let type_name = match db.get_type_name(&type_id) {
         Ok(type_name) => type_name,
         Err(e) => return Err(TypeResponseError::new(&e.to_string())),
     };
@@ -74,7 +74,7 @@ pub fn post_type(
         name: ROMString::from(data.get_name()),
     };
 
-    let patch = match db.set_type_name(type_id, type_name) {
+    let patch = match db.set_type_name(&type_id, &type_name) {
         Ok(patch) => patch,
         Err(e) => return Err(TypeResponseError::new(&e.to_string())),
     };
