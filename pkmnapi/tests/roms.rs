@@ -33,6 +33,13 @@ fn post_rom_201() {
         )
     );
 
+    let headers = response.headers();
+
+    assert_eq!(
+        headers.get("Location").next(),
+        Some("http://localhost:8080/v1/roms")
+    );
+
     common::teardown();
 }
 

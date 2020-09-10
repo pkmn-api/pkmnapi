@@ -47,7 +47,7 @@ pub fn post_rom(
     let response = RomResponse::new(&rom_sql);
 
     Ok(status::Created(
-        utils::generate_url("roms", Some(&rom_sql.id)),
+        utils::generate_url("roms", None),
         Some(Json(response)),
     ))
 }
