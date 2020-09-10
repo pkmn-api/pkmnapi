@@ -1663,4 +1663,176 @@ impl PkmnapiDB {
 
         Ok(pic)
     }
+
+    /// Get item name by item ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
+    /// use std::fs;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let item_name = db.get_item_name(&0).unwrap();
+    ///
+    /// assert_eq!(
+    ///     item_name,
+    ///     ItemName {
+    ///         name: ROMString::from("MASTER BALL")
+    ///     }
+    /// );
+    /// ```
+    pub fn get_item_name(&self, item_id: &u8) -> Result<ItemName, String> {
+        let offset_base = ROM_PAGE * 0x02;
+        let offset_base = offset_base + 0x072B;
+
+        let max_offset = (&self.rom[offset_base..])
+            .iter()
+            .position(|&r| r == 0xD0)
+            .unwrap();
+        let max_id = (&self.rom[offset_base..(offset_base + max_offset)])
+            .iter()
+            .filter(|&x| *x == 0x50)
+            .count();
+
+        if item_id >= &(max_id as u8) {
+            return Err(format!("Invalid item ID: {}", item_id));
+        }
+
+        let offset = match {
+            if item_id == &0 {
+                Some(offset_base)
+            } else {
+                self.rom[offset_base..]
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, x)| {
+                        if *x == 0x50 {
+                            return Some(offset_base + i + 1);
+                        }
+
+                        None
+                    })
+                    .take(max_id - 1)
+                    .enumerate()
+                    .filter_map(|(i, x)| {
+                        if (*item_id as usize) - 1 == i {
+                            return Some(x);
+                        }
+
+                        None
+                    })
+                    .next()
+            }
+        } {
+            Some(offset) => offset,
+            None => return Err(format!("Invalid item ID: {}", item_id)),
+        };
+
+        let item_name = ItemName::from(&self.rom[offset..(offset + 13)]);
+
+        Ok(item_name)
+    }
+
+    /// Set item name by item ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
+    /// use std::fs;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom).unwrap();
+    ///
+    /// let patch = db
+    ///     .set_item_name(
+    ///         &0,
+    ///         &ItemName {
+    ///             name: ROMString::from("CHEATERBALL"),
+    ///         },
+    ///     )
+    ///     .unwrap();
+    ///
+    /// assert_eq!(
+    ///     patch,
+    ///     Patch {
+    ///         offset: 0x472B,
+    ///         length: 0x0B,
+    ///         data: vec![0x82, 0x87, 0x84, 0x80, 0x93, 0x84, 0x91, 0x81, 0x80, 0x8B, 0x8B]
+    ///     }
+    /// );
+    /// ```
+    pub fn set_item_name(&self, item_id: &u8, item_name: &ItemName) -> Result<Patch, String> {
+        let old_item_name = self.get_item_name(item_id)?;
+        let old_item_name_len = old_item_name.name.value.len();
+        let item_name_raw = item_name.to_raw();
+        let item_name_len = item_name_raw.len();
+
+        if old_item_name_len != item_name_len {
+            return Err(format!(
+                "Length mismatch: should be exactly {} characters, found {}",
+                old_item_name_len, item_name_len
+            ));
+        }
+
+        let offset_base = ROM_PAGE * 0x02;
+        let offset_base = offset_base + 0x072B;
+
+        let max_offset = (&self.rom[offset_base..])
+            .iter()
+            .position(|&r| r == 0xD0)
+            .unwrap();
+        let max_id = (&self.rom[offset_base..(offset_base + max_offset)])
+            .iter()
+            .filter(|&x| *x == 0x50)
+            .count();
+
+        if item_id >= &(max_id as u8) {
+            return Err(format!("Invalid item ID: {}", item_id));
+        }
+
+        let offset = match {
+            if item_id == &0 {
+                Some(offset_base)
+            } else {
+                self.rom[offset_base..]
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, x)| {
+                        if *x == 0x50 {
+                            return Some(offset_base + i + 1);
+                        }
+
+                        None
+                    })
+                    .take(max_id - 1)
+                    .enumerate()
+                    .filter_map(|(i, x)| {
+                        if (*item_id as usize) - 1 == i {
+                            return Some(x);
+                        }
+
+                        None
+                    })
+                    .next()
+            }
+        } {
+            Some(offset) => offset,
+            None => return Err(format!("Invalid item ID: {}", item_id)),
+        };
+
+        Ok(Patch::new(&offset, &item_name_raw))
+    }
 }

@@ -1016,3 +1016,76 @@ impl TrainerName {
         self.name.value[..].to_vec()
     }
 }
+
+/// Item name
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi_db::string::*;
+/// use pkmnapi_db::types::*;
+///
+/// let rom = vec![0x80, 0x81, 0x82, 0x50];
+/// let item_name = ItemName::from(&rom[..]);
+///
+/// assert_eq!(
+///     item_name,
+///     ItemName {
+///         name: ROMString::from("ABC")
+///     }
+/// );
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct ItemName {
+    pub name: ROMString,
+}
+
+impl From<&[u8]> for ItemName {
+    /// Convert &[u8] to ItemName
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let rom = vec![0x80, 0x81, 0x82, 0x50];
+    /// let item_name = ItemName::from(&rom[..]);
+    ///
+    /// assert_eq!(
+    ///     item_name,
+    ///     ItemName {
+    ///         name: ROMString::from("ABC")
+    ///     }
+    /// );
+    /// ```
+    fn from(rom: &[u8]) -> Self {
+        let name_end_index = rom.iter().position(|&r| r == 0x50).unwrap_or(rom.len());
+
+        let name = ROMString::new(&rom[..name_end_index]);
+
+        ItemName { name }
+    }
+}
+
+impl ItemName {
+    /// Item name to raw bytes
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let item_name = ItemName {
+    ///     name: ROMString::from("ABC"),
+    /// };
+    ///
+    /// let raw = item_name.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x80, 0x81, 0x82]);
+    /// ```
+    pub fn to_raw(&self) -> Vec<u8> {
+        self.name.value[..].to_vec()
+    }
+}
