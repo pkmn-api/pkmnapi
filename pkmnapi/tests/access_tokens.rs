@@ -49,7 +49,7 @@ fn post_access_token_400() {
 }
 
 #[test]
-fn post_access_token_403() {
+fn post_access_token_403_authorization() {
     let client = common::setup();
 
     let request = client
@@ -63,6 +63,30 @@ fn post_access_token_403() {
     assert_eq!(response.status(), Status::Forbidden);
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_access_tokens_forbidden","type":"errors","attributes":{"message":"Authorization header must not be set"}}}"#.to_string()));
+
+    common::teardown();
+}
+
+#[test]
+fn post_access_token_403_timeout() {
+    let client = common::setup();
+
+    client
+        .post("/v1/access_tokens")
+        .body(r#"{"data":{"type":"access_tokens","attributes":{"email_address":"foo@bar.com"}}}"#)
+        .header(ContentType::JSON)
+        .dispatch();
+
+    let request = client
+        .post("/v1/access_tokens")
+        .body(r#"{"data":{"type":"access_tokens","attributes":{"email_address":"foo@bar.com"}}}"#)
+        .header(ContentType::JSON);
+
+    let mut response = request.dispatch();
+
+    assert_eq!(response.status(), Status::Forbidden);
+    assert_eq!(response.content_type(), Some(ContentType::JSON));
+    assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_access_tokens_timeout","type":"errors","attributes":{"message":"Please try again in 600 seconds"}}}"#.to_string()));
 
     common::teardown();
 }

@@ -54,6 +54,7 @@ pub struct BaseErrorResponseData<T> {
 pub enum BaseErrorResponseId {
     error_access_tokens_forbidden,
     error_access_tokens_invalid,
+    error_access_tokens_timeout,
     error_access_tokens_unauthorized,
     error_moves_invalid,
     error_moves,

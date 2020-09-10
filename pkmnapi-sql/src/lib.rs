@@ -304,6 +304,59 @@ impl PkmnapiSQL {
         }
     }
 
+    /// Select row from `users` by ID
+    ///
+    /// # Panics
+    ///
+    /// Panics if the `SECRET_KEY` environment variable is not set
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_sql::*;
+    /// # use std::process::Command;
+    /// # use std::fs;
+    /// # use std::env;
+    /// # env::set_var("DATABASE_URL", "test.db");
+    /// # Command::new("diesel").args(&["migration", "run"]).output();
+    ///
+    /// let sql = PkmnapiSQL::new();
+    ///
+    /// let connection = sql.get_connection().unwrap();
+    /// # let (new_user, access_token) = sql.insert_user(&connection, &String::from("foo@bar.com")).unwrap();
+    /// let user = sql.select_user_by_id(&connection, &access_token).unwrap().unwrap();
+    ///
+    /// assert_eq!(user.id, String::from("foo@bar.com"));
+    /// assert_eq!(user.date_create.len(), 32);
+    /// assert_eq!(user.date_expire.len(), 32);
+    /// assert_eq!(user.access_token_hash.len(), 64);
+    /// assert_eq!(user.rom_id, None);
+    /// # fs::remove_file("test.db");
+    /// ```
+    pub fn select_user_by_id(
+        &self,
+        connection: &SqlitePooledConnection,
+        id: &String,
+    ) -> Result<Option<User>, diesel::result::Error> {
+        use crate::schema::users;
+
+        match users::table
+            .filter(users::id.eq(id))
+            .select((
+                users::id,
+                users::date_create,
+                users::date_expire,
+                users::access_token_hash,
+                users::rom_id,
+            ))
+            .first::<User>(connection)
+        {
+            Ok(user) => Ok(Some(user)),
+            Err(diesel::result::Error::NotFound) => Ok(None),
+            Err(e) => Err(e),
+        }
+    }
+
     /// Select row from `users` by access_token
     ///
     /// # Panics

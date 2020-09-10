@@ -8,6 +8,7 @@ use crate::responses::base::*;
 pub enum ResponseError {
     AccessTokenErrorForbidden(status::Forbidden<Json<AccessTokenErrorForbidden>>),
     AccessTokenErrorInvalid(status::BadRequest<Json<AccessTokenErrorInvalid>>),
+    AccessTokenErrorTimeout(status::Forbidden<Json<AccessTokenErrorTimeout>>),
     AccessTokenErrorUnauthorized(status::Unauthorized<Json<AccessTokenErrorUnauthorized>>),
     MoveResponseError(status::NotFound<Json<MoveResponseError>>),
     MoveResponseErrorInvalid(status::BadRequest<Json<MoveResponseErrorInvalid>>),
@@ -71,6 +72,29 @@ impl AccessTokenErrorInvalid {
 
 #[derive(Debug, Serialize)]
 pub struct AccessTokenErrorInvalidAttributes {
+    pub message: String,
+}
+
+pub type AccessTokenErrorTimeout = BaseErrorResponse<AccessTokenErrorTimeoutAttributes>;
+
+impl AccessTokenErrorTimeout {
+    pub fn new(message: &String) -> ResponseError {
+        let response = AccessTokenErrorTimeout {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_access_tokens_timeout,
+                _type: BaseErrorResponseType::errors,
+                attributes: AccessTokenErrorTimeoutAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::AccessTokenErrorTimeout(status::Forbidden(Some(Json(response))))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct AccessTokenErrorTimeoutAttributes {
     pub message: String,
 }
 

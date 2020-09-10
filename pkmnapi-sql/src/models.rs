@@ -107,6 +107,15 @@ pub struct User {
     pub rom_id: Option<String>,
 }
 
+impl User {
+    pub fn seconds_to_expiration(&self) -> i64 {
+        match DateTime::parse_from_rfc3339(&self.date_expire) {
+            Ok(date_expire) => date_expire.timestamp() - Utc::now().timestamp(),
+            _ => 0,
+        }
+    }
+}
+
 /// Insertable struct of data into `users`
 #[derive(Debug, Insertable, PartialEq)]
 #[table_name = "users"]
@@ -143,7 +152,7 @@ impl NewUser {
     /// ```
     pub fn new(id: &String) -> (Self, String) {
         let date_create = Utc::now().to_rfc3339();
-        let date_expire = (Utc::now() + Duration::days(1)).to_rfc3339();
+        let date_expire = (Utc::now() + Duration::seconds(600)).to_rfc3339();
         let access_token = utils::random_id(64);
         let rom_id = None;
 

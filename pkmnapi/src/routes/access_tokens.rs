@@ -42,6 +42,21 @@ pub fn post_access_token(
     }
 
     let connection = sql.get_connection().unwrap();
+
+    match sql.select_user_by_id(&connection, &email_address) {
+        Ok(Some(user)) => {
+            let seconds = user.seconds_to_expiration();
+
+            if seconds >= 0 {
+                return Err(AccessTokenErrorTimeout::new(&format!(
+                    "Please try again in {} seconds",
+                    seconds
+                )));
+            }
+        }
+        _ => {}
+    };
+
     let (_, access_token) = sql.insert_user(&connection, &email_address).unwrap();
 
     // TODO: send email
