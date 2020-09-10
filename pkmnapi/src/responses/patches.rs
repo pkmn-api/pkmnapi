@@ -1,12 +1,13 @@
 use pkmnapi_sql::models::Patch;
 use serde::Serialize;
 
-use crate::responses::base::{BaseResponse, BaseResponseAll, BaseResponseType};
+use crate::responses::base::{BaseResponse, BaseResponseAll, BaseResponseData, BaseResponseType};
 use crate::responses::links::Links;
 use crate::utils;
 
 pub type PatchResponse = BaseResponse<PatchResponseAttributes>;
-pub type PatchesResponse = BaseResponseAll<PatchResponse>;
+pub type PatchResponseData = BaseResponseData<PatchResponseAttributes>;
+pub type PatchesResponse = BaseResponseAll<PatchResponseData>;
 
 impl PatchesResponse {
     /// Create a new `PatchesResponse`
@@ -14,7 +15,7 @@ impl PatchesResponse {
         PatchesResponse {
             data: patches
                 .iter()
-                .map(|patch| PatchResponse::new(patch))
+                .map(|patch| PatchResponseData::new(patch))
                 .collect(),
             links: Links {
                 _self: utils::generate_url("patches", None),
@@ -27,6 +28,17 @@ impl PatchResponse {
     /// Create a new `PatchResponse`
     pub fn new(patch: &Patch) -> PatchResponse {
         PatchResponse {
+            data: PatchResponseData::new(patch),
+            links: Links {
+                _self: utils::generate_url("patches", Some(&patch.id)),
+            },
+        }
+    }
+}
+
+impl PatchResponseData {
+    pub fn new(patch: &Patch) -> PatchResponseData {
+        BaseResponseData {
             id: patch.id.to_owned(),
             _type: BaseResponseType::patches,
             attributes: PatchResponseAttributes {

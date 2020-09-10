@@ -19,17 +19,17 @@ fn post_rom_201() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
 
     let body = response.body_string().unwrap();
-    let body_a = (&body[..7]).to_string();
-    let body_b = (&body[7..39]).to_string();
-    let body_c = (&body[39..]).to_string();
+    let body_a = (&body[..15]).to_string();
+    let body_b = (&body[15..47]).to_string();
+    let body_c = (&body[47..]).to_string();
 
-    assert_eq!(body_a, r#"{"id":""#);
+    assert_eq!(body_a, r#"{"data":{"id":""#);
     assert_eq!(body_b.len(), 32);
     assert_eq!(
         body_c,
         format!(
-            r#"","type":"roms","attributes":{{"name":"POKEMON RED","hash":"3d45c1ee9abd5738df46d2bdda8b57dc","valid":true}},"links":{{"self":"http://localhost:8080/v1/roms/{}"}}}}"#,
-            body_b
+            r#"","type":"roms","attributes":{{"name":"POKEMON RED","hash":"3d45c1ee9abd5738df46d2bdda8b57dc","valid":true}},"links":{{"self":"http://localhost:8080/v1/roms/{}"}}}},"links":{{"self":"http://localhost:8080/v1/roms/{}"}}}}"#,
+            body_b, body_b
         )
     );
 
@@ -55,7 +55,7 @@ fn post_rom_400_invalid_rom() {
 }
 
 #[test]
-fn post_rom_401_unauthorized() {
+fn post_rom_401() {
     let client = common::setup();
 
     let request = client.post("/v1/roms").body("");
@@ -108,17 +108,17 @@ fn get_rom_200() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
 
     let body = response.body_string().unwrap();
-    let body_a = (&body[..7]).to_string();
-    let body_b = (&body[7..39]).to_string();
-    let body_c = (&body[39..]).to_string();
+    let body_a = (&body[..15]).to_string();
+    let body_b = (&body[15..47]).to_string();
+    let body_c = (&body[47..]).to_string();
 
-    assert_eq!(body_a, r#"{"id":""#);
+    assert_eq!(body_a, r#"{"data":{"id":""#);
     assert_eq!(body_b.len(), 32);
     assert_eq!(
         body_c,
         format!(
-            r#"","type":"roms","attributes":{{"name":"POKEMON RED","hash":"3d45c1ee9abd5738df46d2bdda8b57dc","valid":true}},"links":{{"self":"http://localhost:8080/v1/roms/{}"}}}}"#,
-            body_b
+            r#"","type":"roms","attributes":{{"name":"POKEMON RED","hash":"3d45c1ee9abd5738df46d2bdda8b57dc","valid":true}},"links":{{"self":"http://localhost:8080/v1/roms/{}"}}}},"links":{{"self":"http://localhost:8080/v1/roms/{}"}}}}"#,
+            body_b, body_b
         )
     );
 
@@ -126,7 +126,7 @@ fn get_rom_200() {
 }
 
 #[test]
-fn get_rom_401_unauthorized() {
+fn get_rom_401() {
     let client = common::setup();
 
     let request = client.get("/v1/roms");
@@ -174,7 +174,7 @@ fn delete_rom_204() {
 }
 
 #[test]
-fn delete_rom_401_unauthorized() {
+fn delete_rom_401() {
     let client = common::setup();
 
     let request = client.delete("/v1/roms");

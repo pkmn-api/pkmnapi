@@ -19,7 +19,7 @@ fn get_move_200() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"id":"1","type":"moves","attributes":{"name":"POUND"},"links":{"self":"http://localhost:8080/v1/moves/1"}}"#
+            r#"{"data":{"id":"1","type":"moves","attributes":{"name":"POUND"},"links":{"self":"http://localhost:8080/v1/moves/1"}},"links":{"self":"http://localhost:8080/v1/moves/1"}}"#
                 .to_string()
         )
     );
@@ -93,7 +93,7 @@ fn post_moves_202() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"id":"1","type":"moves","attributes":{"name":"TESTS"},"links":{"self":"http://localhost:8080/v1/moves/1"}}"#
+            r#"{"data":{"id":"1","type":"moves","attributes":{"name":"TESTS"},"links":{"self":"http://localhost:8080/v1/moves/1"}},"links":{"self":"http://localhost:8080/v1/moves/1"}}"#
                 .to_string()
         )
     );

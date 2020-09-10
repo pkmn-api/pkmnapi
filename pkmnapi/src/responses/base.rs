@@ -4,6 +4,12 @@ use crate::responses::links::Links;
 
 #[derive(Debug, Serialize)]
 pub struct BaseResponse<T> {
+    pub data: BaseResponseData<T>,
+    pub links: Links,
+}
+
+#[derive(Debug, Serialize)]
+pub struct BaseResponseData<T> {
     pub id: String,
     #[serde(rename = "type")]
     pub _type: BaseResponseType,

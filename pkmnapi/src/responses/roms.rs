@@ -2,7 +2,7 @@ use pkmnapi_sql::models::Rom;
 use serde::Serialize;
 use std::env;
 
-use crate::responses::base::{BaseResponse, BaseResponseType};
+use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};
 use crate::responses::links::Links;
 use crate::utils;
 
@@ -18,12 +18,17 @@ impl RomResponse {
         let valid_hashes = env::var("VALID_HASHES").expect("VALID_HASHES must be set");
 
         RomResponse {
-            id: rom.id.to_owned(),
-            _type: BaseResponseType::roms,
-            attributes: RomResponseAttributes {
-                name: rom.name.to_owned(),
-                hash: rom.rom_data_id.to_owned(),
-                valid: valid_hashes.find(&rom.rom_data_id) != None,
+            data: BaseResponseData {
+                id: rom.id.to_owned(),
+                _type: BaseResponseType::roms,
+                attributes: RomResponseAttributes {
+                    name: rom.name.to_owned(),
+                    hash: rom.rom_data_id.to_owned(),
+                    valid: valid_hashes.find(&rom.rom_data_id) != None,
+                },
+                links: Links {
+                    _self: utils::generate_url("roms", Some(&rom.id)),
+                },
             },
             links: Links {
                 _self: utils::generate_url("roms", Some(&rom.id)),

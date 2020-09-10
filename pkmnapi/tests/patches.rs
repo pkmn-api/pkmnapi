@@ -161,17 +161,17 @@ fn get_patch_200() {
     let mut response = request.dispatch();
 
     let body = response.body_string().unwrap();
-    let body_a = (&body[..7]).to_string();
-    let body_b = (&body[7..39]).to_string();
-    let body_c = (&body[39..]).to_string();
+    let body_a = (&body[..15]).to_string();
+    let body_b = (&body[15..47]).to_string();
+    let body_c = (&body[47..]).to_string();
 
-    assert_eq!(body_a, r#"{"id":""#);
+    assert_eq!(body_a, r#"{"data":{"id":""#);
     assert_eq!(body_b.len(), 32);
     assert_eq!(
         body_c,
         format!(
-            r#"","type":"patches","attributes":{{"description":"NORMAL -> BORING"}},"links":{{"self":"http://localhost:8080/v1/patches/{}"}}}}"#,
-            body_b
+            r#"","type":"patches","attributes":{{"description":"NORMAL -> BORING"}},"links":{{"self":"http://localhost:8080/v1/patches/{}"}}}},"links":{{"self":"http://localhost:8080/v1/patches/{}"}}}}"#,
+            body_b, body_b
         )
     );
 
