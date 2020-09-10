@@ -1,9 +1,8 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
-pub struct StatsRequest {
-    pub data: StatsRequestData,
-}
+use crate::requests::base::BaseRequest;
+
+pub type StatsRequest = BaseRequest<StatsRequestType, StatsRequestAttributes>;
 
 impl StatsRequest {
     pub fn get_base_hp(&self) -> u8 {
@@ -45,31 +44,24 @@ impl StatsRequest {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct StatsRequestData {
-    #[serde(rename = "type")]
-    pub _type: StatsRequestDataType,
-    pub attributes: StatsRequestDataAttributes,
-}
-
-#[derive(Debug, Deserialize)]
 #[allow(non_camel_case_types)]
-pub enum StatsRequestDataType {
+pub enum StatsRequestType {
     stats,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct StatsRequestDataAttributes {
+pub struct StatsRequestAttributes {
     pub base_hp: u8,
     pub base_attack: u8,
     pub base_defence: u8,
     pub base_speed: u8,
     pub base_special: u8,
-    pub types: Vec<StatsRequestDataAttributesType>,
+    pub types: Vec<StatsRequestAttributesType>,
     pub catch_rate: u8,
     pub base_exp_yield: u8,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct StatsRequestDataAttributesType {
+pub struct StatsRequestAttributesType {
     id: String,
 }

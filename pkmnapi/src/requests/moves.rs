@@ -1,9 +1,8 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
-pub struct MoveRequest {
-    pub data: MoveRequestData,
-}
+use crate::requests::base::BaseRequest;
+
+pub type MoveRequest = BaseRequest<MoveRequestType, MoveRequestAttributes>;
 
 impl MoveRequest {
     pub fn get_name(&self) -> &String {
@@ -12,19 +11,12 @@ impl MoveRequest {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct MoveRequestData {
-    #[serde(rename = "type")]
-    pub _type: MoveRequestDataMove,
-    pub attributes: MoveRequestDataAttributes,
-}
-
-#[derive(Debug, Deserialize)]
 #[allow(non_camel_case_types)]
-pub enum MoveRequestDataMove {
+pub enum MoveRequestType {
     moves,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct MoveRequestDataAttributes {
+pub struct MoveRequestAttributes {
     pub name: String,
 }

@@ -1,18 +1,12 @@
 use pkmnapi_db::types::{TypeEffect, TypeName};
 use serde::Serialize;
 
+use crate::responses::base::{BaseResponse, BaseResponseType};
 use crate::responses::links::Links;
 use crate::responses::types::TypeResponse;
 use crate::utils;
 
-#[derive(Debug, Serialize)]
-pub struct TypeEffectResponse {
-    pub id: String,
-    #[serde(rename = "type")]
-    pub _type: TypeEffectResponseType,
-    pub attributes: TypeEffectResponseAttributes,
-    pub links: Links,
-}
+pub type TypeEffectResponse = BaseResponse<TypeEffectResponseAttributes>;
 
 impl TypeEffectResponse {
     /// Create a new `TypeEffectResponse`
@@ -23,7 +17,7 @@ impl TypeEffectResponse {
     ) -> TypeEffectResponse {
         TypeEffectResponse {
             id: type_effect_id.to_string(),
-            _type: TypeEffectResponseType::type_effects,
+            _type: BaseResponseType::type_effects,
             attributes: TypeEffectResponseAttributes {
                 attacking_type: TypeResponse::new(&type_effect.attacking_type_id, type_names[0]),
                 defending_type: TypeResponse::new(&type_effect.defending_type_id, type_names[1]),
@@ -34,12 +28,6 @@ impl TypeEffectResponse {
             },
         }
     }
-}
-
-#[derive(Debug, Serialize)]
-#[allow(non_camel_case_types)]
-pub enum TypeEffectResponseType {
-    type_effects,
 }
 
 #[derive(Debug, Serialize)]

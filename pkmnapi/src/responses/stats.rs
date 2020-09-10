@@ -1,25 +1,19 @@
 use pkmnapi_db::types::{Stats, TypeName};
 use serde::Serialize;
 
+use crate::responses::base::{BaseResponse, BaseResponseType};
 use crate::responses::links::Links;
 use crate::responses::types::TypeResponse;
 use crate::utils;
 
-#[derive(Debug, Serialize)]
-pub struct StatsResponse {
-    pub id: String,
-    #[serde(rename = "type")]
-    pub _type: StatsResponseType,
-    pub attributes: StatsResponseAttributes,
-    pub links: Links,
-}
+pub type StatsResponse = BaseResponse<StatsResponseAttributes>;
 
 impl StatsResponse {
     /// Create a new `StatsResponse`
     pub fn new(pokedex_id: &u8, stats: &Stats, type_names: Vec<TypeName>) -> StatsResponse {
         StatsResponse {
             id: pokedex_id.to_string(),
-            _type: StatsResponseType::stats,
+            _type: BaseResponseType::stats,
             attributes: StatsResponseAttributes {
                 base_hp: stats.base_hp,
                 base_attack: stats.base_attack,
@@ -40,12 +34,6 @@ impl StatsResponse {
             },
         }
     }
-}
-
-#[derive(Debug, Serialize)]
-#[allow(non_camel_case_types)]
-pub enum StatsResponseType {
-    stats,
 }
 
 #[derive(Debug, Serialize)]

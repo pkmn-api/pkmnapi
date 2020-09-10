@@ -1,9 +1,8 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
-pub struct AccessTokenRequest {
-    pub data: AccessTokenRequestData,
-}
+use crate::requests::base::BaseRequest;
+
+pub type AccessTokenRequest = BaseRequest<AccessTokenRequestType, AccessTokenRequestAttributes>;
 
 impl AccessTokenRequest {
     pub fn get_email_address(&self) -> &String {
@@ -12,19 +11,12 @@ impl AccessTokenRequest {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct AccessTokenRequestData {
-    #[serde(rename = "type")]
-    pub _type: AccessTokenRequestDataType,
-    pub attributes: AccessTokenRequestDataAttributes,
-}
-
-#[derive(Debug, Deserialize)]
 #[allow(non_camel_case_types)]
-pub enum AccessTokenRequestDataType {
+pub enum AccessTokenRequestType {
     access_tokens,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct AccessTokenRequestDataAttributes {
+pub struct AccessTokenRequestAttributes {
     pub email_address: String,
 }

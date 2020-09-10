@@ -2,17 +2,11 @@ use pkmnapi_sql::models::Rom;
 use serde::Serialize;
 use std::env;
 
+use crate::responses::base::{BaseResponse, BaseResponseType};
 use crate::responses::links::Links;
 use crate::utils;
 
-#[derive(Debug, Serialize)]
-pub struct RomResponse {
-    pub id: String,
-    #[serde(rename = "type")]
-    pub _type: RomResponseType,
-    pub attributes: RomResponseAttributes,
-    pub links: Links,
-}
+pub type RomResponse = BaseResponse<RomResponseAttributes>;
 
 impl RomResponse {
     /// Create a new `RomResponse`
@@ -25,7 +19,7 @@ impl RomResponse {
 
         RomResponse {
             id: rom.id.to_owned(),
-            _type: RomResponseType::roms,
+            _type: BaseResponseType::roms,
             attributes: RomResponseAttributes {
                 name: rom.name.to_owned(),
                 hash: rom.rom_data_id.to_owned(),
@@ -36,12 +30,6 @@ impl RomResponse {
             },
         }
     }
-}
-
-#[derive(Debug, Serialize)]
-#[allow(non_camel_case_types)]
-pub enum RomResponseType {
-    roms,
 }
 
 #[derive(Debug, Serialize)]

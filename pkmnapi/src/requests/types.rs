@@ -1,9 +1,8 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
-pub struct TypeRequest {
-    pub data: TypeRequestData,
-}
+use crate::requests::base::BaseRequest;
+
+pub type TypeRequest = BaseRequest<TypeRequestType, TypeRequestAttributes>;
 
 impl TypeRequest {
     pub fn get_name(&self) -> &String {
@@ -12,19 +11,12 @@ impl TypeRequest {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct TypeRequestData {
-    #[serde(rename = "type")]
-    pub _type: TypeRequestDataType,
-    pub attributes: TypeRequestDataAttributes,
-}
-
-#[derive(Debug, Deserialize)]
 #[allow(non_camel_case_types)]
-pub enum TypeRequestDataType {
+pub enum TypeRequestType {
     types,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct TypeRequestDataAttributes {
+pub struct TypeRequestAttributes {
     pub name: String,
 }

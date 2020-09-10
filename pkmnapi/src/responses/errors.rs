@@ -2,6 +2,8 @@ use rocket::response::status;
 use rocket_contrib::json::Json;
 use serde::Serialize;
 
+use crate::responses::base::*;
+
 #[derive(Debug, Responder)]
 pub enum ResponseError {
     AccessTokenErrorForbidden(status::Forbidden<Json<AccessTokenErrorForbidden>>),
@@ -24,115 +26,15 @@ pub enum ResponseError {
     TypeResponseErrorInvalid(status::BadRequest<Json<TypeResponseErrorInvalid>>),
 }
 
-#[derive(Debug, Serialize)]
-#[allow(non_camel_case_types)]
-pub enum ResponseErrorType {
-    errors,
-}
-
-#[derive(Debug, Serialize)]
-#[allow(non_camel_case_types)]
-pub enum ResponseErrorId {
-    error_access_tokens_forbidden,
-    error_access_tokens_invalid,
-    error_access_tokens_unauthorized,
-    error_moves_invalid,
-    error_moves,
-    error_patches,
-    error_pokemon_pics,
-    error_roms_invalid_rom,
-    error_roms_no_rom,
-    error_roms_rom_exists,
-    error_stats_invalid,
-    error_stats,
-    error_tms_invalid,
-    error_tms,
-    error_type_effects_invalid,
-    error_type_effects,
-    error_types_invalid,
-    error_types,
-}
-
-#[derive(Debug, Serialize)]
-pub struct AccessTokenErrorInvalid {
-    pub data: AccessTokenErrorInvalidData,
-}
-
-impl AccessTokenErrorInvalid {
-    pub fn new(message: &String) -> ResponseError {
-        let response = AccessTokenErrorInvalid {
-            data: AccessTokenErrorInvalidData {
-                id: ResponseErrorId::error_access_tokens_invalid,
-                _type: ResponseErrorType::errors,
-                attributes: AccessTokenErrorInvalidDataAttributes {
-                    message: message.to_owned(),
-                },
-            },
-        };
-
-        ResponseError::AccessTokenErrorInvalid(status::BadRequest(Some(Json(response))))
-    }
-}
-
-#[derive(Debug, Serialize)]
-pub struct AccessTokenErrorInvalidData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: AccessTokenErrorInvalidDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct AccessTokenErrorInvalidDataAttributes {
-    pub message: String,
-}
-
-#[derive(Debug, Serialize)]
-pub struct AccessTokenErrorUnauthorized {
-    pub data: AccessTokenErrorUnauthorizedData,
-}
-
-impl AccessTokenErrorUnauthorized {
-    pub fn new() -> ResponseError {
-        let response = AccessTokenErrorUnauthorized {
-            data: AccessTokenErrorUnauthorizedData {
-                id: ResponseErrorId::error_access_tokens_unauthorized,
-                _type: ResponseErrorType::errors,
-                attributes: AccessTokenErrorUnauthorizedDataAttributes {
-                    message: "Authorization header must be set".to_owned(),
-                },
-            },
-        };
-
-        ResponseError::AccessTokenErrorUnauthorized(status::Unauthorized(Some(Json(response))))
-    }
-}
-
-#[derive(Debug, Serialize)]
-pub struct AccessTokenErrorUnauthorizedData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: AccessTokenErrorUnauthorizedDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct AccessTokenErrorUnauthorizedDataAttributes {
-    pub message: String,
-}
-
-#[derive(Debug, Serialize)]
-pub struct AccessTokenErrorForbidden {
-    pub data: AccessTokenErrorForbiddenData,
-}
+pub type AccessTokenErrorForbidden = BaseErrorResponse<AccessTokenErrorForbiddenAttributes>;
 
 impl AccessTokenErrorForbidden {
     pub fn new() -> ResponseError {
         let response = AccessTokenErrorForbidden {
-            data: AccessTokenErrorForbiddenData {
-                id: ResponseErrorId::error_access_tokens_forbidden,
-                _type: ResponseErrorType::errors,
-                attributes: AccessTokenErrorForbiddenDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_access_tokens_forbidden,
+                _type: BaseErrorResponseType::errors,
+                attributes: AccessTokenErrorForbiddenAttributes {
                     message: "Authorization header must not be set".to_owned(),
                 },
             },
@@ -143,30 +45,65 @@ impl AccessTokenErrorForbidden {
 }
 
 #[derive(Debug, Serialize)]
-pub struct AccessTokenErrorForbiddenData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: AccessTokenErrorForbiddenDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct AccessTokenErrorForbiddenDataAttributes {
+pub struct AccessTokenErrorForbiddenAttributes {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct MoveResponseError {
-    pub data: MoveResponseErrorData,
+pub type AccessTokenErrorInvalid = BaseErrorResponse<AccessTokenErrorInvalidAttributes>;
+
+impl AccessTokenErrorInvalid {
+    pub fn new(message: &String) -> ResponseError {
+        let response = AccessTokenErrorInvalid {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_access_tokens_invalid,
+                _type: BaseErrorResponseType::errors,
+                attributes: AccessTokenErrorInvalidAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::AccessTokenErrorInvalid(status::BadRequest(Some(Json(response))))
+    }
 }
+
+#[derive(Debug, Serialize)]
+pub struct AccessTokenErrorInvalidAttributes {
+    pub message: String,
+}
+
+pub type AccessTokenErrorUnauthorized = BaseErrorResponse<AccessTokenErrorUnauthorizedAttributes>;
+
+impl AccessTokenErrorUnauthorized {
+    pub fn new() -> ResponseError {
+        let response = AccessTokenErrorUnauthorized {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_access_tokens_unauthorized,
+                _type: BaseErrorResponseType::errors,
+                attributes: AccessTokenErrorUnauthorizedAttributes {
+                    message: "Authorization header must be set".to_owned(),
+                },
+            },
+        };
+
+        ResponseError::AccessTokenErrorUnauthorized(status::Unauthorized(Some(Json(response))))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct AccessTokenErrorUnauthorizedAttributes {
+    pub message: String,
+}
+
+pub type MoveResponseError = BaseErrorResponse<MoveResponseErrorAttributes>;
 
 impl MoveResponseError {
     pub fn new(message: &String) -> ResponseError {
         let response = MoveResponseError {
-            data: MoveResponseErrorData {
-                id: ResponseErrorId::error_moves,
-                _type: ResponseErrorType::errors,
-                attributes: MoveResponseErrorDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_moves,
+                _type: BaseErrorResponseType::errors,
+                attributes: MoveResponseErrorAttributes {
                     message: message.to_owned(),
                 },
             },
@@ -177,30 +114,19 @@ impl MoveResponseError {
 }
 
 #[derive(Debug, Serialize)]
-pub struct MoveResponseErrorData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: MoveResponseErrorDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct MoveResponseErrorDataAttributes {
+pub struct MoveResponseErrorAttributes {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct MoveResponseErrorInvalid {
-    pub data: MoveResponseErrorInvalidData,
-}
+pub type MoveResponseErrorInvalid = BaseErrorResponse<MoveResponseErrorInvalidAttributes>;
 
 impl MoveResponseErrorInvalid {
     pub fn new(message: &String) -> ResponseError {
         let response = MoveResponseErrorInvalid {
-            data: MoveResponseErrorInvalidData {
-                id: ResponseErrorId::error_moves_invalid,
-                _type: ResponseErrorType::errors,
-                attributes: MoveResponseErrorInvalidDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_moves_invalid,
+                _type: BaseErrorResponseType::errors,
+                attributes: MoveResponseErrorInvalidAttributes {
                     message: message.to_owned(),
                 },
             },
@@ -211,30 +137,19 @@ impl MoveResponseErrorInvalid {
 }
 
 #[derive(Debug, Serialize)]
-pub struct MoveResponseErrorInvalidData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: MoveResponseErrorInvalidDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct MoveResponseErrorInvalidDataAttributes {
+pub struct MoveResponseErrorInvalidAttributes {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct PatchResponseError {
-    pub data: PatchResponseErrorData,
-}
+pub type PatchResponseError = BaseErrorResponse<PatchResponseErrorAttributes>;
 
 impl PatchResponseError {
     pub fn new() -> ResponseError {
         let response = PatchResponseError {
-            data: PatchResponseErrorData {
-                id: ResponseErrorId::error_patches,
-                _type: ResponseErrorType::errors,
-                attributes: PatchResponseErrorDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_patches,
+                _type: BaseErrorResponseType::errors,
+                attributes: PatchResponseErrorAttributes {
                     message: "No patch found".to_owned(),
                 },
             },
@@ -245,30 +160,19 @@ impl PatchResponseError {
 }
 
 #[derive(Debug, Serialize)]
-pub struct PatchResponseErrorData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: PatchResponseErrorDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct PatchResponseErrorDataAttributes {
+pub struct PatchResponseErrorAttributes {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct PokemonPicResponseError {
-    pub data: PokemonPicResponseErrorData,
-}
+pub type PokemonPicResponseError = BaseErrorResponse<PokemonPicResponseErrorAttributes>;
 
 impl PokemonPicResponseError {
     pub fn new(message: &String) -> ResponseError {
         let response = PokemonPicResponseError {
-            data: PokemonPicResponseErrorData {
-                id: ResponseErrorId::error_pokemon_pics,
-                _type: ResponseErrorType::errors,
-                attributes: PokemonPicResponseErrorDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_pokemon_pics,
+                _type: BaseErrorResponseType::errors,
+                attributes: PokemonPicResponseErrorAttributes {
                     message: message.to_owned(),
                 },
             },
@@ -279,30 +183,19 @@ impl PokemonPicResponseError {
 }
 
 #[derive(Debug, Serialize)]
-pub struct PokemonPicResponseErrorData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: PokemonPicResponseErrorDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct PokemonPicResponseErrorDataAttributes {
+pub struct PokemonPicResponseErrorAttributes {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct RomResponseErrorNoRom {
-    pub data: RomResponseErrorNoRomData,
-}
+pub type RomResponseErrorNoRom = BaseErrorResponse<RomResponseErrorNoRomAttributes>;
 
 impl RomResponseErrorNoRom {
     pub fn new() -> ResponseError {
         let response = RomResponseErrorNoRom {
-            data: RomResponseErrorNoRomData {
-                id: ResponseErrorId::error_roms_no_rom,
-                _type: ResponseErrorType::errors,
-                attributes: RomResponseErrorNoRomDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_roms_no_rom,
+                _type: BaseErrorResponseType::errors,
+                attributes: RomResponseErrorNoRomAttributes {
                     message: "No ROM uploaded".to_owned(),
                 },
             },
@@ -313,30 +206,19 @@ impl RomResponseErrorNoRom {
 }
 
 #[derive(Debug, Serialize)]
-pub struct RomResponseErrorNoRomData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: RomResponseErrorNoRomDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct RomResponseErrorNoRomDataAttributes {
+pub struct RomResponseErrorNoRomAttributes {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct RomResponseErrorInvalidRom {
-    pub data: RomResponseErrorInvalidRomData,
-}
+pub type RomResponseErrorInvalidRom = BaseErrorResponse<RomResponseErrorInvalidRomAttributes>;
 
 impl RomResponseErrorInvalidRom {
     pub fn new() -> ResponseError {
         let response = RomResponseErrorInvalidRom {
-            data: RomResponseErrorInvalidRomData {
-                id: ResponseErrorId::error_roms_invalid_rom,
-                _type: ResponseErrorType::errors,
-                attributes: RomResponseErrorInvalidRomDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_roms_invalid_rom,
+                _type: BaseErrorResponseType::errors,
+                attributes: RomResponseErrorInvalidRomAttributes {
                     message: "Invalid ROM provided".to_owned(),
                 },
             },
@@ -347,30 +229,19 @@ impl RomResponseErrorInvalidRom {
 }
 
 #[derive(Debug, Serialize)]
-pub struct RomResponseErrorInvalidRomData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: RomResponseErrorInvalidRomDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct RomResponseErrorInvalidRomDataAttributes {
+pub struct RomResponseErrorInvalidRomAttributes {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct RomResponseErrorRomExists {
-    pub data: RomResponseErrorRomExistsData,
-}
+pub type RomResponseErrorRomExists = BaseErrorResponse<RomResponseErrorRomExistsAttributes>;
 
 impl RomResponseErrorRomExists {
     pub fn new() -> ResponseError {
         let response = RomResponseErrorRomExists {
-            data: RomResponseErrorRomExistsData {
-                id: ResponseErrorId::error_roms_rom_exists,
-                _type: ResponseErrorType::errors,
-                attributes: RomResponseErrorRomExistsDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_roms_rom_exists,
+                _type: BaseErrorResponseType::errors,
+                attributes: RomResponseErrorRomExistsAttributes {
                     message: "ROM already exists".to_owned(),
                 },
             },
@@ -381,30 +252,19 @@ impl RomResponseErrorRomExists {
 }
 
 #[derive(Debug, Serialize)]
-pub struct RomResponseErrorRomExistsData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: RomResponseErrorRomExistsDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct RomResponseErrorRomExistsDataAttributes {
+pub struct RomResponseErrorRomExistsAttributes {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct StatsResponseError {
-    pub data: StatsResponseErrorData,
-}
+pub type StatsResponseError = BaseErrorResponse<StatsResponseErrorAttributes>;
 
 impl StatsResponseError {
     pub fn new(message: &String) -> ResponseError {
         let response = StatsResponseError {
-            data: StatsResponseErrorData {
-                id: ResponseErrorId::error_stats,
-                _type: ResponseErrorType::errors,
-                attributes: StatsResponseErrorDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_stats,
+                _type: BaseErrorResponseType::errors,
+                attributes: StatsResponseErrorAttributes {
                     message: message.to_owned(),
                 },
             },
@@ -415,30 +275,19 @@ impl StatsResponseError {
 }
 
 #[derive(Debug, Serialize)]
-pub struct StatsResponseErrorData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: StatsResponseErrorDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct StatsResponseErrorDataAttributes {
+pub struct StatsResponseErrorAttributes {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct StatsResponseErrorInvalid {
-    pub data: StatsResponseErrorInvalidData,
-}
+pub type StatsResponseErrorInvalid = BaseErrorResponse<StatsResponseErrorInvalidAttributes>;
 
 impl StatsResponseErrorInvalid {
     pub fn new(message: &String) -> ResponseError {
         let response = StatsResponseErrorInvalid {
-            data: StatsResponseErrorInvalidData {
-                id: ResponseErrorId::error_stats_invalid,
-                _type: ResponseErrorType::errors,
-                attributes: StatsResponseErrorInvalidDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_stats_invalid,
+                _type: BaseErrorResponseType::errors,
+                attributes: StatsResponseErrorInvalidAttributes {
                     message: message.to_owned(),
                 },
             },
@@ -449,30 +298,19 @@ impl StatsResponseErrorInvalid {
 }
 
 #[derive(Debug, Serialize)]
-pub struct StatsResponseErrorInvalidData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: StatsResponseErrorInvalidDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct StatsResponseErrorInvalidDataAttributes {
+pub struct StatsResponseErrorInvalidAttributes {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct TMResponseError {
-    pub data: TMResponseErrorData,
-}
+pub type TMResponseError = BaseErrorResponse<TMResponseErrorAttributes>;
 
 impl TMResponseError {
     pub fn new(message: &String) -> ResponseError {
         let response = TMResponseError {
-            data: TMResponseErrorData {
-                id: ResponseErrorId::error_tms,
-                _type: ResponseErrorType::errors,
-                attributes: TMResponseErrorDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_tms,
+                _type: BaseErrorResponseType::errors,
+                attributes: TMResponseErrorAttributes {
                     message: message.to_owned(),
                 },
             },
@@ -483,30 +321,19 @@ impl TMResponseError {
 }
 
 #[derive(Debug, Serialize)]
-pub struct TMResponseErrorData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: TMResponseErrorDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct TMResponseErrorDataAttributes {
+pub struct TMResponseErrorAttributes {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct TMResponseErrorInvalid {
-    pub data: TMResponseErrorInvalidData,
-}
+pub type TMResponseErrorInvalid = BaseErrorResponse<TMResponseErrorInvalidAttributes>;
 
 impl TMResponseErrorInvalid {
     pub fn new(message: &String) -> ResponseError {
         let response = TMResponseErrorInvalid {
-            data: TMResponseErrorInvalidData {
-                id: ResponseErrorId::error_tms_invalid,
-                _type: ResponseErrorType::errors,
-                attributes: TMResponseErrorInvalidDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_tms_invalid,
+                _type: BaseErrorResponseType::errors,
+                attributes: TMResponseErrorInvalidAttributes {
                     message: message.to_owned(),
                 },
             },
@@ -517,30 +344,19 @@ impl TMResponseErrorInvalid {
 }
 
 #[derive(Debug, Serialize)]
-pub struct TMResponseErrorInvalidData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: TMResponseErrorInvalidDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct TMResponseErrorInvalidDataAttributes {
+pub struct TMResponseErrorInvalidAttributes {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct TypeResponseError {
-    pub data: TypeResponseErrorData,
-}
+pub type TypeResponseError = BaseErrorResponse<TypeResponseErrorAttributes>;
 
 impl TypeResponseError {
     pub fn new(message: &String) -> ResponseError {
         let response = TypeResponseError {
-            data: TypeResponseErrorData {
-                id: ResponseErrorId::error_types,
-                _type: ResponseErrorType::errors,
-                attributes: TypeResponseErrorDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_types,
+                _type: BaseErrorResponseType::errors,
+                attributes: TypeResponseErrorAttributes {
                     message: message.to_owned(),
                 },
             },
@@ -551,30 +367,19 @@ impl TypeResponseError {
 }
 
 #[derive(Debug, Serialize)]
-pub struct TypeResponseErrorData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: TypeResponseErrorDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct TypeResponseErrorDataAttributes {
+pub struct TypeResponseErrorAttributes {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct TypeResponseErrorInvalid {
-    pub data: TypeResponseErrorInvalidData,
-}
+pub type TypeResponseErrorInvalid = BaseErrorResponse<TypeResponseErrorInvalidAttributes>;
 
 impl TypeResponseErrorInvalid {
     pub fn new(message: &String) -> ResponseError {
         let response = TypeResponseErrorInvalid {
-            data: TypeResponseErrorInvalidData {
-                id: ResponseErrorId::error_types_invalid,
-                _type: ResponseErrorType::errors,
-                attributes: TypeResponseErrorInvalidDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_types_invalid,
+                _type: BaseErrorResponseType::errors,
+                attributes: TypeResponseErrorInvalidAttributes {
                     message: message.to_owned(),
                 },
             },
@@ -585,30 +390,19 @@ impl TypeResponseErrorInvalid {
 }
 
 #[derive(Debug, Serialize)]
-pub struct TypeResponseErrorInvalidData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: TypeResponseErrorInvalidDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct TypeResponseErrorInvalidDataAttributes {
+pub struct TypeResponseErrorInvalidAttributes {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct TypeEffectResponseError {
-    pub data: TypeEffectResponseErrorData,
-}
+pub type TypeEffectResponseError = BaseErrorResponse<TypeEffectResponseErrorAttributes>;
 
 impl TypeEffectResponseError {
     pub fn new(message: &String) -> ResponseError {
         let response = TypeEffectResponseError {
-            data: TypeEffectResponseErrorData {
-                id: ResponseErrorId::error_type_effects,
-                _type: ResponseErrorType::errors,
-                attributes: TypeEffectResponseErrorDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_type_effects,
+                _type: BaseErrorResponseType::errors,
+                attributes: TypeEffectResponseErrorAttributes {
                     message: message.to_owned(),
                 },
             },
@@ -619,30 +413,20 @@ impl TypeEffectResponseError {
 }
 
 #[derive(Debug, Serialize)]
-pub struct TypeEffectResponseErrorData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: TypeEffectResponseErrorDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct TypeEffectResponseErrorDataAttributes {
+pub struct TypeEffectResponseErrorAttributes {
     pub message: String,
 }
 
-#[derive(Debug, Serialize)]
-pub struct TypeEffectResponseErrorInvalid {
-    pub data: TypeEffectResponseErrorInvalidData,
-}
+pub type TypeEffectResponseErrorInvalid =
+    BaseErrorResponse<TypeEffectResponseErrorInvalidAttributes>;
 
 impl TypeEffectResponseErrorInvalid {
     pub fn new(message: &String) -> ResponseError {
         let response = TypeEffectResponseErrorInvalid {
-            data: TypeEffectResponseErrorInvalidData {
-                id: ResponseErrorId::error_type_effects_invalid,
-                _type: ResponseErrorType::errors,
-                attributes: TypeEffectResponseErrorInvalidDataAttributes {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_type_effects_invalid,
+                _type: BaseErrorResponseType::errors,
+                attributes: TypeEffectResponseErrorInvalidAttributes {
                     message: message.to_owned(),
                 },
             },
@@ -653,14 +437,6 @@ impl TypeEffectResponseErrorInvalid {
 }
 
 #[derive(Debug, Serialize)]
-pub struct TypeEffectResponseErrorInvalidData {
-    pub id: ResponseErrorId,
-    #[serde(rename = "type")]
-    pub _type: ResponseErrorType,
-    pub attributes: TypeEffectResponseErrorInvalidDataAttributes,
-}
-
-#[derive(Debug, Serialize)]
-pub struct TypeEffectResponseErrorInvalidDataAttributes {
+pub struct TypeEffectResponseErrorInvalidAttributes {
     pub message: String,
 }

@@ -1,9 +1,8 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
-pub struct TypeEffectRequest {
-    pub data: TypeEffectRequestData,
-}
+use crate::requests::base::BaseRequest;
+
+pub type TypeEffectRequest = BaseRequest<TypeEffectRequestType, TypeEffectRequestAttributes>;
 
 impl TypeEffectRequest {
     pub fn get_attacking_type_id(&self) -> &String {
@@ -20,26 +19,19 @@ impl TypeEffectRequest {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct TypeEffectRequestData {
-    #[serde(rename = "type")]
-    pub _type: TypeEffectRequestDataType,
-    pub attributes: TypeEffectRequestDataAttributes,
-}
-
-#[derive(Debug, Deserialize)]
 #[allow(non_camel_case_types)]
-pub enum TypeEffectRequestDataType {
+pub enum TypeEffectRequestType {
     type_effects,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct TypeEffectRequestDataAttributes {
-    pub attacking_type: TypeEffectRequestDataAttributesType,
-    pub defending_type: TypeEffectRequestDataAttributesType,
+pub struct TypeEffectRequestAttributes {
+    pub attacking_type: TypeEffectRequestAttributesType,
+    pub defending_type: TypeEffectRequestAttributesType,
     pub multiplier: f32,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct TypeEffectRequestDataAttributesType {
+pub struct TypeEffectRequestAttributesType {
     id: String,
 }
