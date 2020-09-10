@@ -7,5 +7,7 @@ pub mod roms;
 pub mod stats;
 pub mod status;
 pub mod tms;
+pub mod trainer_names;
+pub mod trainer_pics;
 pub mod type_effects;
 pub mod types;

@@ -32,6 +32,7 @@ pub enum BaseResponseType {
     roms,
     stats,
     tms,
+    trainer_names,
     type_effects,
     types,
 }
@@ -69,6 +70,9 @@ pub enum BaseErrorResponseId {
     error_stats,
     error_tms_invalid,
     error_tms,
+    error_trainer_names_invalid,
+    error_trainer_names,
+    error_trainer_pics,
     error_type_effects_invalid,
     error_type_effects,
     error_types_invalid,

@@ -23,6 +23,9 @@ pub enum ResponseError {
     StatsResponseErrorInvalid(status::BadRequest<Json<StatsResponseErrorInvalid>>),
     TMResponseError(status::NotFound<Json<TMResponseError>>),
     TMResponseErrorInvalid(status::BadRequest<Json<TMResponseErrorInvalid>>),
+    TrainerNameResponseError(status::NotFound<Json<TrainerNameResponseError>>),
+    TrainerNameResponseErrorInvalid(status::BadRequest<Json<TrainerNameResponseErrorInvalid>>),
+    TrainerPicResponseError(status::NotFound<Json<TrainerPicResponseError>>),
     TypeEffectResponseError(status::NotFound<Json<TypeEffectResponseError>>),
     TypeEffectResponseErrorInvalid(status::BadRequest<Json<TypeEffectResponseErrorInvalid>>),
     TypeResponseError(status::NotFound<Json<TypeResponseError>>),
@@ -418,6 +421,76 @@ impl TMResponseErrorInvalid {
 
 #[derive(Debug, Serialize)]
 pub struct TMResponseErrorInvalidAttributes {
+    pub message: String,
+}
+
+pub type TrainerNameResponseError = BaseErrorResponse<TrainerNameResponseErrorAttributes>;
+
+impl TrainerNameResponseError {
+    pub fn new(message: &String) -> ResponseError {
+        let response = TrainerNameResponseError {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_trainer_names,
+                _type: BaseErrorResponseType::errors,
+                attributes: TrainerNameResponseErrorAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::TrainerNameResponseError(status::NotFound(Json(response)))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct TrainerNameResponseErrorAttributes {
+    pub message: String,
+}
+
+pub type TrainerNameResponseErrorInvalid =
+    BaseErrorResponse<TrainerNameResponseErrorInvalidAttributes>;
+
+impl TrainerNameResponseErrorInvalid {
+    pub fn new(message: &String) -> ResponseError {
+        let response = TrainerNameResponseErrorInvalid {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_trainer_names_invalid,
+                _type: BaseErrorResponseType::errors,
+                attributes: TrainerNameResponseErrorInvalidAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::TrainerNameResponseErrorInvalid(status::BadRequest(Some(Json(response))))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct TrainerNameResponseErrorInvalidAttributes {
+    pub message: String,
+}
+
+pub type TrainerPicResponseError = BaseErrorResponse<TrainerPicResponseErrorAttributes>;
+
+impl TrainerPicResponseError {
+    pub fn new(message: &String) -> ResponseError {
+        let response = TrainerPicResponseError {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_trainer_pics,
+                _type: BaseErrorResponseType::errors,
+                attributes: TrainerPicResponseErrorAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::TrainerPicResponseError(status::NotFound(Json(response)))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct TrainerPicResponseErrorAttributes {
     pub message: String,
 }
 
