@@ -22,6 +22,7 @@ pub struct BaseResponseAll<T> {
 pub enum BaseResponseType {
     moves,
     patches,
+    pokemon_names,
     roms,
     stats,
     tms,
@@ -51,6 +52,8 @@ pub enum BaseErrorResponseId {
     error_moves_invalid,
     error_moves,
     error_patches,
+    error_pokemon_names_invalid,
+    error_pokemon_names,
     error_pokemon_pics,
     error_roms_invalid_rom,
     error_roms_no_rom,

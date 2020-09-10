@@ -12,6 +12,8 @@ pub enum ResponseError {
     MoveResponseError(status::NotFound<Json<MoveResponseError>>),
     MoveResponseErrorInvalid(status::BadRequest<Json<MoveResponseErrorInvalid>>),
     PatchResponseError(status::NotFound<Json<PatchResponseError>>),
+    PokemonNameResponseError(status::NotFound<Json<PokemonNameResponseError>>),
+    PokemonNameResponseErrorInvalid(status::BadRequest<Json<PokemonNameResponseErrorInvalid>>),
     PokemonPicResponseError(status::NotFound<Json<PokemonPicResponseError>>),
     RomResponseErrorInvalidRom(status::BadRequest<Json<RomResponseErrorInvalidRom>>),
     RomResponseErrorNoRom(status::Forbidden<Json<RomResponseErrorNoRom>>),
@@ -161,6 +163,53 @@ impl PatchResponseError {
 
 #[derive(Debug, Serialize)]
 pub struct PatchResponseErrorAttributes {
+    pub message: String,
+}
+
+pub type PokemonNameResponseError = BaseErrorResponse<PokemonNameResponseErrorAttributes>;
+
+impl PokemonNameResponseError {
+    pub fn new(message: &String) -> ResponseError {
+        let response = PokemonNameResponseError {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_pokemon_names,
+                _type: BaseErrorResponseType::errors,
+                attributes: PokemonNameResponseErrorAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::PokemonNameResponseError(status::NotFound(Json(response)))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct PokemonNameResponseErrorAttributes {
+    pub message: String,
+}
+
+pub type PokemonNameResponseErrorInvalid =
+    BaseErrorResponse<PokemonNameResponseErrorInvalidAttributes>;
+
+impl PokemonNameResponseErrorInvalid {
+    pub fn new(message: &String) -> ResponseError {
+        let response = PokemonNameResponseErrorInvalid {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_pokemon_names_invalid,
+                _type: BaseErrorResponseType::errors,
+                attributes: PokemonNameResponseErrorInvalidAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::PokemonNameResponseErrorInvalid(status::BadRequest(Some(Json(response))))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct PokemonNameResponseErrorInvalidAttributes {
     pub message: String,
 }
 

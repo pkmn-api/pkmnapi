@@ -35,6 +35,8 @@ impl Pkmnapi {
                     routes::patches::get_patch,
                     routes::patches::get_patches_raw,
                     routes::patches::get_patches,
+                    routes::pokemon_names::get_pokemon_name,
+                    routes::pokemon_names::post_pokemon_name,
                     routes::pokemon_pics::get_pokemon_pic_jpeg,
                     routes::pokemon_pics::get_pokemon_pic_png,
                     routes::roms::delete_rom,
