@@ -1488,6 +1488,20 @@ impl PkmnapiDB {
     /// ```
     pub fn get_trainer_name(&self, trainer_id: &u8) -> Result<TrainerName, String> {
         let offset_base = (ROM_PAGE * 0x1C) + 0x19FF;
+
+        let max_offset = (&self.rom[offset_base..])
+            .iter()
+            .position(|&r| r == 0x21)
+            .unwrap();
+        let max_id = (&self.rom[offset_base..(offset_base + max_offset)])
+            .iter()
+            .filter(|&x| *x == 0x50)
+            .count();
+
+        if trainer_id >= &(max_id as u8) {
+            return Err(format!("Invalid trainer ID: {}", trainer_id));
+        }
+
         let offset = match {
             if trainer_id == &0 {
                 Some(offset_base)
@@ -1502,7 +1516,7 @@ impl PkmnapiDB {
 
                         None
                     })
-                    .take(46)
+                    .take(max_id - 1)
                     .enumerate()
                     .filter_map(|(i, x)| {
                         if (*trainer_id as usize) - 1 == i {
@@ -1575,6 +1589,20 @@ impl PkmnapiDB {
         }
 
         let offset_base = (ROM_PAGE * 0x1C) + 0x19FF;
+
+        let max_offset = (&self.rom[offset_base..])
+            .iter()
+            .position(|&r| r == 0x21)
+            .unwrap();
+        let max_id = (&self.rom[offset_base..(offset_base + max_offset)])
+            .iter()
+            .filter(|&x| *x == 0x50)
+            .count();
+
+        if trainer_id >= &(max_id as u8) {
+            return Err(format!("Invalid trainer ID: {}", trainer_id));
+        }
+
         let offset = match {
             if trainer_id == &0 {
                 Some(offset_base)
@@ -1589,7 +1617,7 @@ impl PkmnapiDB {
 
                         None
                     })
-                    .take(46)
+                    .take(max_id - 1)
                     .enumerate()
                     .filter_map(|(i, x)| {
                         if (*trainer_id as usize) - 1 == i {
@@ -1610,7 +1638,19 @@ impl PkmnapiDB {
 
     pub fn get_trainer_pic(&self, trainer_id: &u8) -> Result<Pic, String> {
         let offset_base = ROM_PAGE * 0x1C;
-        let offset = (offset_base + 0x1914) + ((*trainer_id as usize) * 0x05);
+        let offset_base = offset_base + 0x1914;
+
+        let max_index = (&self.rom[offset_base..])
+            .iter()
+            .position(|&r| r == 0x8D)
+            .unwrap();
+        let max_id = ((max_index as f32) / 5.0) as u8;
+
+        if trainer_id >= &max_id {
+            return Err(format!("Invalid trainer ID: {}", trainer_id));
+        }
+
+        let offset = offset_base + ((*trainer_id as usize) * 0x05);
 
         let pointer_base = ROM_PAGE * 0x24;
         let pointer = pointer_base + {
