@@ -1462,6 +1462,63 @@ impl PkmnapiDB {
         Ok(pic)
     }
 
+    pub fn set_pokemon_pic(
+        &self,
+        pokedex_id: &u8,
+        pokemon_pic_face: &PokemonPicFace,
+        pic: &Pic,
+        encoding_method: PicEncodingMethod,
+    ) -> Result<Patch, String> {
+        let old_pixels = self.get_pokemon_pic(pokedex_id, pokemon_pic_face)?;
+        let pixels = pic.encode(encoding_method);
+
+        if pixels.len() > old_pixels.bytes + 1 {
+            return Err("Length mismatch: compressed image is too large".to_string());
+        }
+
+        let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
+
+        let (offset, bank_offset) = {
+            if pokedex_id == &151 {
+                let offset_base = ROM_PAGE * 0x02;
+                let offset = offset_base + 0x025B;
+                let bank_offset = (self.rom[0x163A] - 1) * 0x02;
+
+                (offset, bank_offset as usize)
+            } else {
+                let offset_base = ROM_PAGE * 0x1C;
+                let offset = (offset_base + 0x03DE) + (((*pokedex_id as usize) - 1) * 0x1C);
+
+                let bank_offset = match internal_id {
+                    _ if internal_id < self.rom[0x1646] - 1 => self.rom[0x1648],
+                    _ if internal_id < self.rom[0x164D] - 1 => self.rom[0x164F],
+                    _ if internal_id < self.rom[0x1654] - 1 => self.rom[0x1656],
+                    _ if internal_id < self.rom[0x165B] - 1 => self.rom[0x165D],
+                    _ => self.rom[0x1661],
+                };
+                let bank_offset = (bank_offset - 1) * 0x02;
+
+                (offset, bank_offset as usize)
+            }
+        };
+
+        let mut cursor = Cursor::new(&self.rom[(offset + 11)..(offset + 15)]);
+
+        let pointer_front = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
+        let pointer_back = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
+
+        let offset_base = ROM_PAGE * bank_offset;
+        let offset_front = offset_base + pointer_front;
+        let offset_back = offset_base + pointer_back;
+
+        let pointer = match pokemon_pic_face {
+            PokemonPicFace::FRONT => offset_front,
+            PokemonPicFace::BACK => offset_back,
+        };
+
+        Ok(Patch::new(&pointer, &pixels))
+    }
+
     /// Get trainer name by trainer ID
     ///
     /// # Example
