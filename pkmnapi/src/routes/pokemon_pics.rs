@@ -1,8 +1,12 @@
+use pkmnapi_db::pic::*;
 use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 use pkmnapi_sql::*;
 use rocket::http::{ContentType, Header};
+use rocket::response::status;
 use rocket::response::Response;
 use rocket::State;
+use rocket_contrib::json::JsonValue;
 use std::io::Cursor;
 
 use crate::guards::*;
@@ -89,4 +93,138 @@ pub fn get_pokemon_pic_jpeg<'a>(
         .finalize();
 
     Ok(response)
+}
+
+#[post(
+    "/pokemon/pics/<pokedex_id>?<face>&<method>&<primary>",
+    format = "image/png",
+    data = "<data>",
+    rank = 1
+)]
+pub fn post_pokemon_pic_png<'a>(
+    sql: State<PkmnapiSQL>,
+    data: Vec<u8>,
+    access_token: Result<AccessToken, AccessTokenError>,
+    patch_description: Result<PatchDescription, PatchDescriptionError>,
+    pokedex_id: u8,
+    face: Option<String>,
+    method: Option<u8>,
+    primary: Option<u8>,
+) -> Result<status::Accepted<JsonValue>, ResponseError> {
+    let access_token = match access_token {
+        Ok(access_token) => access_token.into_inner(),
+        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
+    };
+
+    let connection = sql.get_connection().unwrap();
+    let rom_data_sql = match sql.select_user_rom_data_by_access_token(&connection, &access_token) {
+        Ok(Some(rom_sql)) => rom_sql,
+        _ => return Err(RomResponseErrorNoRom::new()),
+    };
+
+    let db = match PkmnapiDB::new(&rom_data_sql.data) {
+        Ok(db) => db,
+        Err(_) => return Err(RomResponseErrorInvalidRom::new()),
+    };
+
+    let pic = match Pic::from_png(data) {
+        Ok(pic) => pic,
+        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+    };
+
+    let encoding_method = PicEncodingMethod::from(method.unwrap_or(0x01), primary.unwrap_or(0x00));
+
+    let patch = match db.set_pokemon_pic(
+        &pokedex_id,
+        &PokemonPicFace::from(face),
+        &pic,
+        encoding_method,
+    ) {
+        Ok(patch) => patch,
+        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+    };
+
+    let patch_description = match patch_description {
+        Ok(patch_description) => patch_description.into_inner(),
+        Err(_) => None,
+    };
+
+    match sql.insert_patch(
+        &connection,
+        &access_token,
+        &patch.to_raw(),
+        patch_description,
+    ) {
+        Ok(_) => {}
+        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+    };
+
+    Ok(status::Accepted(Some(json!({}))))
+}
+
+#[post(
+    "/pokemon/pics/<pokedex_id>?<face>&<method>&<primary>",
+    format = "image/jpeg",
+    data = "<data>",
+    rank = 2
+)]
+pub fn post_pokemon_pic_jpeg<'a>(
+    sql: State<PkmnapiSQL>,
+    data: Vec<u8>,
+    access_token: Result<AccessToken, AccessTokenError>,
+    patch_description: Result<PatchDescription, PatchDescriptionError>,
+    pokedex_id: u8,
+    face: Option<String>,
+    method: Option<u8>,
+    primary: Option<u8>,
+) -> Result<status::Accepted<JsonValue>, ResponseError> {
+    let access_token = match access_token {
+        Ok(access_token) => access_token.into_inner(),
+        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
+    };
+
+    let connection = sql.get_connection().unwrap();
+    let rom_data_sql = match sql.select_user_rom_data_by_access_token(&connection, &access_token) {
+        Ok(Some(rom_sql)) => rom_sql,
+        _ => return Err(RomResponseErrorNoRom::new()),
+    };
+
+    let db = match PkmnapiDB::new(&rom_data_sql.data) {
+        Ok(db) => db,
+        Err(_) => return Err(RomResponseErrorInvalidRom::new()),
+    };
+
+    let pic = match Pic::from_jpeg(data) {
+        Ok(pic) => pic,
+        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+    };
+
+    let encoding_method = PicEncodingMethod::from(method.unwrap_or(0x01), primary.unwrap_or(0x00));
+
+    let patch = match db.set_pokemon_pic(
+        &pokedex_id,
+        &PokemonPicFace::from(face),
+        &pic,
+        encoding_method,
+    ) {
+        Ok(patch) => patch,
+        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+    };
+
+    let patch_description = match patch_description {
+        Ok(patch_description) => patch_description.into_inner(),
+        Err(_) => None,
+    };
+
+    match sql.insert_patch(
+        &connection,
+        &access_token,
+        &patch.to_raw(),
+        patch_description,
+    ) {
+        Ok(_) => {}
+        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+    };
+
+    Ok(status::Accepted(Some(json!({}))))
 }

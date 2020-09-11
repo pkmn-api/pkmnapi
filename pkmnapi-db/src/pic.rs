@@ -454,7 +454,7 @@ impl Pic {
         Pic::from(data, ImageFormat::Png)
     }
 
-    pub fn from_jpg(data: Vec<u8>) -> Result<Self, String> {
+    pub fn from_jpeg(data: Vec<u8>) -> Result<Self, String> {
         Pic::from(data, ImageFormat::Jpeg)
     }
 

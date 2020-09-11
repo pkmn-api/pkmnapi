@@ -39,6 +39,8 @@ impl Pkmnapi {
                     routes::pokemon_names::post_pokemon_name,
                     routes::pokemon_pics::get_pokemon_pic_jpeg,
                     routes::pokemon_pics::get_pokemon_pic_png,
+                    routes::pokemon_pics::post_pokemon_pic_jpeg,
+                    routes::pokemon_pics::post_pokemon_pic_png,
                     routes::roms::delete_rom,
                     routes::roms::get_rom,
                     routes::roms::post_rom,
