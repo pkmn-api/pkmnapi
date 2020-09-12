@@ -416,16 +416,16 @@ impl Pic {
     fn from(data: Vec<u8>, format: ImageFormat) -> Result<Self, String> {
         let raw = match image::load_from_memory_with_format(&data, format) {
             Ok(img) => img,
-            Err(_) => return Err("Could not read image".to_string()),
+            Err(_) => return Err("Could not read image".to_owned()),
         };
 
         let img = match raw.as_luma8() {
             Some(img) => img,
-            None => return Err("Could not read image".to_string()),
+            None => return Err("Could not read image".to_owned()),
         };
 
         if img.width() % 8 != 0 || img.height() % 8 != 0 {
-            return Err("Image dimensions must be multiples of 8".to_string());
+            return Err("Image dimensions must be multiples of 8".to_owned());
         }
 
         let width = ((img.width() as f32) / 8.0) as u8;
@@ -620,7 +620,7 @@ impl Pic {
 
         match img.write_to(&mut buf, format) {
             Ok(_) => {}
-            Err(_) => return Err("Could not write image".to_string()),
+            Err(_) => return Err("Could not write image".to_owned()),
         }
 
         Ok(buf)

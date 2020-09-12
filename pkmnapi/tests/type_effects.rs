@@ -20,7 +20,7 @@ fn get_type_effect_200() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"0","type":"type_effects","attributes":{"attacking_type":{"id":"21","type":"types","attributes":{"name":"WATER"},"links":{"self":"http://localhost:8080/v1/types/21"}},"defending_type":{"id":"20","type":"types","attributes":{"name":"FIRE"},"links":{"self":"http://localhost:8080/v1/types/20"}},"multiplier":2.0},"links":{"self":"http://localhost:8080/v1/type_effects/0"}},"links":{"self":"http://localhost:8080/v1/type_effects/0"}}"#
-                .to_string()
+                .to_owned()
         )
     );
 
@@ -57,7 +57,7 @@ fn get_type_effect_404() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"error_type_effects","type":"errors","attributes":{"message":"Invalid ID: valid range is 0-81"}}}"#
-                .to_string()
+                .to_owned()
         )
     );
 
@@ -80,7 +80,7 @@ fn post_type_effect_202() {
 
     assert_eq!(response.status(), Status::Accepted);
     assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(response.body_string(), Some("{}".to_string()));
+    assert_eq!(response.body_string(), Some("{}".to_owned()));
 
     let request = client
         .get("/v1/type_effects/0")
@@ -94,7 +94,7 @@ fn post_type_effect_202() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"0","type":"type_effects","attributes":{"attacking_type":{"id":"0","type":"types","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/0"}},"defending_type":{"id":"0","type":"types","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/0"}},"multiplier":0.0},"links":{"self":"http://localhost:8080/v1/type_effects/0"}},"links":{"self":"http://localhost:8080/v1/type_effects/0"}}"#
-                .to_string()
+                .to_owned()
         )
     );
 
@@ -136,7 +136,7 @@ fn post_type_effect_404() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"error_type_effects","type":"errors","attributes":{"message":"Invalid ID: valid range is 0-81"}}}"#
-                .to_string()
+                .to_owned()
         )
     );
 

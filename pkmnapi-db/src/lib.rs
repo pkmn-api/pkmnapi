@@ -1473,7 +1473,7 @@ impl PkmnapiDB {
         let pixels = pic.encode(encoding_method);
 
         if pixels.len() > old_pixels.bytes + 1 {
-            return Err("Length mismatch: compressed image is too large".to_string());
+            return Err("Length mismatch: compressed image is too large".to_owned());
         }
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;

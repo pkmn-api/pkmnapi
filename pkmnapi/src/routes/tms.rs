@@ -59,7 +59,7 @@ pub fn post_tm(
         }
         _ => {
             return Err(TMResponseErrorInvalid::new(
-                &"An unknown error occurred".to_string(),
+                &"An unknown error occurred".to_owned(),
             ));
         }
     };

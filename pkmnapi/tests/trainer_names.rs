@@ -20,7 +20,7 @@ fn get_trainer_name_200() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"0","type":"trainer_names","attributes":{"name":"YOUNGSTER"},"links":{"self":"http://localhost:8080/v1/trainer/names/0"}},"links":{"self":"http://localhost:8080/v1/trainer/names/0"}}"#
-                .to_string()
+                .to_owned()
         )
     );
 
@@ -57,7 +57,7 @@ fn get_trainer_name_404() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"error_trainer_names","type":"errors","attributes":{"message":"Invalid trainer ID: 100"}}}"#
-                .to_string()
+                .to_owned()
         )
     );
 
@@ -80,7 +80,7 @@ fn post_trainer_name_202() {
 
     assert_eq!(response.status(), Status::Accepted);
     assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(response.body_string(), Some("{}".to_string()));
+    assert_eq!(response.body_string(), Some("{}".to_owned()));
 
     let request = client
         .get("/v1/trainer/names/0")
@@ -94,7 +94,7 @@ fn post_trainer_name_202() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"0","type":"trainer_names","attributes":{"name":"OLD-TIMER"},"links":{"self":"http://localhost:8080/v1/trainer/names/0"}},"links":{"self":"http://localhost:8080/v1/trainer/names/0"}}"#
-                .to_string()
+                .to_owned()
         )
     );
 
@@ -136,7 +136,7 @@ fn post_trainer_name_404() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"error_trainer_names","type":"errors","attributes":{"message":"Invalid trainer ID: 100"}}}"#
-                .to_string()
+                .to_owned()
         )
     );
 

@@ -60,7 +60,7 @@ impl Header {
     /// ```
     pub fn from(rom: &[u8]) -> Result<Header, String> {
         if rom.len() < 0x150 {
-            return Err("Header too small".to_string());
+            return Err("Header too small".to_owned());
         }
 
         let raw = rom[0x100..=0x14F].to_vec();

@@ -12,7 +12,7 @@ fn status_ok() {
 
     assert_eq!(response.status(), Status::Ok);
     assert_eq!(response.content_type(), Some(ContentType::Plain));
-    assert_eq!(response.body_string(), Some("OK".to_string()));
+    assert_eq!(response.body_string(), Some("OK".to_owned()));
 
     common::teardown();
 }

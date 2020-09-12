@@ -58,7 +58,7 @@ pub fn post_trainer_name(
         }
         _ => {
             return Err(TrainerNameResponseErrorInvalid::new(
-                &"An unknown error occurred".to_string(),
+                &"An unknown error occurred".to_owned(),
             ));
         }
     };

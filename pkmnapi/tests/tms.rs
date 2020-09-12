@@ -20,7 +20,7 @@ fn get_tm_200() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"1","type":"tms","attributes":{"move":{"id":"5","type":"moves","attributes":{"name":"MEGA PUNCH"},"links":{"self":"http://localhost:8080/v1/moves/5"}}},"links":{"self":"http://localhost:8080/v1/tms/1"}},"links":{"self":"http://localhost:8080/v1/tms/1"}}"#
-                .to_string()
+                .to_owned()
         )
     );
 
@@ -57,7 +57,7 @@ fn get_tm_404() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"error_tms","type":"errors","attributes":{"message":"Invalid ID: valid range is 1-50"}}}"#
-                .to_string()
+                .to_owned()
         )
     );
 
@@ -80,7 +80,7 @@ fn post_tms_202() {
 
     assert_eq!(response.status(), Status::Accepted);
     assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(response.body_string(), Some("{}".to_string()));
+    assert_eq!(response.body_string(), Some("{}".to_owned()));
 
     let request = client
         .get("/v1/tms/1")
@@ -94,7 +94,7 @@ fn post_tms_202() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"1","type":"tms","attributes":{"move":{"id":"1","type":"moves","attributes":{"name":"POUND"},"links":{"self":"http://localhost:8080/v1/moves/1"}}},"links":{"self":"http://localhost:8080/v1/tms/1"}},"links":{"self":"http://localhost:8080/v1/tms/1"}}"#
-                .to_string()
+                .to_owned()
         )
     );
 
@@ -136,7 +136,7 @@ fn post_tms_404() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"error_tms","type":"errors","attributes":{"message":"Invalid ID: valid range is 1-50"}}}"#
-                .to_string()
+                .to_owned()
         )
     );
 

@@ -20,7 +20,7 @@ fn get_move_200() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"1","type":"moves","attributes":{"name":"POUND"},"links":{"self":"http://localhost:8080/v1/moves/1"}},"links":{"self":"http://localhost:8080/v1/moves/1"}}"#
-                .to_string()
+                .to_owned()
         )
     );
 
@@ -57,7 +57,7 @@ fn get_move_404() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"error_moves","type":"errors","attributes":{"message":"Invalid move ID: 200"}}}"#
-                .to_string()
+                .to_owned()
         )
     );
 
@@ -80,7 +80,7 @@ fn post_moves_202() {
 
     assert_eq!(response.status(), Status::Accepted);
     assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(response.body_string(), Some("{}".to_string()));
+    assert_eq!(response.body_string(), Some("{}".to_owned()));
 
     let request = client
         .get("/v1/moves/1")
@@ -94,7 +94,7 @@ fn post_moves_202() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"1","type":"moves","attributes":{"name":"TESTS"},"links":{"self":"http://localhost:8080/v1/moves/1"}},"links":{"self":"http://localhost:8080/v1/moves/1"}}"#
-                .to_string()
+                .to_owned()
         )
     );
 
@@ -136,7 +136,7 @@ fn post_moves_404() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"error_moves","type":"errors","attributes":{"message":"Invalid move ID: 200"}}}"#
-                .to_string()
+                .to_owned()
         )
     );
 

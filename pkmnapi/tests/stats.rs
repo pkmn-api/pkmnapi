@@ -20,7 +20,7 @@ fn get_stats_200() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"1","type":"stats","attributes":{"base_hp":45,"base_attack":49,"base_defence":49,"base_speed":45,"base_special":65,"types":[{"id":"22","type":"types","attributes":{"name":"GRASS"},"links":{"self":"http://localhost:8080/v1/types/22"}},{"id":"3","type":"types","attributes":{"name":"POISON"},"links":{"self":"http://localhost:8080/v1/types/3"}}],"catch_rate":45,"base_exp_yield":64},"links":{"self":"http://localhost:8080/v1/stats/1"}},"links":{"self":"http://localhost:8080/v1/stats/1"}}"#
-                .to_string()
+                .to_owned()
         )
     );
 
@@ -57,7 +57,7 @@ fn get_stats_404() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"error_stats","type":"errors","attributes":{"message":"Invalid Pokédex ID: 200"}}}"#
-                .to_string()
+                .to_owned()
         )
     );
 
@@ -80,7 +80,7 @@ fn post_stats_202() {
 
     assert_eq!(response.status(), Status::Accepted);
     assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(response.body_string(), Some("{}".to_string()));
+    assert_eq!(response.body_string(), Some("{}".to_owned()));
 
     let request = client
         .get("/v1/stats/1")
@@ -94,7 +94,7 @@ fn post_stats_202() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"1","type":"stats","attributes":{"base_hp":42,"base_attack":42,"base_defence":42,"base_speed":42,"base_special":42,"types":[{"id":"0","type":"types","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/0"}},{"id":"0","type":"types","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/0"}}],"catch_rate":42,"base_exp_yield":42},"links":{"self":"http://localhost:8080/v1/stats/1"}},"links":{"self":"http://localhost:8080/v1/stats/1"}}"#
-                .to_string()
+                .to_owned()
         )
     );
 
@@ -136,7 +136,7 @@ fn post_stats_404() {
         response.body_string(),
         Some(
             r#"{"data":{"id":"error_stats","type":"errors","attributes":{"message":"Invalid Pokédex ID: 200"}}}"#
-                .to_string()
+                .to_owned()
         )
     );
 

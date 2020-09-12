@@ -54,7 +54,7 @@ pub fn post_type(
         }
         _ => {
             return Err(TypeResponseErrorInvalid::new(
-                &"An unknown error occurred".to_string(),
+                &"An unknown error occurred".to_owned(),
             ));
         }
     };

@@ -26,7 +26,7 @@ pub fn post_access_token(
         }
         _ => {
             return Err(AccessTokenErrorInvalid::new(
-                &"An unknown error occurred".to_string(),
+                &"An unknown error occurred".to_owned(),
             ));
         }
     };

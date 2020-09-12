@@ -58,7 +58,7 @@ pub fn post_pokemon_name(
         }
         _ => {
             return Err(PokemonNameResponseErrorInvalid::new(
-                &"An unknown error occurred".to_string(),
+                &"An unknown error occurred".to_owned(),
             ));
         }
     };

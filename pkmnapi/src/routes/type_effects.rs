@@ -72,7 +72,7 @@ pub fn post_type_effect(
         }
         _ => {
             return Err(TypeEffectResponseErrorInvalid::new(
-                &"An unknown error occurred".to_string(),
+                &"An unknown error occurred".to_owned(),
             ));
         }
     };

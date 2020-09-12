@@ -43,7 +43,7 @@ fn post_access_token_400() {
 
     assert_eq!(response.status(), Status::BadRequest);
     assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_access_tokens_invalid","type":"errors","attributes":{"message":"Invalid email address: foo"}}}"#.to_string()));
+    assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_access_tokens_invalid","type":"errors","attributes":{"message":"Invalid email address: foo"}}}"#.to_owned()));
 
     common::teardown();
 }
@@ -56,13 +56,13 @@ fn post_access_token_403_authorization() {
         .post("/v1/access_tokens")
         .body(r#"{"data":{"type":"access_tokens","attributes":{"email_address":"foo@bar.com"}}}"#)
         .header(ContentType::JSON)
-        .header(common::auth_header(&"foo".to_string()));
+        .header(common::auth_header(&"foo".to_owned()));
 
     let mut response = request.dispatch();
 
     assert_eq!(response.status(), Status::Forbidden);
     assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_access_tokens_forbidden","type":"errors","attributes":{"message":"Authorization header must not be set"}}}"#.to_string()));
+    assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_access_tokens_forbidden","type":"errors","attributes":{"message":"Authorization header must not be set"}}}"#.to_owned()));
 
     common::teardown();
 }
@@ -86,7 +86,7 @@ fn post_access_token_403_timeout() {
 
     assert_eq!(response.status(), Status::Forbidden);
     assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_access_tokens_timeout","type":"errors","attributes":{"message":"Please try again in 600 seconds"}}}"#.to_string()));
+    assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_access_tokens_timeout","type":"errors","attributes":{"message":"Please try again in 600 seconds"}}}"#.to_owned()));
 
     common::teardown();
 }

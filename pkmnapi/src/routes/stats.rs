@@ -68,7 +68,7 @@ pub fn post_stats(
         }
         _ => {
             return Err(StatsResponseErrorInvalid::new(
-                &"An unknown error occurred".to_string(),
+                &"An unknown error occurred".to_owned(),
             ));
         }
     };
