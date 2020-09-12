@@ -5,7 +5,7 @@ use pkmnapi_sql::*;
 use rocket::http::{ContentType, Header};
 use rocket::response::status;
 use rocket::response::Response;
-use rocket::State;
+use rocket::{Data, State};
 use rocket_contrib::json::JsonValue;
 use std::io::Cursor;
 
@@ -103,7 +103,7 @@ pub fn get_pokemon_pic_jpeg<'a>(
 )]
 pub fn post_pokemon_pic_png<'a>(
     sql: State<PkmnapiSQL>,
-    data: Vec<u8>,
+    data: Data,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
     pokedex_id: u8,
@@ -127,7 +127,15 @@ pub fn post_pokemon_pic_png<'a>(
         Err(_) => return Err(RomResponseErrorInvalidRom::new()),
     };
 
-    let pic = match Pic::from_png(data) {
+    let raw_data = {
+        let mut raw_data = Vec::new();
+
+        data.stream_to(&mut raw_data).unwrap();
+
+        raw_data
+    };
+
+    let pic = match Pic::from_png(raw_data) {
         Ok(pic) => pic,
         Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
     };
@@ -170,7 +178,7 @@ pub fn post_pokemon_pic_png<'a>(
 )]
 pub fn post_pokemon_pic_jpeg<'a>(
     sql: State<PkmnapiSQL>,
-    data: Vec<u8>,
+    data: Data,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
     pokedex_id: u8,
@@ -194,7 +202,15 @@ pub fn post_pokemon_pic_jpeg<'a>(
         Err(_) => return Err(RomResponseErrorInvalidRom::new()),
     };
 
-    let pic = match Pic::from_jpeg(data) {
+    let raw_data = {
+        let mut raw_data = Vec::new();
+
+        data.stream_to(&mut raw_data).unwrap();
+
+        raw_data
+    };
+
+    let pic = match Pic::from_jpeg(raw_data) {
         Ok(pic) => pic,
         Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
     };
