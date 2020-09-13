@@ -1089,3 +1089,378 @@ impl ItemName {
         self.name.value[..].to_vec()
     }
 }
+
+/// Save player name
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi_db::string::*;
+/// use pkmnapi_db::types::*;
+///
+/// let sav = vec![0x80, 0x81, 0x82, 0x50];
+/// let save_player_name = SavePlayerName::from(&sav[..]);
+///
+/// assert_eq!(
+///     save_player_name,
+///     SavePlayerName {
+///         name: ROMString::from("ABC")
+///     }
+/// );
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct SavePlayerName {
+    pub name: ROMString,
+}
+
+impl From<&[u8]> for SavePlayerName {
+    /// Convert &[u8] to SavePlayerName
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let sav = vec![0x80, 0x81, 0x82, 0x50];
+    /// let save_player_name = SavePlayerName::from(&sav[..]);
+    ///
+    /// assert_eq!(
+    ///     save_player_name,
+    ///     SavePlayerName {
+    ///         name: ROMString::from("ABC")
+    ///     }
+    /// );
+    /// ```
+    fn from(sav: &[u8]) -> Self {
+        let name_end_index = sav.iter().position(|&r| r == 0x50).unwrap_or(sav.len());
+
+        let name = ROMString::new(&sav[..name_end_index]);
+
+        SavePlayerName { name }
+    }
+}
+
+impl SavePlayerName {
+    /// Save player name to raw bytes
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let save_player_name = SavePlayerName {
+    ///     name: ROMString::from("ABC"),
+    /// };
+    ///
+    /// let raw = save_player_name.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x80, 0x81, 0x82]);
+    /// ```
+    pub fn to_raw(&self) -> Vec<u8> {
+        self.name.value[..].to_vec()
+    }
+}
+
+/// Save item
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi_db::string::*;
+/// use pkmnapi_db::types::*;
+///
+/// let sav = vec![0x01, 0x02];
+/// let save_item = SaveItem::from(&sav[..]);
+///
+/// assert_eq!(
+///     save_item,
+///     SaveItem {
+///         item_id: 0x01,
+///         amount: 0x02
+///     }
+/// );
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct SaveItem {
+    pub item_id: u8,
+    pub amount: u8,
+}
+
+impl From<&[u8]> for SaveItem {
+    /// Convert &[u8] to SaveItem
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let sav = vec![0x01, 0x02];
+    /// let save_item = SaveItem::from(&sav[..]);
+    ///
+    /// assert_eq!(
+    ///     save_item,
+    ///     SaveItem {
+    ///         item_id: 0x01,
+    ///         amount: 0x02
+    ///     }
+    /// );
+    /// ```
+    fn from(sav: &[u8]) -> Self {
+        let item_id = sav[0];
+        let amount = sav[1];
+
+        SaveItem { item_id, amount }
+    }
+}
+
+impl SaveItem {
+    /// Save item to raw bytes
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let save_item = SaveItem {
+    ///     item_id: 0x01,
+    ///     amount: 0x02,
+    /// };
+    ///
+    /// let raw = save_item.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x01, 0x02]);
+    /// ```
+    pub fn to_raw(&self) -> Vec<u8> {
+        vec![self.item_id, self.amount]
+    }
+}
+
+/// Save rival name
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi_db::string::*;
+/// use pkmnapi_db::types::*;
+///
+/// let sav = vec![0x80, 0x81, 0x82, 0x50];
+/// let save_rival_name = SaveRivalName::from(&sav[..]);
+///
+/// assert_eq!(
+///     save_rival_name,
+///     SaveRivalName {
+///         name: ROMString::from("ABC")
+///     }
+/// );
+/// ```
+#[derive(Debug, PartialEq)]
+pub struct SaveRivalName {
+    pub name: ROMString,
+}
+
+impl From<&[u8]> for SaveRivalName {
+    /// Convert &[u8] to SaveRivalName
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let sav = vec![0x80, 0x81, 0x82, 0x50];
+    /// let save_rival_name = SaveRivalName::from(&sav[..]);
+    ///
+    /// assert_eq!(
+    ///     save_rival_name,
+    ///     SaveRivalName {
+    ///         name: ROMString::from("ABC")
+    ///     }
+    /// );
+    /// ```
+    fn from(sav: &[u8]) -> Self {
+        let name_end_index = sav.iter().position(|&r| r == 0x50).unwrap_or(sav.len());
+
+        let name = ROMString::new(&sav[..name_end_index]);
+
+        SaveRivalName { name }
+    }
+}
+
+impl SaveRivalName {
+    /// Save rival name to raw bytes
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::string::*;
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let save_rival_name = SaveRivalName {
+    ///     name: ROMString::from("ABC"),
+    /// };
+    ///
+    /// let raw = save_rival_name.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x80, 0x81, 0x82]);
+    /// ```
+    pub fn to_raw(&self) -> Vec<u8> {
+        self.name.value[..].to_vec()
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub enum SaveTextSpeed {
+    SLOW,
+    MEDIUM,
+    FAST,
+}
+
+impl From<&u8> for SaveTextSpeed {
+    /// Convert &u8 to SaveTextSpeed
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let save_text_speed = SaveTextSpeed::from(&0x01);
+    ///
+    /// assert_eq!(save_text_speed, SaveTextSpeed::FAST);
+    ///
+    /// let save_text_speed = SaveTextSpeed::from(&0x03);
+    ///
+    /// assert_eq!(save_text_speed, SaveTextSpeed::MEDIUM);
+    ///
+    /// let save_text_speed = SaveTextSpeed::from(&0x05);
+    ///
+    /// assert_eq!(save_text_speed, SaveTextSpeed::SLOW);
+    /// ```
+    fn from(save_text_speed: &u8) -> Self {
+        match save_text_speed {
+            0x01 => SaveTextSpeed::FAST,
+            0x05 => SaveTextSpeed::SLOW,
+            _ => SaveTextSpeed::MEDIUM,
+        }
+    }
+}
+
+impl SaveTextSpeed {
+    pub fn value(&self) -> u8 {
+        match self {
+            SaveTextSpeed::FAST => 0x01,
+            SaveTextSpeed::MEDIUM => 0x03,
+            SaveTextSpeed::SLOW => 0x05,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub enum SaveBattleAnimation {
+    ON,
+    OFF,
+}
+
+impl From<&u8> for SaveBattleAnimation {
+    /// Convert &u8 to SaveBattleAnimation
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let save_battle_animation = SaveBattleAnimation::from(&0x00);
+    ///
+    /// assert_eq!(save_battle_animation, SaveBattleAnimation::ON);
+    ///
+    /// let save_battle_animation = SaveBattleAnimation::from(&0x01);
+    ///
+    /// assert_eq!(save_battle_animation, SaveBattleAnimation::OFF);
+    /// ```
+    fn from(save_battle_animation: &u8) -> Self {
+        match save_battle_animation {
+            0x01 => SaveBattleAnimation::OFF,
+            _ => SaveBattleAnimation::ON,
+        }
+    }
+}
+
+impl SaveBattleAnimation {
+    pub fn value(&self) -> u8 {
+        match self {
+            SaveBattleAnimation::ON => 0x00,
+            SaveBattleAnimation::OFF => 0x01,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub enum SaveBattleStyle {
+    SHIFT,
+    SET,
+}
+
+impl From<&u8> for SaveBattleStyle {
+    /// Convert &u8 to SaveBattleStyle
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let save_battle_style = SaveBattleStyle::from(&0x00);
+    ///
+    /// assert_eq!(save_battle_style, SaveBattleStyle::SHIFT);
+    ///
+    /// let save_battle_style = SaveBattleStyle::from(&0x01);
+    ///
+    /// assert_eq!(save_battle_style, SaveBattleStyle::SET);
+    /// ```
+    fn from(save_battle_style: &u8) -> Self {
+        match save_battle_style {
+            0x01 => SaveBattleStyle::SET,
+            _ => SaveBattleStyle::SHIFT,
+        }
+    }
+}
+
+impl SaveBattleStyle {
+    pub fn value(&self) -> u8 {
+        match self {
+            SaveBattleStyle::SHIFT => 0x00,
+            SaveBattleStyle::SET => 0x01,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct SaveOptions {
+    pub text_speed: SaveTextSpeed,
+    pub battle_animation: SaveBattleAnimation,
+    pub battle_style: SaveBattleStyle,
+}
+
+impl From<&u8> for SaveOptions {
+    fn from(sav: &u8) -> Self {
+        SaveOptions {
+            text_speed: SaveTextSpeed::from(&(sav & 0x0F)),
+            battle_animation: SaveBattleAnimation::from(&((sav & 0x40) >> 6)),
+            battle_style: SaveBattleStyle::from(&((sav & 0x80) >> 7)),
+        }
+    }
+}
+
+impl SaveOptions {
+    pub fn to_raw(&self) -> Vec<u8> {
+        let value = {
+            self.text_speed.value()
+                | (self.battle_animation.value() << 6)
+                | (self.battle_style.value() << 7)
+        };
+
+        vec![value]
+    }
+}

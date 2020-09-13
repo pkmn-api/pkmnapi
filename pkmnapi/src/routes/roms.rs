@@ -28,7 +28,7 @@ pub fn post_rom(
         rom
     };
 
-    let db = match PkmnapiDB::new(&rom) {
+    let db = match PkmnapiDB::new(&rom, None) {
         Ok(db) => db,
         Err(_) => return Err(RomResponseErrorInvalidRom::new()),
     };

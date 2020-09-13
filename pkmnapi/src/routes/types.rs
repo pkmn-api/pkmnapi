@@ -65,7 +65,7 @@ pub fn post_type(
         _ => return Err(RomResponseErrorNoRom::new()),
     };
 
-    let db = match PkmnapiDB::new(&rom_data_sql.data) {
+    let db = match PkmnapiDB::new(&rom_data_sql.data, None) {
         Ok(db) => db,
         Err(_) => return Err(RomResponseErrorInvalidRom::new()),
     };

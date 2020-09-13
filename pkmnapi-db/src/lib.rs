@@ -9,12 +9,13 @@
 //! # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
 //!
 //! let rom = fs::read(rom_path).unwrap();
-//! let db = PkmnapiDB::new(&rom).unwrap();
+//! let db = PkmnapiDB::new(&rom, None).unwrap();
 //! ```
 
 pub mod header;
 pub mod patch;
 pub mod pic;
+pub mod sav;
 pub mod string;
 pub mod types;
 
@@ -22,11 +23,12 @@ use byteorder::{LittleEndian, ReadBytesExt};
 use header::*;
 use patch::*;
 use pic::*;
+use sav::*;
 use std::io::Cursor;
 use std::num::Wrapping;
 use types::*;
 
-const ROM_PAGE: usize = 0x2000;
+pub const ROM_PAGE: usize = 0x2000;
 const POKEMON_INTERNAL_MAX: usize = 190;
 
 /// Pkmnapi database
@@ -40,11 +42,12 @@ const POKEMON_INTERNAL_MAX: usize = 190;
 /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
 ///
 /// let rom = fs::read(rom_path).unwrap();
-/// let db = PkmnapiDB::new(&rom).unwrap();
+/// let db = PkmnapiDB::new(&rom, None).unwrap();
 /// ```
 #[derive(Debug)]
 pub struct PkmnapiDB {
     pub rom: Vec<u8>,
+    pub sav: Option<Sav>,
     pub hash: String,
     pub header: Header,
 }
@@ -61,14 +64,20 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     /// ```
-    pub fn new(rom: &Vec<u8>) -> Result<PkmnapiDB, String> {
+    pub fn new(rom: &Vec<u8>, sav: Option<&Vec<u8>>) -> Result<PkmnapiDB, String> {
         let hash = format!("{:x}", md5::compute(&rom));
         let header = Header::from(&rom)?;
+        let rom = rom[..].to_vec();
+        let sav = match sav {
+            Some(sav) => Some(Sav::new(sav)?),
+            None => None,
+        };
 
         Ok(PkmnapiDB {
-            rom: rom[..].to_vec(),
+            rom,
+            sav,
             hash,
             header,
         })
@@ -85,7 +94,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// assert_eq!(db.verify_checksum(), true);
     /// ```
@@ -110,7 +119,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db.generate_checksum();
     ///
@@ -145,7 +154,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// assert_eq!(db.verify_hash("3d45c1ee9abd5738df46d2bdda8b57dc"), true);
     /// ```
@@ -165,7 +174,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let mut db = PkmnapiDB::new(&rom).unwrap();
+    /// let mut db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// assert_eq!(db.rom[..4], [0xFF, 0x00, 0x00, 0x00]);
     ///
@@ -199,7 +208,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let pokemon_name = PokemonName {
     ///     name: ROMString::from("BULBASAUR"),
@@ -243,7 +252,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let pokedex_id = 151;
     /// let internal_id = db.pokedex_id_to_internal_id(&pokedex_id).unwrap();
@@ -280,7 +289,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let internal_id = 0x14;
     /// let pokedex_id = db.internal_id_to_pokedex_id(&internal_id).unwrap();
@@ -311,7 +320,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let type_name = db.get_type_name(&0).unwrap();
     ///
@@ -361,7 +370,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db
     ///     .set_type_name(
@@ -419,7 +428,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let type_effect = db.get_type_effect(&0).unwrap();
     ///
@@ -466,7 +475,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db
     ///     .set_type_effect(
@@ -525,7 +534,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let type_effect = db.get_stats(&1).unwrap();
     ///
@@ -575,7 +584,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db
     ///     .set_stats(
@@ -627,7 +636,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let pokemon_name = db.get_pokemon_name(&1).unwrap();
     ///
@@ -663,7 +672,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db
     ///     .set_pokemon_name(
@@ -713,7 +722,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let move_stats = db.get_move_stats(&1).unwrap();
     ///
@@ -755,7 +764,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db
     ///     .set_move_stats(
@@ -806,7 +815,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let move_name = db.get_move_name(&1).unwrap();
     ///
@@ -872,7 +881,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db
     ///     .set_move_name(
@@ -955,7 +964,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let hm = db.get_hm(&1).unwrap();
     ///
@@ -994,7 +1003,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db.set_hm(&1, &HM { move_id: 0x42 }).unwrap();
     ///
@@ -1037,7 +1046,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let tm = db.get_tm(&1).unwrap();
     ///
@@ -1073,7 +1082,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db.set_tm(&1, &TM { move_id: 0x42 }).unwrap();
     ///
@@ -1113,7 +1122,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let tm_price = db.get_tm_price(&1).unwrap();
     ///
@@ -1156,7 +1165,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db.set_tm_price(&1, &TMPrice { value: 9000 }).unwrap();
     ///
@@ -1204,7 +1213,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let pokedex_entry = db.get_pokedex_entry(&1).unwrap();
     ///
@@ -1245,7 +1254,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db
     ///     .set_pokedex_entry(&1, &PokedexEntry {
@@ -1307,7 +1316,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let pokedex_entry_text = db.get_pokedex_entry_text(&1).unwrap();
     ///
@@ -1355,7 +1364,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db
     ///     .set_pokedex_entry_text(&1, &PokedexEntryText {
@@ -1412,6 +1421,26 @@ impl PkmnapiDB {
         Ok(Patch::new(&pointer, &pokedex_entry_text.to_raw()))
     }
 
+    /// Get Pokémon pic by Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
+    /// use std::fs;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let pokemon_pic = db.get_pokemon_pic(&1, &PokemonPicFace::FRONT).unwrap();
+    ///
+    /// assert_eq!(pokemon_pic.width, 5);
+    /// assert_eq!(pokemon_pic.height, 5);
+    /// assert_eq!(pokemon_pic.pixels.len(), 1600);
+    /// ```
     pub fn get_pokemon_pic(
         &self,
         pokedex_id: &u8,
@@ -1462,6 +1491,34 @@ impl PkmnapiDB {
         Ok(pic)
     }
 
+    /// Set Pokémon pic by Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::pic::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
+    /// use std::fs;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let pokemon_pic = Pic::new(&vec![0x55]).unwrap();
+    /// let patch = db.set_pokemon_pic(&1, &PokemonPicFace::FRONT, &pokemon_pic, PicEncodingMethod::THREE(0x01)).unwrap();
+    ///
+    /// assert_eq!(
+    ///     patch,
+    ///     Patch {
+    ///         offset: 0x34000,
+    ///         length: 0x07,
+    ///         data: vec![0x55, 0xBF, 0xD2, 0x1D, 0xFE, 0x90, 0x80]
+    ///     }
+    /// );
+    /// ```
     pub fn set_pokemon_pic(
         &self,
         pokedex_id: &u8,
@@ -1532,7 +1589,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let trainer_name = db.get_trainer_name(&0).unwrap();
     ///
@@ -1608,7 +1665,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db
     ///     .set_trainer_name(
@@ -1734,9 +1791,9 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
-    /// let item_name = db.get_item_name(&0).unwrap();
+    /// let item_name = db.get_item_name(&1).unwrap();
     ///
     /// assert_eq!(
     ///     item_name,
@@ -1749,6 +1806,10 @@ impl PkmnapiDB {
         let offset_base = ROM_PAGE * 0x02;
         let offset_base = offset_base + 0x072B;
 
+        if item_id < &1 {
+            return Err(format!("Invalid item ID: {}", item_id));
+        }
+
         let max_offset = (&self.rom[offset_base..])
             .iter()
             .position(|&r| r == 0xD0)
@@ -1758,12 +1819,12 @@ impl PkmnapiDB {
             .filter(|&x| *x == 0x50)
             .count();
 
-        if item_id >= &(max_id as u8) {
+        if item_id - 1 >= max_id as u8 {
             return Err(format!("Invalid item ID: {}", item_id));
         }
 
         let offset = match {
-            if item_id == &0 {
+            if item_id == &1 {
                 Some(offset_base)
             } else {
                 self.rom[offset_base..]
@@ -1779,7 +1840,7 @@ impl PkmnapiDB {
                     .take(max_id - 1)
                     .enumerate()
                     .filter_map(|(i, x)| {
-                        if (*item_id as usize) - 1 == i {
+                        if (*item_id as usize) - 2 == i {
                             return Some(x);
                         }
 
@@ -1811,11 +1872,11 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db
     ///     .set_item_name(
-    ///         &0,
+    ///         &1,
     ///         &ItemName {
     ///             name: ROMString::from("CHEATERBALL"),
     ///         },
@@ -1832,6 +1893,10 @@ impl PkmnapiDB {
     /// );
     /// ```
     pub fn set_item_name(&self, item_id: &u8, item_name: &ItemName) -> Result<Patch, String> {
+        if item_id < &1 {
+            return Err(format!("Invalid item ID: {}", item_id));
+        }
+
         let old_item_name = self.get_item_name(item_id)?;
         let old_item_name_len = old_item_name.name.value.len();
         let item_name_raw = item_name.to_raw();
@@ -1856,12 +1921,12 @@ impl PkmnapiDB {
             .filter(|&x| *x == 0x50)
             .count();
 
-        if item_id >= &(max_id as u8) {
+        if item_id - 1 >= max_id as u8 {
             return Err(format!("Invalid item ID: {}", item_id));
         }
 
         let offset = match {
-            if item_id == &0 {
+            if item_id == &1 {
                 Some(offset_base)
             } else {
                 self.rom[offset_base..]
@@ -1877,7 +1942,7 @@ impl PkmnapiDB {
                     .take(max_id - 1)
                     .enumerate()
                     .filter_map(|(i, x)| {
-                        if (*item_id as usize) - 1 == i {
+                        if (*item_id as usize) - 2 == i {
                             return Some(x);
                         }
 

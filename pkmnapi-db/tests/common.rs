@@ -9,5 +9,5 @@ pub fn load_rom() -> PkmnapiDB {
 
     let rom = fs::read(PKMN_ROM).unwrap();
 
-    PkmnapiDB::new(&rom).unwrap()
+    PkmnapiDB::new(&rom, None).unwrap()
 }

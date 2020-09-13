@@ -20,7 +20,7 @@ pub fn get_db_with_applied_patches(
         Err(_) => vec![],
     };
 
-    let mut db = match PkmnapiDB::new(&rom_data_sql.data) {
+    let mut db = match PkmnapiDB::new(&rom_data_sql.data, None) {
         Ok(db) => db,
         Err(_) => return Err(RomResponseErrorInvalidRom::new()),
     };
