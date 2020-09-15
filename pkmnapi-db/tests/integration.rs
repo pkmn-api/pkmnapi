@@ -13,7 +13,7 @@ fn new_failure() {
     let rom = vec![];
 
     match PkmnapiDB::new(&rom, None) {
-        Err(e) => assert_eq!(e, "Header too small"),
+        Err(e) => assert_eq!(e, error::Error::HeaderTooSmall),
         _ => {}
     };
 }

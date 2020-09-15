@@ -56,7 +56,7 @@ fn get_type_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_types","type":"errors","attributes":{"message":"Invalid ID: valid range is 0-26"}}}"#
+            r#"{"data":{"id":"error_types","type":"errors","attributes":{"message":"Invalid type ID 100: valid range is 0-26"}}}"#
                 .to_owned()
         )
     );
@@ -135,7 +135,7 @@ fn post_type_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_types","type":"errors","attributes":{"message":"Invalid ID: valid range is 0-26"}}}"#
+            r#"{"data":{"id":"error_types","type":"errors","attributes":{"message":"Invalid type ID 100: valid range is 0-26"}}}"#
                 .to_owned()
         )
     );

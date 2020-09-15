@@ -19,6 +19,7 @@
 //! );
 //! ```
 
+use crate::error;
 use image::{self, DynamicImage, ImageBuffer, ImageFormat, Luma};
 use std::ops::{BitAnd, BitOr, BitXor, Shl, Shr};
 
@@ -276,7 +277,7 @@ impl Pic {
     ///     }
     /// );
     /// ```
-    pub fn new(data: &[u8]) -> Result<Self, String> {
+    pub fn new(data: &[u8]) -> Result<Self, error::Error> {
         let mut bitstream = PicBitstream::from(data);
 
         let width = bitstream.get(4) as u8;
@@ -413,19 +414,19 @@ impl Pic {
         data
     }
 
-    fn from(data: Vec<u8>, format: ImageFormat) -> Result<Self, String> {
+    fn from(data: Vec<u8>, format: ImageFormat) -> Result<Self, error::Error> {
         let raw = match image::load_from_memory_with_format(&data, format) {
             Ok(img) => img,
-            Err(_) => return Err("Could not read image".to_owned()),
+            Err(_) => return Err(error::Error::PicCouldNotRead),
         };
 
         let img = match raw.as_luma8() {
             Some(img) => img,
-            None => return Err("Could not read image".to_owned()),
+            None => return Err(error::Error::PicCouldNotRead),
         };
 
         if img.width() % 8 != 0 || img.height() % 8 != 0 {
-            return Err("Image dimensions must be multiples of 8".to_owned());
+            return Err(error::Error::PicWrongSize);
         }
 
         let width = ((img.width() as f32) / 8.0) as u8;
@@ -450,11 +451,11 @@ impl Pic {
         })
     }
 
-    pub fn from_png(data: Vec<u8>) -> Result<Self, String> {
+    pub fn from_png(data: Vec<u8>) -> Result<Self, error::Error> {
         Pic::from(data, ImageFormat::Png)
     }
 
-    pub fn from_jpeg(data: Vec<u8>) -> Result<Self, String> {
+    pub fn from_jpeg(data: Vec<u8>) -> Result<Self, error::Error> {
         Pic::from(data, ImageFormat::Jpeg)
     }
 
@@ -604,7 +605,7 @@ impl Pic {
         output
     }
 
-    fn to_img(&self, format: ImageFormat) -> Result<Vec<u8>, String> {
+    fn to_img(&self, format: ImageFormat) -> Result<Vec<u8>, error::Error> {
         let width = self.width as u32 * 8;
         let height = self.height as u32 * 8;
 
@@ -620,17 +621,17 @@ impl Pic {
 
         match img.write_to(&mut buf, format) {
             Ok(_) => {}
-            Err(_) => return Err("Could not write image".to_owned()),
+            Err(_) => return Err(error::Error::PicCouldNotWrite),
         }
 
         Ok(buf)
     }
 
-    pub fn to_png(&self) -> Result<Vec<u8>, String> {
+    pub fn to_png(&self) -> Result<Vec<u8>, error::Error> {
         self.to_img(ImageFormat::Png)
     }
 
-    pub fn to_jpeg(&self) -> Result<Vec<u8>, String> {
+    pub fn to_jpeg(&self) -> Result<Vec<u8>, error::Error> {
         self.to_img(ImageFormat::Jpeg)
     }
 }

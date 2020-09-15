@@ -56,7 +56,7 @@ fn get_tm_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_tms","type":"errors","attributes":{"message":"Invalid ID: valid range is 1-50"}}}"#
+            r#"{"data":{"id":"error_tms","type":"errors","attributes":{"message":"Invalid TM ID 200: valid range is 1-50"}}}"#
                 .to_owned()
         )
     );
@@ -135,7 +135,7 @@ fn post_tms_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_tms","type":"errors","attributes":{"message":"Invalid ID: valid range is 1-50"}}}"#
+            r#"{"data":{"id":"error_tms","type":"errors","attributes":{"message":"Invalid TM ID 200: valid range is 1-50"}}}"#
                 .to_owned()
         )
     );

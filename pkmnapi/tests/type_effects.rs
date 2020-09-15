@@ -56,7 +56,7 @@ fn get_type_effect_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_type_effects","type":"errors","attributes":{"message":"Invalid ID: valid range is 0-81"}}}"#
+            r#"{"data":{"id":"error_type_effects","type":"errors","attributes":{"message":"Invalid type effect ID 200: valid range is 0-81"}}}"#
                 .to_owned()
         )
     );
@@ -135,7 +135,7 @@ fn post_type_effect_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_type_effects","type":"errors","attributes":{"message":"Invalid ID: valid range is 0-81"}}}"#
+            r#"{"data":{"id":"error_type_effects","type":"errors","attributes":{"message":"Invalid type effect ID 200: valid range is 0-81"}}}"#
                 .to_owned()
         )
     );

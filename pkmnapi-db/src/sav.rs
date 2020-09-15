@@ -16,6 +16,7 @@
 
 // SRC: https://github.com/junebug12851/pokered-save-editor/blob/37f5992e866b416ed731276f387a15db80c70815/non-app-assets/savefile-structure.bt
 
+use crate::error;
 use crate::patch::*;
 use crate::types::*;
 use crate::ROM_PAGE;
@@ -43,15 +44,12 @@ impl Sav {
     //! let sav = Sav::new(&sav_data).unwrap();
     //!
     //! assert_eq!(sav.sav.len(), 0x8000);
-    pub fn new(sav: &Vec<u8>) -> Result<Self, String> {
+    pub fn new(sav: &Vec<u8>) -> Result<Self, error::Error> {
         let sav_len = sav.len();
         let expected_sav_len = 0x8000;
 
         if sav_len != expected_sav_len {
-            return Err(format!(
-                "Length mismatch: should be {} bytes, found {}",
-                expected_sav_len, sav_len
-            ));
+            return Err(error::Error::SavWrongSize(expected_sav_len, sav_len));
         }
 
         Ok(Sav { sav: sav.to_vec() })
@@ -111,7 +109,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn generate_checksum(&self) -> Result<Patch, String> {
+    pub fn generate_checksum(&self) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset_start = offset_base + 0x0598;
         let offset_end = offset_base + 0x1522;
@@ -182,7 +180,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn get_player_name(&self) -> Result<SavePlayerName, String> {
+    pub fn get_player_name(&self) -> Result<SavePlayerName, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x598;
 
@@ -224,7 +222,10 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_player_name(&self, save_player_name: &SavePlayerName) -> Result<Patch, String> {
+    pub fn set_player_name(
+        &self,
+        save_player_name: &SavePlayerName,
+    ) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x598;
 
@@ -233,9 +234,9 @@ impl Sav {
         let max_len = 0x0A;
 
         if save_player_name_raw_len > max_len {
-            return Err(format!(
-                "Length mismatch: should be {} characters or fewer, found {}",
-                max_len, save_player_name_raw_len
+            return Err(error::Error::SavPlayerNameWrongSize(
+                max_len,
+                save_player_name_raw_len,
             ));
         }
 
@@ -276,7 +277,7 @@ impl Sav {
     ///     vec![0x01]
     /// );
     /// ```
-    pub fn get_pokemon_owned(&self) -> Result<Vec<u8>, String> {
+    pub fn get_pokemon_owned(&self) -> Result<Vec<u8>, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x5A3;
 
@@ -329,7 +330,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_pokemon_owned(&self, save_pokemon_owned: &Vec<u8>) -> Result<Patch, String> {
+    pub fn set_pokemon_owned(&self, save_pokemon_owned: &Vec<u8>) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x5A3;
 
@@ -374,7 +375,7 @@ impl Sav {
     ///     vec![0x01]
     /// );
     /// ```
-    pub fn get_pokemon_seen(&self) -> Result<Vec<u8>, String> {
+    pub fn get_pokemon_seen(&self) -> Result<Vec<u8>, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x5B6;
 
@@ -427,7 +428,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_pokemon_seen(&self, save_pokemon_seen: &Vec<u8>) -> Result<Patch, String> {
+    pub fn set_pokemon_seen(&self, save_pokemon_seen: &Vec<u8>) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x5B6;
 
@@ -481,7 +482,7 @@ impl Sav {
     ///     ]
     /// );
     /// ```
-    pub fn get_bag_items(&self) -> Result<Vec<SaveItem>, String> {
+    pub fn get_bag_items(&self) -> Result<Vec<SaveItem>, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x5C9;
         let max_len = 20;
@@ -534,7 +535,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_bag_items(&self, save_bag_items: &Vec<SaveItem>) -> Result<Patch, String> {
+    pub fn set_bag_items(&self, save_bag_items: &Vec<SaveItem>) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x5C9;
         let max_len = 20;
@@ -542,10 +543,7 @@ impl Sav {
         let item_count = save_bag_items.len();
 
         if item_count > max_len {
-            return Err(format!(
-                "Length mismatch: should be {} items or fewer, found {}",
-                max_len, item_count
-            ));
+            return Err(error::Error::SavBagItemsWrongSize(max_len, item_count));
         }
 
         let save_bag_items_data: Vec<u8> = save_bag_items
@@ -581,7 +579,7 @@ impl Sav {
     ///     123456
     /// );
     /// ```
-    pub fn get_money(&self) -> Result<u32, String> {
+    pub fn get_money(&self) -> Result<u32, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x5F3;
 
@@ -626,7 +624,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_money(&self, money: &u32) -> Result<Patch, String> {
+    pub fn set_money(&self, money: &u32) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x5F3;
 
@@ -668,7 +666,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn get_rival_name(&self) -> Result<SaveRivalName, String> {
+    pub fn get_rival_name(&self) -> Result<SaveRivalName, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x5F6;
 
@@ -710,7 +708,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_rival_name(&self, save_rival_name: &SaveRivalName) -> Result<Patch, String> {
+    pub fn set_rival_name(&self, save_rival_name: &SaveRivalName) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x5F6;
 
@@ -719,9 +717,9 @@ impl Sav {
         let max_len = 0x0A;
 
         if save_rival_name_raw_len > max_len {
-            return Err(format!(
-                "Length mismatch: should be {} characters or fewer, found {}",
-                max_len, save_rival_name_raw_len
+            return Err(error::Error::SavRivalNameWrongSize(
+                max_len,
+                save_rival_name_raw_len,
             ));
         }
 
@@ -766,7 +764,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn get_options(&self) -> Result<SaveOptions, String> {
+    pub fn get_options(&self) -> Result<SaveOptions, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x601;
 
@@ -809,7 +807,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_options(&self, save_options: &SaveOptions) -> Result<Patch, String> {
+    pub fn set_options(&self, save_options: &SaveOptions) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x601;
 
@@ -834,7 +832,7 @@ impl Sav {
     ///
     /// assert_eq!(badges, vec![0x00]);
     /// ```
-    pub fn get_badges(&self) -> Result<Vec<u8>, String> {
+    pub fn get_badges(&self) -> Result<Vec<u8>, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x602;
 
@@ -883,7 +881,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_badges(&self, save_badges: &Vec<u8>) -> Result<Patch, String> {
+    pub fn set_badges(&self, save_badges: &Vec<u8>) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x602;
 
@@ -923,7 +921,7 @@ impl Sav {
     ///     666
     /// );
     /// ```
-    pub fn get_player_id(&self) -> Result<u16, String> {
+    pub fn get_player_id(&self) -> Result<u16, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x605;
 
@@ -966,7 +964,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_player_id(&self, save_player_id: &u16) -> Result<Patch, String> {
+    pub fn set_player_id(&self, save_player_id: &u16) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x605;
 
@@ -1007,7 +1005,7 @@ impl Sav {
     ///     ]
     /// );
     /// ```
-    pub fn get_box_items(&self) -> Result<Vec<SaveItem>, String> {
+    pub fn get_box_items(&self) -> Result<Vec<SaveItem>, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x7E6;
         let max_len = 50;
@@ -1060,7 +1058,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_box_items(&self, save_box_items: &Vec<SaveItem>) -> Result<Patch, String> {
+    pub fn set_box_items(&self, save_box_items: &Vec<SaveItem>) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x7E6;
         let max_len = 50;
@@ -1068,10 +1066,7 @@ impl Sav {
         let item_count = save_box_items.len();
 
         if item_count > max_len {
-            return Err(format!(
-                "Length mismatch: should be {} items or fewer, found {}",
-                max_len, item_count
-            ));
+            return Err(error::Error::SavBoxItemsWrongSize(max_len, item_count));
         }
 
         let save_box_items_data: Vec<u8> = save_box_items
@@ -1107,7 +1102,7 @@ impl Sav {
     ///     0x00
     /// );
     /// ```
-    pub fn get_current_box(&self) -> Result<u8, String> {
+    pub fn get_current_box(&self) -> Result<u8, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x84C;
 
@@ -1146,7 +1141,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_current_box(&self, current_box: &u8) -> Result<Patch, String> {
+    pub fn set_current_box(&self, current_box: &u8) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x84C;
 
@@ -1176,7 +1171,7 @@ impl Sav {
     ///     0x1234
     /// );
     /// ```
-    pub fn get_coins(&self) -> Result<u16, String> {
+    pub fn get_coins(&self) -> Result<u16, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x850;
 
@@ -1219,7 +1214,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_coins(&self, save_coins: &u16) -> Result<Patch, String> {
+    pub fn set_coins(&self, save_coins: &u16) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset = offset_base + 0x850;
 

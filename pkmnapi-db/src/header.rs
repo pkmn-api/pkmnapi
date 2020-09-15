@@ -14,6 +14,7 @@
 //! assert_eq!(header.title, "POKEMON RED");
 //! ```
 
+use crate::error;
 use byteorder::{BigEndian, ReadBytesExt};
 use std::io::Cursor;
 use std::num::Wrapping;
@@ -58,9 +59,9 @@ impl Header {
     ///
     /// assert_eq!(header.title, "POKEMON RED");
     /// ```
-    pub fn from(rom: &[u8]) -> Result<Header, String> {
+    pub fn from(rom: &[u8]) -> Result<Header, error::Error> {
         if rom.len() < 0x150 {
-            return Err("Header too small".to_owned());
+            return Err(error::Error::HeaderTooSmall);
         }
 
         let raw = rom[0x100..=0x14F].to_vec();
@@ -68,7 +69,7 @@ impl Header {
         let logo = raw[0x004..=0x033].to_vec();
         let title = match str::from_utf8(&raw[0x034..=0x043]) {
             Ok(title) => title.trim_matches(char::from(0)).to_string(),
-            Err(e) => return Err(e.to_string()),
+            Err(e) => return Err(error::Error::HeaderParseError(e.to_string())),
         };
         let manufacturer_code = raw[0x03F..=0x042].to_vec();
         let cgb_flag = PkmnapiCGBFlag::from(raw[0x043]);

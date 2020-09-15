@@ -12,6 +12,7 @@
 //! let db = PkmnapiDB::new(&rom, None).unwrap();
 //! ```
 
+pub mod error;
 pub mod header;
 pub mod patch;
 pub mod pic;
@@ -66,7 +67,7 @@ impl PkmnapiDB {
     /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom, None).unwrap();
     /// ```
-    pub fn new(rom: &Vec<u8>, sav: Option<&Vec<u8>>) -> Result<PkmnapiDB, String> {
+    pub fn new(rom: &Vec<u8>, sav: Option<&Vec<u8>>) -> Result<PkmnapiDB, error::Error> {
         let hash = format!("{:x}", md5::compute(&rom));
         let header = Header::from(&rom)?;
         let rom = rom[..].to_vec();
@@ -259,9 +260,9 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(internal_id, 0x14);
     /// ```
-    pub fn pokedex_id_to_internal_id(&self, pokedex_id: &u8) -> Result<u8, String> {
+    pub fn pokedex_id_to_internal_id(&self, pokedex_id: &u8) -> Result<u8, error::Error> {
         if pokedex_id < &1 {
-            return Err(format!("Invalid Pokédex ID: {}", pokedex_id));
+            return Err(error::Error::PokedexIDInvalid(*pokedex_id));
         }
 
         let offset_base = ROM_PAGE * 0x20;
@@ -272,7 +273,7 @@ impl PkmnapiDB {
             .position(|r| pokedex_id == r)
         {
             Some(internal_id) => internal_id,
-            None => return Err(format!("Invalid Pokédex ID: {}", pokedex_id)),
+            None => return Err(error::Error::PokedexIDInvalid(*pokedex_id)),
         };
 
         Ok(internal_id as u8)
@@ -296,9 +297,9 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(pokedex_id, 151);
     /// ```
-    pub fn internal_id_to_pokedex_id(&self, internal_id: &u8) -> Result<u8, String> {
+    pub fn internal_id_to_pokedex_id(&self, internal_id: &u8) -> Result<u8, error::Error> {
         if internal_id >= &(POKEMON_INTERNAL_MAX as u8) {
-            return Err(format!("Invalid internal ID: {}", internal_id));
+            return Err(error::Error::InternalIDInvalid(*internal_id));
         }
 
         let offset_base = ROM_PAGE * 0x20;
@@ -331,7 +332,7 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_type_name(&self, type_id: &u8) -> Result<TypeName, String> {
+    pub fn get_type_name(&self, type_id: &u8) -> Result<TypeName, error::Error> {
         let offset_base = ROM_PAGE * 0x10;
         let pointer_base = offset_base + 0x7DAE;
         let pointer_offset = pointer_base + ((*type_id as usize) * 2);
@@ -345,10 +346,10 @@ impl PkmnapiDB {
             .iter()
             .position(|&r| r == 0x8D)
             .unwrap();
-        let max_id = ((max_index as f32) / 2.0) as u8;
+        let max_id = ((max_index as f32) / 2.0) as usize;
 
-        if type_id >= &max_id {
-            return Err(format!("Invalid ID: valid range is 0-{}", max_id - 1));
+        if type_id >= &(max_id as u8) {
+            return Err(error::Error::TypeIDInvalid(*type_id, 0, max_id - 1));
         }
 
         let type_name = TypeName::from(&self.rom[pointer..=(pointer + 9)]);
@@ -390,16 +391,16 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_type_name(&self, type_id: &u8, type_name: &TypeName) -> Result<Patch, String> {
+    pub fn set_type_name(&self, type_id: &u8, type_name: &TypeName) -> Result<Patch, error::Error> {
         let old_type_name = self.get_type_name(type_id)?;
         let old_type_name_len = old_type_name.name.value.len();
         let type_name_raw = type_name.to_raw();
         let type_name_len = type_name_raw.len();
 
         if old_type_name_len < type_name_len {
-            return Err(format!(
-                "Length mismatch: should be {} characters or fewer, found {}",
-                old_type_name_len, type_name_len
+            return Err(error::Error::TypeNameWrongSize(
+                old_type_name_len,
+                type_name_len,
             ));
         }
 
@@ -441,7 +442,7 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_type_effect(&self, type_effect_id: &u8) -> Result<TypeEffect, String> {
+    pub fn get_type_effect(&self, type_effect_id: &u8) -> Result<TypeEffect, error::Error> {
         let offset_base = ROM_PAGE * 0x1F;
         let pointer = offset_base + 0x0474;
 
@@ -449,10 +450,14 @@ impl PkmnapiDB {
             .iter()
             .position(|&r| r == 0xFF)
             .unwrap();
-        let max_id = ((max_index as f32) / 3.0) as u8;
+        let max_id = ((max_index as f32) / 3.0) as usize;
 
-        if type_effect_id >= &max_id {
-            return Err(format!("Invalid ID: valid range is 0-{}", max_id - 1));
+        if type_effect_id >= &(max_id as u8) {
+            return Err(error::Error::TypeEffectIDInvalid(
+                *type_effect_id,
+                0,
+                max_id - 1,
+            ));
         }
 
         let pointer = pointer + ((*type_effect_id as usize) * 0x03);
@@ -501,7 +506,7 @@ impl PkmnapiDB {
         &self,
         type_effect_id: &u8,
         type_effect: &TypeEffect,
-    ) -> Result<Patch, String> {
+    ) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x1F;
         let pointer = offset_base + 0x0474;
 
@@ -509,10 +514,14 @@ impl PkmnapiDB {
             .iter()
             .position(|&r| r == 0xFF)
             .unwrap();
-        let max_id = ((max_index as f32) / 3.0) as u8;
+        let max_id = ((max_index as f32) / 3.0) as usize;
 
-        if type_effect_id >= &max_id {
-            return Err(format!("Invalid ID: valid range is 0-{}", max_id - 1));
+        if type_effect_id >= &(max_id as u8) {
+            return Err(error::Error::TypeEffectIDInvalid(
+                *type_effect_id,
+                0,
+                max_id - 1,
+            ));
         }
 
         let pointer = pointer + ((*type_effect_id as usize) * 3);
@@ -553,7 +562,7 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_stats(&self, pokedex_id: &u8) -> Result<Stats, String> {
+    pub fn get_stats(&self, pokedex_id: &u8) -> Result<Stats, error::Error> {
         let _internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset = {
@@ -612,7 +621,7 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_stats(&self, pokedex_id: &u8, stats: &Stats) -> Result<Patch, String> {
+    pub fn set_stats(&self, pokedex_id: &u8, stats: &Stats) -> Result<Patch, error::Error> {
         let _internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x1C;
@@ -647,7 +656,7 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_pokemon_name(&self, pokedex_id: &u8) -> Result<PokemonName, String> {
+    pub fn get_pokemon_name(&self, pokedex_id: &u8) -> Result<PokemonName, error::Error> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x0E;
@@ -696,7 +705,7 @@ impl PkmnapiDB {
         &self,
         pokedex_id: &u8,
         pokemon_name: &PokemonName,
-    ) -> Result<Patch, String> {
+    ) -> Result<Patch, error::Error> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x0E;
@@ -738,9 +747,9 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_move_stats(&self, move_id: &u8) -> Result<MoveStats, String> {
+    pub fn get_move_stats(&self, move_id: &u8) -> Result<MoveStats, error::Error> {
         if move_id < &1 {
-            return Err(format!("Move ID too low: {}", move_id));
+            return Err(error::Error::MoveIDInvalid(*move_id));
         }
 
         let offset_base = ROM_PAGE * 0x1C;
@@ -789,9 +798,13 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_move_stats(&self, move_id: &u8, move_stats: &MoveStats) -> Result<Patch, String> {
+    pub fn set_move_stats(
+        &self,
+        move_id: &u8,
+        move_stats: &MoveStats,
+    ) -> Result<Patch, error::Error> {
         if move_id < &1 {
-            return Err(format!("Move ID too low: {}", move_id));
+            return Err(error::Error::MoveIDInvalid(*move_id));
         }
 
         let offset_base = ROM_PAGE * 0x1C;
@@ -826,9 +839,9 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_move_name(&self, move_id: &u8) -> Result<MoveName, String> {
+    pub fn get_move_name(&self, move_id: &u8) -> Result<MoveName, error::Error> {
         if move_id < &1 {
-            return Err(format!("Invalid move ID: {}", move_id));
+            return Err(error::Error::MoveIDInvalid(*move_id));
         }
 
         let offset_base = ROM_PAGE * 0x58;
@@ -859,7 +872,7 @@ impl PkmnapiDB {
             }
         } {
             Some(offset) => offset,
-            None => return Err(format!("Invalid move ID: {}", move_id)),
+            None => return Err(error::Error::MoveIDInvalid(*move_id)),
         };
 
         let move_name = MoveName::from(&self.rom[offset..(offset + 13)]);
@@ -901,21 +914,21 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_move_name(&self, move_id: &u8, move_name: &MoveName) -> Result<Patch, String> {
+    pub fn set_move_name(&self, move_id: &u8, move_name: &MoveName) -> Result<Patch, error::Error> {
         let old_move_name = self.get_move_name(move_id)?;
         let old_move_name_len = old_move_name.name.value.len();
         let move_name_raw = move_name.to_raw();
         let move_name_len = move_name_raw.len();
 
         if old_move_name_len != move_name_len {
-            return Err(format!(
-                "Length mismatch: should be exactly {} characters, found {}",
-                old_move_name_len, move_name_len
+            return Err(error::Error::MoveNameWrongSize(
+                old_move_name_len,
+                move_name_len,
             ));
         }
 
         if move_id < &1 {
-            return Err(format!("Invalid move ID: {}", move_id));
+            return Err(error::Error::MoveIDInvalid(*move_id));
         }
 
         let offset_base = ROM_PAGE * 0x58;
@@ -946,7 +959,7 @@ impl PkmnapiDB {
             }
         } {
             Some(offset) => offset,
-            None => return Err(format!("Invalid move ID: {}", move_id)),
+            None => return Err(error::Error::MoveIDInvalid(*move_id)),
         };
 
         Ok(Patch::new(&offset, &move_name_raw))
@@ -970,7 +983,7 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(hm, HM { move_id: 0x0F });
     /// ```
-    pub fn get_hm(&self, hm_id: &u8) -> Result<HM, String> {
+    pub fn get_hm(&self, hm_id: &u8) -> Result<HM, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset_base = offset_base + 0x1052;
 
@@ -980,7 +993,7 @@ impl PkmnapiDB {
             .unwrap();
 
         if hm_id < &1 || hm_id > &(max_id as u8) {
-            return Err(format!("Invalid ID: valid range is 1-{}", max_id));
+            return Err(error::Error::HMIDInvalid(*hm_id, 1, max_id));
         }
 
         let offset = offset_base + ((*hm_id as usize) - 1);
@@ -1016,7 +1029,7 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_hm(&self, hm_id: &u8, hm: &HM) -> Result<Patch, String> {
+    pub fn set_hm(&self, hm_id: &u8, hm: &HM) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x01;
         let offset_base = offset_base + 0x1052;
 
@@ -1026,7 +1039,7 @@ impl PkmnapiDB {
             .unwrap();
 
         if hm_id < &1 || hm_id > &(max_id as u8) {
-            return Err(format!("Invalid ID: valid range is 1-{}", max_id));
+            return Err(error::Error::HMIDInvalid(*hm_id, 1, max_id));
         }
 
         let offset = offset_base + ((*hm_id as usize) - 1);
@@ -1052,14 +1065,14 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(tm, TM { move_id: 0x05 });
     /// ```
-    pub fn get_tm(&self, tm_id: &u8) -> Result<TM, String> {
+    pub fn get_tm(&self, tm_id: &u8) -> Result<TM, error::Error> {
         let offset_base = ROM_PAGE * 0x09;
         let offset_base = offset_base + 0x1773;
 
-        let max_id = 50;
+        let max_id = 50usize;
 
-        if tm_id < &1 || tm_id > &max_id {
-            return Err(format!("Invalid ID: valid range is 1-{}", max_id));
+        if tm_id < &1 || tm_id > &(max_id as u8) {
+            return Err(error::Error::TMIDInvalid(*tm_id, 1, max_id));
         }
 
         let offset = offset_base + ((*tm_id as usize) - 1);
@@ -1095,14 +1108,14 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_tm(&self, tm_id: &u8, tm: &TM) -> Result<Patch, String> {
+    pub fn set_tm(&self, tm_id: &u8, tm: &TM) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x09;
         let offset_base = offset_base + 0x1773;
 
-        let max_id = 50;
+        let max_id = 50usize;
 
-        if tm_id < &1 || tm_id > &max_id {
-            return Err(format!("Invalid ID: valid range is 1-{}", max_id));
+        if tm_id < &1 || tm_id > &(max_id as u8) {
+            return Err(error::Error::TMIDInvalid(*tm_id, 1, max_id));
         }
 
         let offset = offset_base + ((*tm_id as usize) - 1);
@@ -1128,14 +1141,14 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(tm_price, TMPrice { value: 3000 });
     /// ```
-    pub fn get_tm_price(&self, tm_id: &u8) -> Result<TMPrice, String> {
+    pub fn get_tm_price(&self, tm_id: &u8) -> Result<TMPrice, error::Error> {
         let offset_base = ROM_PAGE * 0x3D;
         let offset_base = offset_base + 0x1FA7;
 
-        let max_id = 50;
+        let max_id = 50usize;
 
-        if tm_id < &1 || tm_id > &max_id {
-            return Err(format!("Invalid ID: valid range is 1-{}", max_id));
+        if tm_id < &1 || tm_id > &(max_id as u8) {
+            return Err(error::Error::TMIDInvalid(*tm_id, 1, max_id));
         }
 
         let offset = offset_base + (((*tm_id as usize - 1) as f32 / 2.0) as usize);
@@ -1178,14 +1191,14 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_tm_price(&self, tm_id: &u8, tm_price: &TMPrice) -> Result<Patch, String> {
+    pub fn set_tm_price(&self, tm_id: &u8, tm_price: &TMPrice) -> Result<Patch, error::Error> {
         let offset_base = ROM_PAGE * 0x3D;
         let offset_base = offset_base + 0x1FA7;
 
-        let max_id = 50;
+        let max_id = 50usize;
 
-        if tm_id < &1 || tm_id > &max_id {
-            return Err(format!("Invalid ID: valid range is 1-{}", max_id));
+        if tm_id < &1 || tm_id > &(max_id as u8) {
+            return Err(error::Error::TMIDInvalid(*tm_id, 1, max_id));
         }
 
         let offset = offset_base + ((((*tm_id as usize) - 1) as f32 / 2.0) as usize);
@@ -1223,7 +1236,7 @@ impl PkmnapiDB {
     ///     weight: 150
     /// });
     /// ```
-    pub fn get_pokedex_entry(&self, pokedex_id: &u8) -> Result<PokedexEntry, String> {
+    pub fn get_pokedex_entry(&self, pokedex_id: &u8) -> Result<PokedexEntry, error::Error> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x1E;
@@ -1277,15 +1290,15 @@ impl PkmnapiDB {
         &self,
         pokedex_id: &u8,
         pokedex_entry: &PokedexEntry,
-    ) -> Result<Patch, String> {
+    ) -> Result<Patch, error::Error> {
         let old_pokedex_entry_species = self.get_pokedex_entry(pokedex_id)?;
         let old_pokedex_entry_species_len = old_pokedex_entry_species.species.value.len();
         let pokedex_entry_species_len = pokedex_entry.species.value.len();
 
         if old_pokedex_entry_species_len != pokedex_entry_species_len {
-            return Err(format!(
-                "Length mismatch: species should be exactly {} characters, found {}",
-                old_pokedex_entry_species_len, pokedex_entry_species_len
+            return Err(error::Error::PokedexEntrySpeciesWrongSize(
+                old_pokedex_entry_species_len,
+                pokedex_entry_species_len,
             ));
         }
 
@@ -1324,7 +1337,10 @@ impl PkmnapiDB {
     ///     text: ROMString::from("A strange seed was\nplanted on its\nback at birth.¶The plant sprouts\nand grows with\nthis #MON"),
     /// });
     /// ```
-    pub fn get_pokedex_entry_text(&self, pokedex_id: &u8) -> Result<PokedexEntryText, String> {
+    pub fn get_pokedex_entry_text(
+        &self,
+        pokedex_id: &u8,
+    ) -> Result<PokedexEntryText, error::Error> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x1E;
@@ -1385,16 +1401,16 @@ impl PkmnapiDB {
         &self,
         pokedex_id: &u8,
         pokedex_entry_text: &PokedexEntryText,
-    ) -> Result<Patch, String> {
+    ) -> Result<Patch, error::Error> {
         let old_pokedex_entry_text = self.get_pokedex_entry_text(pokedex_id)?;
         let old_pokedex_entry_text_len = old_pokedex_entry_text.text.value.len();
         let pokedex_entry_text_raw = pokedex_entry_text.text.to_string();
         let pokedex_entry_text_len = pokedex_entry_text_raw.len();
 
         if pokedex_entry_text_len >= old_pokedex_entry_text_len {
-            return Err(format!(
-                "Length mismatch: should be less than {} characters, found {}",
-                old_pokedex_entry_text_len, pokedex_entry_text_len
+            return Err(error::Error::PokedexEntryTextWrongSize(
+                old_pokedex_entry_text_len,
+                pokedex_entry_text_len,
             ));
         }
 
@@ -1445,7 +1461,7 @@ impl PkmnapiDB {
         &self,
         pokedex_id: &u8,
         pokemon_pic_face: &PokemonPicFace,
-    ) -> Result<Pic, String> {
+    ) -> Result<Pic, error::Error> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let (offset, bank_offset) = {
@@ -1525,12 +1541,12 @@ impl PkmnapiDB {
         pokemon_pic_face: &PokemonPicFace,
         pic: &Pic,
         encoding_method: PicEncodingMethod,
-    ) -> Result<Patch, String> {
+    ) -> Result<Patch, error::Error> {
         let old_pixels = self.get_pokemon_pic(pokedex_id, pokemon_pic_face)?;
         let pixels = pic.encode(encoding_method);
 
         if pixels.len() > old_pixels.bytes + 1 {
-            return Err("Length mismatch: compressed image is too large".to_owned());
+            return Err(error::Error::PicTooLarge);
         }
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
@@ -1600,7 +1616,7 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_trainer_name(&self, trainer_id: &u8) -> Result<TrainerName, String> {
+    pub fn get_trainer_name(&self, trainer_id: &u8) -> Result<TrainerName, error::Error> {
         let offset_base = (ROM_PAGE * 0x1C) + 0x19FF;
 
         let max_offset = (&self.rom[offset_base..])
@@ -1613,7 +1629,7 @@ impl PkmnapiDB {
             .count();
 
         if trainer_id >= &(max_id as u8) {
-            return Err(format!("Invalid trainer ID: {}", trainer_id));
+            return Err(error::Error::TrainerIDInvalid(*trainer_id));
         }
 
         let offset = match {
@@ -1643,7 +1659,7 @@ impl PkmnapiDB {
             }
         } {
             Some(offset) => offset,
-            None => return Err(format!("Invalid trainer ID: {}", trainer_id)),
+            None => return Err(error::Error::TrainerIDInvalid(*trainer_id)),
         };
 
         let trainer_name = TrainerName::from(&self.rom[offset..(offset + 13)]);
@@ -1689,16 +1705,16 @@ impl PkmnapiDB {
         &self,
         trainer_id: &u8,
         trainer_name: &TrainerName,
-    ) -> Result<Patch, String> {
+    ) -> Result<Patch, error::Error> {
         let old_trainer_name = self.get_trainer_name(trainer_id)?;
         let old_trainer_name_len = old_trainer_name.name.value.len();
         let trainer_name_raw = trainer_name.to_raw();
         let trainer_name_len = trainer_name_raw.len();
 
         if old_trainer_name_len != trainer_name_len {
-            return Err(format!(
-                "Length mismatch: should be exactly {} characters, found {}",
-                old_trainer_name_len, trainer_name_len
+            return Err(error::Error::TrainerNameWrongSize(
+                old_trainer_name_len,
+                trainer_name_len,
             ));
         }
 
@@ -1714,7 +1730,7 @@ impl PkmnapiDB {
             .count();
 
         if trainer_id >= &(max_id as u8) {
-            return Err(format!("Invalid trainer ID: {}", trainer_id));
+            return Err(error::Error::TrainerIDInvalid(*trainer_id));
         }
 
         let offset = match {
@@ -1744,13 +1760,13 @@ impl PkmnapiDB {
             }
         } {
             Some(offset) => offset,
-            None => return Err(format!("Invalid trainer ID: {}", trainer_id)),
+            None => return Err(error::Error::TrainerIDInvalid(*trainer_id)),
         };
 
         Ok(Patch::new(&offset, &trainer_name_raw))
     }
 
-    pub fn get_trainer_pic(&self, trainer_id: &u8) -> Result<Pic, String> {
+    pub fn get_trainer_pic(&self, trainer_id: &u8) -> Result<Pic, error::Error> {
         let offset_base = ROM_PAGE * 0x1C;
         let offset_base = offset_base + 0x1914;
 
@@ -1761,7 +1777,7 @@ impl PkmnapiDB {
         let max_id = ((max_index as f32) / 5.0) as u8;
 
         if trainer_id >= &max_id {
-            return Err(format!("Invalid trainer ID: {}", trainer_id));
+            return Err(error::Error::TrainerIDInvalid(*trainer_id));
         }
 
         let offset = offset_base + ((*trainer_id as usize) * 0x05);
@@ -1802,12 +1818,12 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_item_name(&self, item_id: &u8) -> Result<ItemName, String> {
+    pub fn get_item_name(&self, item_id: &u8) -> Result<ItemName, error::Error> {
         let offset_base = ROM_PAGE * 0x02;
         let offset_base = offset_base + 0x072B;
 
         if item_id < &1 {
-            return Err(format!("Invalid item ID: {}", item_id));
+            return Err(error::Error::ItemIDInvalid(*item_id));
         }
 
         let max_offset = (&self.rom[offset_base..])
@@ -1820,7 +1836,7 @@ impl PkmnapiDB {
             .count();
 
         if item_id - 1 >= max_id as u8 {
-            return Err(format!("Invalid item ID: {}", item_id));
+            return Err(error::Error::ItemIDInvalid(*item_id));
         }
 
         let offset = match {
@@ -1850,7 +1866,7 @@ impl PkmnapiDB {
             }
         } {
             Some(offset) => offset,
-            None => return Err(format!("Invalid item ID: {}", item_id)),
+            None => return Err(error::Error::ItemIDInvalid(*item_id)),
         };
 
         let item_name = ItemName::from(&self.rom[offset..(offset + 13)]);
@@ -1892,9 +1908,9 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_item_name(&self, item_id: &u8, item_name: &ItemName) -> Result<Patch, String> {
+    pub fn set_item_name(&self, item_id: &u8, item_name: &ItemName) -> Result<Patch, error::Error> {
         if item_id < &1 {
-            return Err(format!("Invalid item ID: {}", item_id));
+            return Err(error::Error::ItemIDInvalid(*item_id));
         }
 
         let old_item_name = self.get_item_name(item_id)?;
@@ -1903,9 +1919,9 @@ impl PkmnapiDB {
         let item_name_len = item_name_raw.len();
 
         if old_item_name_len != item_name_len {
-            return Err(format!(
-                "Length mismatch: should be exactly {} characters, found {}",
-                old_item_name_len, item_name_len
+            return Err(error::Error::ItemNameWrongSize(
+                old_item_name_len,
+                item_name_len,
             ));
         }
 
@@ -1922,7 +1938,7 @@ impl PkmnapiDB {
             .count();
 
         if item_id - 1 >= max_id as u8 {
-            return Err(format!("Invalid item ID: {}", item_id));
+            return Err(error::Error::ItemIDInvalid(*item_id));
         }
 
         let offset = match {
@@ -1952,7 +1968,7 @@ impl PkmnapiDB {
             }
         } {
             Some(offset) => offset,
-            None => return Err(format!("Invalid item ID: {}", item_id)),
+            None => return Err(error::Error::ItemIDInvalid(*item_id)),
         };
 
         Ok(Patch::new(&offset, &item_name_raw))
