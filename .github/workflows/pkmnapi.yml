@@ -1,0 +1,81 @@
+name: pkmnapi
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  pkmnapi:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        override: true
+    - name: Secrets
+      run: ./decrypt.sh
+      working-directory: secrets
+      env:
+        SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
+    - name: Build
+      run: cargo build --verbose
+      working-directory: pkmnapi
+    - name: Dependencies
+      run: cargo install diesel_cli
+      working-directory: pkmnapi
+    - name: Test
+      run: cargo test --verbose -- --test-threads 1
+      working-directory: pkmnapi
+      env:
+        PKMN_ROM: ../secrets/pkmn.gb
+  pkmnapi-db:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        override: true
+    - name: Secrets
+      run: ./decrypt.sh
+      working-directory: secrets
+      env:
+        SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
+    - name: Build
+      run: cargo build --verbose
+      working-directory: pkmnapi-db
+    - name: Test
+      run: cargo test --verbose
+      working-directory: pkmnapi-db
+      env:
+        PKMN_ROM: ../secrets/pkmn.gb
+        PKMN_SAV: ./tests/data/pkmn.sav
+    - name: Test Ignored
+      run: cargo test --verbose -- --ignored
+      working-directory: pkmnapi-db
+      env:
+        PKMN_ROM: ../secrets/pkmn.gb
+        PKMN_SAV: ./tests/data/pkmn.sav
+  pkmnapi-sql:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        override: true
+    - name: Build
+      run: cargo build --verbose
+      working-directory: pkmnapi-sql
+    - name: Dependencies
+      run: cargo install diesel_cli
+      working-directory: pkmnapi-sql
+    - name: Test
+      run: cargo test --verbose -- --test-threads 1
+      working-directory: pkmnapi-sql
