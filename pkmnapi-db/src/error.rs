@@ -8,6 +8,8 @@ pub enum Error {
     InternalIDInvalid(u8),
     ItemIDInvalid(u8),
     ItemNameWrongSize(usize, usize),
+    MapCouldNotWrite,
+    MapInvalid(u8),
     MoveIDInvalid(u8),
     MoveNameWrongSize(usize, usize),
     PicCouldNotRead,
@@ -72,6 +74,8 @@ impl fmt::Display for Error {
                 "Item name length mismatch: should be exactly {} characters, found {}",
                 expected, actual
             ),
+            Error::MapCouldNotWrite => "Could not write image".to_owned(),
+            Error::MapInvalid(map_id) => format!("Invalid map ID: {}", map_id),
             Error::MoveNameWrongSize(expected, actual) => format!(
                 "Move name length mismatch: should be exactly {} characters, found {}",
                 expected, actual
