@@ -189,7 +189,7 @@ impl PkmnapiSQL {
     /// let rom = sql.select_rom_by_id(&connection, &id).unwrap().unwrap();
     ///
     /// assert_eq!(rom.id.len(), 32);
-    /// assert_eq!(rom.date_create.len(), 32);
+    /// assert_eq!(rom.date_create.len(), 20);
     /// assert_eq!(rom.name, String::from("foo"));
     /// assert_eq!(rom.rom_data_id.len(), 32);
     /// # fs::remove_file("test.db");
@@ -323,12 +323,12 @@ impl PkmnapiSQL {
     /// let sql = PkmnapiSQL::new();
     ///
     /// let connection = sql.get_connection().unwrap();
-    /// # let (new_user, access_token) = sql.insert_user(&connection, &String::from("foo@bar.com")).unwrap();
-    /// let user = sql.select_user_by_id(&connection, &access_token).unwrap().unwrap();
+    /// # let (new_user, _access_token) = sql.insert_user(&connection, &String::from("foo@bar.com")).unwrap();
+    /// let user = sql.select_user_by_id(&connection, &new_user.id).unwrap().unwrap();
     ///
     /// assert_eq!(user.id, String::from("foo@bar.com"));
-    /// assert_eq!(user.date_create.len(), 32);
-    /// assert_eq!(user.date_expire.len(), 32);
+    /// assert_eq!(user.date_create.len(), 20);
+    /// assert_eq!(user.date_expire.len(), 20);
     /// assert_eq!(user.access_token_hash.len(), 64);
     /// assert_eq!(user.rom_id, None);
     /// # fs::remove_file("test.db");
@@ -380,8 +380,8 @@ impl PkmnapiSQL {
     /// let user = sql.select_user_by_access_token(&connection, &access_token).unwrap().unwrap();
     ///
     /// assert_eq!(user.id, String::from("foo@bar.com"));
-    /// assert_eq!(user.date_create.len(), 32);
-    /// assert_eq!(user.date_expire.len(), 32);
+    /// assert_eq!(user.date_create.len(), 20);
+    /// assert_eq!(user.date_expire.len(), 20);
     /// assert_eq!(user.access_token_hash.len(), 64);
     /// assert_eq!(user.rom_id, None);
     /// # fs::remove_file("test.db");
@@ -436,8 +436,8 @@ impl PkmnapiSQL {
     ///     .unwrap();
     ///
     /// assert_eq!(new_user.id, String::from("foo@bar.com"));
-    /// assert_eq!(new_user.date_create.len(), 32);
-    /// assert_eq!(new_user.date_expire.len(), 32);
+    /// assert_eq!(new_user.date_create.len(), 20);
+    /// assert_eq!(new_user.date_expire.len(), 20);
     /// assert_eq!(new_user.access_token_hash.len(), 64);
     /// assert_eq!(new_user.rom_id, None);
     /// assert_eq!(access_token.len(), 64);
@@ -507,7 +507,7 @@ impl PkmnapiSQL {
     /// let rom = sql.select_user_rom_by_access_token(&connection, &access_token).unwrap().unwrap();
     ///
     /// assert_eq!(rom.id.len(), 32);
-    /// assert_eq!(rom.date_create.len(), 32);
+    /// assert_eq!(rom.date_create.len(), 20);
     /// assert_eq!(rom.name, String::from("foo"));
     /// assert_eq!(rom.rom_data_id.len(), 32);
     /// # fs::remove_file("test.db");
@@ -725,7 +725,7 @@ impl PkmnapiSQL {
     /// let patch = sql.select_patch_by_id(&connection, &access_token, &id).unwrap().unwrap();
     ///
     /// assert_eq!(patch.id.len(), 32);
-    /// assert_eq!(patch.date_create.len(), 32);
+    /// assert_eq!(patch.date_create.len(), 20);
     /// assert_eq!(patch.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(patch.description, None);
     /// # fs::remove_file("test.db");
@@ -780,7 +780,7 @@ impl PkmnapiSQL {
     /// let patch = &patches[0];
     ///
     /// assert_eq!(patch.id.len(), 32);
-    /// assert_eq!(patch.date_create.len(), 32);
+    /// assert_eq!(patch.date_create.len(), 20);
     /// assert_eq!(patch.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(patch.description, None);
     /// # fs::remove_file("test.db");

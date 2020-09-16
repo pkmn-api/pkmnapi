@@ -80,13 +80,13 @@ impl NewRom {
     /// let new_rom = NewRom::new(&String::from("foo"), &String::from("bar"));
     ///
     /// assert_eq!(new_rom.id.len(), 32);
-    /// assert_eq!(new_rom.date_create.len(), 32);
+    /// assert_eq!(new_rom.date_create.len(), 20);
     /// assert_eq!(new_rom.name, String::from("foo"));
     /// assert_eq!(new_rom.rom_data_id, String::from("bar"));
     /// ```
     pub fn new(name: &String, rom_data_id: &String) -> Self {
         let id = utils::random_id(32);
-        let date_create = Utc::now().to_rfc3339();
+        let date_create = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
 
         NewRom {
             id,
@@ -144,15 +144,16 @@ impl NewUser {
     /// let (new_user, access_token) = NewUser::new(&String::from("foo@bar.com"));
     ///
     /// assert_eq!(new_user.id, String::from("foo@bar.com"));
-    /// assert_eq!(new_user.date_create.len(), 32);
-    /// assert_eq!(new_user.date_expire.len(), 32);
+    /// assert_eq!(new_user.date_create.len(), 20);
+    /// assert_eq!(new_user.date_expire.len(), 20);
     /// assert_eq!(new_user.access_token_hash.len(), 64);
     /// assert_eq!(new_user.rom_id, None);
     /// assert_eq!(access_token.len(), 64);
     /// ```
     pub fn new(id: &String) -> (Self, String) {
-        let date_create = Utc::now().to_rfc3339();
-        let date_expire = (Utc::now() + Duration::seconds(600)).to_rfc3339();
+        let date_create = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
+        let date_expire =
+            (Utc::now() + Duration::seconds(600)).to_rfc3339_opts(SecondsFormat::Secs, true);
         let access_token = utils::random_id(64);
         let rom_id = None;
 
@@ -201,14 +202,14 @@ impl NewPatch {
     /// let new_patch = NewPatch::new(&String::from("foo"), &vec![0x01, 0x02, 0x03, 0x04], None);
     ///
     /// assert_eq!(new_patch.id.len(), 32);
-    /// assert_eq!(new_patch.date_create.len(), 32);
+    /// assert_eq!(new_patch.date_create.len(), 20);
     /// assert_eq!(new_patch.user_id, String::from("foo"));
     /// assert_eq!(new_patch.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(new_patch.description, None);
     /// ```
     pub fn new(user_id: &String, data: &Vec<u8>, description: Option<String>) -> Self {
         let id = utils::random_id(32);
-        let date_create = Utc::now().to_rfc3339();
+        let date_create = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
 
         NewPatch {
             id,
