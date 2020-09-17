@@ -1,3 +1,4 @@
+use pkmnapi_email::*;
 use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
@@ -59,13 +60,21 @@ pub fn post_access_token(
 
     let (_, access_token) = sql.insert_user(&connection, &email_address).unwrap();
 
-    // TODO: send email
+    let response = if cfg!(debug_assertions) {
+        json!(access_token)
+    } else {
+        let email = PkmnapiEmail::new(
+            &email_address,
+            PkmnapiEmailTemplate::AccessToken(access_token.clone()),
+        );
 
-    #[cfg(debug_assertions)]
-    let response = json!(access_token);
+        match email.send() {
+            Ok(_) => {}
+            Err(e) => return Err(AccessTokenErrorEmail::new(&e)),
+        };
 
-    #[cfg(not(debug_assertions))]
-    let response = json!({});
+        json!({})
+    };
 
     Ok(status::Created(
         utils::generate_url("access_tokens", None),

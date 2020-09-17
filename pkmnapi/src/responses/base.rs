@@ -53,6 +53,7 @@ pub struct BaseErrorResponseData<T> {
 #[derive(Debug, Serialize)]
 #[allow(non_camel_case_types)]
 pub enum BaseErrorResponseId {
+    error_access_tokens_email,
     error_access_tokens_forbidden,
     error_access_tokens_invalid,
     error_access_tokens_timeout,

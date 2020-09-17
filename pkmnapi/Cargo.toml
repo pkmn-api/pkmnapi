@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 pkmnapi-db = { path = "../pkmnapi-db" }
+pkmnapi-email = { path = "../pkmnapi-email" }
 pkmnapi-sql = { path = "../pkmnapi-sql" }
 rand = "0.7.3"
 rocket = "0.4.5"

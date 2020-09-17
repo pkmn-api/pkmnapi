@@ -6,6 +6,7 @@ use crate::responses::base::*;
 
 #[derive(Debug, Responder)]
 pub enum ResponseError {
+    AccessTokenErrorEmail(status::Forbidden<Json<AccessTokenErrorEmail>>),
     AccessTokenErrorForbidden(status::Forbidden<Json<AccessTokenErrorForbidden>>),
     AccessTokenErrorInvalid(status::BadRequest<Json<AccessTokenErrorInvalid>>),
     AccessTokenErrorTimeout(status::Forbidden<Json<AccessTokenErrorTimeout>>),
@@ -31,6 +32,29 @@ pub enum ResponseError {
     TypeEffectResponseErrorInvalid(status::BadRequest<Json<TypeEffectResponseErrorInvalid>>),
     TypeResponseError(status::NotFound<Json<TypeResponseError>>),
     TypeResponseErrorInvalid(status::BadRequest<Json<TypeResponseErrorInvalid>>),
+}
+
+pub type AccessTokenErrorEmail = BaseErrorResponse<AccessTokenErrorEmailAttributes>;
+
+impl AccessTokenErrorEmail {
+    pub fn new(message: &String) -> ResponseError {
+        let response = AccessTokenErrorEmail {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_access_tokens_email,
+                _type: BaseErrorResponseType::errors,
+                attributes: AccessTokenErrorEmailAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::AccessTokenErrorEmail(status::Forbidden(Some(Json(response))))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct AccessTokenErrorEmailAttributes {
+    pub message: String,
 }
 
 pub type AccessTokenErrorForbidden = BaseErrorResponse<AccessTokenErrorForbiddenAttributes>;
