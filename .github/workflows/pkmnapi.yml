@@ -34,6 +34,7 @@ jobs:
       working-directory: pkmnapi
       env:
         PKMN_ROM: ../secrets/pkmn.gb
+        PKMN_SAV: ../pkmnapi-db/tests/data/pkmn.sav
   pkmnapi-db:
     runs-on: ubuntu-latest
     steps:

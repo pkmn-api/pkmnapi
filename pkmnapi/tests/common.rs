@@ -74,6 +74,26 @@ pub fn post_rom(client: &Client, access_token: &String) {
 }
 
 #[allow(dead_code)]
+#[allow(non_snake_case)]
+pub fn load_sav() -> Vec<u8> {
+    let PKMN_SAV = env::var("PKMN_SAV")
+        .expect("Set the PKMN_SAV environment variable to point to the SAV location");
+
+    fs::read(PKMN_SAV).unwrap()
+}
+
+#[allow(dead_code)]
+pub fn post_sav(client: &Client, access_token: &String) {
+    let sav = load_sav();
+
+    client
+        .post("/v1/savs")
+        .body(&sav)
+        .header(auth_header(&access_token))
+        .dispatch();
+}
+
+#[allow(dead_code)]
 pub fn assert_unauthorized(response: &mut Response) {
     assert_eq!(response.status(), Status::Unauthorized);
     assert_eq!(response.content_type(), Some(ContentType::JSON));

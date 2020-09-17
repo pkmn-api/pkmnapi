@@ -157,7 +157,7 @@ pub fn post_pokemon_pic_png<'a>(
         Err(_) => None,
     };
 
-    match sql.insert_patch(
+    match sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),
@@ -232,7 +232,7 @@ pub fn post_pokemon_pic_jpeg<'a>(
         Err(_) => None,
     };
 
-    match sql.insert_patch(
+    match sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),

@@ -14,13 +14,16 @@ pub enum ResponseError {
     MapPicResponseError(status::NotFound<Json<MapPicResponseError>>),
     MoveResponseError(status::NotFound<Json<MoveResponseError>>),
     MoveResponseErrorInvalid(status::BadRequest<Json<MoveResponseErrorInvalid>>),
-    PatchResponseError(status::NotFound<Json<PatchResponseError>>),
     PokemonNameResponseError(status::NotFound<Json<PokemonNameResponseError>>),
     PokemonNameResponseErrorInvalid(status::BadRequest<Json<PokemonNameResponseErrorInvalid>>),
     PokemonPicResponseError(status::NotFound<Json<PokemonPicResponseError>>),
+    RomPatchResponseError(status::NotFound<Json<RomPatchResponseError>>),
     RomResponseErrorInvalidRom(status::BadRequest<Json<RomResponseErrorInvalidRom>>),
     RomResponseErrorNoRom(status::Forbidden<Json<RomResponseErrorNoRom>>),
     RomResponseErrorRomExists(status::Forbidden<Json<RomResponseErrorRomExists>>),
+    SavResponseErrorInvalidSav(status::BadRequest<Json<SavResponseErrorInvalidSav>>),
+    SavResponseErrorNoSav(status::Forbidden<Json<SavResponseErrorNoSav>>),
+    SavResponseErrorSavExists(status::Forbidden<Json<SavResponseErrorSavExists>>),
     StatsResponseError(status::NotFound<Json<StatsResponseError>>),
     StatsResponseErrorInvalid(status::BadRequest<Json<StatsResponseErrorInvalid>>),
     TMResponseError(status::NotFound<Json<TMResponseError>>),
@@ -218,29 +221,6 @@ pub struct MoveResponseErrorInvalidAttributes {
     pub message: String,
 }
 
-pub type PatchResponseError = BaseErrorResponse<PatchResponseErrorAttributes>;
-
-impl PatchResponseError {
-    pub fn new() -> ResponseError {
-        let response = PatchResponseError {
-            data: BaseErrorResponseData {
-                id: BaseErrorResponseId::error_patches,
-                _type: BaseErrorResponseType::errors,
-                attributes: PatchResponseErrorAttributes {
-                    message: "No patch found".to_owned(),
-                },
-            },
-        };
-
-        ResponseError::PatchResponseError(status::NotFound(Json(response)))
-    }
-}
-
-#[derive(Debug, Serialize)]
-pub struct PatchResponseErrorAttributes {
-    pub message: String,
-}
-
 pub type PokemonNameResponseError = BaseErrorResponse<PokemonNameResponseErrorAttributes>;
 
 impl PokemonNameResponseError {
@@ -311,6 +291,29 @@ pub struct PokemonPicResponseErrorAttributes {
     pub message: String,
 }
 
+pub type RomPatchResponseError = BaseErrorResponse<RomPatchResponseErrorAttributes>;
+
+impl RomPatchResponseError {
+    pub fn new() -> ResponseError {
+        let response = RomPatchResponseError {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_rom_patches,
+                _type: BaseErrorResponseType::errors,
+                attributes: RomPatchResponseErrorAttributes {
+                    message: "No ROM patch found".to_owned(),
+                },
+            },
+        };
+
+        ResponseError::RomPatchResponseError(status::NotFound(Json(response)))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct RomPatchResponseErrorAttributes {
+    pub message: String,
+}
+
 pub type RomResponseErrorNoRom = BaseErrorResponse<RomResponseErrorNoRomAttributes>;
 
 impl RomResponseErrorNoRom {
@@ -377,6 +380,75 @@ impl RomResponseErrorRomExists {
 
 #[derive(Debug, Serialize)]
 pub struct RomResponseErrorRomExistsAttributes {
+    pub message: String,
+}
+
+pub type SavResponseErrorNoSav = BaseErrorResponse<SavResponseErrorNoSavAttributes>;
+
+impl SavResponseErrorNoSav {
+    pub fn new() -> ResponseError {
+        let response = SavResponseErrorNoSav {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_savs_no_sav,
+                _type: BaseErrorResponseType::errors,
+                attributes: SavResponseErrorNoSavAttributes {
+                    message: "No SAV uploaded".to_owned(),
+                },
+            },
+        };
+
+        ResponseError::SavResponseErrorNoSav(status::Forbidden(Some(Json(response))))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct SavResponseErrorNoSavAttributes {
+    pub message: String,
+}
+
+pub type SavResponseErrorInvalidSav = BaseErrorResponse<SavResponseErrorInvalidSavAttributes>;
+
+impl SavResponseErrorInvalidSav {
+    pub fn new() -> ResponseError {
+        let response = SavResponseErrorInvalidSav {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_savs_invalid_sav,
+                _type: BaseErrorResponseType::errors,
+                attributes: SavResponseErrorInvalidSavAttributes {
+                    message: "Invalid SAV provided".to_owned(),
+                },
+            },
+        };
+
+        ResponseError::SavResponseErrorInvalidSav(status::BadRequest(Some(Json(response))))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct SavResponseErrorInvalidSavAttributes {
+    pub message: String,
+}
+
+pub type SavResponseErrorSavExists = BaseErrorResponse<SavResponseErrorSavExistsAttributes>;
+
+impl SavResponseErrorSavExists {
+    pub fn new() -> ResponseError {
+        let response = SavResponseErrorSavExists {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_savs_sav_exists,
+                _type: BaseErrorResponseType::errors,
+                attributes: SavResponseErrorSavExistsAttributes {
+                    message: "SAV already exists".to_owned(),
+                },
+            },
+        };
+
+        ResponseError::SavResponseErrorSavExists(status::Forbidden(Some(Json(response))))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct SavResponseErrorSavExistsAttributes {
     pub message: String,
 }
 

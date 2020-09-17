@@ -10,23 +10,38 @@ pub fn get_db_with_applied_patches(
     access_token: &String,
 ) -> Result<PkmnapiDB, ResponseError> {
     let connection = sql.get_connection().unwrap();
-    let rom_data_sql = match sql.select_user_rom_data_by_access_token(&connection, &access_token) {
-        Ok(Some(rom_sql)) => rom_sql,
+    let rom_data = match sql.select_user_rom_data_by_access_token(&connection, &access_token) {
+        Ok(Some(rom_data)) => rom_data,
         _ => return Err(RomResponseErrorNoRom::new()),
     };
+    let sav = match sql.select_user_sav_by_access_token(&connection, &access_token) {
+        Ok(Some(sav)) => Some(sav.data),
+        _ => None,
+    };
 
-    let patches = match sql.select_patches_by_access_token(&connection, &access_token) {
+    let rom_patches = match sql.select_rom_patches_by_access_token(&connection, &access_token) {
         Ok(patches) => patches,
         Err(_) => vec![],
     };
 
-    let mut db = match PkmnapiDB::new(&rom_data_sql.data, None) {
+    let sav_patches = match sql.select_sav_patches_by_access_token(&connection, &access_token) {
+        Ok(patches) => patches,
+        Err(_) => vec![],
+    };
+
+    let mut db = match PkmnapiDB::new(&rom_data.data, sav) {
         Ok(db) => db,
         Err(_) => return Err(RomResponseErrorInvalidRom::new()),
     };
 
-    for patch in patches {
+    for patch in rom_patches {
         db.apply_patch(patch.data);
+    }
+
+    if let Some(ref mut sav) = db.sav {
+        for patch in sav_patches {
+            sav.apply_patch(patch.data);
+        }
     }
 
     Ok(db)

@@ -110,7 +110,7 @@ pub fn post_stats(
         Err(_) => None,
     };
 
-    match sql.insert_patch(
+    match sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),

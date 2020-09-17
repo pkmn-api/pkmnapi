@@ -1,10 +1,11 @@
 pub mod access_tokens;
 pub mod map_pics;
 pub mod moves;
-pub mod patches;
 pub mod pokemon_names;
 pub mod pokemon_pics;
+pub mod rom_patches;
 pub mod roms;
+pub mod savs;
 pub mod stats;
 pub mod status;
 pub mod tms;

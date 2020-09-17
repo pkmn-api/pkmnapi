@@ -8,31 +8,31 @@ use std::io::Cursor;
 
 use crate::guards::*;
 use crate::responses::errors::*;
-use crate::responses::patches::*;
+use crate::responses::rom_patches::*;
 
-#[get("/patches", format = "application/json", rank = 1)]
-pub fn get_patches(
+#[get("/roms/patches", format = "application/json", rank = 1)]
+pub fn get_rom_patches(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
-) -> Result<Json<PatchesResponse>, ResponseError> {
+) -> Result<Json<RomPatchesResponse>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
     };
 
     let connection = sql.get_connection().unwrap();
-    let patches = match sql.select_patches_by_access_token(&connection, &access_token) {
+    let patches = match sql.select_rom_patches_by_access_token(&connection, &access_token) {
         Ok(patches) => patches,
         Err(_) => return Err(RomResponseErrorNoRom::new()),
     };
 
-    let response = PatchesResponse::new(&patches);
+    let response = RomPatchesResponse::new(&patches);
 
     Ok(Json(response))
 }
 
-#[get("/patches", format = "application/patch", rank = 2)]
-pub fn get_patches_raw<'a>(
+#[get("/roms/patches", format = "application/patch", rank = 2)]
+pub fn get_rom_patches_raw<'a>(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Response<'a>, ResponseError> {
@@ -42,7 +42,7 @@ pub fn get_patches_raw<'a>(
     };
 
     let connection = sql.get_connection().unwrap();
-    let patches = match sql.select_patches_by_access_token(&connection, &access_token) {
+    let patches = match sql.select_rom_patches_by_access_token(&connection, &access_token) {
         Ok(patches) => patches,
         Err(_) => return Err(RomResponseErrorNoRom::new()),
     };
@@ -70,31 +70,31 @@ pub fn get_patches_raw<'a>(
     Ok(response)
 }
 
-#[get("/patches/<patch_id>")]
-pub fn get_patch(
+#[get("/roms/patches/<patch_id>")]
+pub fn get_rom_patch(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_id: String,
-) -> Result<Json<PatchResponse>, ResponseError> {
+) -> Result<Json<RomPatchResponse>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
     };
 
     let connection = sql.get_connection().unwrap();
-    let patch = match sql.select_patch_by_id(&connection, &access_token, &patch_id) {
+    let patch = match sql.select_rom_patch_by_id(&connection, &access_token, &patch_id) {
         Ok(Some(patch)) => patch,
-        Ok(None) => return Err(PatchResponseError::new()),
+        Ok(None) => return Err(RomPatchResponseError::new()),
         Err(_) => return Err(RomResponseErrorNoRom::new()),
     };
 
-    let response = PatchResponse::new(&patch);
+    let response = RomPatchResponse::new(&patch);
 
     Ok(Json(response))
 }
 
-#[delete("/patches/<patch_id>")]
-pub fn delete_patch(
+#[delete("/roms/patches/<patch_id>")]
+pub fn delete_rom_patch(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_id: String,
@@ -105,7 +105,7 @@ pub fn delete_patch(
     };
 
     let connection = sql.get_connection().unwrap();
-    match sql.delete_patch_by_id(&connection, &access_token, &patch_id) {
+    match sql.delete_rom_patch_by_id(&connection, &access_token, &patch_id) {
         Ok(_) => {}
         Err(_) => return Err(RomResponseErrorNoRom::new()),
     }

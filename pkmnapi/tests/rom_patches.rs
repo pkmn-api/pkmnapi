@@ -3,13 +3,13 @@ use rocket::http::{Accept, ContentType, Header, MediaType, Status};
 mod common;
 
 #[test]
-fn get_patches_200() {
+fn get_rom_patches_200() {
     let (client, access_token) = common::setup_with_access_token();
 
     common::post_rom(&client, &access_token);
 
     let request = client
-        .get("/v1/patches")
+        .get("/v1/roms/patches")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -18,7 +18,7 @@ fn get_patches_200() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(
         response.body_string(),
-        Some(r#"{"data":[],"links":{"self":"http://localhost:8080/v1/patches"}}"#.to_string())
+        Some(r#"{"data":[],"links":{"self":"http://localhost:8080/v1/roms/patches"}}"#.to_string())
     );
 
     client
@@ -29,7 +29,7 @@ fn get_patches_200() {
         .dispatch();
 
     let request = client
-        .get("/v1/patches")
+        .get("/v1/roms/patches")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -47,7 +47,7 @@ fn get_patches_200() {
     assert_eq!(
         body_c,
         format!(
-            r#"","type":"patches","attributes":{{}},"links":{{"self":"http://localhost:8080/v1/patches/{}"}}}}],"links":{{"self":"http://localhost:8080/v1/patches"}}}}"#,
+            r#"","type":"rom_patches","attributes":{{}},"links":{{"self":"http://localhost:8080/v1/roms/patches/{}"}}}}],"links":{{"self":"http://localhost:8080/v1/roms/patches"}}}}"#,
             body_b
         )
     );
@@ -56,10 +56,10 @@ fn get_patches_200() {
 }
 
 #[test]
-fn get_patches_401() {
+fn get_rom_patches_401() {
     let client = common::setup();
 
-    let request = client.get("/v1/patches");
+    let request = client.get("/v1/roms/patches");
 
     let mut response = request.dispatch();
 
@@ -68,7 +68,7 @@ fn get_patches_401() {
 }
 
 #[test]
-fn get_patches_raw_200() {
+fn get_rom_patches_raw_200() {
     let (client, access_token) = common::setup_with_access_token();
 
     common::post_rom(&client, &access_token);
@@ -81,7 +81,7 @@ fn get_patches_raw_200() {
         .dispatch();
 
     let request = client
-        .get("/v1/patches")
+        .get("/v1/roms/patches")
         .header(Accept::new(vec![
             MediaType::new("application", "patch").into()
         ]))
@@ -114,11 +114,12 @@ fn get_patches_raw_200() {
 }
 
 #[test]
-fn get_patches_raw_401() {
+fn get_rom_patches_raw_401() {
     let client = common::setup();
 
-    let request =
-        client.get("/v1/patches").header(Accept::new(vec![
+    let request = client
+        .get("/v1/roms/patches")
+        .header(Accept::new(vec![
             MediaType::new("application", "patch").into()
         ]));
 
@@ -129,7 +130,7 @@ fn get_patches_raw_401() {
 }
 
 #[test]
-fn get_patch_200() {
+fn get_rom_patch_200() {
     let (client, access_token) = common::setup_with_access_token();
 
     common::post_rom(&client, &access_token);
@@ -143,7 +144,7 @@ fn get_patch_200() {
         .dispatch();
 
     let request = client
-        .get("/v1/patches")
+        .get("/v1/roms/patches")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -155,7 +156,7 @@ fn get_patch_200() {
     let patch_id = (&body[16..48]).to_string();
 
     let request = client
-        .get(format!("/v1/patches/{}", patch_id))
+        .get(format!("/v1/roms/patches/{}", patch_id))
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -170,7 +171,7 @@ fn get_patch_200() {
     assert_eq!(
         body_c,
         format!(
-            r#"","type":"patches","attributes":{{"description":"NORMAL -> BORING"}},"links":{{"self":"http://localhost:8080/v1/patches/{}"}}}},"links":{{"self":"http://localhost:8080/v1/patches/{}"}}}}"#,
+            r#"","type":"rom_patches","attributes":{{"description":"NORMAL -> BORING"}},"links":{{"self":"http://localhost:8080/v1/roms/patches/{}"}}}},"links":{{"self":"http://localhost:8080/v1/roms/patches/{}"}}}}"#,
             body_b, body_b
         )
     );
@@ -179,10 +180,10 @@ fn get_patch_200() {
 }
 
 #[test]
-fn get_patch_401() {
+fn get_rom_patch_401() {
     let client = common::setup();
 
-    let request = client.get("/v1/patches/abcdefgh");
+    let request = client.get("/v1/roms/patches/abcdefgh");
 
     let mut response = request.dispatch();
 
@@ -191,24 +192,24 @@ fn get_patch_401() {
 }
 
 #[test]
-fn get_patch_404() {
+fn get_rom_patch_404() {
     let (client, access_token) = common::setup_with_access_token();
 
     let request = client
-        .get("/v1/patches/abcdefgh")
+        .get("/v1/roms/patches/abcdefgh")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
 
     assert_eq!(response.status(), Status::NotFound);
     assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_patches","type":"errors","attributes":{"message":"No patch found"}}}"#.to_string()));
+    assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_rom_patches","type":"errors","attributes":{"message":"No ROM patch found"}}}"#.to_string()));
 
     common::teardown();
 }
 
 #[test]
-fn delete_patch_204() {
+fn delete_rom_patch_204() {
     let (client, access_token) = common::setup_with_access_token();
 
     common::post_rom(&client, &access_token);
@@ -221,7 +222,7 @@ fn delete_patch_204() {
         .dispatch();
 
     let request = client
-        .get("/v1/patches")
+        .get("/v1/roms/patches")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -233,7 +234,7 @@ fn delete_patch_204() {
     let patch_id = (&body[16..48]).to_string();
 
     let request = client
-        .delete(format!("/v1/patches/{}", patch_id))
+        .delete(format!("/v1/roms/patches/{}", patch_id))
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();

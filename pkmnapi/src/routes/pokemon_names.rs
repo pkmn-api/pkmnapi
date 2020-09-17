@@ -88,7 +88,7 @@ pub fn post_pokemon_name(
         Err(_) => None,
     };
 
-    match sql.insert_patch(
+    match sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),
