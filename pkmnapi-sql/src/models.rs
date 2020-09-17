@@ -2,7 +2,7 @@
 
 use chrono::{prelude::*, Duration};
 
-use crate::schema::{patches, rom_data, roms, users};
+use crate::schema::{rom_data, rom_patches, roms, sav_patches, savs, users};
 use crate::utils;
 
 /// Queryable struct of data from `rom_data`
@@ -105,6 +105,7 @@ pub struct User {
     pub date_expire: String,
     pub access_token_hash: String,
     pub rom_id: Option<String>,
+    pub sav_id: Option<String>,
 }
 
 impl User {
@@ -125,6 +126,7 @@ pub struct NewUser {
     pub date_expire: String,
     pub access_token_hash: String,
     pub rom_id: Option<String>,
+    pub sav_id: Option<String>,
 }
 
 impl NewUser {
@@ -148,6 +150,7 @@ impl NewUser {
     /// assert_eq!(new_user.date_expire.len(), 20);
     /// assert_eq!(new_user.access_token_hash.len(), 64);
     /// assert_eq!(new_user.rom_id, None);
+    /// assert_eq!(new_user.sav_id, None);
     /// assert_eq!(access_token.len(), 64);
     /// ```
     pub fn new(id: &String) -> (Self, String) {
@@ -156,6 +159,7 @@ impl NewUser {
             (Utc::now() + Duration::seconds(600)).to_rfc3339_opts(SecondsFormat::Secs, true);
         let access_token = utils::random_id(64);
         let rom_id = None;
+        let sav_id = None;
 
         let access_token_hash = utils::hmac(&access_token);
 
@@ -165,25 +169,26 @@ impl NewUser {
             date_expire,
             access_token_hash,
             rom_id,
+            sav_id,
         };
 
         (new_user, access_token)
     }
 }
 
-/// Queryable struct of data from `patches`
+/// Queryable struct of data from `rom_patches`
 #[derive(Debug, Queryable, PartialEq)]
-pub struct Patch {
+pub struct RomPatch {
     pub id: String,
     pub date_create: String,
     pub data: Vec<u8>,
     pub description: Option<String>,
 }
 
-/// Insertable struct of data into `patches`
+/// Insertable struct of data into `rom_patches`
 #[derive(Debug, Insertable, PartialEq)]
-#[table_name = "patches"]
-pub struct NewPatch {
+#[table_name = "rom_patches"]
+pub struct NewRomPatch {
     pub id: String,
     pub date_create: String,
     pub user_id: String,
@@ -191,7 +196,7 @@ pub struct NewPatch {
     pub description: Option<String>,
 }
 
-impl NewPatch {
+impl NewRomPatch {
     /// Create new patch entry
     ///
     /// # Example
@@ -199,7 +204,7 @@ impl NewPatch {
     /// ```
     /// use pkmnapi_sql::models::*;
     ///
-    /// let new_patch = NewPatch::new(&String::from("foo"), &vec![0x01, 0x02, 0x03, 0x04], None);
+    /// let new_patch = NewRomPatch::new(&String::from("foo"), &vec![0x01, 0x02, 0x03, 0x04], None);
     ///
     /// assert_eq!(new_patch.id.len(), 32);
     /// assert_eq!(new_patch.date_create.len(), 20);
@@ -211,7 +216,100 @@ impl NewPatch {
         let id = utils::random_id(32);
         let date_create = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
 
-        NewPatch {
+        NewRomPatch {
+            id,
+            date_create,
+            user_id: user_id.to_string(),
+            data: data.to_vec(),
+            description,
+        }
+    }
+}
+
+/// Queryable struct of data from `savs`
+#[derive(Debug, Queryable)]
+pub struct Sav {
+    pub id: String,
+    pub date_create: String,
+    pub data: Vec<u8>,
+}
+
+/// Insertable struct of data into `savs`
+#[derive(Debug, Insertable, PartialEq)]
+#[table_name = "savs"]
+pub struct NewSav {
+    pub id: String,
+    pub date_create: String,
+    pub data: Vec<u8>,
+}
+
+impl NewSav {
+    /// Create new savs entry
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_sql::models::*;
+    ///
+    /// let new_sav = NewSav::new(&vec![0x01, 0x02, 0x03, 0x04]);
+    ///
+    /// assert_eq!(new_sav.id.len(), 32);
+    /// assert_eq!(new_sav.date_create.len(), 20);
+    /// assert_eq!(new_sav.data, vec![0x01, 0x02, 0x03, 0x04]);
+    /// ```
+    pub fn new(data: &Vec<u8>) -> Self {
+        let id = utils::random_id(32);
+        let date_create = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
+
+        NewSav {
+            id,
+            date_create,
+            data: data.to_vec(),
+        }
+    }
+}
+
+/// Queryable struct of data from `sav_patches`
+#[derive(Debug, Queryable, PartialEq)]
+pub struct SavPatch {
+    pub id: String,
+    pub date_create: String,
+    pub data: Vec<u8>,
+    pub description: Option<String>,
+}
+
+/// Insertable struct of data into `sav_patches`
+#[derive(Debug, Insertable, PartialEq)]
+#[table_name = "sav_patches"]
+pub struct NewSavPatch {
+    pub id: String,
+    pub date_create: String,
+    pub user_id: String,
+    pub data: Vec<u8>,
+    pub description: Option<String>,
+}
+
+impl NewSavPatch {
+    /// Create new patch entry
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_sql::models::*;
+    ///
+    /// let new_patch = NewSavPatch::new(&String::from("foo"), &vec![0x01, 0x02, 0x03, 0x04], None);
+    ///
+    /// assert_eq!(new_patch.id.len(), 32);
+    /// assert_eq!(new_patch.date_create.len(), 20);
+    /// assert_eq!(new_patch.user_id, String::from("foo"));
+    /// assert_eq!(new_patch.data, vec![0x01, 0x02, 0x03, 0x04]);
+    /// assert_eq!(new_patch.description, None);
+    /// ```
+    pub fn new(user_id: &String, data: &Vec<u8>, description: Option<String>) -> Self {
+        let id = utils::random_id(32);
+        let date_create = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
+
+        NewSavPatch {
             id,
             date_create,
             user_id: user_id.to_string(),

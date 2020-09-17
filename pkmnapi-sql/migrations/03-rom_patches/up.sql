@@ -1,4 +1,4 @@
-CREATE TABLE "patches" (
+CREATE TABLE "rom_patches" (
     "id"          VARCHAR NOT NULL,
     "date_create" VARCHAR NOT NULL,
     "user_id"     VARCHAR NOT NULL,
