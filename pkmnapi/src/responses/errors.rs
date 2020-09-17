@@ -10,6 +10,7 @@ pub enum ResponseError {
     AccessTokenErrorInvalid(status::BadRequest<Json<AccessTokenErrorInvalid>>),
     AccessTokenErrorTimeout(status::Forbidden<Json<AccessTokenErrorTimeout>>),
     AccessTokenErrorUnauthorized(status::Unauthorized<Json<AccessTokenErrorUnauthorized>>),
+    MapPicResponseError(status::NotFound<Json<MapPicResponseError>>),
     MoveResponseError(status::NotFound<Json<MoveResponseError>>),
     MoveResponseErrorInvalid(status::BadRequest<Json<MoveResponseErrorInvalid>>),
     PatchResponseError(status::NotFound<Json<PatchResponseError>>),
@@ -121,6 +122,29 @@ impl AccessTokenErrorUnauthorized {
 
 #[derive(Debug, Serialize)]
 pub struct AccessTokenErrorUnauthorizedAttributes {
+    pub message: String,
+}
+
+pub type MapPicResponseError = BaseErrorResponse<MapPicResponseErrorAttributes>;
+
+impl MapPicResponseError {
+    pub fn new(message: &String) -> ResponseError {
+        let response = MapPicResponseError {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_map_pics,
+                _type: BaseErrorResponseType::errors,
+                attributes: MapPicResponseErrorAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::MapPicResponseError(status::NotFound(Json(response)))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct MapPicResponseErrorAttributes {
     pub message: String,
 }
 

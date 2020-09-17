@@ -1,4 +1,5 @@
 pub mod access_tokens;
+pub mod map_pics;
 pub mod moves;
 pub mod patches;
 pub mod pokemon_names;

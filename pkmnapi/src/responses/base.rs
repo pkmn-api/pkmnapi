@@ -57,6 +57,7 @@ pub enum BaseErrorResponseId {
     error_access_tokens_invalid,
     error_access_tokens_timeout,
     error_access_tokens_unauthorized,
+    error_map_pics,
     error_moves_invalid,
     error_moves,
     error_patches,
