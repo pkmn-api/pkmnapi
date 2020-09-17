@@ -69,12 +69,12 @@ impl PkmnapiDB {
     /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom, None).unwrap();
     /// ```
-    pub fn new(rom: &Vec<u8>, sav: Option<&Vec<u8>>) -> Result<PkmnapiDB, error::Error> {
+    pub fn new(rom: &Vec<u8>, sav: Option<Vec<u8>>) -> Result<PkmnapiDB, error::Error> {
         let hash = format!("{:x}", md5::compute(&rom));
         let header = Header::from(&rom)?;
         let rom = rom[..].to_vec();
         let sav = match sav {
-            Some(sav) => Some(Sav::new(sav)?),
+            Some(sav) => Some(Sav::new(&sav)?),
             None => None,
         };
 
