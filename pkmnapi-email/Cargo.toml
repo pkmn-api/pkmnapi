@@ -1,0 +1,10 @@
+[package]
+name = "pkmnapi-email"
+version = "0.1.0"
+authors = ["Kevin Selwyn <kevinselwyn@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+dotenv = "0.15.0"
+lettre = "0.9.3"
+lettre_email = "0.9.4"

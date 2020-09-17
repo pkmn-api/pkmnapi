@@ -62,6 +62,20 @@ jobs:
       env:
         PKMN_ROM: ../secrets/pkmn.gb
         PKMN_SAV: ./tests/data/pkmn.sav
+  pkmnapi-email:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        override: true
+    - name: Build
+      run: cargo build --verbose
+      working-directory: pkmnapi-email
+    - name: Test
+      run: cargo test --verbose
+      working-directory: pkmnapi-email
   pkmnapi-sql:
     runs-on: ubuntu-latest
     steps:
