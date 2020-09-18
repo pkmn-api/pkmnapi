@@ -1609,7 +1609,7 @@ impl PkmnapiDB {
     /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
-    /// let trainer_name = db.get_trainer_name(&0).unwrap();
+    /// let trainer_name = db.get_trainer_name(&1).unwrap();
     ///
     /// assert_eq!(
     ///     trainer_name,
@@ -1621,6 +1621,10 @@ impl PkmnapiDB {
     pub fn get_trainer_name(&self, trainer_id: &u8) -> Result<TrainerName, error::Error> {
         let offset_base = (ROM_PAGE * 0x1C) + 0x19FF;
 
+        if trainer_id < &1 {
+            return Err(error::Error::TrainerIDInvalid(*trainer_id));
+        }
+
         let max_offset = (&self.rom[offset_base..])
             .iter()
             .position(|&r| r == 0x21)
@@ -1630,12 +1634,12 @@ impl PkmnapiDB {
             .filter(|&x| *x == 0x50)
             .count();
 
-        if trainer_id >= &(max_id as u8) {
+        if trainer_id > &(max_id as u8) {
             return Err(error::Error::TrainerIDInvalid(*trainer_id));
         }
 
         let offset = match {
-            if trainer_id == &0 {
+            if trainer_id == &1 {
                 Some(offset_base)
             } else {
                 self.rom[offset_base..]
@@ -1651,7 +1655,7 @@ impl PkmnapiDB {
                     .take(max_id - 1)
                     .enumerate()
                     .filter_map(|(i, x)| {
-                        if (*trainer_id as usize) - 1 == i {
+                        if (*trainer_id as usize) - 2 == i {
                             return Some(x);
                         }
 
@@ -1687,7 +1691,7 @@ impl PkmnapiDB {
     ///
     /// let patch = db
     ///     .set_trainer_name(
-    ///         &0,
+    ///         &1,
     ///         &TrainerName {
     ///             name: ROMString::from("ABCDEFGHI"),
     ///         },
@@ -1708,6 +1712,10 @@ impl PkmnapiDB {
         trainer_id: &u8,
         trainer_name: &TrainerName,
     ) -> Result<Patch, error::Error> {
+        if trainer_id < &1 {
+            return Err(error::Error::TrainerIDInvalid(*trainer_id));
+        }
+
         let old_trainer_name = self.get_trainer_name(trainer_id)?;
         let old_trainer_name_len = old_trainer_name.name.value.len();
         let trainer_name_raw = trainer_name.to_raw();
@@ -1731,12 +1739,12 @@ impl PkmnapiDB {
             .filter(|&x| *x == 0x50)
             .count();
 
-        if trainer_id >= &(max_id as u8) {
+        if trainer_id > &(max_id as u8) {
             return Err(error::Error::TrainerIDInvalid(*trainer_id));
         }
 
         let offset = match {
-            if trainer_id == &0 {
+            if trainer_id == &1 {
                 Some(offset_base)
             } else {
                 self.rom[offset_base..]
@@ -1752,7 +1760,7 @@ impl PkmnapiDB {
                     .take(max_id - 1)
                     .enumerate()
                     .filter_map(|(i, x)| {
-                        if (*trainer_id as usize) - 1 == i {
+                        if (*trainer_id as usize) - 2 == i {
                             return Some(x);
                         }
 
@@ -1772,17 +1780,21 @@ impl PkmnapiDB {
         let offset_base = ROM_PAGE * 0x1C;
         let offset_base = offset_base + 0x1914;
 
+        if trainer_id < &1 {
+            return Err(error::Error::TrainerIDInvalid(*trainer_id));
+        }
+
         let max_index = (&self.rom[offset_base..])
             .iter()
             .position(|&r| r == 0x8D)
             .unwrap();
         let max_id = ((max_index as f32) / 5.0) as u8;
 
-        if trainer_id >= &max_id {
+        if trainer_id > &max_id {
             return Err(error::Error::TrainerIDInvalid(*trainer_id));
         }
 
-        let offset = offset_base + ((*trainer_id as usize) * 0x05);
+        let offset = offset_base + (((*trainer_id - 1) as usize) * 0x05);
 
         let pointer_base = ROM_PAGE * 0x24;
         let pointer = pointer_base + {
@@ -1794,6 +1806,33 @@ impl PkmnapiDB {
         let pic = Pic::new(&self.rom[pointer..])?;
 
         Ok(pic)
+    }
+
+    pub fn set_trainer_pic(
+        &self,
+        trainer_id: &u8,
+        pic: &Pic,
+        encoding_method: PicEncodingMethod,
+    ) -> Result<Patch, error::Error> {
+        let old_pixels = self.get_trainer_pic(trainer_id)?;
+        let pixels = pic.encode(encoding_method);
+
+        if pixels.len() > old_pixels.bytes + 1 {
+            return Err(error::Error::PicTooLarge);
+        }
+
+        let offset_base = ROM_PAGE * 0x1C;
+        let offset_base = offset_base + 0x1914;
+        let offset = offset_base + (((*trainer_id - 1) as usize) * 0x05);
+
+        let pointer_base = ROM_PAGE * 0x24;
+        let pointer = pointer_base + {
+            let mut cursor = Cursor::new(&self.rom[offset..(offset + 2)]);
+
+            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
+        };
+
+        Ok(Patch::new(&pointer, &pixels))
     }
 
     /// Get item name by item ID
