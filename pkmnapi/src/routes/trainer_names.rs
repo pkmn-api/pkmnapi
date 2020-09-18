@@ -1,6 +1,5 @@
 use pkmnapi_db::string::*;
 use pkmnapi_db::types::*;
-use pkmnapi_db::*;
 use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
@@ -23,7 +22,7 @@ pub fn get_trainer_name(
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
     };
 
-    let db = utils::get_db_with_applied_patches(sql, &access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let trainer_name = match db.get_trainer_name(&trainer_id) {
         Ok(trainer_name) => trainer_name,
@@ -63,16 +62,7 @@ pub fn post_trainer_name(
         }
     };
 
-    let connection = sql.get_connection().unwrap();
-    let rom_data_sql = match sql.select_user_rom_data_by_access_token(&connection, &access_token) {
-        Ok(Some(rom_sql)) => rom_sql,
-        _ => return Err(RomResponseErrorNoRom::new()),
-    };
-
-    let db = match PkmnapiDB::new(&rom_data_sql.data, None) {
-        Ok(db) => db,
-        Err(_) => return Err(RomResponseErrorInvalidRom::new()),
-    };
+    let (db, connection) = utils::get_db(&sql, &access_token)?;
 
     let trainer_name = TrainerName {
         name: ROMString::from(data.get_name()),

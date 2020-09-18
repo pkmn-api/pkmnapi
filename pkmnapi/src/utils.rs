@@ -5,10 +5,10 @@ use std::env;
 
 use crate::responses::errors::*;
 
-pub fn get_db_with_applied_patches(
-    sql: State<PkmnapiSQL>,
+pub fn get_db(
+    sql: &State<PkmnapiSQL>,
     access_token: &String,
-) -> Result<PkmnapiDB, ResponseError> {
+) -> Result<(PkmnapiDB, SqlitePooledConnection), ResponseError> {
     let connection = sql.get_connection().unwrap();
     let rom_data = match sql.select_user_rom_data_by_access_token(&connection, &access_token) {
         Ok(Some(rom_data)) => rom_data,
@@ -19,6 +19,20 @@ pub fn get_db_with_applied_patches(
         _ => None,
     };
 
+    let db = match PkmnapiDB::new(&rom_data.data, sav) {
+        Ok(db) => db,
+        Err(_) => return Err(RomResponseErrorInvalidRom::new()),
+    };
+
+    Ok((db, connection))
+}
+
+pub fn get_db_with_applied_patches(
+    sql: &State<PkmnapiSQL>,
+    access_token: &String,
+) -> Result<(PkmnapiDB, SqlitePooledConnection), ResponseError> {
+    let (mut db, connection) = get_db(sql, access_token)?;
+
     let rom_patches = match sql.select_rom_patches_by_access_token(&connection, &access_token) {
         Ok(patches) => patches,
         Err(_) => vec![],
@@ -27,11 +41,6 @@ pub fn get_db_with_applied_patches(
     let sav_patches = match sql.select_sav_patches_by_access_token(&connection, &access_token) {
         Ok(patches) => patches,
         Err(_) => vec![],
-    };
-
-    let mut db = match PkmnapiDB::new(&rom_data.data, sav) {
-        Ok(db) => db,
-        Err(_) => return Err(RomResponseErrorInvalidRom::new()),
     };
 
     for patch in rom_patches {
@@ -44,7 +53,7 @@ pub fn get_db_with_applied_patches(
         }
     }
 
-    Ok(db)
+    Ok((db, connection))
 }
 
 pub fn generate_url(route: &str, resource: Option<&String>) -> String {

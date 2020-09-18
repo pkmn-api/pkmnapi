@@ -19,7 +19,7 @@ pub fn get_trainer_pic_png<'a>(
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
     };
 
-    let db = utils::get_db_with_applied_patches(sql, &access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let pic = match db.get_trainer_pic(&trainer_id) {
         Ok(pic) => pic,
@@ -59,7 +59,7 @@ pub fn get_trainer_pic_jpeg<'a>(
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
     };
 
-    let db = utils::get_db_with_applied_patches(sql, &access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let pic = match db.get_trainer_pic(&trainer_id) {
         Ok(pic) => pic,

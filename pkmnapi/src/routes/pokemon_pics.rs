@@ -1,6 +1,5 @@
 use pkmnapi_db::pic::*;
 use pkmnapi_db::types::*;
-use pkmnapi_db::*;
 use pkmnapi_sql::*;
 use rocket::http::{ContentType, Header};
 use rocket::response::status;
@@ -25,7 +24,7 @@ pub fn get_pokemon_pic_png<'a>(
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
     };
 
-    let db = utils::get_db_with_applied_patches(sql, &access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let pic = match db.get_pokemon_pic(&pokedex_id, &PokemonPicFace::from(face)) {
         Ok(pic) => pic,
@@ -66,7 +65,7 @@ pub fn get_pokemon_pic_jpeg<'a>(
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
     };
 
-    let db = utils::get_db_with_applied_patches(sql, &access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let pic = match db.get_pokemon_pic(&pokedex_id, &PokemonPicFace::from(face)) {
         Ok(pic) => pic,
@@ -116,16 +115,7 @@ pub fn post_pokemon_pic_png<'a>(
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
     };
 
-    let connection = sql.get_connection().unwrap();
-    let rom_data_sql = match sql.select_user_rom_data_by_access_token(&connection, &access_token) {
-        Ok(Some(rom_sql)) => rom_sql,
-        _ => return Err(RomResponseErrorNoRom::new()),
-    };
-
-    let db = match PkmnapiDB::new(&rom_data_sql.data, None) {
-        Ok(db) => db,
-        Err(_) => return Err(RomResponseErrorInvalidRom::new()),
-    };
+    let (db, connection) = utils::get_db(&sql, &access_token)?;
 
     let raw_data = {
         let mut raw_data = Vec::new();
@@ -191,16 +181,7 @@ pub fn post_pokemon_pic_jpeg<'a>(
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
     };
 
-    let connection = sql.get_connection().unwrap();
-    let rom_data_sql = match sql.select_user_rom_data_by_access_token(&connection, &access_token) {
-        Ok(Some(rom_sql)) => rom_sql,
-        _ => return Err(RomResponseErrorNoRom::new()),
-    };
-
-    let db = match PkmnapiDB::new(&rom_data_sql.data, None) {
-        Ok(db) => db,
-        Err(_) => return Err(RomResponseErrorInvalidRom::new()),
-    };
+    let (db, connection) = utils::get_db(&sql, &access_token)?;
 
     let raw_data = {
         let mut raw_data = Vec::new();
