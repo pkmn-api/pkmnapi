@@ -9,7 +9,7 @@ fn get_trainer_name_200() {
     common::post_rom(&client, &access_token);
 
     let request = client
-        .get("/v1/trainer/names/0")
+        .get("/v1/trainer/names/1")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -19,7 +19,7 @@ fn get_trainer_name_200() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"0","type":"trainer_names","attributes":{"name":"YOUNGSTER"},"links":{"self":"http://localhost:8080/v1/trainer/names/0"}},"links":{"self":"http://localhost:8080/v1/trainer/names/0"}}"#
+            r#"{"data":{"id":"1","type":"trainer_names","attributes":{"name":"YOUNGSTER"},"links":{"self":"http://localhost:8080/v1/trainer/names/1"}},"links":{"self":"http://localhost:8080/v1/trainer/names/1"}}"#
                 .to_owned()
         )
     );
@@ -31,7 +31,7 @@ fn get_trainer_name_200() {
 fn get_trainer_name_401() {
     let client = common::setup();
 
-    let request = client.get("/v1/trainer/names/0");
+    let request = client.get("/v1/trainer/names/1");
 
     let mut response = request.dispatch();
 
@@ -71,7 +71,7 @@ fn post_trainer_name_202() {
     common::post_rom(&client, &access_token);
 
     let request = client
-        .post("/v1/trainer/names/0")
+        .post("/v1/trainer/names/1")
         .body(r#"{"data":{"type":"trainer_names","attributes":{"name":"OLD-TIMER"}}}"#)
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token));
@@ -83,7 +83,7 @@ fn post_trainer_name_202() {
     assert_eq!(response.body_string(), Some("{}".to_owned()));
 
     let request = client
-        .get("/v1/trainer/names/0")
+        .get("/v1/trainer/names/1")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -93,7 +93,7 @@ fn post_trainer_name_202() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"0","type":"trainer_names","attributes":{"name":"OLD-TIMER"},"links":{"self":"http://localhost:8080/v1/trainer/names/0"}},"links":{"self":"http://localhost:8080/v1/trainer/names/0"}}"#
+            r#"{"data":{"id":"1","type":"trainer_names","attributes":{"name":"OLD-TIMER"},"links":{"self":"http://localhost:8080/v1/trainer/names/1"}},"links":{"self":"http://localhost:8080/v1/trainer/names/1"}}"#
                 .to_owned()
         )
     );
@@ -106,7 +106,7 @@ fn post_trainer_name_401() {
     let client = common::setup();
 
     let request = client
-        .post("/v1/trainer/names/0")
+        .post("/v1/trainer/names/1")
         .body(r#"{"data":{"type":"trainer_names","attributes":{"name":"OLD-TIMER"}}}"#)
         .header(ContentType::JSON);
 

@@ -59,6 +59,8 @@ impl Pkmnapi {
                     routes::trainer_names::post_trainer_name,
                     routes::trainer_pics::get_trainer_pic_jpeg,
                     routes::trainer_pics::get_trainer_pic_png,
+                    routes::trainer_pics::post_trainer_pic_jpeg,
+                    routes::trainer_pics::post_trainer_pic_png,
                     routes::type_effects::get_type_effect,
                     routes::type_effects::post_type_effect,
                     routes::types::get_type,

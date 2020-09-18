@@ -1,7 +1,10 @@
+use pkmnapi_db::pic::*;
 use pkmnapi_sql::*;
 use rocket::http::{ContentType, Header};
+use rocket::response::status;
 use rocket::response::Response;
-use rocket::State;
+use rocket::{Data, State};
+use rocket_contrib::json::JsonValue;
 use std::io::Cursor;
 
 use crate::guards::*;
@@ -88,4 +91,124 @@ pub fn get_trainer_pic_jpeg<'a>(
         .finalize();
 
     Ok(response)
+}
+
+#[post(
+    "/trainer/pics/<trainer_id>?<method>&<primary>",
+    format = "image/png",
+    data = "<data>",
+    rank = 1
+)]
+pub fn post_trainer_pic_png<'a>(
+    sql: State<PkmnapiSQL>,
+    data: Data,
+    access_token: Result<AccessToken, AccessTokenError>,
+    patch_description: Result<PatchDescription, PatchDescriptionError>,
+    trainer_id: u8,
+    method: Option<u8>,
+    primary: Option<u8>,
+) -> Result<status::Accepted<JsonValue>, ResponseError> {
+    let access_token = match access_token {
+        Ok(access_token) => access_token.into_inner(),
+        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
+    };
+
+    let (db, connection) = utils::get_db(&sql, &access_token)?;
+
+    let raw_data = {
+        let mut raw_data = Vec::new();
+
+        data.stream_to(&mut raw_data).unwrap();
+
+        raw_data
+    };
+
+    let pic = match Pic::from_png(raw_data) {
+        Ok(pic) => pic,
+        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+    };
+
+    let encoding_method = PicEncodingMethod::from(method.unwrap_or(0x01), primary.unwrap_or(0x00));
+
+    let patch = match db.set_trainer_pic(&trainer_id, &pic, encoding_method) {
+        Ok(patch) => patch,
+        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+    };
+
+    let patch_description = match patch_description {
+        Ok(patch_description) => patch_description.into_inner(),
+        Err(_) => None,
+    };
+
+    match sql.insert_rom_patch(
+        &connection,
+        &access_token,
+        &patch.to_raw(),
+        patch_description,
+    ) {
+        Ok(_) => {}
+        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+    };
+
+    Ok(status::Accepted(Some(json!({}))))
+}
+
+#[post(
+    "/trainer/pics/<trainer_id>?<method>&<primary>",
+    format = "image/jpeg",
+    data = "<data>",
+    rank = 1
+)]
+pub fn post_trainer_pic_jpeg<'a>(
+    sql: State<PkmnapiSQL>,
+    data: Data,
+    access_token: Result<AccessToken, AccessTokenError>,
+    patch_description: Result<PatchDescription, PatchDescriptionError>,
+    trainer_id: u8,
+    method: Option<u8>,
+    primary: Option<u8>,
+) -> Result<status::Accepted<JsonValue>, ResponseError> {
+    let access_token = match access_token {
+        Ok(access_token) => access_token.into_inner(),
+        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
+    };
+
+    let (db, connection) = utils::get_db(&sql, &access_token)?;
+
+    let raw_data = {
+        let mut raw_data = Vec::new();
+
+        data.stream_to(&mut raw_data).unwrap();
+
+        raw_data
+    };
+
+    let pic = match Pic::from_jpeg(raw_data) {
+        Ok(pic) => pic,
+        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+    };
+
+    let encoding_method = PicEncodingMethod::from(method.unwrap_or(0x01), primary.unwrap_or(0x00));
+
+    let patch = match db.set_trainer_pic(&trainer_id, &pic, encoding_method) {
+        Ok(patch) => patch,
+        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+    };
+
+    let patch_description = match patch_description {
+        Ok(patch_description) => patch_description.into_inner(),
+        Err(_) => None,
+    };
+
+    match sql.insert_rom_patch(
+        &connection,
+        &access_token,
+        &patch.to_raw(),
+        patch_description,
+    ) {
+        Ok(_) => {}
+        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+    };
+
+    Ok(status::Accepted(Some(json!({}))))
 }
