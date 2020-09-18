@@ -46,6 +46,8 @@ impl Pkmnapi {
                     routes::roms::delete_rom,
                     routes::roms::get_rom,
                     routes::roms::post_rom,
+                    routes::sav_player_names::get_sav_player_name,
+                    routes::sav_player_names::post_sav_player_name,
                     routes::savs::delete_sav,
                     routes::savs::get_sav,
                     routes::savs::post_sav,

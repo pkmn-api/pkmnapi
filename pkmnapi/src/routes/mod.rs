@@ -5,6 +5,7 @@ pub mod pokemon_names;
 pub mod pokemon_pics;
 pub mod rom_patches;
 pub mod roms;
+pub mod sav_player_names;
 pub mod savs;
 pub mod stats;
 pub mod status;

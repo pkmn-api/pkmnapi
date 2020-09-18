@@ -21,6 +21,8 @@ pub enum ResponseError {
     RomResponseErrorInvalidRom(status::BadRequest<Json<RomResponseErrorInvalidRom>>),
     RomResponseErrorNoRom(status::Forbidden<Json<RomResponseErrorNoRom>>),
     RomResponseErrorRomExists(status::Forbidden<Json<RomResponseErrorRomExists>>),
+    SavPlayerNameResponseError(status::NotFound<Json<SavPlayerNameResponseError>>),
+    SavPlayerNameResponseErrorInvalid(status::BadRequest<Json<SavPlayerNameResponseErrorInvalid>>),
     SavResponseErrorInvalidSav(status::BadRequest<Json<SavResponseErrorInvalidSav>>),
     SavResponseErrorNoSav(status::Forbidden<Json<SavResponseErrorNoSav>>),
     SavResponseErrorSavExists(status::Forbidden<Json<SavResponseErrorSavExists>>),
@@ -380,6 +382,53 @@ impl RomResponseErrorRomExists {
 
 #[derive(Debug, Serialize)]
 pub struct RomResponseErrorRomExistsAttributes {
+    pub message: String,
+}
+
+pub type SavPlayerNameResponseError = BaseErrorResponse<SavPlayerNameResponseErrorAttributes>;
+
+impl SavPlayerNameResponseError {
+    pub fn new(message: &String) -> ResponseError {
+        let response = SavPlayerNameResponseError {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_sav_player_names,
+                _type: BaseErrorResponseType::errors,
+                attributes: SavPlayerNameResponseErrorAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::SavPlayerNameResponseError(status::NotFound(Json(response)))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct SavPlayerNameResponseErrorAttributes {
+    pub message: String,
+}
+
+pub type SavPlayerNameResponseErrorInvalid =
+    BaseErrorResponse<SavPlayerNameResponseErrorInvalidAttributes>;
+
+impl SavPlayerNameResponseErrorInvalid {
+    pub fn new(message: &String) -> ResponseError {
+        let response = SavPlayerNameResponseErrorInvalid {
+            data: BaseErrorResponseData {
+                id: BaseErrorResponseId::error_sav_player_names_invalid,
+                _type: BaseErrorResponseType::errors,
+                attributes: SavPlayerNameResponseErrorInvalidAttributes {
+                    message: message.to_owned(),
+                },
+            },
+        };
+
+        ResponseError::SavPlayerNameResponseErrorInvalid(status::BadRequest(Some(Json(response))))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct SavPlayerNameResponseErrorInvalidAttributes {
     pub message: String,
 }
 
