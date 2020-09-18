@@ -605,12 +605,18 @@ impl Pic {
         output
     }
 
-    fn to_img(&self, format: ImageFormat) -> Result<Vec<u8>, error::Error> {
+    fn to_img(&self, format: ImageFormat, mirror: bool) -> Result<Vec<u8>, error::Error> {
         let width = self.width as u32 * 8;
         let height = self.height as u32 * 8;
 
         let img = ImageBuffer::from_fn(width, height, |x, y| {
-            let i = x + (y * width);
+            let i = (y * width) + {
+                if mirror {
+                    width - x - 1
+                } else {
+                    x
+                }
+            };
             let pixel = (3 - self.pixels[i as usize]) * 0x55;
 
             Luma([pixel])
@@ -627,11 +633,11 @@ impl Pic {
         Ok(buf)
     }
 
-    pub fn to_png(&self) -> Result<Vec<u8>, error::Error> {
-        self.to_img(ImageFormat::Png)
+    pub fn to_png(&self, mirror: bool) -> Result<Vec<u8>, error::Error> {
+        self.to_img(ImageFormat::Png, mirror)
     }
 
-    pub fn to_jpeg(&self) -> Result<Vec<u8>, error::Error> {
-        self.to_img(ImageFormat::Jpeg)
+    pub fn to_jpeg(&self, mirror: bool) -> Result<Vec<u8>, error::Error> {
+        self.to_img(ImageFormat::Jpeg, mirror)
     }
 }

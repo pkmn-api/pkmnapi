@@ -10,7 +10,7 @@ macro_rules! get_trainer_pic_test {
 
             match db.get_trainer_pic(&$trainer_id) {
                 Ok(pic) => assert_eq!(
-                    pic.to_png().unwrap(),
+                    pic.to_png(false).unwrap(),
                     $pic_data,
                     "Searched for trainer ID: {}",
                     $trainer_id

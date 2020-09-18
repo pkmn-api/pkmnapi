@@ -12,12 +12,17 @@ use crate::guards::*;
 use crate::responses::errors::*;
 use crate::utils;
 
-#[get("/pokemon/pics/<pokedex_id>?<face>", format = "image/png", rank = 1)]
+#[get(
+    "/pokemon/pics/<pokedex_id>?<face>&<mirror>",
+    format = "image/png",
+    rank = 1
+)]
 pub fn get_pokemon_pic_png<'a>(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
     pokedex_id: u8,
     face: Option<String>,
+    mirror: Option<bool>,
 ) -> Result<Response<'a>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
@@ -36,7 +41,7 @@ pub fn get_pokemon_pic_png<'a>(
         Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
     };
 
-    let img = match pic.to_png() {
+    let img = match pic.to_png(mirror.is_some()) {
         Ok(img) => img,
         Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
     };
@@ -53,12 +58,17 @@ pub fn get_pokemon_pic_png<'a>(
     Ok(response)
 }
 
-#[get("/pokemon/pics/<pokedex_id>?<face>", format = "image/jpeg", rank = 2)]
+#[get(
+    "/pokemon/pics/<pokedex_id>?<face>&<mirror>",
+    format = "image/jpeg",
+    rank = 2
+)]
 pub fn get_pokemon_pic_jpeg<'a>(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
     pokedex_id: u8,
     face: Option<String>,
+    mirror: Option<bool>,
 ) -> Result<Response<'a>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
@@ -77,7 +87,7 @@ pub fn get_pokemon_pic_jpeg<'a>(
         Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
     };
 
-    let img = match pic.to_jpeg() {
+    let img = match pic.to_jpeg(mirror.is_some()) {
         Ok(img) => img,
         Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
     };

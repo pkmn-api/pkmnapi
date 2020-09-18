@@ -8,11 +8,12 @@ use crate::guards::*;
 use crate::responses::errors::*;
 use crate::utils;
 
-#[get("/trainer/pics/<trainer_id>", format = "image/png", rank = 1)]
+#[get("/trainer/pics/<trainer_id>?<mirror>", format = "image/png", rank = 1)]
 pub fn get_trainer_pic_png<'a>(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
     trainer_id: u8,
+    mirror: Option<bool>,
 ) -> Result<Response<'a>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
@@ -31,7 +32,7 @@ pub fn get_trainer_pic_png<'a>(
         Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
     };
 
-    let img = match pic.to_png() {
+    let img = match pic.to_png(mirror.is_some()) {
         Ok(img) => img,
         Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
     };
@@ -48,11 +49,12 @@ pub fn get_trainer_pic_png<'a>(
     Ok(response)
 }
 
-#[get("/trainer/pics/<trainer_id>", format = "image/jpeg", rank = 2)]
+#[get("/trainer/pics/<trainer_id>?<mirror>", format = "image/jpeg", rank = 2)]
 pub fn get_trainer_pic_jpeg<'a>(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
     trainer_id: u8,
+    mirror: Option<bool>,
 ) -> Result<Response<'a>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
@@ -71,7 +73,7 @@ pub fn get_trainer_pic_jpeg<'a>(
         Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
     };
 
-    let img = match pic.to_jpeg() {
+    let img = match pic.to_jpeg(mirror.is_some()) {
         Ok(img) => img,
         Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
     };
