@@ -57,6 +57,8 @@ impl Pkmnapi {
                     routes::tms::post_tm,
                     routes::trainer_names::get_trainer_name,
                     routes::trainer_names::post_trainer_name,
+                    routes::trainer_parties::get_trainer_parties,
+                    routes::trainer_parties::post_trainer_parties,
                     routes::trainer_pics::get_trainer_pic_jpeg,
                     routes::trainer_pics::get_trainer_pic_png,
                     routes::trainer_pics::post_trainer_pic_jpeg,

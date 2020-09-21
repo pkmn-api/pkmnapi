@@ -6,5 +6,6 @@ pub mod sav_player_names;
 pub mod stats;
 pub mod tms;
 pub mod trainer_names;
+pub mod trainer_parties;
 pub mod type_effects;
 pub mod types;

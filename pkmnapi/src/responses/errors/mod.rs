@@ -28,6 +28,8 @@ mod tm_response_error;
 mod tm_response_error_invalid;
 mod trainer_name_response_error;
 mod trainer_name_response_error_invalid;
+mod trainer_parties_response_error;
+mod trainer_parties_response_error_invalid;
 mod trainer_pic_response_error;
 mod type_effect_response_error;
 mod type_effect_response_error_invalid;
@@ -60,6 +62,8 @@ pub use crate::responses::errors::tm_response_error::*;
 pub use crate::responses::errors::tm_response_error_invalid::*;
 pub use crate::responses::errors::trainer_name_response_error::*;
 pub use crate::responses::errors::trainer_name_response_error_invalid::*;
+pub use crate::responses::errors::trainer_parties_response_error::*;
+pub use crate::responses::errors::trainer_parties_response_error_invalid::*;
 pub use crate::responses::errors::trainer_pic_response_error::*;
 pub use crate::responses::errors::type_effect_response_error::*;
 pub use crate::responses::errors::type_effect_response_error_invalid::*;
@@ -94,6 +98,10 @@ pub enum ResponseError {
     TMResponseErrorInvalid(status::BadRequest<Json<TMResponseErrorInvalid>>),
     TrainerNameResponseError(status::NotFound<Json<TrainerNameResponseError>>),
     TrainerNameResponseErrorInvalid(status::BadRequest<Json<TrainerNameResponseErrorInvalid>>),
+    TrainerPartiesResponseError(status::NotFound<Json<TrainerPartiesResponseError>>),
+    TrainerPartiesResponseErrorInvalid(
+        status::BadRequest<Json<TrainerPartiesResponseErrorInvalid>>,
+    ),
     TrainerPicResponseError(status::NotFound<Json<TrainerPicResponseError>>),
     TypeEffectResponseError(status::NotFound<Json<TypeEffectResponseError>>),
     TypeEffectResponseErrorInvalid(status::BadRequest<Json<TypeEffectResponseErrorInvalid>>),
@@ -143,6 +151,8 @@ pub enum BaseErrorResponseId {
     error_tms,
     error_trainer_names_invalid,
     error_trainer_names,
+    error_trainer_parties_invalid,
+    error_trainer_parties,
     error_trainer_pics,
     error_type_effects_invalid,
     error_type_effects,
