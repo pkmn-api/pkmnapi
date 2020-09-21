@@ -49,4 +49,4 @@ Behold, the final result:
 
 ![Brock Rock](../../img/brock-rock.png)
 
-[[Up]](../index.md) - [[Prev - Updating BROCK's Name]](../02-updating-brocks-name/index.md)
+[[Up]](../index.md) - [[Prev - Updating BROCK's Name]](../02-updating-brocks-name/index.md) - [[Next - Updating BROCK's Pokémon]](../04-updating-brocks-pokemon/index.md)
