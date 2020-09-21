@@ -27,6 +27,8 @@ pub enum Error {
     TMIDInvalid(u8, usize, usize),
     TrainerIDInvalid(u8),
     TrainerNameWrongSize(usize, usize),
+    TrainerPartiesWrongDataSize(usize, usize),
+    TrainerPartiesWrongSize(usize, usize),
     TypeEffectIDInvalid(u8, usize, usize),
     TypeIDInvalid(u8, usize, usize),
     TypeNameWrongSize(usize, usize),
@@ -115,6 +117,16 @@ impl fmt::Display for Error {
             Error::TrainerNameWrongSize(expected, actual) => format!(
                 "Trainer name length mismatch: should be exactly {} characters, found {}",
                 expected, actual
+            ),
+            Error::TrainerPartiesWrongDataSize(expected, actual) => format!(
+                "Trainer parties data length mismatch: should be exactly {} bytes, found {}",
+                expected, actual
+            ),
+            Error::TrainerPartiesWrongSize(expected, actual) => format!(
+                "Trainer parties length mismatch: should be exactly {} {}, found {}",
+                expected,
+                if expected == &1 { "party" } else { "parties" },
+                actual
             ),
             Error::TypeNameWrongSize(expected, actual) => format!(
                 "Type name length mismatch: should be {} characters or fewer, found {}",

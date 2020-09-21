@@ -1464,3 +1464,109 @@ impl SaveOptions {
         vec![value]
     }
 }
+
+#[derive(Debug, PartialEq)]
+pub struct Party {
+    pub level_type: PartyLevelType,
+    pub pokemon: Vec<PartyPokemon>,
+}
+
+impl From<&[u8]> for Party {
+    fn from(party: &[u8]) -> Self {
+        let level_type = match party.iter().next() {
+            Some(level) if *level != 0xFF => PartyLevelType::SAME(*level),
+            _ => PartyLevelType::DIFFERENT,
+        };
+
+        let pokemon: Vec<PartyPokemon> = match level_type {
+            PartyLevelType::SAME(level) => party[1..(party.len() - 1)]
+                .iter()
+                .take_while(|&x| x != &0x00)
+                .map(|internal_id| PartyPokemon {
+                    level,
+                    internal_id: *internal_id - 1,
+                    pokedex_id: 0,
+                })
+                .collect(),
+            PartyLevelType::DIFFERENT => party[1..(party.len() - 1)]
+                .chunks(2)
+                .take_while(|&chunk| chunk[0] != 0x00)
+                .map(|chunk| PartyPokemon {
+                    level: chunk[0],
+                    internal_id: chunk[1] - 1,
+                    pokedex_id: 0,
+                })
+                .collect(),
+        };
+
+        Party {
+            level_type,
+            pokemon,
+        }
+    }
+}
+
+impl Party {
+    pub fn new(party_pokemon: &Vec<PartyPokemon>) -> Self {
+        let levels: Vec<u8> = party_pokemon.iter().map(|pokemon| pokemon.level).collect();
+        let level_min = levels.iter().min().unwrap();
+        let level_max = levels.iter().max().unwrap();
+        let level_type = if level_min == level_max {
+            PartyLevelType::SAME(*level_min)
+        } else {
+            PartyLevelType::DIFFERENT
+        };
+
+        Party {
+            level_type,
+            pokemon: party_pokemon.to_vec(),
+        }
+    }
+
+    pub fn to_raw(&self) -> Vec<u8> {
+        match self.level_type {
+            PartyLevelType::SAME(level) => [
+                vec![level],
+                self.pokemon
+                    .iter()
+                    .map(|pokemon| pokemon.internal_id)
+                    .collect(),
+                vec![0x00],
+            ]
+            .concat(),
+            PartyLevelType::DIFFERENT => [
+                vec![0xFF],
+                self.pokemon
+                    .iter()
+                    .map(|pokemon| vec![pokemon.internal_id, pokemon.level])
+                    .flatten()
+                    .collect(),
+                vec![0x00],
+            ]
+            .concat(),
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub struct PartyPokemon {
+    pub level: u8,
+    pub pokedex_id: u8,
+    pub(crate) internal_id: u8,
+}
+
+impl PartyPokemon {
+    pub fn new(level: u8, pokedex_id: u8) -> Self {
+        PartyPokemon {
+            level,
+            pokedex_id,
+            internal_id: 0,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum PartyLevelType {
+    SAME(u8),
+    DIFFERENT,
+}
