@@ -35,7 +35,7 @@ pub fn get_map_pic_png<'a>(
         .header(ContentType::new("image", "png"))
         .header(Header::new(
             "Content-Disposition",
-            format!(r#"attachment; filename="map-{:03}.png""#, map_id),
+            format!(r#"attachment; filename="map-{}.png""#, map_id),
         ))
         .sized_body(Cursor::new(img))
         .finalize();
@@ -70,7 +70,7 @@ pub fn get_map_pic_jpeg<'a>(
         .header(ContentType::new("image", "jpeg"))
         .header(Header::new(
             "Content-Disposition",
-            format!(r#"attachment; filename="map-{:03}.jpg""#, map_id),
+            format!(r#"attachment; filename="map-{}.jpg""#, map_id),
         ))
         .sized_body(Cursor::new(img))
         .finalize();
