@@ -556,7 +556,7 @@ impl PkmnapiDB {
         Ok(Patch::new(&pointer, &type_effect_raw))
     }
 
-    /// Get stats by Pokédex ID
+    /// Get Pokémon stats by Pokédex ID
     ///
     /// # Example
     ///
@@ -570,11 +570,11 @@ impl PkmnapiDB {
     /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
-    /// let type_effect = db.get_stats(&1).unwrap();
+    /// let pokemon_stats = db.get_pokemon_stats(&1).unwrap();
     ///
     /// assert_eq!(
-    ///     type_effect,
-    ///     Stats {
+    ///     pokemon_stats,
+    ///     PokemonStats {
     ///         pokedex_id: 1,
     ///         base_hp: 45,
     ///         base_attack: 49,
@@ -587,7 +587,7 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_stats(&self, pokedex_id: &u8) -> Result<Stats, error::Error> {
+    pub fn get_pokemon_stats(&self, pokedex_id: &u8) -> Result<PokemonStats, error::Error> {
         let _internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset = {
@@ -600,12 +600,12 @@ impl PkmnapiDB {
             }
         };
 
-        let stats = Stats::from(&self.rom[offset..(offset + 0x1C)]);
+        let pokemon_stats = PokemonStats::from(&self.rom[offset..(offset + 0x1C)]);
 
-        Ok(stats)
+        Ok(pokemon_stats)
     }
 
-    /// Set stats by Pokédex ID
+    /// Set Pokémon stats by Pokédex ID
     ///
     /// # Example
     ///
@@ -621,9 +621,9 @@ impl PkmnapiDB {
     /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db
-    ///     .set_stats(
+    ///     .set_pokemon_stats(
     ///         &1,
-    ///         &Stats {
+    ///         &PokemonStats {
     ///             pokedex_id: 0x01,
     ///             base_hp: 0x42,
     ///             base_attack: 0x13,
@@ -646,15 +646,19 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_stats(&self, pokedex_id: &u8, stats: &Stats) -> Result<Patch, error::Error> {
+    pub fn set_pokemon_stats(
+        &self,
+        pokedex_id: &u8,
+        pokemon_stats: &PokemonStats,
+    ) -> Result<Patch, error::Error> {
         let _internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x1C;
         let offset = (offset_base + 0x03DE) + (((*pokedex_id as usize) - 1) * 0x1C);
 
-        let stats_raw = stats.to_raw();
+        let pokemon_stats_raw = pokemon_stats.to_raw();
 
-        Ok(Patch::new(&offset, &stats_raw))
+        Ok(Patch::new(&offset, &pokemon_stats_raw))
     }
 
     /// Get Pokémon name by Pokédex ID

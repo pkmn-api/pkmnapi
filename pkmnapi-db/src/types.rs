@@ -174,11 +174,11 @@ impl TypeEffect {
 /// use pkmnapi_db::types::*;
 ///
 /// let rom = vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A];
-/// let stats = Stats::from(&rom[..]);
+/// let stats = PokemonStats::from(&rom[..]);
 ///
 /// assert_eq!(
 ///     stats,
-///     Stats {
+///     PokemonStats {
 ///         pokedex_id: 0x01,
 ///         base_hp: 0x02,
 ///         base_attack: 0x03,
@@ -192,7 +192,7 @@ impl TypeEffect {
 /// );
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct Stats {
+pub struct PokemonStats {
     pub pokedex_id: u8,
     pub base_hp: u8,
     pub base_attack: u8,
@@ -204,8 +204,8 @@ pub struct Stats {
     pub base_exp_yield: u8,
 }
 
-impl From<&[u8]> for Stats {
-    /// Convert &[u8] to Stats
+impl From<&[u8]> for PokemonStats {
+    /// Convert &[u8] to PokemonStats
     ///
     /// # Example
     ///
@@ -213,11 +213,11 @@ impl From<&[u8]> for Stats {
     /// use pkmnapi_db::types::*;
     ///
     /// let rom = vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A];
-    /// let stats = Stats::from(&rom[..]);
+    /// let stats = PokemonStats::from(&rom[..]);
     ///
     /// assert_eq!(
     ///     stats,
-    ///     Stats {
+    ///     PokemonStats {
     ///         pokedex_id: 0x01,
     ///         base_hp: 0x02,
     ///         base_attack: 0x03,
@@ -249,7 +249,7 @@ impl From<&[u8]> for Stats {
         let catch_rate = cursor.read_u8().unwrap_or(0);
         let base_exp_yield = cursor.read_u8().unwrap_or(0);
 
-        Stats {
+        PokemonStats {
             pokedex_id,
             base_hp,
             base_attack,
@@ -263,7 +263,7 @@ impl From<&[u8]> for Stats {
     }
 }
 
-impl Stats {
+impl PokemonStats {
     /// Convert stats to raw bytes
     ///
     /// # Example
@@ -271,7 +271,7 @@ impl Stats {
     /// ```
     /// use pkmnapi_db::types::*;
     ///
-    /// let stats = Stats {
+    /// let stats = PokemonStats {
     ///     pokedex_id: 0x01,
     ///     base_hp: 0x02,
     ///     base_attack: 0x03,
