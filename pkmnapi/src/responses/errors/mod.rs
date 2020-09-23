@@ -13,6 +13,8 @@ mod move_response_error_invalid;
 mod pokemon_name_response_error;
 mod pokemon_name_response_error_invalid;
 mod pokemon_pic_response_error;
+mod pokemon_stats_response_error;
+mod pokemon_stats_response_error_invalid;
 mod rom_patch_response_error;
 mod rom_response_error_invalid_rom;
 mod rom_response_error_no_rom;
@@ -22,8 +24,6 @@ mod sav_player_name_response_error_invalid;
 mod sav_response_error_invalid_sav;
 mod sav_response_error_no_sav;
 mod sav_response_error_sav_exists;
-mod stats_response_error;
-mod stats_response_error_invalid;
 mod tm_response_error;
 mod tm_response_error_invalid;
 mod trainer_name_response_error;
@@ -47,6 +47,8 @@ pub use crate::responses::errors::move_response_error_invalid::*;
 pub use crate::responses::errors::pokemon_name_response_error::*;
 pub use crate::responses::errors::pokemon_name_response_error_invalid::*;
 pub use crate::responses::errors::pokemon_pic_response_error::*;
+pub use crate::responses::errors::pokemon_stats_response_error::*;
+pub use crate::responses::errors::pokemon_stats_response_error_invalid::*;
 pub use crate::responses::errors::rom_patch_response_error::*;
 pub use crate::responses::errors::rom_response_error_invalid_rom::*;
 pub use crate::responses::errors::rom_response_error_no_rom::*;
@@ -56,8 +58,6 @@ pub use crate::responses::errors::sav_player_name_response_error_invalid::*;
 pub use crate::responses::errors::sav_response_error_invalid_sav::*;
 pub use crate::responses::errors::sav_response_error_no_sav::*;
 pub use crate::responses::errors::sav_response_error_sav_exists::*;
-pub use crate::responses::errors::stats_response_error::*;
-pub use crate::responses::errors::stats_response_error_invalid::*;
 pub use crate::responses::errors::tm_response_error::*;
 pub use crate::responses::errors::tm_response_error_invalid::*;
 pub use crate::responses::errors::trainer_name_response_error::*;
@@ -83,6 +83,8 @@ pub enum ResponseError {
     PokemonNameResponseError(status::NotFound<Json<PokemonNameResponseError>>),
     PokemonNameResponseErrorInvalid(status::BadRequest<Json<PokemonNameResponseErrorInvalid>>),
     PokemonPicResponseError(status::NotFound<Json<PokemonPicResponseError>>),
+    PokemonStatsResponseError(status::NotFound<Json<PokemonStatsResponseError>>),
+    PokemonStatsResponseErrorInvalid(status::BadRequest<Json<PokemonStatsResponseErrorInvalid>>),
     RomPatchResponseError(status::NotFound<Json<RomPatchResponseError>>),
     RomResponseErrorInvalidRom(status::BadRequest<Json<RomResponseErrorInvalidRom>>),
     RomResponseErrorNoRom(status::Forbidden<Json<RomResponseErrorNoRom>>),
@@ -92,8 +94,6 @@ pub enum ResponseError {
     SavResponseErrorInvalidSav(status::BadRequest<Json<SavResponseErrorInvalidSav>>),
     SavResponseErrorNoSav(status::Forbidden<Json<SavResponseErrorNoSav>>),
     SavResponseErrorSavExists(status::Forbidden<Json<SavResponseErrorSavExists>>),
-    StatsResponseError(status::NotFound<Json<StatsResponseError>>),
-    StatsResponseErrorInvalid(status::BadRequest<Json<StatsResponseErrorInvalid>>),
     TMResponseError(status::NotFound<Json<TMResponseError>>),
     TMResponseErrorInvalid(status::BadRequest<Json<TMResponseErrorInvalid>>),
     TrainerNameResponseError(status::NotFound<Json<TrainerNameResponseError>>),
@@ -136,6 +136,8 @@ pub enum BaseErrorResponseId {
     error_pokemon_names_invalid,
     error_pokemon_names,
     error_pokemon_pics,
+    error_pokemon_stats_invalid,
+    error_pokemon_stats,
     error_rom_patches,
     error_roms_invalid_rom,
     error_roms_no_rom,
@@ -145,8 +147,6 @@ pub enum BaseErrorResponseId {
     error_savs_invalid_sav,
     error_savs_no_sav,
     error_savs_sav_exists,
-    error_stats_invalid,
-    error_stats,
     error_tms_invalid,
     error_tms,
     error_trainer_names_invalid,

@@ -2,9 +2,9 @@ use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;
 
-pub type StatsRequest = BaseRequest<StatsRequestType, StatsRequestAttributes>;
+pub type PokemonStatsRequest = BaseRequest<PokemonStatsRequestType, PokemonStatsRequestAttributes>;
 
-impl StatsRequest {
+impl PokemonStatsRequest {
     pub fn get_base_hp(&self) -> u8 {
         self.data.attributes.base_hp
     }
@@ -45,23 +45,23 @@ impl StatsRequest {
 
 #[derive(Debug, Deserialize)]
 #[allow(non_camel_case_types)]
-pub enum StatsRequestType {
-    stats,
+pub enum PokemonStatsRequestType {
+    pokemon_stats,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct StatsRequestAttributes {
+pub struct PokemonStatsRequestAttributes {
     pub base_hp: u8,
     pub base_attack: u8,
     pub base_defence: u8,
     pub base_speed: u8,
     pub base_special: u8,
-    pub types: Vec<StatsRequestAttributesType>,
+    pub types: Vec<PokemonStatsRequestAttributesType>,
     pub catch_rate: u8,
     pub base_exp_yield: u8,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct StatsRequestAttributesType {
+pub struct PokemonStatsRequestAttributesType {
     id: String,
 }

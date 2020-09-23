@@ -28,11 +28,11 @@ pub struct BaseResponseAll<T> {
 pub enum BaseResponseType {
     moves,
     pokemon_names,
+    pokemon_stats,
     rom_patches,
     roms,
     sav_player_names,
     savs,
-    stats,
     tms,
     trainer_names,
     trainer_parties,

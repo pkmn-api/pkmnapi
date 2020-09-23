@@ -39,6 +39,8 @@ impl Pkmnapi {
                     routes::pokemon_pics::get_pokemon_pic_png,
                     routes::pokemon_pics::post_pokemon_pic_jpeg,
                     routes::pokemon_pics::post_pokemon_pic_png,
+                    routes::pokemon_stats::get_pokemon_stats,
+                    routes::pokemon_stats::post_pokemon_stats,
                     routes::rom_patches::delete_rom_patch,
                     routes::rom_patches::get_rom_patch,
                     routes::rom_patches::get_rom_patches_raw,
@@ -51,8 +53,6 @@ impl Pkmnapi {
                     routes::savs::delete_sav,
                     routes::savs::get_sav,
                     routes::savs::post_sav,
-                    routes::stats::get_stats,
-                    routes::stats::post_stats,
                     routes::tms::get_tm,
                     routes::tms::post_tm,
                     routes::trainer_names::get_trainer_name,
@@ -70,7 +70,10 @@ impl Pkmnapi {
                 ],
             )
             .attach(AdHoc::on_response("Update Server Name", |_, res| {
-                res.set_raw_header("Server", concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION")));
+                res.set_raw_header(
+                    "Server",
+                    concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION")),
+                );
             }))
     }
 }

@@ -5,17 +5,17 @@ use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
 
 use crate::guards::*;
-use crate::requests::stats::*;
+use crate::requests::pokemon_stats::*;
 use crate::responses::errors::*;
-use crate::responses::stats::*;
+use crate::responses::pokemon_stats::*;
 use crate::utils;
 
-#[get("/stats/<pokedex_id>")]
-pub fn get_stats(
+#[get("/pokemon/stats/<pokedex_id>")]
+pub fn get_pokemon_stats(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
     pokedex_id: u8,
-) -> Result<Json<StatsResponse>, ResponseError> {
+) -> Result<Json<PokemonStatsResponse>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
@@ -23,17 +23,17 @@ pub fn get_stats(
 
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let stats = match db.get_stats(&pokedex_id) {
-        Ok(stats) => stats,
-        Err(e) => return Err(StatsResponseError::new(&e.to_string())),
+    let pokemon_stats = match db.get_pokemon_stats(&pokedex_id) {
+        Ok(pokemon_stats) => pokemon_stats,
+        Err(e) => return Err(PokemonStatsResponseError::new(&e.to_string())),
     };
 
-    let type_names: Result<Vec<TypeName>, _> = stats
+    let type_names: Result<Vec<TypeName>, _> = pokemon_stats
         .type_ids
         .iter()
         .map(|type_id| match db.get_type_name(type_id) {
             Ok(type_name) => Ok(type_name),
-            Err(e) => return Err(StatsResponseError::new(&e.to_string())),
+            Err(e) => return Err(PokemonStatsResponseError::new(&e.to_string())),
         })
         .collect();
 
@@ -42,17 +42,21 @@ pub fn get_stats(
         Err(e) => return Err(e),
     };
 
-    let response = StatsResponse::new(&pokedex_id, &stats, type_names);
+    let response = PokemonStatsResponse::new(&pokedex_id, &pokemon_stats, type_names);
 
     Ok(Json(response))
 }
 
-#[post("/stats/<pokedex_id>", format = "application/json", data = "<data>")]
-pub fn post_stats(
+#[post(
+    "/pokemon/stats/<pokedex_id>",
+    format = "application/json",
+    data = "<data>"
+)]
+pub fn post_pokemon_stats(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
-    data: Result<Json<StatsRequest>, JsonError>,
+    data: Result<Json<PokemonStatsRequest>, JsonError>,
     pokedex_id: u8,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
     let access_token = match access_token {
@@ -63,10 +67,10 @@ pub fn post_stats(
     let data = match data {
         Ok(data) => data.into_inner(),
         Err(JsonError::Parse(_, e)) => {
-            return Err(StatsResponseErrorInvalid::new(&e.to_string()));
+            return Err(PokemonStatsResponseErrorInvalid::new(&e.to_string()));
         }
         _ => {
-            return Err(StatsResponseErrorInvalid::new(
+            return Err(PokemonStatsResponseErrorInvalid::new(
                 &"An unknown error occurred".to_owned(),
             ));
         }
@@ -74,7 +78,7 @@ pub fn post_stats(
 
     let (db, connection) = utils::get_db(&sql, &access_token)?;
 
-    let stats = Stats {
+    let pokemon_stats = PokemonStats {
         pokedex_id: pokedex_id,
         base_hp: data.get_base_hp(),
         base_attack: data.get_base_attack(),
@@ -90,9 +94,9 @@ pub fn post_stats(
         base_exp_yield: data.get_base_exp_yield(),
     };
 
-    let patch = match db.set_stats(&pokedex_id, &stats) {
+    let patch = match db.set_pokemon_stats(&pokedex_id, &pokemon_stats) {
         Ok(patch) => patch,
-        Err(e) => return Err(StatsResponseError::new(&e.to_string())),
+        Err(e) => return Err(PokemonStatsResponseError::new(&e.to_string())),
     };
 
     let patch_description = match patch_description {
@@ -107,7 +111,7 @@ pub fn post_stats(
         patch_description,
     ) {
         Ok(_) => {}
-        Err(e) => return Err(StatsResponseError::new(&e.to_string())),
+        Err(e) => return Err(PokemonStatsResponseError::new(&e.to_string())),
     };
 
     Ok(status::Accepted(Some(json!({}))))
