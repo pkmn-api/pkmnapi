@@ -8,8 +8,8 @@ mod access_token_error_invalid;
 mod access_token_error_timeout;
 mod access_token_error_unauthorized;
 mod map_pic_response_error;
-mod move_response_error;
-mod move_response_error_invalid;
+mod move_name_response_error;
+mod move_name_response_error_invalid;
 mod not_found_error;
 mod pokemon_name_response_error;
 mod pokemon_name_response_error_invalid;
@@ -43,8 +43,8 @@ pub use crate::responses::errors::access_token_error_invalid::*;
 pub use crate::responses::errors::access_token_error_timeout::*;
 pub use crate::responses::errors::access_token_error_unauthorized::*;
 pub use crate::responses::errors::map_pic_response_error::*;
-pub use crate::responses::errors::move_response_error::*;
-pub use crate::responses::errors::move_response_error_invalid::*;
+pub use crate::responses::errors::move_name_response_error::*;
+pub use crate::responses::errors::move_name_response_error_invalid::*;
 pub use crate::responses::errors::not_found_error::*;
 pub use crate::responses::errors::pokemon_name_response_error::*;
 pub use crate::responses::errors::pokemon_name_response_error_invalid::*;
@@ -80,8 +80,8 @@ pub enum ResponseError {
     AccessTokenErrorTimeout(status::Forbidden<Json<AccessTokenErrorTimeout>>),
     AccessTokenErrorUnauthorized(status::Unauthorized<Json<AccessTokenErrorUnauthorized>>),
     MapPicResponseError(status::NotFound<Json<MapPicResponseError>>),
-    MoveResponseError(status::NotFound<Json<MoveResponseError>>),
-    MoveResponseErrorInvalid(status::BadRequest<Json<MoveResponseErrorInvalid>>),
+    MoveNameResponseError(status::NotFound<Json<MoveNameResponseError>>),
+    MoveNameResponseErrorInvalid(status::BadRequest<Json<MoveNameResponseErrorInvalid>>),
     NotFoundError(status::NotFound<Json<NotFoundError>>),
     PokemonNameResponseError(status::NotFound<Json<PokemonNameResponseError>>),
     PokemonNameResponseErrorInvalid(status::BadRequest<Json<PokemonNameResponseErrorInvalid>>),
@@ -134,8 +134,8 @@ pub enum BaseErrorResponseId {
     error_access_tokens_timeout,
     error_access_tokens_unauthorized,
     error_map_pics,
-    error_moves_invalid,
-    error_moves,
+    error_move_names_invalid,
+    error_move_names,
     error_not_found,
     error_pokemon_names_invalid,
     error_pokemon_names,

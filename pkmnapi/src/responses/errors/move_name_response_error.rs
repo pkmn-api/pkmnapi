@@ -4,25 +4,25 @@ use serde::Serialize;
 
 use crate::responses::errors::*;
 
-pub type MoveResponseError = BaseErrorResponse<MoveResponseErrorAttributes>;
+pub type MoveNameResponseError = BaseErrorResponse<MoveNameResponseErrorAttributes>;
 
-impl MoveResponseError {
+impl MoveNameResponseError {
     pub fn new(message: &String) -> ResponseError {
-        let response = MoveResponseError {
+        let response = MoveNameResponseError {
             data: BaseErrorResponseData {
-                id: BaseErrorResponseId::error_moves,
+                id: BaseErrorResponseId::error_move_names,
                 _type: BaseErrorResponseType::errors,
-                attributes: MoveResponseErrorAttributes {
+                attributes: MoveNameResponseErrorAttributes {
                     message: message.to_owned(),
                 },
             },
         };
 
-        ResponseError::MoveResponseError(status::NotFound(Json(response)))
+        ResponseError::MoveNameResponseError(status::NotFound(Json(response)))
     }
 }
 
 #[derive(Debug, Serialize)]
-pub struct MoveResponseErrorAttributes {
+pub struct MoveNameResponseErrorAttributes {
     pub message: String,
 }

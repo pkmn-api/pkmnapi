@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};
 use crate::responses::links::Links;
-use crate::responses::moves::MoveResponseData;
+use crate::responses::move_names::MoveNameResponseData;
 use crate::utils;
 
 pub type TMResponse = BaseResponse<TMResponseAttributes>;
@@ -16,7 +16,7 @@ impl TMResponse {
                 id: tm_id.to_string(),
                 _type: BaseResponseType::tms,
                 attributes: TMResponseAttributes {
-                    _move: MoveResponseData::new(&tm.move_id, move_name),
+                    _move: MoveNameResponseData::new(&tm.move_id, move_name),
                 },
                 links: Links {
                     _self: utils::generate_url("tms", Some(&tm_id.to_string())),
@@ -32,5 +32,5 @@ impl TMResponse {
 #[derive(Debug, Serialize)]
 pub struct TMResponseAttributes {
     #[serde(rename = "move")]
-    pub _move: MoveResponseData,
+    pub _move: MoveNameResponseData,
 }

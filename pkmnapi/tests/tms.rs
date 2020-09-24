@@ -19,7 +19,7 @@ fn get_tm_200() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"1","type":"tms","attributes":{"move":{"id":"5","type":"moves","attributes":{"name":"MEGA PUNCH"},"links":{"self":"http://localhost:8080/v1/moves/5"}}},"links":{"self":"http://localhost:8080/v1/tms/1"}},"links":{"self":"http://localhost:8080/v1/tms/1"}}"#
+            r#"{"data":{"id":"1","type":"tms","attributes":{"move":{"id":"5","type":"move_names","attributes":{"name":"MEGA PUNCH"},"links":{"self":"http://localhost:8080/v1/moves/names/5"}}},"links":{"self":"http://localhost:8080/v1/tms/1"}},"links":{"self":"http://localhost:8080/v1/tms/1"}}"#
                 .to_owned()
         )
     );
@@ -93,7 +93,7 @@ fn post_tms_202() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"1","type":"tms","attributes":{"move":{"id":"1","type":"moves","attributes":{"name":"POUND"},"links":{"self":"http://localhost:8080/v1/moves/1"}}},"links":{"self":"http://localhost:8080/v1/tms/1"}},"links":{"self":"http://localhost:8080/v1/tms/1"}}"#
+            r#"{"data":{"id":"1","type":"tms","attributes":{"move":{"id":"1","type":"move_names","attributes":{"name":"POUND"},"links":{"self":"http://localhost:8080/v1/moves/names/1"}}},"links":{"self":"http://localhost:8080/v1/tms/1"}},"links":{"self":"http://localhost:8080/v1/tms/1"}}"#
                 .to_owned()
         )
     );

@@ -6,17 +6,17 @@ use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
 
 use crate::guards::*;
-use crate::requests::moves::*;
+use crate::requests::move_names::*;
 use crate::responses::errors::*;
-use crate::responses::moves::*;
+use crate::responses::move_names::*;
 use crate::utils;
 
-#[get("/moves/<move_id>")]
-pub fn get_move(
+#[get("/moves/names/<move_id>")]
+pub fn get_move_name(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
     move_id: u8,
-) -> Result<Json<MoveResponse>, ResponseError> {
+) -> Result<Json<MoveNameResponse>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
@@ -26,19 +26,19 @@ pub fn get_move(
 
     let move_name = match db.get_move_name(&move_id) {
         Ok(move_name) => move_name,
-        Err(e) => return Err(MoveResponseError::new(&e.to_string())),
+        Err(e) => return Err(MoveNameResponseError::new(&e.to_string())),
     };
-    let response = MoveResponse::new(&move_id, &move_name);
+    let response = MoveNameResponse::new(&move_id, &move_name);
 
     Ok(Json(response))
 }
 
-#[post("/moves/<move_id>", format = "application/json", data = "<data>")]
-pub fn post_move(
+#[post("/moves/names/<move_id>", format = "application/json", data = "<data>")]
+pub fn post_move_name(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
-    data: Result<Json<MoveRequest>, JsonError>,
+    data: Result<Json<MoveNameRequest>, JsonError>,
     move_id: u8,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
     let access_token = match access_token {
@@ -49,10 +49,10 @@ pub fn post_move(
     let data = match data {
         Ok(data) => data.into_inner(),
         Err(JsonError::Parse(_, e)) => {
-            return Err(MoveResponseErrorInvalid::new(&e.to_string()));
+            return Err(MoveNameResponseErrorInvalid::new(&e.to_string()));
         }
         _ => {
-            return Err(MoveResponseErrorInvalid::new(
+            return Err(MoveNameResponseErrorInvalid::new(
                 &"An unknown error occurred".to_owned(),
             ));
         }
@@ -66,7 +66,7 @@ pub fn post_move(
 
     let patch = match db.set_move_name(&move_id, &move_name) {
         Ok(patch) => patch,
-        Err(e) => return Err(MoveResponseError::new(&e.to_string())),
+        Err(e) => return Err(MoveNameResponseError::new(&e.to_string())),
     };
 
     let patch_description = match patch_description {
@@ -81,7 +81,7 @@ pub fn post_move(
         patch_description,
     ) {
         Ok(_) => {}
-        Err(e) => return Err(MoveResponseError::new(&e.to_string())),
+        Err(e) => return Err(MoveNameResponseError::new(&e.to_string())),
     };
 
     Ok(status::Accepted(Some(json!({}))))
