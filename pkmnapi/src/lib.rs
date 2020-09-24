@@ -15,12 +15,20 @@ pub mod utils;
 use pkmnapi_sql::*;
 use rocket::fairing::AdHoc;
 use rocket::Rocket;
+use rocket_cors::AllowedHeaders;
 
 pub struct Pkmnapi {}
 
 impl Pkmnapi {
     pub fn init() -> Rocket {
         let sql = PkmnapiSQL::new();
+        let cors = rocket_cors::CorsOptions {
+            allowed_headers: AllowedHeaders::some(&["Authorization", "Accept"]),
+            allow_credentials: true,
+            ..Default::default()
+        }
+        .to_cors()
+        .unwrap();
 
         rocket::ignite()
             .manage(sql)
@@ -78,5 +86,6 @@ impl Pkmnapi {
                     concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION")),
                 );
             }))
+            .attach(cors)
     }
 }
