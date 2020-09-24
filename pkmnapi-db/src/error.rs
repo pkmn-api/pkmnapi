@@ -6,11 +6,11 @@ pub enum Error {
     HeaderTooSmall,
     HMIDInvalid(u8, usize, usize),
     InternalIDInvalid(u8),
-    ItemIDInvalid(u8),
+    ItemIDInvalid(u8, usize, usize),
     ItemNameWrongSize(usize, usize),
     MapCouldNotWrite,
     MapInvalid(u8),
-    MoveIDInvalid(u8),
+    MoveIDInvalid(u8, usize, usize),
     MoveNameWrongSize(usize, usize),
     PicCouldNotRead,
     PicCouldNotWrite,
@@ -25,7 +25,7 @@ pub enum Error {
     SavRivalNameWrongSize(usize, usize),
     SavWrongSize(usize, usize),
     TMIDInvalid(u8, usize, usize),
-    TrainerIDInvalid(u8),
+    TrainerIDInvalid(u8, usize, usize),
     TrainerNameWrongSize(usize, usize),
     TrainerPartiesWrongDataSize(usize, usize),
     TrainerPartiesWrongSize(usize, usize),
@@ -57,13 +57,22 @@ impl fmt::Display for Error {
             Error::InternalIDInvalid(internal_id) => {
                 format!("Invalid internal ID: {}", internal_id)
             }
-            Error::ItemIDInvalid(item_id) => format!("Invalid item ID: {}", item_id),
-            Error::MoveIDInvalid(move_id) => format!("Invalid move ID: {}", move_id),
+            Error::ItemIDInvalid(item_id, min, max) => format!(
+                "Invalid item ID {}: valid range is {}-{}",
+                item_id, min, max
+            ),
+            Error::MoveIDInvalid(move_id, min, max) => format!(
+                "Invalid move ID {}: valid range is {}-{}",
+                move_id, min, max
+            ),
             Error::PokedexIDInvalid(pokedex_id) => format!("Invalid Pokédex ID: {}", pokedex_id),
             Error::TMIDInvalid(tm_id, min, max) => {
                 format!("Invalid TM ID {}: valid range is {}-{}", tm_id, min, max)
             }
-            Error::TrainerIDInvalid(item_id) => format!("Invalid trainer ID: {}", item_id),
+            Error::TrainerIDInvalid(item_id, min, max) => format!(
+                "Invalid trainer ID {}: valid range is {}-{}",
+                item_id, min, max
+            ),
             Error::TypeEffectIDInvalid(type_effect_id, min, max) => format!(
                 "Invalid type effect ID {}: valid range is {}-{}",
                 type_effect_id, min, max
