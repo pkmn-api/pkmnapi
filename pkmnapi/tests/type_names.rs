@@ -3,13 +3,13 @@ use rocket::http::{ContentType, Status};
 mod common;
 
 #[test]
-fn get_type_200() {
+fn get_type_name_200() {
     let (client, access_token) = common::setup_with_access_token();
 
     common::post_rom(&client, &access_token);
 
     let request = client
-        .get("/v1/types/0")
+        .get("/v1/types/names/0")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -19,7 +19,7 @@ fn get_type_200() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"0","type":"types","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/0"}},"links":{"self":"http://localhost:8080/v1/types/0"}}"#
+            r#"{"data":{"id":"0","type":"type_names","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/names/0"}},"links":{"self":"http://localhost:8080/v1/types/names/0"}}"#
                 .to_owned()
         )
     );
@@ -28,10 +28,10 @@ fn get_type_200() {
 }
 
 #[test]
-fn get_type_401() {
+fn get_type_name_401() {
     let client = common::setup();
 
-    let request = client.get("/v1/types/0");
+    let request = client.get("/v1/types/names/0");
 
     let mut response = request.dispatch();
 
@@ -40,13 +40,13 @@ fn get_type_401() {
 }
 
 #[test]
-fn get_type_404() {
+fn get_type_name_404() {
     let (client, access_token) = common::setup_with_access_token();
 
     common::post_rom(&client, &access_token);
 
     let request = client
-        .get("/v1/types/100")
+        .get("/v1/types/names/100")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -56,7 +56,7 @@ fn get_type_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_types","type":"errors","attributes":{"message":"Invalid type ID 100: valid range is 0-26"}}}"#
+            r#"{"data":{"id":"error_type_names","type":"errors","attributes":{"message":"Invalid type ID 100: valid range is 0-26"}}}"#
                 .to_owned()
         )
     );
@@ -65,14 +65,14 @@ fn get_type_404() {
 }
 
 #[test]
-fn post_type_202() {
+fn post_type_name_202() {
     let (client, access_token) = common::setup_with_access_token();
 
     common::post_rom(&client, &access_token);
 
     let request = client
-        .post("/v1/types/0")
-        .body(r#"{"data":{"type":"types","attributes":{"name":"BORING"}}}"#)
+        .post("/v1/types/names/0")
+        .body(r#"{"data":{"type":"type_names","attributes":{"name":"BORING"}}}"#)
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token));
 
@@ -83,7 +83,7 @@ fn post_type_202() {
     assert_eq!(response.body_string(), Some("{}".to_owned()));
 
     let request = client
-        .get("/v1/types/0")
+        .get("/v1/types/names/0")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -93,7 +93,7 @@ fn post_type_202() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"0","type":"types","attributes":{"name":"BORING"},"links":{"self":"http://localhost:8080/v1/types/0"}},"links":{"self":"http://localhost:8080/v1/types/0"}}"#
+            r#"{"data":{"id":"0","type":"type_names","attributes":{"name":"BORING"},"links":{"self":"http://localhost:8080/v1/types/names/0"}},"links":{"self":"http://localhost:8080/v1/types/names/0"}}"#
                 .to_owned()
         )
     );
@@ -102,12 +102,12 @@ fn post_type_202() {
 }
 
 #[test]
-fn post_type_401() {
+fn post_type_name_401() {
     let client = common::setup();
 
     let request = client
-        .post("/v1/types/0")
-        .body(r#"{"data":{"type":"types","attributes":{"name":"BORING"}}}"#)
+        .post("/v1/types/names/0")
+        .body(r#"{"data":{"type":"type_names","attributes":{"name":"BORING"}}}"#)
         .header(ContentType::JSON);
 
     let mut response = request.dispatch();
@@ -117,14 +117,14 @@ fn post_type_401() {
 }
 
 #[test]
-fn post_type_404() {
+fn post_type_name_404() {
     let (client, access_token) = common::setup_with_access_token();
 
     common::post_rom(&client, &access_token);
 
     let request = client
-        .post("/v1/types/100")
-        .body(r#"{"data":{"type":"types","attributes":{"name":"BORING"}}}"#)
+        .post("/v1/types/names/100")
+        .body(r#"{"data":{"type":"type_names","attributes":{"name":"BORING"}}}"#)
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token));
 
@@ -135,7 +135,7 @@ fn post_type_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_types","type":"errors","attributes":{"message":"Invalid type ID 100: valid range is 0-26"}}}"#
+            r#"{"data":{"id":"error_type_names","type":"errors","attributes":{"message":"Invalid type ID 100: valid range is 0-26"}}}"#
                 .to_owned()
         )
     );

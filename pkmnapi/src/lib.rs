@@ -65,8 +65,8 @@ impl Pkmnapi {
                     routes::trainer_pics::post_trainer_pic_png,
                     routes::type_effects::get_type_effect,
                     routes::type_effects::post_type_effect,
-                    routes::types::get_type,
-                    routes::types::post_type,
+                    routes::type_names::get_type_name,
+                    routes::type_names::post_type_name,
                 ],
             )
             .register(catchers![routes::errors::not_found])

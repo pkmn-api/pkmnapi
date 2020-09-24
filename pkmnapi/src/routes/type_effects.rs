@@ -10,7 +10,7 @@ use crate::responses::errors::*;
 use crate::responses::type_effects::*;
 use crate::utils;
 
-#[get("/type_effects/<type_effect_id>")]
+#[get("/types/effects/<type_effect_id>")]
 pub fn get_type_effect(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
@@ -48,7 +48,7 @@ pub fn get_type_effect(
 }
 
 #[post(
-    "/type_effects/<type_effect_id>",
+    "/types/effects/<type_effect_id>",
     format = "application/json",
     data = "<data>"
 )]

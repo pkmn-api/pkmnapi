@@ -4,25 +4,25 @@ use serde::Serialize;
 
 use crate::responses::errors::*;
 
-pub type TypeResponseError = BaseErrorResponse<TypeResponseErrorAttributes>;
+pub type TypeNameResponseError = BaseErrorResponse<TypeNameResponseErrorAttributes>;
 
-impl TypeResponseError {
+impl TypeNameResponseError {
     pub fn new(message: &String) -> ResponseError {
-        let response = TypeResponseError {
+        let response = TypeNameResponseError {
             data: BaseErrorResponseData {
-                id: BaseErrorResponseId::error_types,
+                id: BaseErrorResponseId::error_type_names,
                 _type: BaseErrorResponseType::errors,
-                attributes: TypeResponseErrorAttributes {
+                attributes: TypeNameResponseErrorAttributes {
                     message: message.to_owned(),
                 },
             },
         };
 
-        ResponseError::TypeResponseError(status::NotFound(Json(response)))
+        ResponseError::TypeNameResponseError(status::NotFound(Json(response)))
     }
 }
 
 #[derive(Debug, Serialize)]
-pub struct TypeResponseErrorAttributes {
+pub struct TypeNameResponseErrorAttributes {
     pub message: String,
 }

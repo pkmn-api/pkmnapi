@@ -34,8 +34,8 @@ mod trainer_parties_response_error_invalid;
 mod trainer_pic_response_error;
 mod type_effect_response_error;
 mod type_effect_response_error_invalid;
-mod type_response_error;
-mod type_response_error_invalid;
+mod type_name_response_error;
+mod type_name_response_error_invalid;
 
 pub use crate::responses::errors::access_token_error_email::*;
 pub use crate::responses::errors::access_token_error_forbidden::*;
@@ -69,8 +69,8 @@ pub use crate::responses::errors::trainer_parties_response_error_invalid::*;
 pub use crate::responses::errors::trainer_pic_response_error::*;
 pub use crate::responses::errors::type_effect_response_error::*;
 pub use crate::responses::errors::type_effect_response_error_invalid::*;
-pub use crate::responses::errors::type_response_error::*;
-pub use crate::responses::errors::type_response_error_invalid::*;
+pub use crate::responses::errors::type_name_response_error::*;
+pub use crate::responses::errors::type_name_response_error_invalid::*;
 
 #[derive(Debug, Responder)]
 pub enum ResponseError {
@@ -108,8 +108,8 @@ pub enum ResponseError {
     TrainerPicResponseError(status::NotFound<Json<TrainerPicResponseError>>),
     TypeEffectResponseError(status::NotFound<Json<TypeEffectResponseError>>),
     TypeEffectResponseErrorInvalid(status::BadRequest<Json<TypeEffectResponseErrorInvalid>>),
-    TypeResponseError(status::NotFound<Json<TypeResponseError>>),
-    TypeResponseErrorInvalid(status::BadRequest<Json<TypeResponseErrorInvalid>>),
+    TypeNameResponseError(status::NotFound<Json<TypeNameResponseError>>),
+    TypeNameResponseErrorInvalid(status::BadRequest<Json<TypeNameResponseErrorInvalid>>),
 }
 
 #[derive(Debug, Serialize)]
@@ -160,8 +160,8 @@ pub enum BaseErrorResponseId {
     error_trainer_pics,
     error_type_effects_invalid,
     error_type_effects,
-    error_types_invalid,
-    error_types,
+    error_type_names_invalid,
+    error_type_names,
 }
 
 #[derive(Debug, Serialize)]

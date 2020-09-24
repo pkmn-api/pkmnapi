@@ -6,17 +6,17 @@ use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
 
 use crate::guards::*;
-use crate::requests::types::*;
+use crate::requests::type_names::*;
 use crate::responses::errors::*;
-use crate::responses::types::*;
+use crate::responses::type_names::*;
 use crate::utils;
 
-#[get("/types/<type_id>")]
-pub fn get_type(
+#[get("/types/names/<type_id>")]
+pub fn get_type_name(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
     type_id: u8,
-) -> Result<Json<TypeResponse>, ResponseError> {
+) -> Result<Json<TypeNameResponse>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
@@ -26,19 +26,19 @@ pub fn get_type(
 
     let type_name = match db.get_type_name(&type_id) {
         Ok(type_name) => type_name,
-        Err(e) => return Err(TypeResponseError::new(&e.to_string())),
+        Err(e) => return Err(TypeNameResponseError::new(&e.to_string())),
     };
-    let response = TypeResponse::new(&type_id, &type_name);
+    let response = TypeNameResponse::new(&type_id, &type_name);
 
     Ok(Json(response))
 }
 
-#[post("/types/<type_id>", format = "application/json", data = "<data>")]
-pub fn post_type(
+#[post("/types/names/<type_id>", format = "application/json", data = "<data>")]
+pub fn post_type_name(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
-    data: Result<Json<TypeRequest>, JsonError>,
+    data: Result<Json<TypeNameRequest>, JsonError>,
     type_id: u8,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
     let access_token = match access_token {
@@ -49,10 +49,10 @@ pub fn post_type(
     let data = match data {
         Ok(data) => data.into_inner(),
         Err(JsonError::Parse(_, e)) => {
-            return Err(TypeResponseErrorInvalid::new(&e.to_string()));
+            return Err(TypeNameResponseErrorInvalid::new(&e.to_string()));
         }
         _ => {
-            return Err(TypeResponseErrorInvalid::new(
+            return Err(TypeNameResponseErrorInvalid::new(
                 &"An unknown error occurred".to_owned(),
             ));
         }
@@ -66,7 +66,7 @@ pub fn post_type(
 
     let patch = match db.set_type_name(&type_id, &type_name) {
         Ok(patch) => patch,
-        Err(e) => return Err(TypeResponseError::new(&e.to_string())),
+        Err(e) => return Err(TypeNameResponseError::new(&e.to_string())),
     };
 
     let patch_description = match patch_description {
@@ -81,7 +81,7 @@ pub fn post_type(
         patch_description,
     ) {
         Ok(_) => {}
-        Err(e) => return Err(TypeResponseError::new(&e.to_string())),
+        Err(e) => return Err(TypeNameResponseError::new(&e.to_string())),
     };
 
     Ok(status::Accepted(Some(json!({}))))

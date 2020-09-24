@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};
 use crate::responses::links::Links;
-use crate::responses::types::TypeResponseData;
+use crate::responses::type_names::TypeNameResponseData;
 use crate::utils;
 
 pub type PokemonStatsResponse = BaseResponse<PokemonStatsResponseAttributes>;
@@ -29,7 +29,7 @@ impl PokemonStatsResponse {
                         .type_ids
                         .iter()
                         .enumerate()
-                        .map(|(i, type_id)| TypeResponseData::new(&type_id, &type_names[i]))
+                        .map(|(i, type_id)| TypeNameResponseData::new(&type_id, &type_names[i]))
                         .collect(),
                     catch_rate: pokemon_stats.catch_rate,
                     base_exp_yield: pokemon_stats.base_exp_yield,
@@ -52,7 +52,7 @@ pub struct PokemonStatsResponseAttributes {
     pub base_defence: u8,
     pub base_speed: u8,
     pub base_special: u8,
-    pub types: Vec<TypeResponseData>,
+    pub types: Vec<TypeNameResponseData>,
     pub catch_rate: u8,
     pub base_exp_yield: u8,
 }

@@ -37,5 +37,5 @@ pub enum BaseResponseType {
     trainer_names,
     trainer_parties,
     type_effects,
-    types,
+    type_names,
 }

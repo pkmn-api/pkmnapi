@@ -15,4 +15,4 @@ pub mod trainer_names;
 pub mod trainer_parties;
 pub mod trainer_pics;
 pub mod type_effects;
-pub mod types;
+pub mod type_names;

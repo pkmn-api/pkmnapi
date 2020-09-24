@@ -19,7 +19,7 @@ fn get_pokemon_stats_200() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"1","type":"pokemon_stats","attributes":{"base_hp":45,"base_attack":49,"base_defence":49,"base_speed":45,"base_special":65,"types":[{"id":"22","type":"types","attributes":{"name":"GRASS"},"links":{"self":"http://localhost:8080/v1/types/22"}},{"id":"3","type":"types","attributes":{"name":"POISON"},"links":{"self":"http://localhost:8080/v1/types/3"}}],"catch_rate":45,"base_exp_yield":64},"links":{"self":"http://localhost:8080/v1/pokemon/stats/1"}},"links":{"self":"http://localhost:8080/v1/pokemon/stats/1"}}"#
+            r#"{"data":{"id":"1","type":"pokemon_stats","attributes":{"base_hp":45,"base_attack":49,"base_defence":49,"base_speed":45,"base_special":65,"types":[{"id":"22","type":"type_names","attributes":{"name":"GRASS"},"links":{"self":"http://localhost:8080/v1/types/names/22"}},{"id":"3","type":"type_names","attributes":{"name":"POISON"},"links":{"self":"http://localhost:8080/v1/types/names/3"}}],"catch_rate":45,"base_exp_yield":64},"links":{"self":"http://localhost:8080/v1/pokemon/stats/1"}},"links":{"self":"http://localhost:8080/v1/pokemon/stats/1"}}"#
                 .to_owned()
         )
     );
@@ -93,7 +93,7 @@ fn post_pokemon_stats_202() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"1","type":"pokemon_stats","attributes":{"base_hp":42,"base_attack":42,"base_defence":42,"base_speed":42,"base_special":42,"types":[{"id":"0","type":"types","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/0"}},{"id":"0","type":"types","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/0"}}],"catch_rate":42,"base_exp_yield":42},"links":{"self":"http://localhost:8080/v1/pokemon/stats/1"}},"links":{"self":"http://localhost:8080/v1/pokemon/stats/1"}}"#
+            r#"{"data":{"id":"1","type":"pokemon_stats","attributes":{"base_hp":42,"base_attack":42,"base_defence":42,"base_speed":42,"base_special":42,"types":[{"id":"0","type":"type_names","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/names/0"}},{"id":"0","type":"type_names","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/names/0"}}],"catch_rate":42,"base_exp_yield":42},"links":{"self":"http://localhost:8080/v1/pokemon/stats/1"}},"links":{"self":"http://localhost:8080/v1/pokemon/stats/1"}}"#
                 .to_owned()
         )
     );

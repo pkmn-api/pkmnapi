@@ -22,8 +22,8 @@ fn get_rom_patches_200() {
     );
 
     client
-        .post("/v1/types/0")
-        .body(r#"{"data":{"type":"types","attributes":{"name":"BORING"}}}"#)
+        .post("/v1/types/names/0")
+        .body(r#"{"data":{"type":"type_names","attributes":{"name":"BORING"}}}"#)
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token))
         .dispatch();
@@ -74,8 +74,8 @@ fn get_rom_patches_raw_200() {
     common::post_rom(&client, &access_token);
 
     client
-        .post("/v1/types/0")
-        .body(r#"{"data":{"type":"types","attributes":{"name":"BORING"}}}"#)
+        .post("/v1/types/names/0")
+        .body(r#"{"data":{"type":"type_names","attributes":{"name":"BORING"}}}"#)
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token))
         .dispatch();
@@ -136,8 +136,8 @@ fn get_rom_patch_200() {
     common::post_rom(&client, &access_token);
 
     client
-        .post("/v1/types/0")
-        .body(r#"{"data":{"type":"types","attributes":{"name":"BORING"}}}"#)
+        .post("/v1/types/names/0")
+        .body(r#"{"data":{"type":"type_names","attributes":{"name":"BORING"}}}"#)
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token))
         .header(Header::new("X-Patch-Description", "NORMAL -> BORING"))
@@ -215,8 +215,8 @@ fn delete_rom_patch_204() {
     common::post_rom(&client, &access_token);
 
     client
-        .post("/v1/types/0")
-        .body(r#"{"data":{"type":"types","attributes":{"name":"BORING"}}}"#)
+        .post("/v1/types/names/0")
+        .body(r#"{"data":{"type":"type_names","attributes":{"name":"BORING"}}}"#)
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token))
         .dispatch();

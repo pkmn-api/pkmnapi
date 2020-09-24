@@ -9,7 +9,7 @@ fn get_type_effect_200() {
     common::post_rom(&client, &access_token);
 
     let request = client
-        .get("/v1/type_effects/0")
+        .get("/v1/types/effects/0")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -19,7 +19,7 @@ fn get_type_effect_200() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"0","type":"type_effects","attributes":{"attacking_type":{"id":"21","type":"types","attributes":{"name":"WATER"},"links":{"self":"http://localhost:8080/v1/types/21"}},"defending_type":{"id":"20","type":"types","attributes":{"name":"FIRE"},"links":{"self":"http://localhost:8080/v1/types/20"}},"multiplier":2.0},"links":{"self":"http://localhost:8080/v1/type_effects/0"}},"links":{"self":"http://localhost:8080/v1/type_effects/0"}}"#
+            r#"{"data":{"id":"0","type":"type_effects","attributes":{"attacking_type":{"id":"21","type":"type_names","attributes":{"name":"WATER"},"links":{"self":"http://localhost:8080/v1/types/names/21"}},"defending_type":{"id":"20","type":"type_names","attributes":{"name":"FIRE"},"links":{"self":"http://localhost:8080/v1/types/names/20"}},"multiplier":2.0},"links":{"self":"http://localhost:8080/v1/types/effects/0"}},"links":{"self":"http://localhost:8080/v1/types/effects/0"}}"#
                 .to_owned()
         )
     );
@@ -31,7 +31,7 @@ fn get_type_effect_200() {
 fn get_type_effect_401() {
     let client = common::setup();
 
-    let request = client.get("/v1/type_effects/0");
+    let request = client.get("/v1/types/effects/0");
 
     let mut response = request.dispatch();
 
@@ -46,7 +46,7 @@ fn get_type_effect_404() {
     common::post_rom(&client, &access_token);
 
     let request = client
-        .get("/v1/type_effects/200")
+        .get("/v1/types/effects/200")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -71,7 +71,7 @@ fn post_type_effect_202() {
     common::post_rom(&client, &access_token);
 
     let request = client
-        .post("/v1/type_effects/0")
+        .post("/v1/types/effects/0")
         .body(r#"{"data":{"type":"type_effects","attributes":{"attacking_type":{"id":"0"},"defending_type":{"id":"0"},"multiplier":0.0}}}"#)
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token));
@@ -83,7 +83,7 @@ fn post_type_effect_202() {
     assert_eq!(response.body_string(), Some("{}".to_owned()));
 
     let request = client
-        .get("/v1/type_effects/0")
+        .get("/v1/types/effects/0")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -93,7 +93,7 @@ fn post_type_effect_202() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"0","type":"type_effects","attributes":{"attacking_type":{"id":"0","type":"types","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/0"}},"defending_type":{"id":"0","type":"types","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/0"}},"multiplier":0.0},"links":{"self":"http://localhost:8080/v1/type_effects/0"}},"links":{"self":"http://localhost:8080/v1/type_effects/0"}}"#
+            r#"{"data":{"id":"0","type":"type_effects","attributes":{"attacking_type":{"id":"0","type":"type_names","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/names/0"}},"defending_type":{"id":"0","type":"type_names","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/names/0"}},"multiplier":0.0},"links":{"self":"http://localhost:8080/v1/types/effects/0"}},"links":{"self":"http://localhost:8080/v1/types/effects/0"}}"#
                 .to_owned()
         )
     );
@@ -106,7 +106,7 @@ fn post_type_effect_401() {
     let client = common::setup();
 
     let request = client
-        .post("/v1/type_effects/0")
+        .post("/v1/types/effects/0")
         .body(r#"{"data":{"type":"type_effects","attributes":{"attacking_type":{"id":"0"},"defending_type":{"id":"0"},"multiplier":0.0}}}"#)
         .header(ContentType::JSON);
 
@@ -123,7 +123,7 @@ fn post_type_effect_404() {
     common::post_rom(&client, &access_token);
 
     let request = client
-        .post("/v1/type_effects/200")
+        .post("/v1/types/effects/200")
         .body(r#"{"data":{"type":"type_effects","attributes":{"attacking_type":{"id":"0"},"defending_type":{"id":"0"},"multiplier":0.0}}}"#)
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token));
