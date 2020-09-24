@@ -8,7 +8,7 @@ use crate::guards::*;
 use crate::responses::errors::*;
 use crate::utils;
 
-#[get("/map/pics/<map_id>", format = "image/png", rank = 1)]
+#[get("/maps/pics/<map_id>", format = "image/png", rank = 1)]
 pub fn get_map_pic_png<'a>(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
@@ -43,7 +43,7 @@ pub fn get_map_pic_png<'a>(
     Ok(response)
 }
 
-#[get("/map/pics/<map_id>", format = "image/jpeg", rank = 2)]
+#[get("/maps/pics/<map_id>", format = "image/jpeg", rank = 2)]
 pub fn get_map_pic_jpeg<'a>(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,

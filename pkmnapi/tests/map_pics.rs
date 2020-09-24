@@ -9,7 +9,7 @@ fn get_map_pic_png_200() {
     common::post_rom(&client, &access_token);
 
     let request = client
-        .get("/v1/map/pics/1")
+        .get("/v1/maps/pics/1")
         .header(common::auth_header(&access_token));
 
     let response = request.dispatch();
@@ -24,7 +24,7 @@ fn get_map_pic_png_200() {
 fn get_map_pic_png_401() {
     let client = common::setup();
 
-    let request = client.get("/v1/map/pics/1");
+    let request = client.get("/v1/maps/pics/1");
 
     let mut response = request.dispatch();
 
@@ -39,7 +39,7 @@ fn get_map_pic_png_404() {
     common::post_rom(&client, &access_token);
 
     let request = client
-        .get("/v1/map/pics/255")
+        .get("/v1/maps/pics/255")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -64,7 +64,7 @@ fn get_map_pic_jpeg_200() {
     common::post_rom(&client, &access_token);
 
     let request = client
-        .get("/v1/map/pics/1")
+        .get("/v1/maps/pics/1")
         .header(Accept::JPEG)
         .header(common::auth_header(&access_token));
 
@@ -80,7 +80,7 @@ fn get_map_pic_jpeg_200() {
 fn get_map_pic_jpeg_401() {
     let client = common::setup();
 
-    let request = client.get("/v1/map/pics/1").header(Accept::JPEG);
+    let request = client.get("/v1/maps/pics/1").header(Accept::JPEG);
 
     let mut response = request.dispatch();
 
@@ -95,7 +95,7 @@ fn get_map_pic_jpeg_404() {
     common::post_rom(&client, &access_token);
 
     let request = client
-        .get("/v1/map/pics/255")
+        .get("/v1/maps/pics/255")
         .header(Accept::JPEG)
         .header(common::auth_header(&access_token));
 
