@@ -1,5 +1,6 @@
 pub mod access_tokens;
 pub mod errors;
+pub mod hms;
 pub mod map_pics;
 pub mod move_names;
 pub mod pokemon_names;

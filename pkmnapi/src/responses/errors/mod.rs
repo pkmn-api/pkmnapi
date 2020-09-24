@@ -7,6 +7,8 @@ mod access_token_error_forbidden;
 mod access_token_error_invalid;
 mod access_token_error_timeout;
 mod access_token_error_unauthorized;
+mod hm_response_error;
+mod hm_response_error_invalid;
 mod map_pic_response_error;
 mod move_name_response_error;
 mod move_name_response_error_invalid;
@@ -42,6 +44,8 @@ pub use crate::responses::errors::access_token_error_forbidden::*;
 pub use crate::responses::errors::access_token_error_invalid::*;
 pub use crate::responses::errors::access_token_error_timeout::*;
 pub use crate::responses::errors::access_token_error_unauthorized::*;
+pub use crate::responses::errors::hm_response_error::*;
+pub use crate::responses::errors::hm_response_error_invalid::*;
 pub use crate::responses::errors::map_pic_response_error::*;
 pub use crate::responses::errors::move_name_response_error::*;
 pub use crate::responses::errors::move_name_response_error_invalid::*;
@@ -79,6 +83,8 @@ pub enum ResponseError {
     AccessTokenErrorInvalid(status::BadRequest<Json<AccessTokenErrorInvalid>>),
     AccessTokenErrorTimeout(status::Forbidden<Json<AccessTokenErrorTimeout>>),
     AccessTokenErrorUnauthorized(status::Unauthorized<Json<AccessTokenErrorUnauthorized>>),
+    HMResponseError(status::NotFound<Json<HMResponseError>>),
+    HMResponseErrorInvalid(status::BadRequest<Json<HMResponseErrorInvalid>>),
     MapPicResponseError(status::NotFound<Json<MapPicResponseError>>),
     MoveNameResponseError(status::NotFound<Json<MoveNameResponseError>>),
     MoveNameResponseErrorInvalid(status::BadRequest<Json<MoveNameResponseErrorInvalid>>),
@@ -133,6 +139,8 @@ pub enum BaseErrorResponseId {
     error_access_tokens_invalid,
     error_access_tokens_timeout,
     error_access_tokens_unauthorized,
+    error_hms_invalid,
+    error_hms,
     error_map_pics,
     error_move_names_invalid,
     error_move_names,

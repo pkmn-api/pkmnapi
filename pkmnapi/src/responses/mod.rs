@@ -1,5 +1,6 @@
 pub mod base;
 pub mod errors;
+pub mod hms;
 pub mod links;
 pub mod move_names;
 pub mod pokemon_names;

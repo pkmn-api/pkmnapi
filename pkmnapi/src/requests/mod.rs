@@ -1,5 +1,6 @@
 pub mod access_tokens;
 pub mod base;
+pub mod hms;
 pub mod move_names;
 pub mod pokemon_names;
 pub mod pokemon_stats;

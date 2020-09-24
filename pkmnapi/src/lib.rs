@@ -29,6 +29,8 @@ impl Pkmnapi {
                 "/v1",
                 routes![
                     routes::access_tokens::post_access_token,
+                    routes::hms::get_hm,
+                    routes::hms::post_hm,
                     routes::map_pics::get_map_pic_jpeg,
                     routes::map_pics::get_map_pic_png,
                     routes::move_names::get_move_name,
