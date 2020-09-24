@@ -56,7 +56,7 @@ fn get_trainer_name_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_trainer_names","type":"errors","attributes":{"message":"Invalid trainer ID: 100"}}}"#
+            r#"{"data":{"id":"error_trainer_names","type":"errors","attributes":{"message":"Invalid trainer ID 100: valid range is 1-47"}}}"#
                 .to_owned()
         )
     );
@@ -135,7 +135,7 @@ fn post_trainer_name_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_trainer_names","type":"errors","attributes":{"message":"Invalid trainer ID: 100"}}}"#
+            r#"{"data":{"id":"error_trainer_names","type":"errors","attributes":{"message":"Invalid trainer ID 100: valid range is 1-47"}}}"#
                 .to_owned()
         )
     );

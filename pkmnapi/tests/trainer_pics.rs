@@ -90,7 +90,7 @@ fn get_trainer_pic_png_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_trainer_pics","type":"errors","attributes":{"message":"Invalid trainer ID: 100"}}}"#
+            r#"{"data":{"id":"error_trainer_pics","type":"errors","attributes":{"message":"Invalid trainer ID 100: valid range is 1-47"}}}"#
                 .to_string()
         )
     );
@@ -227,7 +227,7 @@ fn get_trainer_pic_jpeg_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_trainer_pics","type":"errors","attributes":{"message":"Invalid trainer ID: 100"}}}"#
+            r#"{"data":{"id":"error_trainer_pics","type":"errors","attributes":{"message":"Invalid trainer ID 100: valid range is 1-47"}}}"#
                 .to_string()
         )
     );

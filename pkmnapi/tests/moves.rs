@@ -56,7 +56,7 @@ fn get_move_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_moves","type":"errors","attributes":{"message":"Invalid move ID: 200"}}}"#
+            r#"{"data":{"id":"error_moves","type":"errors","attributes":{"message":"Invalid move ID 200: valid range is 1-165"}}}"#
                 .to_owned()
         )
     );
@@ -135,7 +135,7 @@ fn post_moves_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_moves","type":"errors","attributes":{"message":"Invalid move ID: 200"}}}"#
+            r#"{"data":{"id":"error_moves","type":"errors","attributes":{"message":"Invalid move ID 200: valid range is 1-165"}}}"#
                 .to_owned()
         )
     );
