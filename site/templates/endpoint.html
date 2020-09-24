@@ -1,0 +1,35 @@
+{% extends "book/templates/page.html" %}
+
+{% block content %}
+    <h1>{{ page.title }}</h1>
+
+    {% for key, endpoint in page.extra.endpoints %}
+    {{ "### " ~ endpoint.name | markdown(inline=true) | safe }}
+    <p>{{ endpoint.description }}</p>
+    {{ "#### Request Parameters" | markdown(inline=true) | safe }}
+    <table>
+        <thead>
+            <tr>
+                <th>Location</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Required?</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request_parameter in endpoint.request_parameters %}
+            <tr>
+                <td>{{ request_parameter.0 }}</td>
+                <td>{{ "`" ~ request_parameter.1 ~ "`" | markdown(inline=true) | safe }}</td>
+                <td>{{ request_parameter.2 }}</td>
+                <td>{% if request_parameter.3 %}✔️{% endif %}</td>
+                <td>{{ request_parameter.4 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
+
+    {{ page.content | safe }}
+{% endblock content %}

@@ -1,0 +1,6 @@
+{% extends "book/templates/page.html" %}
+
+{% block title %}
+{% set section = get_section(path=page.ancestors | last) %}
+{{ config.title }} | {{ section.title }} | {{ page.title }}
+{% endblock title %}

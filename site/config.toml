@@ -1,0 +1,9 @@
+base_url = "https://pkmnapi.com"
+build_search_index = true
+compile_sass = true
+highlight_code = true
+theme = "book"
+title = "pkmnapi"
+
+[extra]
+api_domain = "https://api.pkmnapi.com"

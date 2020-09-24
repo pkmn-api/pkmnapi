@@ -1,0 +1,26 @@
+{% if body %}
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set rows = body | split(pat="\n") %}
+        {% for row in rows %}
+        <tr>
+            {% set cols = row | split(pat="|") | slice(start=1, end=-1) %}
+            {% for col in cols %}
+            <td>
+                {{ col | markdown(inline=true) | safe }}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+None
+{% endif %}

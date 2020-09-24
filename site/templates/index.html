@@ -1,0 +1,20 @@
+{% extends "book/templates/index.html" %}
+
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="{{ get_url(path="style.css") | safe }}">
+{% endblock css %}
+
+{% block js_body %}
+{{ super() }}
+<script type="text/javascript" src="{{ get_url(path="app.js") | safe }}"></script>
+{% endblock js_body %}
+
+{% block menu %}
+<li{% if current_path == "/" %} class="active"{% endif %}>
+    <a href="/">
+        Home
+    </a>
+</li>
+{{ super() }}
+{% endblock menu %}
