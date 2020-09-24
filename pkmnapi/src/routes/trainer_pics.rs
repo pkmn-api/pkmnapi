@@ -11,7 +11,7 @@ use crate::guards::*;
 use crate::responses::errors::*;
 use crate::utils;
 
-#[get("/trainer/pics/<trainer_id>?<mirror>", format = "image/png", rank = 1)]
+#[get("/trainers/pics/<trainer_id>?<mirror>", format = "image/png", rank = 1)]
 pub fn get_trainer_pic_png<'a>(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
@@ -52,7 +52,11 @@ pub fn get_trainer_pic_png<'a>(
     Ok(response)
 }
 
-#[get("/trainer/pics/<trainer_id>?<mirror>", format = "image/jpeg", rank = 2)]
+#[get(
+    "/trainers/pics/<trainer_id>?<mirror>",
+    format = "image/jpeg",
+    rank = 2
+)]
 pub fn get_trainer_pic_jpeg<'a>(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
@@ -94,7 +98,7 @@ pub fn get_trainer_pic_jpeg<'a>(
 }
 
 #[post(
-    "/trainer/pics/<trainer_id>?<method>&<primary>",
+    "/trainers/pics/<trainer_id>?<method>&<primary>",
     format = "image/png",
     data = "<data>",
     rank = 1
@@ -154,7 +158,7 @@ pub fn post_trainer_pic_png<'a>(
 }
 
 #[post(
-    "/trainer/pics/<trainer_id>?<method>&<primary>",
+    "/trainers/pics/<trainer_id>?<method>&<primary>",
     format = "image/jpeg",
     data = "<data>",
     rank = 1

@@ -11,7 +11,7 @@ use crate::responses::errors::*;
 use crate::responses::trainer_parties::*;
 use crate::utils;
 
-#[get("/trainer/parties/<trainer_id>")]
+#[get("/trainers/parties/<trainer_id>")]
 pub fn get_trainer_parties(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
@@ -62,7 +62,7 @@ pub fn get_trainer_parties(
 }
 
 #[post(
-    "/trainer/parties/<trainer_id>",
+    "/trainers/parties/<trainer_id>",
     format = "application/json",
     data = "<data>"
 )]

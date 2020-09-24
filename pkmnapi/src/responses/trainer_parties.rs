@@ -41,11 +41,11 @@ impl TrainerPartiesResponse {
                         .collect(),
                 },
                 links: Links {
-                    _self: utils::generate_url("trainer/parties", Some(&trainer_id.to_string())),
+                    _self: utils::generate_url("trainers/parties", Some(&trainer_id.to_string())),
                 },
             },
             links: Links {
-                _self: utils::generate_url("trainer/parties", Some(&trainer_id.to_string())),
+                _self: utils::generate_url("trainers/parties", Some(&trainer_id.to_string())),
             },
         }
     }

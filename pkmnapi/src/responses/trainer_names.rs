@@ -18,11 +18,11 @@ impl TrainerNameResponse {
                     name: trainer_name.name.to_string(),
                 },
                 links: Links {
-                    _self: utils::generate_url("trainer/names", Some(&trainer_id.to_string())),
+                    _self: utils::generate_url("trainers/names", Some(&trainer_id.to_string())),
                 },
             },
             links: Links {
-                _self: utils::generate_url("trainer/names", Some(&trainer_id.to_string())),
+                _self: utils::generate_url("trainers/names", Some(&trainer_id.to_string())),
             },
         }
     }
