@@ -13,6 +13,7 @@ table! {
         user_id -> Text,
         data -> Binary,
         description -> Nullable<Text>,
+        etag -> Text,
     }
 }
 
@@ -21,6 +22,7 @@ table! {
         id -> Text,
         date_create -> Text,
         name -> Text,
+        etag -> Text,
         rom_data_id -> Text,
     }
 }
@@ -32,6 +34,7 @@ table! {
         user_id -> Text,
         data -> Binary,
         description -> Nullable<Text>,
+        etag -> Text,
     }
 }
 
@@ -40,6 +43,7 @@ table! {
         id -> Text,
         date_create -> Text,
         data -> Binary,
+        etag -> Text,
     }
 }
 

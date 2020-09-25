@@ -56,6 +56,7 @@ pub struct Rom {
     pub id: String,
     pub date_create: String,
     pub name: String,
+    pub etag: String,
     pub rom_data_id: String,
 }
 
@@ -66,6 +67,7 @@ pub struct NewRom {
     pub id: String,
     pub date_create: String,
     pub name: String,
+    pub etag: String,
     pub rom_data_id: String,
 }
 
@@ -82,16 +84,27 @@ impl NewRom {
     /// assert_eq!(new_rom.id.len(), 32);
     /// assert_eq!(new_rom.date_create.len(), 20);
     /// assert_eq!(new_rom.name, String::from("foo"));
+    /// assert_eq!(new_rom.etag.len(), 36);
     /// assert_eq!(new_rom.rom_data_id, String::from("bar"));
     /// ```
     pub fn new(name: &String, rom_data_id: &String) -> Self {
         let id = utils::random_id(32);
         let date_create = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
+        let etag = utils::etag(
+            &[
+                id.as_bytes(),
+                date_create.as_bytes(),
+                name.as_bytes(),
+                rom_data_id.as_bytes(),
+            ]
+            .concat(),
+        );
 
         NewRom {
             id,
             date_create,
             name: name.to_string(),
+            etag,
             rom_data_id: rom_data_id.to_string(),
         }
     }
@@ -183,6 +196,7 @@ pub struct RomPatch {
     pub date_create: String,
     pub data: Vec<u8>,
     pub description: Option<String>,
+    pub etag: String,
 }
 
 /// Insertable struct of data into `rom_patches`
@@ -194,6 +208,7 @@ pub struct NewRomPatch {
     pub user_id: String,
     pub data: Vec<u8>,
     pub description: Option<String>,
+    pub etag: String,
 }
 
 impl NewRomPatch {
@@ -211,10 +226,24 @@ impl NewRomPatch {
     /// assert_eq!(new_patch.user_id, String::from("foo"));
     /// assert_eq!(new_patch.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(new_patch.description, None);
+    /// assert_eq!(new_patch.etag.len(), 36);
     /// ```
     pub fn new(user_id: &String, data: &Vec<u8>, description: Option<String>) -> Self {
         let id = utils::random_id(32);
         let date_create = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
+        let etag = utils::etag(
+            &[
+                id.as_bytes(),
+                date_create.as_bytes(),
+                user_id.as_bytes(),
+                data,
+                description
+                    .to_owned()
+                    .unwrap_or(String::from(""))
+                    .as_bytes(),
+            ]
+            .concat(),
+        );
 
         NewRomPatch {
             id,
@@ -222,6 +251,7 @@ impl NewRomPatch {
             user_id: user_id.to_string(),
             data: data.to_vec(),
             description,
+            etag,
         }
     }
 }
@@ -232,6 +262,7 @@ pub struct Sav {
     pub id: String,
     pub date_create: String,
     pub data: Vec<u8>,
+    pub etag: String,
 }
 
 /// Insertable struct of data into `savs`
@@ -241,6 +272,7 @@ pub struct NewSav {
     pub id: String,
     pub date_create: String,
     pub data: Vec<u8>,
+    pub etag: String,
 }
 
 impl NewSav {
@@ -256,15 +288,18 @@ impl NewSav {
     /// assert_eq!(new_sav.id.len(), 32);
     /// assert_eq!(new_sav.date_create.len(), 20);
     /// assert_eq!(new_sav.data, vec![0x01, 0x02, 0x03, 0x04]);
+    /// assert_eq!(new_sav.etag.len(), 36);
     /// ```
     pub fn new(data: &Vec<u8>) -> Self {
         let id = utils::random_id(32);
         let date_create = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
+        let etag = utils::etag(&[id.as_bytes(), date_create.as_bytes(), data].concat());
 
         NewSav {
             id,
             date_create,
             data: data.to_vec(),
+            etag,
         }
     }
 }
@@ -276,6 +311,7 @@ pub struct SavPatch {
     pub date_create: String,
     pub data: Vec<u8>,
     pub description: Option<String>,
+    pub etag: String,
 }
 
 /// Insertable struct of data into `sav_patches`
@@ -287,6 +323,7 @@ pub struct NewSavPatch {
     pub user_id: String,
     pub data: Vec<u8>,
     pub description: Option<String>,
+    pub etag: String,
 }
 
 impl NewSavPatch {
@@ -304,10 +341,24 @@ impl NewSavPatch {
     /// assert_eq!(new_patch.user_id, String::from("foo"));
     /// assert_eq!(new_patch.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(new_patch.description, None);
+    /// assert_eq!(new_patch.etag.len(), 36);
     /// ```
     pub fn new(user_id: &String, data: &Vec<u8>, description: Option<String>) -> Self {
         let id = utils::random_id(32);
         let date_create = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
+        let etag = utils::etag(
+            &[
+                id.as_bytes(),
+                date_create.as_bytes(),
+                user_id.as_bytes(),
+                data,
+                description
+                    .to_owned()
+                    .unwrap_or(String::from(""))
+                    .as_bytes(),
+            ]
+            .concat(),
+        );
 
         NewSavPatch {
             id,
@@ -315,6 +366,7 @@ impl NewSavPatch {
             user_id: user_id.to_string(),
             data: data.to_vec(),
             description,
+            etag,
         }
     }
 }

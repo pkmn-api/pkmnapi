@@ -80,3 +80,20 @@ pub fn hmac(value: &String) -> String {
 pub fn hash(value: &Vec<u8>) -> String {
     format!("{:02x}", md5::compute(value))
 }
+
+/// Generate eTag
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi_sql::utils;
+///
+/// let etag = utils::etag(&"bar".to_owned().into_bytes());
+///
+/// assert_eq!(etag, "w/\"37b51d194a7513e45b56f6524f2d51f2\"");
+/// ```
+pub fn etag(body: &Vec<u8>) -> String {
+    let content = hash(body);
+
+    format!("w/\"{}\"", content)
+}

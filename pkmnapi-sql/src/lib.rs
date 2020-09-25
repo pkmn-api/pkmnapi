@@ -12,6 +12,7 @@
 extern crate diesel;
 extern crate dotenv;
 
+pub mod error;
 pub mod models;
 pub mod schema;
 pub mod utils;
@@ -70,10 +71,10 @@ impl PkmnapiSQL {
         PkmnapiSQL { connection }
     }
 
-    pub fn get_connection(&self) -> Result<SqlitePooledConnection, diesel::result::Error> {
+    pub fn get_connection(&self) -> Result<SqlitePooledConnection, error::Error> {
         match self.connection.get() {
             Ok(connection) => Ok(connection),
-            Err(_) => Err(diesel::result::Error::NotFound),
+            Err(_) => return Err(diesel::result::Error::NotFound.into()),
         }
     }
 
@@ -105,7 +106,7 @@ impl PkmnapiSQL {
         &self,
         connection: &SqlitePooledConnection,
         id: &String,
-    ) -> Result<Option<RomData>, diesel::result::Error> {
+    ) -> Result<Option<RomData>, error::Error> {
         use crate::schema::rom_data;
 
         match rom_data::table
@@ -114,7 +115,7 @@ impl PkmnapiSQL {
         {
             Ok(rom_data) => Ok(Some(rom_data)),
             Err(diesel::result::Error::NotFound) => Ok(None),
-            Err(e) => Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -151,7 +152,7 @@ impl PkmnapiSQL {
         connection: &SqlitePooledConnection,
         name: &String,
         data: &Vec<u8>,
-    ) -> Result<RomData, diesel::result::Error> {
+    ) -> Result<RomData, error::Error> {
         use crate::schema::rom_data;
 
         let new_rom_data = NewRomData::new(&name, &data);
@@ -162,10 +163,10 @@ impl PkmnapiSQL {
         {
             Ok(_) => match self.select_rom_data_by_id(connection, &new_rom_data.id) {
                 Ok(Some(rom_data)) => Ok(rom_data),
-                Ok(None) => Err(diesel::result::Error::NotFound),
-                Err(e) => return Err(e),
+                Ok(None) => return Err(diesel::result::Error::NotFound.into()),
+                Err(e) => return Err(e.into()),
             },
-            Err(e) => return Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -191,6 +192,7 @@ impl PkmnapiSQL {
     /// assert_eq!(rom.id.len(), 32);
     /// assert_eq!(rom.date_create.len(), 20);
     /// assert_eq!(rom.name, String::from("foo"));
+    /// assert_eq!(rom.etag.len(), 36);
     /// assert_eq!(rom.rom_data_id.len(), 32);
     /// # fs::remove_file("test.db");
     /// ```
@@ -198,19 +200,25 @@ impl PkmnapiSQL {
         &self,
         connection: &SqlitePooledConnection,
         id: &String,
-    ) -> Result<Option<Rom>, diesel::result::Error> {
+    ) -> Result<Option<Rom>, error::Error> {
         use crate::schema::rom_data;
         use crate::schema::roms;
 
         match roms::table
             .filter(roms::id.eq(id))
             .inner_join(rom_data::table)
-            .select((roms::id, roms::date_create, roms::name, rom_data::id))
+            .select((
+                roms::id,
+                roms::date_create,
+                roms::name,
+                roms::etag,
+                rom_data::id,
+            ))
             .first::<Rom>(connection)
         {
             Ok(rom) => Ok(Some(rom)),
             Err(diesel::result::Error::NotFound) => Ok(None),
-            Err(e) => Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -239,6 +247,7 @@ impl PkmnapiSQL {
     ///
     /// assert_eq!(new_rom.id.len(), 32);
     /// assert_eq!(new_rom.name, String::from("foo"));
+    /// assert_eq!(new_rom.etag.len(), 36);
     /// assert_eq!(new_rom.rom_data_id.len(), 32);
     /// # fs::remove_file("test.db");
     /// ```
@@ -247,10 +256,10 @@ impl PkmnapiSQL {
         connection: &SqlitePooledConnection,
         name: &String,
         data: &Vec<u8>,
-    ) -> Result<Rom, diesel::result::Error> {
+    ) -> Result<Rom, error::Error> {
         use crate::schema::roms;
 
-        match connection.transaction::<_, diesel::result::Error, _>(|| {
+        match connection.transaction::<_, error::Error, _>(|| {
             let new_rom_data = self.insert_rom_data(connection, &name, &data)?;
             let new_rom = NewRom::new(&name, &new_rom_data.id);
 
@@ -259,15 +268,15 @@ impl PkmnapiSQL {
                 .execute(connection)
             {
                 Ok(_) => Ok(new_rom.id),
-                Err(e) => return Err(e),
+                Err(e) => return Err(e.into()),
             }
         }) {
             Ok(new_rom_id) => match self.select_rom_by_id(connection, &new_rom_id) {
                 Ok(Some(rom)) => Ok(rom),
-                Ok(None) => Err(diesel::result::Error::NotFound),
-                Err(e) => return Err(e),
+                Ok(None) => return Err(diesel::result::Error::NotFound.into()),
+                Err(e) => return Err(e.into()),
             },
-            Err(e) => return Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -295,12 +304,12 @@ impl PkmnapiSQL {
         &self,
         connection: &SqlitePooledConnection,
         id: &String,
-    ) -> Result<(), diesel::result::Error> {
+    ) -> Result<(), error::Error> {
         use crate::schema::roms;
 
         match diesel::delete(roms::table.filter(roms::id.eq(id))).execute(connection) {
             Ok(_) => Ok(()),
-            Err(e) => Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -338,7 +347,7 @@ impl PkmnapiSQL {
         &self,
         connection: &SqlitePooledConnection,
         id: &String,
-    ) -> Result<Option<User>, diesel::result::Error> {
+    ) -> Result<Option<User>, error::Error> {
         use crate::schema::users;
 
         match users::table
@@ -355,7 +364,7 @@ impl PkmnapiSQL {
         {
             Ok(user) => Ok(Some(user)),
             Err(diesel::result::Error::NotFound) => Ok(None),
-            Err(e) => Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -393,7 +402,7 @@ impl PkmnapiSQL {
         &self,
         connection: &SqlitePooledConnection,
         access_token: &String,
-    ) -> Result<Option<User>, diesel::result::Error> {
+    ) -> Result<Option<User>, error::Error> {
         use crate::schema::users;
 
         let access_token_hash = utils::hmac(&access_token);
@@ -412,7 +421,7 @@ impl PkmnapiSQL {
         {
             Ok(user) => Ok(Some(user)),
             Err(diesel::result::Error::NotFound) => Ok(None),
-            Err(e) => Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -452,7 +461,7 @@ impl PkmnapiSQL {
         &self,
         connection: &SqlitePooledConnection,
         id: &String,
-    ) -> Result<(User, String), diesel::result::Error> {
+    ) -> Result<(User, String), error::Error> {
         use crate::schema::users;
 
         let (new_user, access_token) = NewUser::new(&id);
@@ -463,8 +472,8 @@ impl PkmnapiSQL {
         {
             Ok(_) => match self.select_user_by_access_token(connection, &access_token) {
                 Ok(Some(new_user)) => Ok((new_user, access_token)),
-                Ok(None) => return Err(diesel::result::Error::NotFound),
-                Err(e) => return Err(e),
+                Ok(None) => return Err(diesel::result::Error::NotFound.into()),
+                Err(e) => return Err(e.into()),
             },
             Err(DatabaseError(DatabaseErrorKind::UniqueViolation, _)) => {
                 let (updated_user, access_token) = NewUser::new(&id);
@@ -480,11 +489,11 @@ impl PkmnapiSQL {
 
                 match self.select_user_by_access_token(&connection, &access_token) {
                     Ok(Some(new_user)) => Ok((new_user, access_token)),
-                    Ok(None) => return Err(diesel::result::Error::NotFound),
-                    Err(e) => return Err(e),
+                    Ok(None) => return Err(diesel::result::Error::NotFound.into()),
+                    Err(e) => return Err(e.into()),
                 }
             }
-            Err(e) => return Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -514,6 +523,7 @@ impl PkmnapiSQL {
     /// assert_eq!(rom.id.len(), 32);
     /// assert_eq!(rom.date_create.len(), 20);
     /// assert_eq!(rom.name, String::from("foo"));
+    /// assert_eq!(rom.etag.len(), 36);
     /// assert_eq!(rom.rom_data_id.len(), 32);
     /// # fs::remove_file("test.db");
     /// ```
@@ -521,7 +531,7 @@ impl PkmnapiSQL {
         &self,
         connection: &SqlitePooledConnection,
         access_token: &String,
-    ) -> Result<Option<Rom>, diesel::result::Error> {
+    ) -> Result<Option<Rom>, error::Error> {
         use crate::schema::roms;
         use crate::schema::users;
 
@@ -530,12 +540,18 @@ impl PkmnapiSQL {
         match users::table
             .filter(users::access_token_hash.eq(access_token_hash))
             .inner_join(roms::table)
-            .select((roms::id, roms::date_create, roms::name, roms::rom_data_id))
+            .select((
+                roms::id,
+                roms::date_create,
+                roms::name,
+                roms::etag,
+                roms::rom_data_id,
+            ))
             .first::<Rom>(connection)
         {
             Ok(rom) => Ok(Some(rom)),
             Err(diesel::result::Error::NotFound) => Ok(None),
-            Err(e) => Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -570,6 +586,7 @@ impl PkmnapiSQL {
     ///
     /// assert_eq!(rom.id.len(), 32);
     /// assert_eq!(rom.name, String::from("foo"));
+    /// assert_eq!(rom.etag.len(), 36);
     /// assert_eq!(rom.rom_data_id.len(), 32);
     /// # fs::remove_file("test.db");
     /// ```
@@ -579,15 +596,18 @@ impl PkmnapiSQL {
         access_token: &String,
         name: &String,
         data: &Vec<u8>,
-    ) -> Result<Rom, diesel::result::Error> {
+    ) -> Result<Rom, error::Error> {
         use crate::schema::users;
 
-        connection.transaction::<_, diesel::result::Error, _>(|| {
-            let new_rom = self.insert_rom(connection, &name, &data)?;
+        match connection.transaction::<_, diesel::result::Error, _>(|| {
+            let new_rom = match self.insert_rom(connection, &name, &data) {
+                Ok(new_rom) => new_rom,
+                Err(e) => return Err(e.into_inner()),
+            };
             let user = match self.select_user_by_access_token(connection, &access_token) {
                 Ok(Some(user)) => user,
                 Ok(None) => return Err(diesel::result::Error::NotFound),
-                Err(e) => return Err(e),
+                Err(e) => return Err(e.into_inner()),
             };
 
             let rom_id = match user.rom_id {
@@ -603,10 +623,13 @@ impl PkmnapiSQL {
 
             match self.select_rom_by_id(connection, &rom_id) {
                 Ok(Some(rom)) => Ok(rom),
-                Ok(None) => Err(diesel::result::Error::NotFound),
-                Err(e) => return Err(e),
+                Ok(None) => return Err(diesel::result::Error::NotFound),
+                Err(e) => return Err(e.into_inner()),
             }
-        })
+        }) {
+            Ok(rom) => Ok(rom),
+            Err(e) => return Err(e.into()),
+        }
     }
 
     /// Update row in `roms`
@@ -629,23 +652,29 @@ impl PkmnapiSQL {
     ///
     /// let connection = sql.get_connection().unwrap();
     /// # let (new_user, access_token) = sql.insert_user(&connection, &String::from("foo@bar.com")).unwrap();
-    /// # sql.update_user_rom_by_access_token(&connection, &access_token, &String::from("foo"), &vec![0x01, 0x02, 0x03, 0x04]).unwrap();
-    /// sql.delete_user_rom_by_access_token(&connection, &access_token);
+    /// # let rom = sql.update_user_rom_by_access_token(&connection, &access_token, &String::from("foo"), &vec![0x01, 0x02, 0x03, 0x04]).unwrap();
+    /// # let etag = rom.etag;
+    /// sql.delete_user_rom_by_access_token(&connection, &access_token, &etag);
     /// # fs::remove_file("test.db");
     /// ```
     pub fn delete_user_rom_by_access_token(
         &self,
         connection: &SqlitePooledConnection,
         access_token: &String,
-    ) -> Result<(), diesel::result::Error> {
+        etag: &String,
+    ) -> Result<(), error::Error> {
         use crate::schema::users;
 
-        connection.transaction::<_, diesel::result::Error, _>(|| {
+        connection.transaction::<_, error::Error, _>(|| {
             let rom = match self.select_user_rom_by_access_token(connection, &access_token) {
                 Ok(Some(rom)) => rom,
-                Ok(None) => return Err(diesel::result::Error::NotFound),
-                Err(e) => return Err(e),
+                Ok(None) => return Err(diesel::result::Error::NotFound.into()),
+                Err(e) => return Err(e.into()),
             };
+
+            if rom.etag != etag.to_owned() {
+                return Err(error::Error::ETagError);
+            }
 
             let access_token_hash = utils::hmac(&access_token);
             let rom_id: Option<String> = None;
@@ -690,7 +719,7 @@ impl PkmnapiSQL {
         &self,
         connection: &SqlitePooledConnection,
         access_token: &String,
-    ) -> Result<Option<RomData>, diesel::result::Error> {
+    ) -> Result<Option<RomData>, error::Error> {
         use crate::schema::rom_data;
         use crate::schema::roms;
         use crate::schema::users;
@@ -705,7 +734,7 @@ impl PkmnapiSQL {
         {
             Ok(rom_data) => Ok(Some(rom_data)),
             Err(diesel::result::Error::NotFound) => Ok(None),
-            Err(e) => Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -733,6 +762,7 @@ impl PkmnapiSQL {
     /// assert_eq!(patch.date_create.len(), 20);
     /// assert_eq!(patch.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(patch.description, None);
+    /// assert_eq!(patch.etag.len(), 36);
     /// # fs::remove_file("test.db");
     /// ```
     pub fn select_rom_patch_by_id(
@@ -740,7 +770,7 @@ impl PkmnapiSQL {
         connection: &SqlitePooledConnection,
         access_token: &String,
         id: &String,
-    ) -> Result<Option<RomPatch>, diesel::result::Error> {
+    ) -> Result<Option<RomPatch>, error::Error> {
         use crate::schema::rom_patches;
         use crate::schema::users;
 
@@ -755,12 +785,13 @@ impl PkmnapiSQL {
                 rom_patches::date_create,
                 rom_patches::data,
                 rom_patches::description,
+                rom_patches::etag,
             ))
             .first::<RomPatch>(connection)
         {
             Ok(patch) => Ok(Some(patch)),
             Err(diesel::result::Error::NotFound) => Ok(None),
-            Err(e) => Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -788,19 +819,20 @@ impl PkmnapiSQL {
     /// assert_eq!(patch.date_create.len(), 20);
     /// assert_eq!(patch.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(patch.description, None);
+    /// assert_eq!(patch.etag.len(), 36);
     /// # fs::remove_file("test.db");
     /// ```
     pub fn select_rom_patches_by_access_token(
         &self,
         connection: &SqlitePooledConnection,
         access_token: &String,
-    ) -> Result<Vec<RomPatch>, diesel::result::Error> {
+    ) -> Result<Vec<RomPatch>, error::Error> {
         use crate::schema::rom_patches;
         use crate::schema::users;
 
         let access_token_hash = utils::hmac(&access_token);
 
-        users::table
+        match users::table
             .filter(users::access_token_hash.eq(access_token_hash))
             .inner_join(rom_patches::table)
             .select((
@@ -808,8 +840,13 @@ impl PkmnapiSQL {
                 rom_patches::date_create,
                 rom_patches::data,
                 rom_patches::description,
+                rom_patches::etag,
             ))
             .get_results::<RomPatch>(connection)
+        {
+            Ok(rom_patches) => Ok(rom_patches),
+            Err(e) => return Err(e.into()),
+        }
     }
 
     /// Insert new row into `rom_patches`
@@ -847,13 +884,13 @@ impl PkmnapiSQL {
         access_token: &String,
         data: &Vec<u8>,
         description: Option<String>,
-    ) -> Result<RomPatch, diesel::result::Error> {
+    ) -> Result<RomPatch, error::Error> {
         use crate::schema::rom_patches;
 
         let user = match self.select_user_by_access_token(&connection, &access_token) {
             Ok(Some(user)) => user,
-            Ok(None) => return Err(diesel::result::Error::NotFound),
-            Err(e) => return Err(e),
+            Ok(None) => return Err(diesel::result::Error::NotFound.into()),
+            Err(e) => return Err(e.into()),
         };
 
         let new_rom_patch = NewRomPatch::new(&user.id, &data, description);
@@ -865,11 +902,11 @@ impl PkmnapiSQL {
             Ok(_) => {
                 match self.select_rom_patch_by_id(connection, &access_token, &new_rom_patch.id) {
                     Ok(Some(patch)) => Ok(patch),
-                    Ok(None) => Err(diesel::result::Error::NotFound),
-                    Err(e) => return Err(e),
+                    Ok(None) => return Err(diesel::result::Error::NotFound.into()),
+                    Err(e) => return Err(e.into()),
                 }
             }
-            Err(e) => return Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -891,7 +928,8 @@ impl PkmnapiSQL {
     /// # let (new_user, access_token) = sql.insert_user(&connection, &String::from("foo@bar.com")).unwrap();
     /// # let new_rom_patch = sql.insert_rom_patch(&connection, &access_token, &vec![0x01, 0x02, 0x03, 0x04], None).unwrap();
     /// # let id = new_rom_patch.id;
-    /// sql.delete_rom_patch_by_id(&connection, &access_token, &id).unwrap();
+    /// # let etag = new_rom_patch.etag;
+    /// sql.delete_rom_patch_by_id(&connection, &access_token, &id, &etag).unwrap();
     /// # fs::remove_file("test.db");
     /// ```
     pub fn delete_rom_patch_by_id(
@@ -899,15 +937,26 @@ impl PkmnapiSQL {
         connection: &SqlitePooledConnection,
         access_token: &String,
         id: &String,
-    ) -> Result<(), diesel::result::Error> {
+        etag: &String,
+    ) -> Result<(), error::Error> {
         use crate::schema::rom_patches;
 
-        connection.transaction::<_, diesel::result::Error, _>(|| {
+        connection.transaction::<_, error::Error, _>(|| {
             let user = match self.select_user_by_access_token(connection, &access_token) {
                 Ok(Some(user)) => user,
-                Ok(None) => return Err(diesel::result::Error::NotFound),
-                Err(e) => return Err(e),
+                Ok(None) => return Err(diesel::result::Error::NotFound.into()),
+                Err(e) => return Err(e.into()),
             };
+
+            let patch = match self.select_rom_patch_by_id(connection, &access_token, id) {
+                Ok(Some(patch)) => patch,
+                Ok(None) => return Err(diesel::result::Error::NotFound.into()),
+                Err(e) => return Err(e.into()),
+            };
+
+            if patch.etag != etag.to_owned() {
+                return Err(error::Error::ETagError);
+            }
 
             match diesel::delete(
                 rom_patches::table
@@ -917,7 +966,7 @@ impl PkmnapiSQL {
             .execute(connection)
             {
                 Ok(_) => Ok(()),
-                Err(e) => Err(e),
+                Err(e) => return Err(e.into()),
             }
         })
     }
@@ -944,23 +993,24 @@ impl PkmnapiSQL {
     /// assert_eq!(sav.id.len(), 32);
     /// assert_eq!(sav.date_create.len(), 20);
     /// assert_eq!(sav.data, vec![0x01, 0x02, 0x03, 0x04]);
+    /// assert_eq!(sav.etag.len(), 36);
     /// # fs::remove_file("test.db");
     /// ```
     pub fn select_sav_by_id(
         &self,
         connection: &SqlitePooledConnection,
         id: &String,
-    ) -> Result<Option<Sav>, diesel::result::Error> {
+    ) -> Result<Option<Sav>, error::Error> {
         use crate::schema::savs;
 
         match savs::table
             .filter(savs::id.eq(id))
-            .select((savs::id, savs::date_create, savs::data))
+            .select((savs::id, savs::date_create, savs::data, savs::etag))
             .first::<Sav>(connection)
         {
             Ok(sav) => Ok(Some(sav)),
             Err(diesel::result::Error::NotFound) => Ok(None),
-            Err(e) => Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -986,16 +1036,17 @@ impl PkmnapiSQL {
     /// assert_eq!(new_sav.id.len(), 32);
     /// assert_eq!(new_sav.date_create.len(), 20);
     /// assert_eq!(new_sav.data, vec![0x01, 0x02, 0x03, 0x04]);
+    /// assert_eq!(new_sav.etag.len(), 36);
     /// # fs::remove_file("test.db");
     /// ```
     pub fn insert_sav(
         &self,
         connection: &SqlitePooledConnection,
         data: &Vec<u8>,
-    ) -> Result<Sav, diesel::result::Error> {
+    ) -> Result<Sav, error::Error> {
         use crate::schema::savs;
 
-        match connection.transaction::<_, diesel::result::Error, _>(|| {
+        match connection.transaction::<_, error::Error, _>(|| {
             let new_sav = NewSav::new(data);
 
             match diesel::insert_into(savs::table)
@@ -1003,15 +1054,15 @@ impl PkmnapiSQL {
                 .execute(connection)
             {
                 Ok(_) => Ok(new_sav.id),
-                Err(e) => return Err(e),
+                Err(e) => return Err(e.into()),
             }
         }) {
             Ok(new_sav_id) => match self.select_sav_by_id(connection, &new_sav_id) {
                 Ok(Some(sav)) => Ok(sav),
-                Ok(None) => Err(diesel::result::Error::NotFound),
-                Err(e) => return Err(e),
+                Ok(None) => return Err(diesel::result::Error::NotFound.into()),
+                Err(e) => return Err(e.into()),
             },
-            Err(e) => return Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -1039,12 +1090,12 @@ impl PkmnapiSQL {
         &self,
         connection: &SqlitePooledConnection,
         id: &String,
-    ) -> Result<(), diesel::result::Error> {
+    ) -> Result<(), error::Error> {
         use crate::schema::savs;
 
         match diesel::delete(savs::table.filter(savs::id.eq(id))).execute(connection) {
             Ok(_) => Ok(()),
-            Err(e) => Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -1072,6 +1123,7 @@ impl PkmnapiSQL {
     /// assert_eq!(patch.date_create.len(), 20);
     /// assert_eq!(patch.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(patch.description, None);
+    /// assert_eq!(patch.etag.len(), 36);
     /// # fs::remove_file("test.db");
     /// ```
     pub fn select_sav_patch_by_id(
@@ -1079,7 +1131,7 @@ impl PkmnapiSQL {
         connection: &SqlitePooledConnection,
         access_token: &String,
         id: &String,
-    ) -> Result<Option<SavPatch>, diesel::result::Error> {
+    ) -> Result<Option<SavPatch>, error::Error> {
         use crate::schema::sav_patches;
         use crate::schema::users;
 
@@ -1094,12 +1146,13 @@ impl PkmnapiSQL {
                 sav_patches::date_create,
                 sav_patches::data,
                 sav_patches::description,
+                sav_patches::etag,
             ))
             .first::<SavPatch>(connection)
         {
             Ok(patch) => Ok(Some(patch)),
             Err(diesel::result::Error::NotFound) => Ok(None),
-            Err(e) => Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -1127,19 +1180,20 @@ impl PkmnapiSQL {
     /// assert_eq!(patch.date_create.len(), 20);
     /// assert_eq!(patch.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(patch.description, None);
+    /// assert_eq!(patch.etag.len(), 36);
     /// # fs::remove_file("test.db");
     /// ```
     pub fn select_sav_patches_by_access_token(
         &self,
         connection: &SqlitePooledConnection,
         access_token: &String,
-    ) -> Result<Vec<SavPatch>, diesel::result::Error> {
+    ) -> Result<Vec<SavPatch>, error::Error> {
         use crate::schema::sav_patches;
         use crate::schema::users;
 
         let access_token_hash = utils::hmac(&access_token);
 
-        users::table
+        match users::table
             .filter(users::access_token_hash.eq(access_token_hash))
             .inner_join(sav_patches::table)
             .select((
@@ -1147,8 +1201,13 @@ impl PkmnapiSQL {
                 sav_patches::date_create,
                 sav_patches::data,
                 sav_patches::description,
+                sav_patches::etag,
             ))
             .get_results::<SavPatch>(connection)
+        {
+            Ok(sav_patches) => Ok(sav_patches),
+            Err(e) => return Err(e.into()),
+        }
     }
 
     /// Insert new row into `sav_patches`
@@ -1186,13 +1245,13 @@ impl PkmnapiSQL {
         access_token: &String,
         data: &Vec<u8>,
         description: Option<String>,
-    ) -> Result<SavPatch, diesel::result::Error> {
+    ) -> Result<SavPatch, error::Error> {
         use crate::schema::sav_patches;
 
         let user = match self.select_user_by_access_token(&connection, &access_token) {
             Ok(Some(user)) => user,
-            Ok(None) => return Err(diesel::result::Error::NotFound),
-            Err(e) => return Err(e),
+            Ok(None) => return Err(diesel::result::Error::NotFound.into()),
+            Err(e) => return Err(e.into()),
         };
 
         let new_sav_patch = NewSavPatch::new(&user.id, &data, description);
@@ -1204,11 +1263,11 @@ impl PkmnapiSQL {
             Ok(_) => {
                 match self.select_sav_patch_by_id(connection, &access_token, &new_sav_patch.id) {
                     Ok(Some(patch)) => Ok(patch),
-                    Ok(None) => Err(diesel::result::Error::NotFound),
-                    Err(e) => return Err(e),
+                    Ok(None) => return Err(diesel::result::Error::NotFound.into()),
+                    Err(e) => return Err(e.into()),
                 }
             }
-            Err(e) => return Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -1230,7 +1289,8 @@ impl PkmnapiSQL {
     /// # let (new_user, access_token) = sql.insert_user(&connection, &String::from("foo@bar.com")).unwrap();
     /// # let new_sav_patch = sql.insert_sav_patch(&connection, &access_token, &vec![0x01, 0x02, 0x03, 0x04], None).unwrap();
     /// # let id = new_sav_patch.id;
-    /// sql.delete_sav_patch_by_id(&connection, &access_token, &id).unwrap();
+    /// # let etag = new_sav_patch.etag;
+    /// sql.delete_sav_patch_by_id(&connection, &access_token, &id, &etag).unwrap();
     /// # fs::remove_file("test.db");
     /// ```
     pub fn delete_sav_patch_by_id(
@@ -1238,15 +1298,26 @@ impl PkmnapiSQL {
         connection: &SqlitePooledConnection,
         access_token: &String,
         id: &String,
-    ) -> Result<(), diesel::result::Error> {
+        etag: &String,
+    ) -> Result<(), error::Error> {
         use crate::schema::sav_patches;
 
-        connection.transaction::<_, diesel::result::Error, _>(|| {
+        connection.transaction::<_, error::Error, _>(|| {
             let user = match self.select_user_by_access_token(connection, &access_token) {
                 Ok(Some(user)) => user,
-                Ok(None) => return Err(diesel::result::Error::NotFound),
-                Err(e) => return Err(e),
+                Ok(None) => return Err(diesel::result::Error::NotFound.into()),
+                Err(e) => return Err(e.into()),
             };
+
+            let patch = match self.select_sav_patch_by_id(connection, &access_token, id) {
+                Ok(Some(patch)) => patch,
+                Ok(None) => return Err(diesel::result::Error::NotFound.into()),
+                Err(e) => return Err(e.into()),
+            };
+
+            if patch.etag != etag.to_owned() {
+                return Err(error::Error::ETagError);
+            }
 
             match diesel::delete(
                 sav_patches::table
@@ -1256,7 +1327,7 @@ impl PkmnapiSQL {
             .execute(connection)
             {
                 Ok(_) => Ok(()),
-                Err(e) => Err(e),
+                Err(e) => return Err(e.into()),
             }
         })
     }
@@ -1287,13 +1358,14 @@ impl PkmnapiSQL {
     /// assert_eq!(sav.id.len(), 32);
     /// assert_eq!(sav.date_create.len(), 20);
     /// assert_eq!(sav.data, vec![0x01, 0x02, 0x03, 0x04]);
+    /// assert_eq!(sav.etag.len(), 36);
     /// # fs::remove_file("test.db");
     /// ```
     pub fn select_user_sav_by_access_token(
         &self,
         connection: &SqlitePooledConnection,
         access_token: &String,
-    ) -> Result<Option<Sav>, diesel::result::Error> {
+    ) -> Result<Option<Sav>, error::Error> {
         use crate::schema::savs;
         use crate::schema::users;
 
@@ -1302,12 +1374,12 @@ impl PkmnapiSQL {
         match users::table
             .filter(users::access_token_hash.eq(access_token_hash))
             .inner_join(savs::table)
-            .select((savs::id, savs::date_create, savs::data))
+            .select((savs::id, savs::date_create, savs::data, savs::etag))
             .first::<Sav>(connection)
         {
             Ok(sav) => Ok(Some(sav)),
             Err(diesel::result::Error::NotFound) => Ok(None),
-            Err(e) => Err(e),
+            Err(e) => return Err(e.into()),
         }
     }
 
@@ -1342,6 +1414,7 @@ impl PkmnapiSQL {
     /// assert_eq!(sav.id.len(), 32);
     /// assert_eq!(sav.date_create.len(), 20);
     /// assert_eq!(sav.data, vec![0x01, 0x02, 0x03, 0x04]);
+    /// assert_eq!(sav.etag.len(), 36);
     /// # fs::remove_file("test.db");
     /// ```
     pub fn update_user_sav_by_access_token(
@@ -1349,15 +1422,18 @@ impl PkmnapiSQL {
         connection: &SqlitePooledConnection,
         access_token: &String,
         data: &Vec<u8>,
-    ) -> Result<Sav, diesel::result::Error> {
+    ) -> Result<Sav, error::Error> {
         use crate::schema::users;
 
-        connection.transaction::<_, diesel::result::Error, _>(|| {
-            let new_sav = self.insert_sav(connection, &data)?;
+        match connection.transaction::<_, diesel::result::Error, _>(|| {
+            let new_sav = match self.insert_sav(connection, &data) {
+                Ok(new_sav) => new_sav,
+                Err(e) => return Err(e.into_inner()),
+            };
             let user = match self.select_user_by_access_token(connection, &access_token) {
                 Ok(Some(user)) => user,
                 Ok(None) => return Err(diesel::result::Error::NotFound),
-                Err(e) => return Err(e),
+                Err(e) => return Err(e.into_inner()),
             };
 
             let sav_id = match user.sav_id {
@@ -1373,10 +1449,13 @@ impl PkmnapiSQL {
 
             match self.select_sav_by_id(connection, &sav_id) {
                 Ok(Some(sav)) => Ok(sav),
-                Ok(None) => Err(diesel::result::Error::NotFound),
-                Err(e) => return Err(e),
+                Ok(None) => return Err(diesel::result::Error::NotFound),
+                Err(e) => return Err(e.into_inner()),
             }
-        })
+        }) {
+            Ok(sav) => Ok(sav),
+            Err(e) => return Err(e.into()),
+        }
     }
 
     /// Update row in `savs`
@@ -1399,23 +1478,29 @@ impl PkmnapiSQL {
     ///
     /// let connection = sql.get_connection().unwrap();
     /// # let (new_user, access_token) = sql.insert_user(&connection, &String::from("foo@bar.com")).unwrap();
-    /// # sql.update_user_sav_by_access_token(&connection, &access_token, &vec![0x01, 0x02, 0x03, 0x04]).unwrap();
-    /// sql.delete_user_sav_by_access_token(&connection, &access_token);
+    /// # let sav = sql.update_user_sav_by_access_token(&connection, &access_token, &vec![0x01, 0x02, 0x03, 0x04]).unwrap();
+    /// # let etag = sav.etag;
+    /// sql.delete_user_sav_by_access_token(&connection, &access_token, &etag);
     /// # fs::remove_file("test.db");
     /// ```
     pub fn delete_user_sav_by_access_token(
         &self,
         connection: &SqlitePooledConnection,
         access_token: &String,
-    ) -> Result<(), diesel::result::Error> {
+        etag: &String,
+    ) -> Result<(), error::Error> {
         use crate::schema::users;
 
-        connection.transaction::<_, diesel::result::Error, _>(|| {
+        connection.transaction::<_, error::Error, _>(|| {
             let sav = match self.select_user_sav_by_access_token(connection, &access_token) {
                 Ok(Some(sav)) => sav,
-                Ok(None) => return Err(diesel::result::Error::NotFound),
-                Err(e) => return Err(e),
+                Ok(None) => return Err(diesel::result::Error::NotFound.into()),
+                Err(e) => return Err(e.into()),
             };
+
+            if sav.etag != etag.to_owned() {
+                return Err(error::Error::ETagError);
+            }
 
             let access_token_hash = utils::hmac(&access_token);
             let sav_id: Option<String> = None;

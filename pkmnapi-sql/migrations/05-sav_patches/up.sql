@@ -4,6 +4,7 @@ CREATE TABLE "sav_patches" (
     "user_id"     VARCHAR NOT NULL,
     "data"        BLOB NOT NULL,
     "description" VARCHAR,
+    "etag"        VARCHAR NOT NULL,
     PRIMARY KEY("id"),
     FOREIGN KEY("user_id") REFERENCES "users"("id")
 );
