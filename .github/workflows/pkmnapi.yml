@@ -12,6 +12,20 @@ env:
 jobs:
   pkmnapi:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: pkmnapi-test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
     - uses: actions/checkout@v2
     - uses: actions-rs/toolchain@v1
@@ -33,6 +47,7 @@ jobs:
       run: cargo test --verbose -- --test-threads 1
       working-directory: pkmnapi
       env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/pkmnapi-test
         PKMN_ROM: ../secrets/pkmn.gb
         PKMN_SAV: ../pkmnapi-db/tests/data/pkmn.sav
   pkmnapi-db:
@@ -79,6 +94,20 @@ jobs:
       working-directory: pkmnapi-email
   pkmnapi-sql:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: pkmnapi-test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
     - uses: actions/checkout@v2
     - uses: actions-rs/toolchain@v1
@@ -94,3 +123,5 @@ jobs:
     - name: Test
       run: cargo test --verbose -- --test-threads 1
       working-directory: pkmnapi-sql
+      env:
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/pkmnapi-test
