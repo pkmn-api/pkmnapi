@@ -47,7 +47,7 @@ pub fn get_pokemon_pic_png<'a>(
     };
 
     let response = Response::build()
-        .header(ContentType::new("image", "png"))
+        .header(ContentType::PNG)
         .header(Header::new(
             "Content-Disposition",
             format!(r#"attachment; filename="{}.png""#, pokemon_name.name),
@@ -93,7 +93,7 @@ pub fn get_pokemon_pic_jpeg<'a>(
     };
 
     let response = Response::build()
-        .header(ContentType::new("image", "jpeg"))
+        .header(ContentType::JPEG)
         .header(Header::new(
             "Content-Disposition",
             format!(r#"attachment; filename="{}.jpg""#, pokemon_name.name),

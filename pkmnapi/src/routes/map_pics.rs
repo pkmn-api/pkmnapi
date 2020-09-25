@@ -32,7 +32,7 @@ pub fn get_map_pic_png<'a>(
     };
 
     let response = Response::build()
-        .header(ContentType::new("image", "png"))
+        .header(ContentType::PNG)
         .header(Header::new(
             "Content-Disposition",
             format!(r#"attachment; filename="map-{}.png""#, map_id),
@@ -67,7 +67,7 @@ pub fn get_map_pic_jpeg<'a>(
     };
 
     let response = Response::build()
-        .header(ContentType::new("image", "jpeg"))
+        .header(ContentType::JPEG)
         .header(Header::new(
             "Content-Disposition",
             format!(r#"attachment; filename="map-{}.jpg""#, map_id),

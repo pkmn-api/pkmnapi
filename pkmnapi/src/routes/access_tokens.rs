@@ -16,7 +16,7 @@ pub fn post_access_token(
     data: Result<Json<AccessTokenRequest>, JsonError>,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<status::Created<JsonValue>, ResponseError> {
-    if let Ok(_) = access_token {
+    if access_token.is_ok() {
         return Err(AccessTokenErrorForbidden::new());
     }
 

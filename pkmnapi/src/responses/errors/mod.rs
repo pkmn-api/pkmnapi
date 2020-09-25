@@ -11,6 +11,7 @@ mod etag_error_mismatch;
 mod etag_error_missing;
 mod hm_response_error;
 mod hm_response_error_invalid;
+mod internal_server_error;
 mod map_pic_response_error;
 mod move_name_response_error;
 mod move_name_response_error_invalid;
@@ -50,6 +51,7 @@ pub use crate::responses::errors::etag_error_mismatch::*;
 pub use crate::responses::errors::etag_error_missing::*;
 pub use crate::responses::errors::hm_response_error::*;
 pub use crate::responses::errors::hm_response_error_invalid::*;
+pub use crate::responses::errors::internal_server_error::*;
 pub use crate::responses::errors::map_pic_response_error::*;
 pub use crate::responses::errors::move_name_response_error::*;
 pub use crate::responses::errors::move_name_response_error_invalid::*;
@@ -149,6 +151,7 @@ pub enum BaseErrorResponseId {
     error_etag_missing,
     error_hms_invalid,
     error_hms,
+    error_internal_server,
     error_map_pics,
     error_move_names_invalid,
     error_move_names,

@@ -79,7 +79,10 @@ impl Pkmnapi {
                     routes::type_names::post_type_name,
                 ],
             )
-            .register(catchers![routes::errors::not_found])
+            .register(catchers![
+                routes::errors::not_found,
+                routes::errors::internal_server_error
+            ])
             .attach(AdHoc::on_response("Update Server Name", |_, res| {
                 res.set_raw_header(
                     "Server",

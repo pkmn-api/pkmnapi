@@ -41,7 +41,7 @@ pub fn get_trainer_pic_png<'a>(
     };
 
     let response = Response::build()
-        .header(ContentType::new("image", "png"))
+        .header(ContentType::PNG)
         .header(Header::new(
             "Content-Disposition",
             format!(r#"attachment; filename="{}.png""#, trainer_name.name),
@@ -86,7 +86,7 @@ pub fn get_trainer_pic_jpeg<'a>(
     };
 
     let response = Response::build()
-        .header(ContentType::new("image", "jpeg"))
+        .header(ContentType::JPEG)
         .header(Header::new(
             "Content-Disposition",
             format!(r#"attachment; filename="{}.jpg""#, trainer_name.name),
