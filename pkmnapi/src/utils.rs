@@ -8,7 +8,7 @@ use crate::responses::errors::*;
 pub fn get_db(
     sql: &State<PkmnapiSQL>,
     access_token: &String,
-) -> Result<(PkmnapiDB, SqlitePooledConnection), ResponseError> {
+) -> Result<(PkmnapiDB, PgPooledConnection), ResponseError> {
     let connection = sql.get_connection().unwrap();
     let rom_data = match sql.select_user_rom_data_by_access_token(&connection, &access_token) {
         Ok(Some(rom_data)) => rom_data,
@@ -30,7 +30,7 @@ pub fn get_db(
 pub fn get_db_with_applied_patches(
     sql: &State<PkmnapiSQL>,
     access_token: &String,
-) -> Result<(PkmnapiDB, SqlitePooledConnection), ResponseError> {
+) -> Result<(PkmnapiDB, PgPooledConnection), ResponseError> {
     let (mut db, connection) = get_db(sql, access_token)?;
 
     let rom_patches = match sql.select_rom_patches_by_access_token(&connection, &access_token) {

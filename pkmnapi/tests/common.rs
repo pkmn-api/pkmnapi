@@ -1,25 +1,12 @@
 use pkmnapi::*;
+use pkmnapi_sql::*;
 use rocket::http::{ContentType, Header, Status};
 use rocket::local::Client;
 use rocket::response::Response;
 use std::env;
 use std::fs;
-use std::process::Command;
 
 pub fn setup() -> Client {
-    teardown();
-
-    env::set_var("DATABASE_URL", "test.db");
-    Command::new("diesel")
-        .args(&[
-            "migration",
-            "--migration-dir",
-            "../pkmnapi-sql/migrations",
-            "run",
-        ])
-        .output()
-        .unwrap();
-
     let api = Pkmnapi::init();
     let client = Client::new(api).unwrap();
 
@@ -100,6 +87,9 @@ pub fn assert_unauthorized(response: &mut Response) {
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_access_tokens_unauthorized","type":"errors","attributes":{"message":"Authorization header must be set"}}}"#.to_string()));
 }
 
-pub fn teardown() {
-    let _ = fs::remove_file("test.db");
+pub fn teardown(client: &Client) {
+    let rocket = client.rocket();
+    let sql = rocket.state::<PkmnapiSQL>().unwrap();
+
+    sql.revert_migration();
 }

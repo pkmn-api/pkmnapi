@@ -58,7 +58,7 @@ fn get_pokemon_pic_png_200() {
         ])
     );
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -70,7 +70,7 @@ fn get_pokemon_pic_png_401() {
     let mut response = request.dispatch();
 
     common::assert_unauthorized(&mut response);
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -95,7 +95,7 @@ fn get_pokemon_pic_png_404() {
         )
     );
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -197,7 +197,7 @@ fn get_pokemon_pic_jpeg_200() {
         ])
     );
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -209,7 +209,7 @@ fn get_pokemon_pic_jpeg_401() {
     let mut response = request.dispatch();
 
     common::assert_unauthorized(&mut response);
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -235,5 +235,5 @@ fn get_pokemon_pic_jpeg_404() {
         )
     );
 
-    common::teardown();
+    common::teardown(&client);
 }

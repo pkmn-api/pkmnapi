@@ -40,7 +40,7 @@ fn post_rom_201() {
         Some("http://localhost:8080/v1/roms")
     );
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -58,7 +58,7 @@ fn post_rom_400_invalid_rom() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_roms_invalid_rom","type":"errors","attributes":{"message":"Invalid ROM provided"}}}"#.to_string()));
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -70,7 +70,7 @@ fn post_rom_401() {
     let mut response = request.dispatch();
 
     common::assert_unauthorized(&mut response);
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -96,7 +96,7 @@ fn post_rom_403_rom_exists() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_roms_rom_exists","type":"errors","attributes":{"message":"ROM already exists"}}}"#.to_string()));
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -129,7 +129,7 @@ fn get_rom_200() {
         )
     );
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -141,7 +141,7 @@ fn get_rom_401() {
     let mut response = request.dispatch();
 
     common::assert_unauthorized(&mut response);
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -158,7 +158,7 @@ fn get_rom_403_no_rom() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_roms_no_rom","type":"errors","attributes":{"message":"No ROM uploaded"}}}"#.to_string()));
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -187,7 +187,7 @@ fn delete_rom_204() {
     assert_eq!(response.content_type(), None);
     assert_eq!(response.body_string(), None);
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -207,7 +207,7 @@ fn delete_rom_400() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_etag_mismatch","type":"errors","attributes":{"message":"ETag mismatch"}}}"#.to_string()));
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -219,7 +219,7 @@ fn delete_rom_401() {
     let mut response = request.dispatch();
 
     common::assert_unauthorized(&mut response);
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -237,7 +237,7 @@ fn delete_rom_403_no_rom() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_roms_no_rom","type":"errors","attributes":{"message":"No ROM uploaded"}}}"#.to_string()));
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -256,5 +256,5 @@ fn delete_rom_403_etag() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_etag_missing","type":"errors","attributes":{"message":"If-Match header must be set"}}}"#.to_string()));
 
-    common::teardown();
+    common::teardown(&client);
 }

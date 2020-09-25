@@ -52,7 +52,7 @@ fn get_rom_patches_200() {
         )
     );
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -64,7 +64,7 @@ fn get_rom_patches_401() {
     let mut response = request.dispatch();
 
     common::assert_unauthorized(&mut response);
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -110,7 +110,7 @@ fn get_rom_patches_raw_200() {
         Some(r#"attachment; filename="patch.ips""#)
     );
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -126,7 +126,7 @@ fn get_rom_patches_raw_401() {
     let mut response = request.dispatch();
 
     common::assert_unauthorized(&mut response);
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -176,7 +176,7 @@ fn get_rom_patch_200() {
         )
     );
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -188,7 +188,7 @@ fn get_rom_patch_401() {
     let mut response = request.dispatch();
 
     common::assert_unauthorized(&mut response);
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -205,7 +205,7 @@ fn get_rom_patch_404() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_rom_patches","type":"errors","attributes":{"message":"No ROM patch found"}}}"#.to_string()));
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -253,7 +253,7 @@ fn delete_rom_patch_204() {
     assert_eq!(response.content_type(), None);
     assert_eq!(response.body_string(), None);
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -292,7 +292,7 @@ fn delete_rom_patch_400() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_etag_mismatch","type":"errors","attributes":{"message":"ETag mismatch"}}}"#.to_string()));
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -330,5 +330,5 @@ fn delete_rom_patch_403() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_etag_missing","type":"errors","attributes":{"message":"If-Match header must be set"}}}"#.to_string()));
 
-    common::teardown();
+    common::teardown(&client);
 }

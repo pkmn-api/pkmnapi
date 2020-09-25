@@ -40,7 +40,7 @@ fn post_sav_201() {
         Some("http://localhost:8080/v1/savs")
     );
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -58,7 +58,7 @@ fn post_sav_400_invalid_sav() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_savs_invalid_sav","type":"errors","attributes":{"message":"Invalid SAV provided"}}}"#.to_string()));
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -70,7 +70,7 @@ fn post_sav_401() {
     let mut response = request.dispatch();
 
     common::assert_unauthorized(&mut response);
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -96,7 +96,7 @@ fn post_sav_403_sav_exists() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_savs_sav_exists","type":"errors","attributes":{"message":"SAV already exists"}}}"#.to_string()));
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -129,7 +129,7 @@ fn get_sav_200() {
         )
     );
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -141,7 +141,7 @@ fn get_sav_401() {
     let mut response = request.dispatch();
 
     common::assert_unauthorized(&mut response);
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -158,7 +158,7 @@ fn get_sav_403_no_sav() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_savs_no_sav","type":"errors","attributes":{"message":"No SAV uploaded"}}}"#.to_string()));
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -187,7 +187,7 @@ fn delete_sav_204() {
     assert_eq!(response.content_type(), None);
     assert_eq!(response.body_string(), None);
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -207,7 +207,7 @@ fn delete_sav_400() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_etag_mismatch","type":"errors","attributes":{"message":"ETag mismatch"}}}"#.to_string()));
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -219,7 +219,7 @@ fn delete_sav_401() {
     let mut response = request.dispatch();
 
     common::assert_unauthorized(&mut response);
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -237,7 +237,7 @@ fn delete_sav_403_no_sav() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_savs_no_sav","type":"errors","attributes":{"message":"No SAV uploaded"}}}"#.to_string()));
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -256,5 +256,5 @@ fn delete_rom_403_etag() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_etag_missing","type":"errors","attributes":{"message":"If-Match header must be set"}}}"#.to_string()));
 
-    common::teardown();
+    common::teardown(&client);
 }

@@ -27,7 +27,7 @@ fn post_access_token_201() {
         Some("http://localhost:8080/v1/access_tokens")
     );
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -45,7 +45,7 @@ fn post_access_token_400() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_access_tokens_invalid","type":"errors","attributes":{"message":"Invalid email address: foo"}}}"#.to_owned()));
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -64,7 +64,7 @@ fn post_access_token_403_authorization() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_access_tokens_forbidden","type":"errors","attributes":{"message":"Authorization header must not be set"}}}"#.to_owned()));
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -88,5 +88,5 @@ fn post_access_token_403_timeout() {
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_access_tokens_timeout","type":"errors","attributes":{"message":"Please try again in 600 seconds"}}}"#.to_owned()));
 
-    common::teardown();
+    common::teardown(&client);
 }

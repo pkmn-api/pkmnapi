@@ -24,7 +24,7 @@ fn get_trainer_parties_200() {
         )
     );
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -36,7 +36,7 @@ fn get_trainer_parties_401() {
     let mut response = request.dispatch();
 
     common::assert_unauthorized(&mut response);
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -61,7 +61,7 @@ fn get_trainer_parties_404() {
         )
     );
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -98,7 +98,7 @@ fn post_trainer_parties_202() {
         )
     );
 
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -113,7 +113,7 @@ fn post_trainer_parties_401() {
     let mut response = request.dispatch();
 
     common::assert_unauthorized(&mut response);
-    common::teardown();
+    common::teardown(&client);
 }
 
 #[test]
@@ -140,5 +140,5 @@ fn post_trainer_parties_404() {
         )
     );
 
-    common::teardown();
+    common::teardown(&client);
 }
