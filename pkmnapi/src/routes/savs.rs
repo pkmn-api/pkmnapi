@@ -1,8 +1,10 @@
 use pkmnapi_db::sav::Sav;
 use pkmnapi_sql::*;
+use rocket::http::{ContentType, Header, Status};
 use rocket::response::status;
+use rocket::response::Response;
 use rocket::{Data, State};
-use rocket_contrib::json::Json;
+use std::io::Cursor;
 
 use crate::guards::*;
 use crate::responses::errors::*;
@@ -10,11 +12,11 @@ use crate::responses::savs::*;
 use crate::utils;
 
 #[post("/savs", data = "<data>")]
-pub fn post_sav(
+pub fn post_sav<'a>(
     sql: State<PkmnapiSQL>,
     data: Data,
     access_token: Result<AccessToken, AccessTokenError>,
-) -> Result<status::Created<Json<SavResponse>>, ResponseError> {
+) -> Result<Response<'a>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
@@ -40,18 +42,24 @@ pub fn post_sav(
     };
 
     let response = SavResponse::new(&sav_sql);
+    let body = serde_json::to_string(&response).unwrap();
 
-    Ok(status::Created(
-        utils::generate_url("savs", None),
-        Some(Json(response)),
-    ))
+    let response = Response::build()
+        .status(Status::Created)
+        .header(ContentType::JSON)
+        .header(Header::new("Location", utils::generate_url("savs", None)))
+        .header(Header::new("ETag", sav_sql.etag))
+        .sized_body(Cursor::new(body))
+        .finalize();
+
+    Ok(response)
 }
 
 #[get("/savs")]
-pub fn get_sav(
+pub fn get_sav<'a>(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
-) -> Result<Json<SavResponse>, ResponseError> {
+) -> Result<Response<'a>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
@@ -64,23 +72,37 @@ pub fn get_sav(
     };
 
     let response = SavResponse::new(&sav_sql);
+    let body = serde_json::to_string(&response).unwrap();
 
-    Ok(Json(response))
+    let response = Response::build()
+        .header(ContentType::JSON)
+        .header(Header::new("ETag", sav_sql.etag))
+        .sized_body(Cursor::new(body))
+        .finalize();
+
+    Ok(response)
 }
 
 #[delete("/savs")]
 pub fn delete_sav(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
+    if_match: Result<IfMatch, IfMatchError>,
 ) -> Result<status::NoContent, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
     };
 
+    let etag = match if_match {
+        Ok(if_match) => if_match.into_inner(),
+        Err(_) => return Err(ETagErrorMissing::new()),
+    };
+
     let connection = sql.get_connection().unwrap();
-    match sql.delete_user_sav_by_access_token(&connection, &access_token) {
+    match sql.delete_user_sav_by_access_token(&connection, &access_token, &etag) {
         Ok(_) => {}
+        Err(pkmnapi_sql::error::Error::ETagError) => return Err(ETagErrorMismatch::new()),
         Err(_) => return Err(SavResponseErrorNoSav::new()),
     }
 

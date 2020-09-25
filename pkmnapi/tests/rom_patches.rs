@@ -234,14 +234,101 @@ fn delete_rom_patch_204() {
     let patch_id = (&body[16..48]).to_string();
 
     let request = client
-        .delete(format!("/v1/roms/patches/{}", patch_id))
+        .get(format!("/v1/roms/patches/{}", patch_id))
         .header(common::auth_header(&access_token));
+
+    let response = request.dispatch();
+
+    let headers = response.headers();
+    let etag = headers.get("ETag").next().unwrap().to_owned();
+
+    let request = client
+        .delete(format!("/v1/roms/patches/{}", patch_id))
+        .header(common::auth_header(&access_token))
+        .header(Header::new("If-Match", etag));
 
     let mut response = request.dispatch();
 
     assert_eq!(response.status(), Status::NoContent);
     assert_eq!(response.content_type(), None);
     assert_eq!(response.body_string(), None);
+
+    common::teardown();
+}
+
+#[test]
+fn delete_rom_patch_400() {
+    let (client, access_token) = common::setup_with_access_token();
+
+    common::post_rom(&client, &access_token);
+
+    client
+        .post("/v1/types/names/0")
+        .body(r#"{"data":{"type":"type_names","attributes":{"name":"BORING"}}}"#)
+        .header(ContentType::JSON)
+        .header(common::auth_header(&access_token))
+        .dispatch();
+
+    let request = client
+        .get("/v1/roms/patches")
+        .header(common::auth_header(&access_token));
+
+    let mut response = request.dispatch();
+
+    assert_eq!(response.status(), Status::Ok);
+    assert_eq!(response.content_type(), Some(ContentType::JSON));
+
+    let body = response.body_string().unwrap();
+    let patch_id = (&body[16..48]).to_string();
+
+    let request = client
+        .delete(format!("/v1/roms/patches/{}", patch_id))
+        .header(common::auth_header(&access_token))
+        .header(Header::new("If-Match", "wrong".to_string()));
+
+    let mut response = request.dispatch();
+
+    assert_eq!(response.status(), Status::BadRequest);
+    assert_eq!(response.content_type(), Some(ContentType::JSON));
+    assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_etag_mismatch","type":"errors","attributes":{"message":"ETag mismatch"}}}"#.to_string()));
+
+    common::teardown();
+}
+
+#[test]
+fn delete_rom_patch_403() {
+    let (client, access_token) = common::setup_with_access_token();
+
+    common::post_rom(&client, &access_token);
+
+    client
+        .post("/v1/types/names/0")
+        .body(r#"{"data":{"type":"type_names","attributes":{"name":"BORING"}}}"#)
+        .header(ContentType::JSON)
+        .header(common::auth_header(&access_token))
+        .dispatch();
+
+    let request = client
+        .get("/v1/roms/patches")
+        .header(common::auth_header(&access_token));
+
+    let mut response = request.dispatch();
+
+    assert_eq!(response.status(), Status::Ok);
+    assert_eq!(response.content_type(), Some(ContentType::JSON));
+
+    let body = response.body_string().unwrap();
+    let patch_id = (&body[16..48]).to_string();
+
+    let request = client
+        .delete(format!("/v1/roms/patches/{}", patch_id))
+        .header(common::auth_header(&access_token));
+
+    let mut response = request.dispatch();
+
+    assert_eq!(response.status(), Status::Forbidden);
+    assert_eq!(response.content_type(), Some(ContentType::JSON));
+    assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_etag_missing","type":"errors","attributes":{"message":"If-Match header must be set"}}}"#.to_string()));
 
     common::teardown();
 }

@@ -7,6 +7,8 @@ mod access_token_error_forbidden;
 mod access_token_error_invalid;
 mod access_token_error_timeout;
 mod access_token_error_unauthorized;
+mod etag_error_mismatch;
+mod etag_error_missing;
 mod hm_response_error;
 mod hm_response_error_invalid;
 mod map_pic_response_error;
@@ -44,6 +46,8 @@ pub use crate::responses::errors::access_token_error_forbidden::*;
 pub use crate::responses::errors::access_token_error_invalid::*;
 pub use crate::responses::errors::access_token_error_timeout::*;
 pub use crate::responses::errors::access_token_error_unauthorized::*;
+pub use crate::responses::errors::etag_error_mismatch::*;
+pub use crate::responses::errors::etag_error_missing::*;
 pub use crate::responses::errors::hm_response_error::*;
 pub use crate::responses::errors::hm_response_error_invalid::*;
 pub use crate::responses::errors::map_pic_response_error::*;
@@ -83,6 +87,8 @@ pub enum ResponseError {
     AccessTokenErrorInvalid(status::BadRequest<Json<AccessTokenErrorInvalid>>),
     AccessTokenErrorTimeout(status::Forbidden<Json<AccessTokenErrorTimeout>>),
     AccessTokenErrorUnauthorized(status::Unauthorized<Json<AccessTokenErrorUnauthorized>>),
+    ETagErrorMismatch(status::BadRequest<Json<ETagErrorMismatch>>),
+    ETagErrorMissing(status::Forbidden<Json<ETagErrorMissing>>),
     HMResponseError(status::NotFound<Json<HMResponseError>>),
     HMResponseErrorInvalid(status::BadRequest<Json<HMResponseErrorInvalid>>),
     MapPicResponseError(status::NotFound<Json<MapPicResponseError>>),
@@ -139,6 +145,8 @@ pub enum BaseErrorResponseId {
     error_access_tokens_invalid,
     error_access_tokens_timeout,
     error_access_tokens_unauthorized,
+    error_etag_mismatch,
+    error_etag_missing,
     error_hms_invalid,
     error_hms,
     error_map_pics,

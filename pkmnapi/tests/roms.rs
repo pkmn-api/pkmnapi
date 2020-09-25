@@ -1,4 +1,4 @@
-use rocket::http::{ContentType, Status};
+use rocket::http::{ContentType, Header, Status};
 
 mod common;
 
@@ -168,14 +168,44 @@ fn delete_rom_204() {
     common::post_rom(&client, &access_token);
 
     let request = client
-        .delete("/v1/roms")
+        .get("/v1/roms")
         .header(common::auth_header(&access_token));
+
+    let response = request.dispatch();
+
+    let headers = response.headers();
+    let etag = headers.get("ETag").next().unwrap().to_owned();
+
+    let request = client
+        .delete("/v1/roms")
+        .header(common::auth_header(&access_token))
+        .header(Header::new("If-Match", etag));
 
     let mut response = request.dispatch();
 
     assert_eq!(response.status(), Status::NoContent);
     assert_eq!(response.content_type(), None);
     assert_eq!(response.body_string(), None);
+
+    common::teardown();
+}
+
+#[test]
+fn delete_rom_400() {
+    let (client, access_token) = common::setup_with_access_token();
+
+    common::post_rom(&client, &access_token);
+
+    let request = client
+        .delete("/v1/roms")
+        .header(common::auth_header(&access_token))
+        .header(Header::new("If-Match", "wrong".to_string()));
+
+    let mut response = request.dispatch();
+
+    assert_eq!(response.status(), Status::BadRequest);
+    assert_eq!(response.content_type(), Some(ContentType::JSON));
+    assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_etag_mismatch","type":"errors","attributes":{"message":"ETag mismatch"}}}"#.to_string()));
 
     common::teardown();
 }
@@ -198,13 +228,33 @@ fn delete_rom_403_no_rom() {
 
     let request = client
         .delete("/v1/roms")
-        .header(common::auth_header(&access_token));
+        .header(common::auth_header(&access_token))
+        .header(Header::new("If-Match", "wrong".to_string()));
 
     let mut response = request.dispatch();
 
     assert_eq!(response.status(), Status::Forbidden);
     assert_eq!(response.content_type(), Some(ContentType::JSON));
     assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_roms_no_rom","type":"errors","attributes":{"message":"No ROM uploaded"}}}"#.to_string()));
+
+    common::teardown();
+}
+
+#[test]
+fn delete_rom_403_etag() {
+    let (client, access_token) = common::setup_with_access_token();
+
+    common::post_rom(&client, &access_token);
+
+    let request = client
+        .delete("/v1/roms")
+        .header(common::auth_header(&access_token));
+
+    let mut response = request.dispatch();
+
+    assert_eq!(response.status(), Status::Forbidden);
+    assert_eq!(response.content_type(), Some(ContentType::JSON));
+    assert_eq!(response.body_string(), Some(r#"{"data":{"id":"error_etag_missing","type":"errors","attributes":{"message":"If-Match header must be set"}}}"#.to_string()));
 
     common::teardown();
 }

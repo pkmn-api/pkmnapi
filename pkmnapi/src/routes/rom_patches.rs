@@ -71,11 +71,11 @@ pub fn get_rom_patches_raw<'a>(
 }
 
 #[get("/roms/patches/<patch_id>")]
-pub fn get_rom_patch(
+pub fn get_rom_patch<'a>(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_id: String,
-) -> Result<Json<RomPatchResponse>, ResponseError> {
+) -> Result<Response<'a>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
@@ -89,14 +89,22 @@ pub fn get_rom_patch(
     };
 
     let response = RomPatchResponse::new(&patch);
+    let body = serde_json::to_string(&response).unwrap();
 
-    Ok(Json(response))
+    let response = Response::build()
+        .header(ContentType::JSON)
+        .header(Header::new("ETag", patch.etag))
+        .sized_body(Cursor::new(body))
+        .finalize();
+
+    Ok(response)
 }
 
 #[delete("/roms/patches/<patch_id>")]
 pub fn delete_rom_patch(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
+    if_match: Result<IfMatch, IfMatchError>,
     patch_id: String,
 ) -> Result<status::NoContent, ResponseError> {
     let access_token = match access_token {
@@ -104,9 +112,15 @@ pub fn delete_rom_patch(
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
     };
 
+    let etag = match if_match {
+        Ok(if_match) => if_match.into_inner(),
+        Err(_) => return Err(ETagErrorMissing::new()),
+    };
+
     let connection = sql.get_connection().unwrap();
-    match sql.delete_rom_patch_by_id(&connection, &access_token, &patch_id) {
+    match sql.delete_rom_patch_by_id(&connection, &access_token, &patch_id, &etag) {
         Ok(_) => {}
+        Err(pkmnapi_sql::error::Error::ETagError) => return Err(ETagErrorMismatch::new()),
         Err(_) => return Err(RomResponseErrorNoRom::new()),
     }
 

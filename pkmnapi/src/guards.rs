@@ -40,6 +40,37 @@ impl<'a, 'r> FromRequest<'a, 'r> for AccessToken {
 }
 
 #[derive(Debug, PartialEq)]
+pub struct IfMatch(String);
+
+impl IfMatch {
+    pub fn into_inner(self) -> String {
+        self.0
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub enum IfMatchError {
+    Missing,
+}
+
+impl<'a, 'r> FromRequest<'a, 'r> for IfMatch {
+    type Error = IfMatchError;
+
+    fn from_request(request: &'a Request<'r>) -> request::Outcome<Self, Self::Error> {
+        let if_matches: Vec<&'a str> = request.headers().get("if-match").collect();
+
+        let if_match = match if_matches.get(0) {
+            Some(if_match) => if_match.to_string(),
+            None => return Outcome::Failure((Status::Unauthorized, IfMatchError::Missing)),
+        };
+
+        let if_match = IfMatch(if_match);
+
+        return Outcome::Success(if_match);
+    }
+}
+
+#[derive(Debug, PartialEq)]
 pub struct PatchDescription(Option<String>);
 
 impl PatchDescription {
