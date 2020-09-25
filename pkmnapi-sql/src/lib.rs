@@ -4,12 +4,16 @@
 //!
 //! ```
 //! use pkmnapi_sql::*;
+//! # use std::process::Command;
 //!
 //! let sql = PkmnapiSQL::new();
+//! # sql.revert_migration();
 //! ```
 
 #[macro_use]
 extern crate diesel;
+#[macro_use]
+extern crate diesel_migrations;
 extern crate dotenv;
 
 pub mod error;
@@ -17,17 +21,20 @@ pub mod models;
 pub mod schema;
 pub mod utils;
 
+use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::r2d2::{ConnectionManager, Pool, PooledConnection};
 use diesel::result::{DatabaseErrorKind, Error::DatabaseError};
-use diesel::sqlite::SqliteConnection;
+use diesel_migrations::{embed_migrations, revert_latest_migration, RunMigrationsError};
 use dotenv::dotenv;
 use std::env;
 
 use crate::models::*;
 
-pub type SqlitePool = Pool<ConnectionManager<SqliteConnection>>;
-pub type SqlitePooledConnection = PooledConnection<ConnectionManager<SqliteConnection>>;
+pub type PgPool = Pool<ConnectionManager<PgConnection>>;
+pub type PgPooledConnection = PooledConnection<ConnectionManager<PgConnection>>;
+
+embed_migrations!();
 
 /// PkmnapiSQL
 ///
@@ -35,11 +42,13 @@ pub type SqlitePooledConnection = PooledConnection<ConnectionManager<SqliteConne
 ///
 /// ```
 /// use pkmnapi_sql::*;
+/// # use std::process::Command;
 ///
 /// let sql = PkmnapiSQL::new();
+/// # sql.revert_migration();
 /// ```
 pub struct PkmnapiSQL {
-    connection: SqlitePool,
+    connection: PgPool,
 }
 
 impl PkmnapiSQL {
@@ -55,23 +64,43 @@ impl PkmnapiSQL {
     ///
     /// ```
     /// use pkmnapi_sql::*;
+    /// # use std::process::Command;
     ///
     /// let sql = PkmnapiSQL::new();
+    /// # sql.revert_migration();
     /// ```
     pub fn new() -> PkmnapiSQL {
         dotenv().ok();
 
         let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
-        let manager = ConnectionManager::<SqliteConnection>::new(database_url);
+        let manager = ConnectionManager::<PgConnection>::new(database_url);
         let connection = Pool::builder()
             .build(manager)
             .expect("Failed to create database connection pool");
 
+        let migration_connection = connection
+            .get()
+            .expect("Failed to create migration connection");
+
+        PkmnapiSQL::run_migration(&migration_connection).expect("Failed to run migration");
+
         PkmnapiSQL { connection }
     }
 
-    pub fn get_connection(&self) -> Result<SqlitePooledConnection, error::Error> {
+    fn run_migration(connection: &PgConnection) -> Result<(), RunMigrationsError> {
+        embedded_migrations::run_with_output(connection, &mut std::io::stdout())
+    }
+
+    pub fn revert_migration(&self) {
+        let connection = self
+            .get_connection()
+            .expect("Failed to create migration connection");
+
+        revert_latest_migration(&connection).expect("Failed to revert migration");
+    }
+
+    pub fn get_connection(&self) -> Result<PgPooledConnection, error::Error> {
         match self.connection.get() {
             Ok(connection) => Ok(connection),
             Err(_) => return Err(diesel::result::Error::NotFound.into()),
@@ -85,10 +114,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -100,11 +125,11 @@ impl PkmnapiSQL {
     /// assert_eq!(rom_datum.id.len(), 32);
     /// assert_eq!(rom_datum.name, String::from("foo"));
     /// assert_eq!(rom_datum.data, vec![0x01, 0x02, 0x03, 0x04]);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn select_rom_data_by_id(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         id: &String,
     ) -> Result<Option<RomData>, error::Error> {
         use crate::schema::rom_data;
@@ -126,10 +151,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -145,11 +166,11 @@ impl PkmnapiSQL {
     /// assert_eq!(new_rom_data.id.len(), 32);
     /// assert_eq!(new_rom_data.name, String::from("foo"));
     /// assert_eq!(new_rom_data.data, vec![0x01, 0x02, 0x03, 0x04]);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn insert_rom_data(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         name: &String,
         data: &Vec<u8>,
     ) -> Result<RomData, error::Error> {
@@ -157,8 +178,9 @@ impl PkmnapiSQL {
 
         let new_rom_data = NewRomData::new(&name, &data);
 
-        match diesel::insert_or_ignore_into(rom_data::table)
+        match diesel::insert_into(rom_data::table)
             .values(&new_rom_data)
+            .on_conflict_do_nothing()
             .execute(connection)
         {
             Ok(_) => match self.select_rom_data_by_id(connection, &new_rom_data.id) {
@@ -177,10 +199,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -194,11 +212,11 @@ impl PkmnapiSQL {
     /// assert_eq!(rom.name, String::from("foo"));
     /// assert_eq!(rom.etag.len(), 36);
     /// assert_eq!(rom.rom_data_id.len(), 32);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn select_rom_by_id(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         id: &String,
     ) -> Result<Option<Rom>, error::Error> {
         use crate::schema::rom_data;
@@ -229,10 +247,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -249,11 +263,11 @@ impl PkmnapiSQL {
     /// assert_eq!(new_rom.name, String::from("foo"));
     /// assert_eq!(new_rom.etag.len(), 36);
     /// assert_eq!(new_rom.rom_data_id.len(), 32);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn insert_rom(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         name: &String,
         data: &Vec<u8>,
     ) -> Result<Rom, error::Error> {
@@ -287,10 +301,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -298,11 +308,11 @@ impl PkmnapiSQL {
     /// # let new_rom = sql.insert_rom(&connection, &String::from("foo"), &vec![0x01, 0x02, 0x03, 0x04]).unwrap();
     /// # let id = new_rom.id;
     /// sql.delete_rom_by_id(&connection, &id).unwrap();
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn delete_rom_by_id(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         id: &String,
     ) -> Result<(), error::Error> {
         use crate::schema::roms;
@@ -324,10 +334,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -341,11 +347,11 @@ impl PkmnapiSQL {
     /// assert_eq!(user.access_token_hash.len(), 64);
     /// assert_eq!(user.rom_id, None);
     /// assert_eq!(user.sav_id, None);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn select_user_by_id(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         id: &String,
     ) -> Result<Option<User>, error::Error> {
         use crate::schema::users;
@@ -379,10 +385,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -396,11 +398,11 @@ impl PkmnapiSQL {
     /// assert_eq!(user.access_token_hash.len(), 64);
     /// assert_eq!(user.rom_id, None);
     /// assert_eq!(user.sav_id, None);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn select_user_by_access_token(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
     ) -> Result<Option<User>, error::Error> {
         use crate::schema::users;
@@ -436,10 +438,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -455,11 +453,11 @@ impl PkmnapiSQL {
     /// assert_eq!(new_user.rom_id, None);
     /// assert_eq!(new_user.sav_id, None);
     /// assert_eq!(access_token.len(), 64);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn insert_user(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         id: &String,
     ) -> Result<(User, String), error::Error> {
         use crate::schema::users;
@@ -508,10 +506,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -525,11 +519,11 @@ impl PkmnapiSQL {
     /// assert_eq!(rom.name, String::from("foo"));
     /// assert_eq!(rom.etag.len(), 36);
     /// assert_eq!(rom.rom_data_id.len(), 32);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn select_user_rom_by_access_token(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
     ) -> Result<Option<Rom>, error::Error> {
         use crate::schema::roms;
@@ -566,10 +560,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -588,11 +578,11 @@ impl PkmnapiSQL {
     /// assert_eq!(rom.name, String::from("foo"));
     /// assert_eq!(rom.etag.len(), 36);
     /// assert_eq!(rom.rom_data_id.len(), 32);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn update_user_rom_by_access_token(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
         name: &String,
         data: &Vec<u8>,
@@ -642,11 +632,7 @@ impl PkmnapiSQL {
     ///
     /// ```
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
     /// use pkmnapi_sql::*;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -655,11 +641,11 @@ impl PkmnapiSQL {
     /// # let rom = sql.update_user_rom_by_access_token(&connection, &access_token, &String::from("foo"), &vec![0x01, 0x02, 0x03, 0x04]).unwrap();
     /// # let etag = rom.etag;
     /// sql.delete_user_rom_by_access_token(&connection, &access_token, &etag);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn delete_user_rom_by_access_token(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
         etag: &String,
     ) -> Result<(), error::Error> {
@@ -697,11 +683,7 @@ impl PkmnapiSQL {
     ///
     /// ```
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
     /// use pkmnapi_sql::*;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -713,11 +695,11 @@ impl PkmnapiSQL {
     /// assert_eq!(rom_datum.id.len(), 32);
     /// assert_eq!(rom_datum.name, String::from("foo"));
     /// assert_eq!(rom_datum.data, vec![0x01, 0x02, 0x03, 0x04]);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn select_user_rom_data_by_access_token(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
     ) -> Result<Option<RomData>, error::Error> {
         use crate::schema::rom_data;
@@ -744,11 +726,7 @@ impl PkmnapiSQL {
     ///
     /// ```
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
     /// use pkmnapi_sql::*;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -763,11 +741,11 @@ impl PkmnapiSQL {
     /// assert_eq!(patch.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(patch.description, None);
     /// assert_eq!(patch.etag.len(), 36);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn select_rom_patch_by_id(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
         id: &String,
     ) -> Result<Option<RomPatch>, error::Error> {
@@ -801,11 +779,7 @@ impl PkmnapiSQL {
     ///
     /// ```
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
     /// use pkmnapi_sql::*;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -820,11 +794,11 @@ impl PkmnapiSQL {
     /// assert_eq!(patch.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(patch.description, None);
     /// assert_eq!(patch.etag.len(), 36);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn select_rom_patches_by_access_token(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
     ) -> Result<Vec<RomPatch>, error::Error> {
         use crate::schema::rom_patches;
@@ -856,10 +830,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -876,11 +846,11 @@ impl PkmnapiSQL {
     ///
     /// assert_eq!(new_rom_patch.id.len(), 32);
     /// assert_eq!(new_rom_patch.data, vec![0x01, 0x02, 0x03, 0x04]);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn insert_rom_patch(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
         data: &Vec<u8>,
         description: Option<String>,
@@ -895,8 +865,9 @@ impl PkmnapiSQL {
 
         let new_rom_patch = NewRomPatch::new(&user.id, &data, description);
 
-        match diesel::insert_or_ignore_into(rom_patches::table)
+        match diesel::insert_into(rom_patches::table)
             .values(&new_rom_patch)
+            .on_conflict_do_nothing()
             .execute(connection)
         {
             Ok(_) => {
@@ -917,10 +888,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -930,11 +897,11 @@ impl PkmnapiSQL {
     /// # let id = new_rom_patch.id;
     /// # let etag = new_rom_patch.etag;
     /// sql.delete_rom_patch_by_id(&connection, &access_token, &id, &etag).unwrap();
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn delete_rom_patch_by_id(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
         id: &String,
         etag: &String,
@@ -978,10 +945,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -994,11 +957,11 @@ impl PkmnapiSQL {
     /// assert_eq!(sav.date_create.len(), 20);
     /// assert_eq!(sav.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(sav.etag.len(), 36);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn select_sav_by_id(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         id: &String,
     ) -> Result<Option<Sav>, error::Error> {
         use crate::schema::savs;
@@ -1021,10 +984,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -1037,11 +996,11 @@ impl PkmnapiSQL {
     /// assert_eq!(new_sav.date_create.len(), 20);
     /// assert_eq!(new_sav.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(new_sav.etag.len(), 36);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn insert_sav(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         data: &Vec<u8>,
     ) -> Result<Sav, error::Error> {
         use crate::schema::savs;
@@ -1073,10 +1032,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -1084,11 +1039,11 @@ impl PkmnapiSQL {
     /// # let new_sav = sql.insert_sav(&connection, &vec![0x01, 0x02, 0x03, 0x04]).unwrap();
     /// # let id = new_sav.id;
     /// sql.delete_sav_by_id(&connection, &id).unwrap();
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn delete_sav_by_id(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         id: &String,
     ) -> Result<(), error::Error> {
         use crate::schema::savs;
@@ -1105,11 +1060,7 @@ impl PkmnapiSQL {
     ///
     /// ```
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
     /// use pkmnapi_sql::*;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -1124,11 +1075,11 @@ impl PkmnapiSQL {
     /// assert_eq!(patch.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(patch.description, None);
     /// assert_eq!(patch.etag.len(), 36);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn select_sav_patch_by_id(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
         id: &String,
     ) -> Result<Option<SavPatch>, error::Error> {
@@ -1162,11 +1113,7 @@ impl PkmnapiSQL {
     ///
     /// ```
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
     /// use pkmnapi_sql::*;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -1181,11 +1128,11 @@ impl PkmnapiSQL {
     /// assert_eq!(patch.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(patch.description, None);
     /// assert_eq!(patch.etag.len(), 36);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn select_sav_patches_by_access_token(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
     ) -> Result<Vec<SavPatch>, error::Error> {
         use crate::schema::sav_patches;
@@ -1217,10 +1164,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -1237,11 +1180,11 @@ impl PkmnapiSQL {
     ///
     /// assert_eq!(new_sav_patch.id.len(), 32);
     /// assert_eq!(new_sav_patch.data, vec![0x01, 0x02, 0x03, 0x04]);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn insert_sav_patch(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
         data: &Vec<u8>,
         description: Option<String>,
@@ -1256,8 +1199,9 @@ impl PkmnapiSQL {
 
         let new_sav_patch = NewSavPatch::new(&user.id, &data, description);
 
-        match diesel::insert_or_ignore_into(sav_patches::table)
+        match diesel::insert_into(sav_patches::table)
             .values(&new_sav_patch)
+            .on_conflict_do_nothing()
             .execute(connection)
         {
             Ok(_) => {
@@ -1278,10 +1222,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -1291,11 +1231,11 @@ impl PkmnapiSQL {
     /// # let id = new_sav_patch.id;
     /// # let etag = new_sav_patch.etag;
     /// sql.delete_sav_patch_by_id(&connection, &access_token, &id, &etag).unwrap();
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn delete_sav_patch_by_id(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
         id: &String,
         etag: &String,
@@ -1343,10 +1283,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -1359,11 +1295,11 @@ impl PkmnapiSQL {
     /// assert_eq!(sav.date_create.len(), 20);
     /// assert_eq!(sav.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(sav.etag.len(), 36);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn select_user_sav_by_access_token(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
     ) -> Result<Option<Sav>, error::Error> {
         use crate::schema::savs;
@@ -1394,10 +1330,6 @@ impl PkmnapiSQL {
     /// ```
     /// use pkmnapi_sql::*;
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -1415,11 +1347,11 @@ impl PkmnapiSQL {
     /// assert_eq!(sav.date_create.len(), 20);
     /// assert_eq!(sav.data, vec![0x01, 0x02, 0x03, 0x04]);
     /// assert_eq!(sav.etag.len(), 36);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn update_user_sav_by_access_token(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
         data: &Vec<u8>,
     ) -> Result<Sav, error::Error> {
@@ -1468,11 +1400,7 @@ impl PkmnapiSQL {
     ///
     /// ```
     /// # use std::process::Command;
-    /// # use std::fs;
-    /// # use std::env;
     /// use pkmnapi_sql::*;
-    /// # env::set_var("DATABASE_URL", "test.db");
-    /// # Command::new("diesel").args(&["migration", "run"]).output();
     ///
     /// let sql = PkmnapiSQL::new();
     ///
@@ -1481,11 +1409,11 @@ impl PkmnapiSQL {
     /// # let sav = sql.update_user_sav_by_access_token(&connection, &access_token, &vec![0x01, 0x02, 0x03, 0x04]).unwrap();
     /// # let etag = sav.etag;
     /// sql.delete_user_sav_by_access_token(&connection, &access_token, &etag);
-    /// # fs::remove_file("test.db");
+    /// # sql.revert_migration();
     /// ```
     pub fn delete_user_sav_by_access_token(
         &self,
-        connection: &SqlitePooledConnection,
+        connection: &PgPooledConnection,
         access_token: &String,
         etag: &String,
     ) -> Result<(), error::Error> {

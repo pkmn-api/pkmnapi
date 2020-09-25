@@ -1,60 +1,60 @@
 table! {
     rom_data (id) {
-        id -> Text,
-        name -> Text,
-        data -> Binary,
+        id -> Varchar,
+        name -> Varchar,
+        data -> Bytea,
     }
 }
 
 table! {
     rom_patches (id) {
-        id -> Text,
-        date_create -> Text,
-        user_id -> Text,
-        data -> Binary,
-        description -> Nullable<Text>,
-        etag -> Text,
+        id -> Varchar,
+        date_create -> Varchar,
+        user_id -> Varchar,
+        data -> Bytea,
+        description -> Nullable<Varchar>,
+        etag -> Varchar,
     }
 }
 
 table! {
     roms (id) {
-        id -> Text,
-        date_create -> Text,
-        name -> Text,
-        etag -> Text,
-        rom_data_id -> Text,
+        id -> Varchar,
+        date_create -> Varchar,
+        name -> Varchar,
+        etag -> Varchar,
+        rom_data_id -> Varchar,
     }
 }
 
 table! {
     sav_patches (id) {
-        id -> Text,
-        date_create -> Text,
-        user_id -> Text,
-        data -> Binary,
-        description -> Nullable<Text>,
-        etag -> Text,
+        id -> Varchar,
+        date_create -> Varchar,
+        user_id -> Varchar,
+        data -> Bytea,
+        description -> Nullable<Varchar>,
+        etag -> Varchar,
     }
 }
 
 table! {
     savs (id) {
-        id -> Text,
-        date_create -> Text,
-        data -> Binary,
-        etag -> Text,
+        id -> Varchar,
+        date_create -> Varchar,
+        data -> Bytea,
+        etag -> Varchar,
     }
 }
 
 table! {
     users (id) {
-        id -> Text,
-        date_create -> Text,
-        date_expire -> Text,
-        access_token_hash -> Text,
-        rom_id -> Nullable<Text>,
-        sav_id -> Nullable<Text>,
+        id -> Varchar,
+        date_create -> Varchar,
+        date_expire -> Varchar,
+        access_token_hash -> Varchar,
+        rom_id -> Nullable<Varchar>,
+        sav_id -> Nullable<Varchar>,
     }
 }
 
