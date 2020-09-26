@@ -1,5 +1,5 @@
 [package]
-name = "pkmnapi"
+name = "pkmnapi-api"
 version = "0.1.0"
 authors = ["Kevin Selwyn <kevinselwyn@gmail.com>"]
 edition = "2018"

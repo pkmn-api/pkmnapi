@@ -10,7 +10,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  pkmnapi:
+  pkmnapi-api:
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -39,13 +39,13 @@ jobs:
         SECRET_PASSPHRASE: ${{ secrets.SECRET_PASSPHRASE }}
     - name: Build
       run: cargo build --verbose
-      working-directory: pkmnapi
+      working-directory: pkmnapi-api
     - name: Dependencies
       run: cargo install diesel_cli
-      working-directory: pkmnapi
+      working-directory: pkmnapi-api
     - name: Test
       run: cargo test --verbose -- --test-threads 1
-      working-directory: pkmnapi
+      working-directory: pkmnapi-api
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/pkmnapi-test
         PKMN_ROM: ../secrets/pkmn.gb

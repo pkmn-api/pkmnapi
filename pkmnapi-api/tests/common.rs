@@ -1,4 +1,4 @@
-use pkmnapi::*;
+use pkmnapi_api::*;
 use pkmnapi_sql::*;
 use rocket::http::{ContentType, Header, Status};
 use rocket::local::Client;

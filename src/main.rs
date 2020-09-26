@@ -1,4 +1,4 @@
-use pkmnapi::*;
+use pkmnapi_api::*;
 
 fn main() {
     let api = Pkmnapi::init();
