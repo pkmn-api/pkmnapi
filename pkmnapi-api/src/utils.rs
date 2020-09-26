@@ -58,20 +58,11 @@ pub fn get_db_with_applied_patches(
 
 pub fn generate_url(route: &str, resource: Option<&String>) -> String {
     let version = env::var("API_VERSION").unwrap_or("1".to_owned());
-    let port = env::var("ROCKET_PORT").unwrap_or("80".to_owned());
-    let protocol = match port.as_str() {
-        "433" => "https".to_owned(),
-        _ => "http".to_owned(),
-    };
-    let address = env::var("ROCKET_ADDRESS").unwrap_or("localhost".to_owned());
-    let host = match address.as_str() {
-        "localhost" => format!("{}:{}", address, port),
-        _ => address,
-    };
+    let domain = env::var("API_DOMAIN").unwrap_or("localhost".to_owned());
     let resource = match &resource {
         Some(resource) => format!("/{}", resource),
         None => "".to_owned(),
     };
 
-    format!("{}://{}/v{}/{}{}", protocol, host, version, route, resource)
+    format!("{}/v{}/{}{}", domain, version, route, resource)
 }
