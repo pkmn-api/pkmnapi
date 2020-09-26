@@ -8,10 +8,6 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
-defaults:
-  run:
-    working-directory: pkmnapi
-
 jobs:
   release:
     name: Release for ${{ matrix.os }}
@@ -34,16 +30,6 @@ jobs:
         with:
           toolchain: nightly
           override: true
-      - name: Sqlite (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: cmd
-        run: |
-          choco install sqlite
-          cd /D C:\ProgramData\chocolatey\lib\SQLite\tools
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-          lib /machine:x64 /def:sqlite3.def /out:sqlite3.lib
-          echo ::add-path::C:\ProgramData\chocolatey\lib\SQLite\tools
-          echo ::set-env name=SQLITE3_LIB_DIR::C:\ProgramData\chocolatey\lib\SQLite\tools
       - name: Build
         run: cargo build --release
       - name: Upload
