@@ -14,6 +14,7 @@ use crate::utils;
 #[post("/roms", data = "<data>")]
 pub fn post_rom<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     data: Data,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Response<'a>, ResponseError> {
@@ -63,6 +64,7 @@ pub fn post_rom<'a>(
 #[get("/roms")]
 pub fn get_rom<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Response<'a>, ResponseError> {
     let access_token = match access_token {
@@ -91,6 +93,7 @@ pub fn get_rom<'a>(
 #[delete("/roms")]
 pub fn delete_rom(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     if_match: Result<IfMatch, IfMatchError>,
 ) -> Result<status::NoContent, ResponseError> {

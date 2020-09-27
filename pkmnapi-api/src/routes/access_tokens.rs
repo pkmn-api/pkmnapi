@@ -13,6 +13,7 @@ use crate::utils;
 #[post("/access_tokens", format = "application/json", data = "<data>")]
 pub fn post_access_token(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     data: Result<Json<AccessTokenRequest>, JsonError>,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<status::Created<JsonValue>, ResponseError> {

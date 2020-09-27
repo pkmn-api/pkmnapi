@@ -14,6 +14,7 @@ use crate::utils;
 #[get("/trainers/names/<trainer_id>")]
 pub fn get_trainer_name(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     trainer_id: u8,
 ) -> Result<Json<TrainerNameResponse>, ResponseError> {
@@ -40,6 +41,7 @@ pub fn get_trainer_name(
 )]
 pub fn post_trainer_name(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
     data: Result<Json<TrainerNameRequest>, JsonError>,

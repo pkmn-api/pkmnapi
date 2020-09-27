@@ -13,6 +13,7 @@ use crate::utils;
 #[get("/tms/<tm_id>")]
 pub fn get_tm(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     tm_id: u8,
 ) -> Result<Json<TMResponse>, ResponseError> {
@@ -41,6 +42,7 @@ pub fn get_tm(
 #[post("/tms/<tm_id>", format = "application/json", data = "<data>")]
 pub fn post_tm(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
     data: Result<Json<TMRequest>, JsonError>,

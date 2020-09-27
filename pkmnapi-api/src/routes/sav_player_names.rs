@@ -14,6 +14,7 @@ use crate::utils;
 #[get("/savs/player_names")]
 pub fn get_sav_player_name(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Json<SavPlayerNameResponse>, ResponseError> {
     let access_token = match access_token {
@@ -46,6 +47,7 @@ pub fn get_sav_player_name(
 #[post("/savs/player_names", format = "application/json", data = "<data>")]
 pub fn post_sav_player_name(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
     data: Result<Json<SavPlayerNameRequest>, JsonError>,

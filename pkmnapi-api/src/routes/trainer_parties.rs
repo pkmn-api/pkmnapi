@@ -14,6 +14,7 @@ use crate::utils;
 #[get("/trainers/parties/<trainer_id>")]
 pub fn get_trainer_parties(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     trainer_id: u8,
 ) -> Result<Json<TrainerPartiesResponse>, ResponseError> {
@@ -68,6 +69,7 @@ pub fn get_trainer_parties(
 )]
 pub fn post_trainer_parties(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
     data: Result<Json<TrainerPartiesRequest>, JsonError>,

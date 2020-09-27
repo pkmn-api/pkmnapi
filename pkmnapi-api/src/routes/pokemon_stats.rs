@@ -13,6 +13,7 @@ use crate::utils;
 #[get("/pokemon/stats/<pokedex_id>")]
 pub fn get_pokemon_stats(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     pokedex_id: u8,
 ) -> Result<Json<PokemonStatsResponse>, ResponseError> {
@@ -54,6 +55,7 @@ pub fn get_pokemon_stats(
 )]
 pub fn post_pokemon_stats(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
     data: Result<Json<PokemonStatsRequest>, JsonError>,

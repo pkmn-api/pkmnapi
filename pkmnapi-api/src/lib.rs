@@ -12,16 +12,37 @@ pub mod responses;
 pub mod routes;
 pub mod utils;
 
+use governor::clock::DefaultClock;
+use governor::state::keyed::HashMapStateStore;
+use governor::{Quota, RateLimiter};
 use pkmnapi_sql::*;
 use rocket::fairing::AdHoc;
 use rocket::Rocket;
 use rocket_cors::AllowedHeaders;
+use std::env;
+use std::num::NonZeroU32;
+use std::time::Duration;
 
 pub struct Pkmnapi {}
 
 impl Pkmnapi {
     pub fn init() -> Rocket {
         let sql = PkmnapiSQL::new();
+        let lim: RateLimiter<String, HashMapStateStore<String>, DefaultClock> =
+            RateLimiter::hashmap({
+                let duration = env::var("RATE_LIMIT_DURATION")
+                    .unwrap_or("60".to_owned())
+                    .parse::<u64>()
+                    .unwrap_or(60);
+                let count = env::var("RATE_LIMIT_COUNT")
+                    .unwrap_or("120".to_owned())
+                    .parse::<u32>()
+                    .unwrap_or(120);
+
+                Quota::with_period(Duration::from_secs(duration))
+                    .unwrap()
+                    .allow_burst(NonZeroU32::new(count).unwrap())
+            });
         let cors = rocket_cors::CorsOptions {
             allowed_headers: AllowedHeaders::some(&["Authorization", "Accept"]),
             allow_credentials: true,
@@ -32,6 +53,7 @@ impl Pkmnapi {
 
         rocket::ignite()
             .manage(sql)
+            .manage(lim)
             .mount("/", routes![routes::status::status,])
             .mount(
                 "/v1",
@@ -81,6 +103,7 @@ impl Pkmnapi {
             )
             .register(catchers![
                 routes::errors::not_found,
+                routes::errors::too_many_requests,
                 routes::errors::internal_server_error
             ])
             .attach(AdHoc::on_response("Update Server Name", |_, res| {

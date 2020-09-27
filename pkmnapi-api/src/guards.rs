@@ -1,6 +1,10 @@
+use governor::clock::{Clock, DefaultClock, QuantaClock};
+use governor::state::keyed::HashMapStateStore;
+use governor::RateLimiter;
 use rocket::http::Status;
 use rocket::request::{self, FromRequest, Request};
 use rocket::Outcome;
+use rocket::State;
 
 #[derive(Debug, PartialEq)]
 pub struct AccessToken(String);
@@ -99,5 +103,44 @@ impl<'a, 'r> FromRequest<'a, 'r> for PatchDescription {
         let patch_description = PatchDescription(patch_description);
 
         return Outcome::Success(patch_description);
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct RateLimit;
+
+#[derive(Debug, PartialEq)]
+pub enum RateLimitError {
+    Unknown,
+    TooManyRequests(u64),
+}
+
+impl<'a, 'r> FromRequest<'a, 'r> for RateLimit {
+    type Error = RateLimitError;
+
+    fn from_request(request: &'a Request<'r>) -> request::Outcome<RateLimit, Self::Error> {
+        let lim = match request
+            .guard::<State<RateLimiter<String, HashMapStateStore<String>, DefaultClock>>>()
+        {
+            Outcome::Success(lim) => lim,
+            _ => return Outcome::Failure((Status::InternalServerError, RateLimitError::Unknown)),
+        };
+        let ip = match request.client_ip() {
+            Some(ip) => ip.to_string(),
+            None => "unknown".to_owned(),
+        };
+
+        match lim.check_key(&ip) {
+            Ok(_) => Outcome::Success(RateLimit),
+            Err(e) => {
+                let clock = QuantaClock::default();
+                let wait_time = e.wait_time_from(clock.now()).as_secs();
+
+                Outcome::Failure((
+                    Status::TooManyRequests,
+                    RateLimitError::TooManyRequests(wait_time),
+                ))
+            }
+        }
     }
 }

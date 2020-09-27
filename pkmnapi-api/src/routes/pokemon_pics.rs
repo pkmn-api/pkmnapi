@@ -19,6 +19,7 @@ use crate::utils;
 )]
 pub fn get_pokemon_pic_png<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     pokedex_id: u8,
     face: Option<String>,
@@ -65,6 +66,7 @@ pub fn get_pokemon_pic_png<'a>(
 )]
 pub fn get_pokemon_pic_jpeg<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     pokedex_id: u8,
     face: Option<String>,
@@ -112,6 +114,7 @@ pub fn get_pokemon_pic_jpeg<'a>(
 )]
 pub fn post_pokemon_pic_png<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     data: Data,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
@@ -178,6 +181,7 @@ pub fn post_pokemon_pic_png<'a>(
 )]
 pub fn post_pokemon_pic_jpeg<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     data: Data,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,

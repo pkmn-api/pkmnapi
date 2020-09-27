@@ -32,6 +32,7 @@ mod sav_response_error_no_sav;
 mod sav_response_error_sav_exists;
 mod tm_response_error;
 mod tm_response_error_invalid;
+mod too_many_requests_error;
 mod trainer_name_response_error;
 mod trainer_name_response_error_invalid;
 mod trainer_parties_response_error;
@@ -72,6 +73,7 @@ pub use crate::responses::errors::sav_response_error_no_sav::*;
 pub use crate::responses::errors::sav_response_error_sav_exists::*;
 pub use crate::responses::errors::tm_response_error::*;
 pub use crate::responses::errors::tm_response_error_invalid::*;
+pub use crate::responses::errors::too_many_requests_error::*;
 pub use crate::responses::errors::trainer_name_response_error::*;
 pub use crate::responses::errors::trainer_name_response_error_invalid::*;
 pub use crate::responses::errors::trainer_parties_response_error::*;
@@ -172,6 +174,7 @@ pub enum BaseErrorResponseId {
     error_savs_sav_exists,
     error_tms_invalid,
     error_tms,
+    error_too_many_requests,
     error_trainer_names_invalid,
     error_trainer_names,
     error_trainer_parties_invalid,

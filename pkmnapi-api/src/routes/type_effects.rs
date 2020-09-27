@@ -13,6 +13,7 @@ use crate::utils;
 #[get("/types/effects/<type_effect_id>")]
 pub fn get_type_effect(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     type_effect_id: u8,
 ) -> Result<Json<TypeEffectResponse>, ResponseError> {
@@ -54,6 +55,7 @@ pub fn get_type_effect(
 )]
 pub fn post_type_effect(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
     data: Result<Json<TypeEffectRequest>, JsonError>,

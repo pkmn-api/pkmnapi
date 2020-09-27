@@ -11,6 +11,7 @@ use crate::utils;
 #[get("/maps/pics/<map_id>", format = "image/png", rank = 1)]
 pub fn get_map_pic_png<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     map_id: u8,
 ) -> Result<Response<'a>, ResponseError> {
@@ -46,6 +47,7 @@ pub fn get_map_pic_png<'a>(
 #[get("/maps/pics/<map_id>", format = "image/jpeg", rank = 2)]
 pub fn get_map_pic_jpeg<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     map_id: u8,
 ) -> Result<Response<'a>, ResponseError> {

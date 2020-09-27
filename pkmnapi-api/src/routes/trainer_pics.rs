@@ -14,6 +14,7 @@ use crate::utils;
 #[get("/trainers/pics/<trainer_id>?<mirror>", format = "image/png", rank = 1)]
 pub fn get_trainer_pic_png<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     trainer_id: u8,
     mirror: Option<bool>,
@@ -59,6 +60,7 @@ pub fn get_trainer_pic_png<'a>(
 )]
 pub fn get_trainer_pic_jpeg<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     trainer_id: u8,
     mirror: Option<bool>,
@@ -105,6 +107,7 @@ pub fn get_trainer_pic_jpeg<'a>(
 )]
 pub fn post_trainer_pic_png<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     data: Data,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
@@ -165,6 +168,7 @@ pub fn post_trainer_pic_png<'a>(
 )]
 pub fn post_trainer_pic_jpeg<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     data: Data,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,

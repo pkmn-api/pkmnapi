@@ -14,6 +14,7 @@ use crate::utils;
 #[get("/types/names/<type_id>")]
 pub fn get_type_name(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     type_id: u8,
 ) -> Result<Json<TypeNameResponse>, ResponseError> {
@@ -36,6 +37,7 @@ pub fn get_type_name(
 #[post("/types/names/<type_id>", format = "application/json", data = "<data>")]
 pub fn post_type_name(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
     data: Result<Json<TypeNameRequest>, JsonError>,

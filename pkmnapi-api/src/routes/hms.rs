@@ -13,6 +13,7 @@ use crate::utils;
 #[get("/hms/<hm_id>")]
 pub fn get_hm(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     hm_id: u8,
 ) -> Result<Json<HMResponse>, ResponseError> {
@@ -41,6 +42,7 @@ pub fn get_hm(
 #[post("/hms/<hm_id>", format = "application/json", data = "<data>")]
 pub fn post_hm(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
     data: Result<Json<HMRequest>, JsonError>,

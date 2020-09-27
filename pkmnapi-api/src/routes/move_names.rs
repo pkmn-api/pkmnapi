@@ -14,6 +14,7 @@ use crate::utils;
 #[get("/moves/names/<move_id>")]
 pub fn get_move_name(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     move_id: u8,
 ) -> Result<Json<MoveNameResponse>, ResponseError> {
@@ -36,6 +37,7 @@ pub fn get_move_name(
 #[post("/moves/names/<move_id>", format = "application/json", data = "<data>")]
 pub fn post_move_name(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
     data: Result<Json<MoveNameRequest>, JsonError>,

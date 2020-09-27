@@ -14,6 +14,7 @@ use crate::utils;
 #[get("/pokemon/names/<pokedex_id>")]
 pub fn get_pokemon_name(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     pokedex_id: u8,
 ) -> Result<Json<PokemonNameResponse>, ResponseError> {
@@ -40,6 +41,7 @@ pub fn get_pokemon_name(
 )]
 pub fn post_pokemon_name(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
     data: Result<Json<PokemonNameRequest>, JsonError>,

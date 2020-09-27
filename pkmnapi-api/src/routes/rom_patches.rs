@@ -14,6 +14,7 @@ use crate::utils;
 #[get("/roms/patches", format = "application/json", rank = 1)]
 pub fn get_rom_patches(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Json<RomPatchesResponse>, ResponseError> {
     let access_token = match access_token {
@@ -35,6 +36,7 @@ pub fn get_rom_patches(
 #[get("/roms/patches?<checksum>", format = "application/patch", rank = 2)]
 pub fn get_rom_patches_raw<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     checksum: Option<bool>,
 ) -> Result<Response<'a>, ResponseError> {
@@ -82,6 +84,7 @@ pub fn get_rom_patches_raw<'a>(
 #[get("/roms/patches/<patch_id>")]
 pub fn get_rom_patch<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_id: String,
 ) -> Result<Response<'a>, ResponseError> {
@@ -112,6 +115,7 @@ pub fn get_rom_patch<'a>(
 #[delete("/roms/patches/<patch_id>")]
 pub fn delete_rom_patch(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     if_match: Result<IfMatch, IfMatchError>,
     patch_id: String,

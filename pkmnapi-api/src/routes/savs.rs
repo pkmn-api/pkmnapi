@@ -14,6 +14,7 @@ use crate::utils;
 #[post("/savs", data = "<data>")]
 pub fn post_sav<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     data: Data,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Response<'a>, ResponseError> {
@@ -58,6 +59,7 @@ pub fn post_sav<'a>(
 #[get("/savs")]
 pub fn get_sav<'a>(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Response<'a>, ResponseError> {
     let access_token = match access_token {
@@ -86,6 +88,7 @@ pub fn get_sav<'a>(
 #[delete("/savs")]
 pub fn delete_sav(
     sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     if_match: Result<IfMatch, IfMatchError>,
 ) -> Result<status::NoContent, ResponseError> {
