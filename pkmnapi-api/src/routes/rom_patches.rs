@@ -9,6 +9,7 @@ use std::io::Cursor;
 use crate::guards::*;
 use crate::responses::errors::*;
 use crate::responses::rom_patches::*;
+use crate::utils;
 
 #[get("/roms/patches", format = "application/json", rank = 1)]
 pub fn get_rom_patches(
@@ -31,32 +32,40 @@ pub fn get_rom_patches(
     Ok(Json(response))
 }
 
-#[get("/roms/patches", format = "application/patch", rank = 2)]
+#[get("/roms/patches?<checksum>", format = "application/patch", rank = 2)]
 pub fn get_rom_patches_raw<'a>(
     sql: State<PkmnapiSQL>,
     access_token: Result<AccessToken, AccessTokenError>,
+    checksum: Option<bool>,
 ) -> Result<Response<'a>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
     };
 
-    let connection = sql.get_connection().unwrap();
+    let (db, connection) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
     let patches = match sql.select_rom_patches_by_access_token(&connection, &access_token) {
         Ok(patches) => patches,
         Err(_) => return Err(RomResponseErrorNoRom::new()),
     };
 
-    let patch: Vec<u8> = [
-        "PATCH".chars().map(|c| c as u8).collect::<Vec<u8>>(),
-        patches
-            .iter()
-            .map(|patch| patch.data.to_vec())
-            .flatten()
-            .collect(),
-        "EOF".chars().map(|c| c as u8).collect::<Vec<u8>>(),
-    ]
-    .concat();
+    let header = "PATCH".chars().map(|c| c as u8).collect::<Vec<u8>>();
+    let footer = "EOF".chars().map(|c| c as u8).collect::<Vec<u8>>();
+    let mut body: Vec<u8> = patches
+        .iter()
+        .map(|patch| patch.data.to_vec())
+        .flatten()
+        .collect();
+
+    let checksum = match checksum {
+        Some(false) => vec![],
+        _ => db.generate_checksum().to_raw(),
+    };
+
+    body.extend(&checksum);
+
+    let patch: Vec<u8> = [header, body, footer].concat();
 
     let response = Response::build()
         .header(ContentType::new("application", "patch"))
