@@ -52,3 +52,14 @@
         }
     }
 }
+
+@media screen and (max-width: 600px) {
+    .menu {
+        transition:0.25s;
+
+        &-hidden {
+            width:100%;
+            z-index:2;
+        }
+    }
+}
