@@ -16,6 +16,10 @@ mod map_pic_response_error;
 mod move_name_response_error;
 mod move_name_response_error_invalid;
 mod not_found_error;
+mod pokedex_entry_response_error;
+mod pokedex_entry_response_error_invalid;
+mod pokedex_text_response_error;
+mod pokedex_text_response_error_invalid;
 mod pokemon_name_response_error;
 mod pokemon_name_response_error_invalid;
 mod pokemon_pic_response_error;
@@ -57,6 +61,10 @@ pub use crate::responses::errors::map_pic_response_error::*;
 pub use crate::responses::errors::move_name_response_error::*;
 pub use crate::responses::errors::move_name_response_error_invalid::*;
 pub use crate::responses::errors::not_found_error::*;
+pub use crate::responses::errors::pokedex_entry_response_error::*;
+pub use crate::responses::errors::pokedex_entry_response_error_invalid::*;
+pub use crate::responses::errors::pokedex_text_response_error::*;
+pub use crate::responses::errors::pokedex_text_response_error_invalid::*;
 pub use crate::responses::errors::pokemon_name_response_error::*;
 pub use crate::responses::errors::pokemon_name_response_error_invalid::*;
 pub use crate::responses::errors::pokemon_pic_response_error::*;
@@ -99,6 +107,10 @@ pub enum ResponseError {
     MoveNameResponseError(status::NotFound<Json<MoveNameResponseError>>),
     MoveNameResponseErrorInvalid(status::BadRequest<Json<MoveNameResponseErrorInvalid>>),
     NotFoundError(status::NotFound<Json<NotFoundError>>),
+    PokedexEntryResponseError(status::NotFound<Json<PokedexEntryResponseError>>),
+    PokedexEntryResponseErrorInvalid(status::BadRequest<Json<PokedexEntryResponseErrorInvalid>>),
+    PokedexTextResponseError(status::NotFound<Json<PokedexTextResponseError>>),
+    PokedexTextResponseErrorInvalid(status::BadRequest<Json<PokedexTextResponseErrorInvalid>>),
     PokemonNameResponseError(status::NotFound<Json<PokemonNameResponseError>>),
     PokemonNameResponseErrorInvalid(status::BadRequest<Json<PokemonNameResponseErrorInvalid>>),
     PokemonPicResponseError(status::NotFound<Json<PokemonPicResponseError>>),
@@ -158,6 +170,10 @@ pub enum BaseErrorResponseId {
     error_move_names_invalid,
     error_move_names,
     error_not_found,
+    error_pokedex_entries_invalid,
+    error_pokedex_entries,
+    error_pokedex_texts_invalid,
+    error_pokedex_texts,
     error_pokemon_names_invalid,
     error_pokemon_names,
     error_pokemon_pics,

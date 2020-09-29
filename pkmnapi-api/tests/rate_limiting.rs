@@ -28,7 +28,10 @@ fn rate_limiting() {
     let body_a = (&body[..120]).to_string();
     let body_b = (&body[(body.len() - 13)..]).to_string();
 
-    assert_eq!(body_a, r#"{"data":{"id":"error_too_many_requests","type":"errors","attributes":{"message":"Too many requests. Please try again in "#);
+    assert_eq!(
+        body_a,
+        r#"{"data":{"id":"error_too_many_requests","type":"errors","attributes":{"message":"Too many requests. Please try again in "#
+    );
     assert_eq!(body_b, r#" seconds."}}}"#);
 
     common::teardown(&client);

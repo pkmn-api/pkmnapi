@@ -3,6 +3,8 @@ pub mod errors;
 pub mod hms;
 pub mod map_pics;
 pub mod move_names;
+pub mod pokedex_entries;
+pub mod pokedex_texts;
 pub mod pokemon_names;
 pub mod pokemon_pics;
 pub mod pokemon_stats;
