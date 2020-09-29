@@ -17,7 +17,7 @@ pub enum Error {
     PicTooLarge,
     PicWrongSize,
     PokedexEntrySpeciesWrongSize(usize, usize),
-    PokedexEntryTextWrongSize(usize, usize),
+    PokedexTextWrongSize(usize, usize),
     PokedexIDInvalid(u8),
     SavBagItemsWrongSize(usize, usize),
     SavBoxItemsWrongSize(usize, usize),
@@ -99,8 +99,8 @@ impl fmt::Display for Error {
                 "Pokédex entry species length mismatch: should be exactly {} characters, found {}",
                 expected, actual
             ),
-            Error::PokedexEntryTextWrongSize(expected, actual) => format!(
-                "Pokédex entry text length mismatch: should be {} characters or fewer, found {}",
+            Error::PokedexTextWrongSize(expected, actual) => format!(
+                "Pokédex text length mismatch: should be {} characters or fewer, found {}",
                 expected, actual
             ),
             Error::SavBagItemsWrongSize(expected, actual) => format!(

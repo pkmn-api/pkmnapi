@@ -838,22 +838,22 @@ impl PokedexEntry {
 /// use pkmnapi_db::types::*;
 ///
 /// let rom = vec![0x00, 0x83, 0x91, 0x88, 0x8B, 0x8B, 0x5F];
-/// let pokedex_entry_text = PokedexEntryText::from(&rom[..]);
+/// let pokedex_text = PokedexText::from(&rom[..]);
 ///
 /// assert_eq!(
-///     pokedex_entry_text,
-///     PokedexEntryText {
+///     pokedex_text,
+///     PokedexText {
 ///         text: ROMString::from("DRILL"),
 ///     }
 /// );
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct PokedexEntryText {
+pub struct PokedexText {
     pub text: ROMString,
 }
 
-impl From<&[u8]> for PokedexEntryText {
-    /// Convert &[u8] to PokedexEntryText
+impl From<&[u8]> for PokedexText {
+    /// Convert &[u8] to PokedexText
     ///
     /// # Example
     ///
@@ -862,11 +862,11 @@ impl From<&[u8]> for PokedexEntryText {
     /// use pkmnapi_db::types::*;
     ///
     /// let rom = vec![0x00, 0x83, 0x91, 0x88, 0x8B, 0x8B, 0x5F];
-    /// let pokedex_entry = PokedexEntryText::from(&rom[..]);
+    /// let pokedex_entry = PokedexText::from(&rom[..]);
     ///
     /// assert_eq!(
     ///     pokedex_entry,
-    ///     PokedexEntryText {
+    ///     PokedexText {
     ///         text: ROMString::from("DRILL"),
     ///     }
     /// );
@@ -876,11 +876,11 @@ impl From<&[u8]> for PokedexEntryText {
 
         let text = ROMString::new(&rom[1..text_end_index]);
 
-        PokedexEntryText { text }
+        PokedexText { text }
     }
 }
 
-impl PokedexEntryText {
+impl PokedexText {
     /// Pokédex entry text to raw bytes
     ///
     /// # Example
@@ -889,11 +889,11 @@ impl PokedexEntryText {
     /// use pkmnapi_db::string::*;
     /// use pkmnapi_db::types::*;
     ///
-    /// let pokedex_entry_text = PokedexEntryText {
+    /// let pokedex_text = PokedexText {
     ///     text: ROMString::from("DRILL"),
     /// };
     ///
-    /// let raw = pokedex_entry_text.to_raw();
+    /// let raw = pokedex_text.to_raw();
     ///
     /// assert_eq!(raw, vec![0x00, 0x83, 0x91, 0x88, 0x8B, 0x8B, 0x5F]);
     /// ```

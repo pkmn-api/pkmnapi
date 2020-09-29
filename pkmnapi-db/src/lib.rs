@@ -1582,16 +1582,13 @@ impl PkmnapiDB {
     /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
-    /// let pokedex_entry_text = db.get_pokedex_entry_text(&1).unwrap();
+    /// let pokedex_text = db.get_pokedex_text(&1).unwrap();
     ///
-    /// assert_eq!(pokedex_entry_text, PokedexEntryText {
+    /// assert_eq!(pokedex_text, PokedexText {
     ///     text: ROMString::from("A strange seed was\nplanted on its\nback at birth.¶The plant sprouts\nand grows with\nthis #MON"),
     /// });
     /// ```
-    pub fn get_pokedex_entry_text(
-        &self,
-        pokedex_id: &u8,
-    ) -> Result<PokedexEntryText, error::Error> {
+    pub fn get_pokedex_text(&self, pokedex_id: &u8) -> Result<PokedexText, error::Error> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset_base = ROM_PAGE * 0x1E;
@@ -1612,9 +1609,9 @@ impl PkmnapiDB {
         let pointer_base = (ROM_PAGE * 2) * { cursor.read_u8().unwrap_or(0) as usize };
         let pointer = pointer + pointer_base - (ROM_PAGE * 2);
 
-        let pokedex_entry_text = PokedexEntryText::from(&self.rom[pointer..]);
+        let pokedex_text = PokedexText::from(&self.rom[pointer..]);
 
-        Ok(pokedex_entry_text)
+        Ok(pokedex_text)
     }
 
     /// Set Pokédex entry text by Pokédex ID
@@ -1634,7 +1631,7 @@ impl PkmnapiDB {
     /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
     /// let patch = db
-    ///     .set_pokedex_entry_text(&1, &PokedexEntryText {
+    ///     .set_pokedex_text(&1, &PokedexText {
     ///         text: ROMString::from("ABCDE"),
     ///     })
     ///     .unwrap();
@@ -1648,20 +1645,20 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_pokedex_entry_text(
+    pub fn set_pokedex_text(
         &self,
         pokedex_id: &u8,
-        pokedex_entry_text: &PokedexEntryText,
+        pokedex_text: &PokedexText,
     ) -> Result<Patch, error::Error> {
-        let old_pokedex_entry_text = self.get_pokedex_entry_text(pokedex_id)?;
-        let old_pokedex_entry_text_len = old_pokedex_entry_text.text.value.len();
-        let pokedex_entry_text_raw = pokedex_entry_text.text.to_string();
-        let pokedex_entry_text_len = pokedex_entry_text_raw.len();
+        let old_pokedex_text = self.get_pokedex_text(pokedex_id)?;
+        let old_pokedex_text_len = old_pokedex_text.text.value.len();
+        let pokedex_text_raw = pokedex_text.text.to_string();
+        let pokedex_text_len = pokedex_text_raw.len();
 
-        if pokedex_entry_text_len >= old_pokedex_entry_text_len {
-            return Err(error::Error::PokedexEntryTextWrongSize(
-                old_pokedex_entry_text_len,
-                pokedex_entry_text_len,
+        if pokedex_text_len >= old_pokedex_text_len {
+            return Err(error::Error::PokedexTextWrongSize(
+                old_pokedex_text_len,
+                pokedex_text_len,
             ));
         }
 
@@ -1685,7 +1682,7 @@ impl PkmnapiDB {
         let pointer_base = (ROM_PAGE * 2) * { cursor.read_u8().unwrap_or(0) as usize };
         let pointer = pointer + pointer_base - (ROM_PAGE * 2);
 
-        Ok(Patch::new(&pointer, &pokedex_entry_text.to_raw()))
+        Ok(Patch::new(&pointer, &pokedex_text.to_raw()))
     }
 
     /// Get Pokémon pic by Pokédex ID
