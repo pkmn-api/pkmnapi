@@ -1,4 +1,4 @@
-base_url = "https://pkmnapi.com"
+base_url = "https://www.pkmnapi.com"
 build_search_index = true
 compile_sass = true
 highlight_code = true
