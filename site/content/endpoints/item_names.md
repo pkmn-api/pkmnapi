@@ -1,23 +1,23 @@
 +++
-title = "Type Names"
-weight = 22
+title = "Item Names"
+weight = 3
 +++
 
-| Endpoint                                         | Description         |
-|--------------------------------------------------|---------------------|
-| [GET /v1/types/names/:type_id](#get-type-name)   | Gets a type name    |
-| [POST /v1/types/names/:type_id](#post-type-name) | Updates a type name |
+| Endpoint                                         | Description            |
+|--------------------------------------------------|------------------------|
+| [GET /v1/items/names/:item_id](#get-item-name)   | Gets an item's name    |
+| [POST /v1/items/names/:item_id](#post-item-name) | Updates an item's name |
 
 ---
 
-### GET /v1/types/names/:type_id {#get-type-name}
+### GET /v1/items/names/:item_id {#get-item-name}
 
-Gets a type name
+Gets an item's name
 
 #### Request Parameters
 
 {% api_request_params() %}
-| url | `:type_id` | string | ✔️ | Type ID. |
+| url | `:item_id` | string | ✔️ | Item ID. |
 {% end %}
 
 #### Example Request
@@ -25,7 +25,7 @@ Gets a type name
 **Header:**
 
 {% api_headers() %}
-GET /v1/types/names/0
+GET /v1/items/names/1
 Host: {{API_HOST}}
 Authorization: Bearer <access_token>
 {% end %}
@@ -38,10 +38,10 @@ Authorization: Bearer <access_token>
 
 {% api_response_params() %}
 | `data`                 | object |                                         |
-| `data.id`              | string | Type ID. (identical to `:type_id`)      |
-| `data.type`            | string | Type of resource. Must be "type_names". |
+| `data.id`              | string | Item ID. (identical to `:item_id`)      |
+| `data.type`            | string | Type of resource. Must be "item_names". |
 | `data.attributes`      | object |                                         |
-| `data.attributes.name` | string | Type name.                              |
+| `data.attributes.name` | string | Item name.                              |
 | `data.links`           | object |                                         |
 | `data.links.self`      | string | Link to current resource.               |
 | `links`                | object |                                         |
@@ -63,36 +63,36 @@ Server: pkmnapi/0.1.0
 {% api_response() %}
 {
     "data": {
-        "id": "0",
-        "type": "type_names",
+        "id": "1",
+        "type": "item_names",
         "attributes": {
-            "name": "NORMAL"
+            "name": "MASTER BALL"
         },
         "links": {
-            "self": "{{API_DOMAIN}}/v1/types/names/0"
+            "self": "{{API_DOMAIN}}/v1/items/names/1"
         }
     },
     "links": {
-        "self": "{{API_DOMAIN}}/v1/types/names/0"
+        "self": "{{API_DOMAIN}}/v1/items/names/1"
     }
 }
 {% end %}
 
 ---
 
-### POST /v1/types/names/:type_id {#post-type-name}
+### POST /v1/items/names/:item_id {#post-item-name}
 
-Updates a type
+Updates an item's name
 
 #### Request Parameters
 
 {% api_request_params() %}
-| url    | `:type_id`             | string | ✔️ | Type ID.                            |
+| url    | `:item_id`             | string | ✔️ | Item ID.                            |
 | header | `X-Patch-Description`  | string |   | Description of change.              |
 | body   | `data`                 | object | ✔️ |                                     |
-| body   | `data.type`            | string | ✔️ | Type of data. Must be "type_names". |
+| body   | `data.type`            | string | ✔️ | Type of data. Must be "item_names". |
 | body   | `data.attributes`      | object | ✔️ |                                     |
-| body   | `data.attributes.name` | string | ✔️ | Type name.                          |
+| body   | `data.attributes.name` | string | ✔️ | Item name.                          |
 {% end %}
 
 #### Example Request
@@ -100,11 +100,11 @@ Updates a type
 **Header:**
 
 {% api_headers() %}
-POST /v1/types/names/0
+POST /v1/items/names/1
 Host: {{API_HOST}}
 Authorization: Bearer <access_token>
 Content-Type: application/json
-X-Patch-Description: Update NORMAL type
+X-Patch-Description: Update MASTER BALL to CHEATERBALL
 {% end %}
 
 **Body:**
@@ -112,9 +112,9 @@ X-Patch-Description: Update NORMAL type
 {% api_request() %}
 {
     "data": {
-        "type": "type_names",
+        "type": "item_names",
         "attributes": {
-            "name": "BORING"
+            "name": "CHEATERBALL"
         }
     }
 }

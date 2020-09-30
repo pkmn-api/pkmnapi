@@ -22,7 +22,7 @@ impl PokemonEvolutionsRequest {
                     PokemonEvolutionLevel::new(evolution.pokemon.id, evolution.level)
                 }
                 evolution::ITEM(evolution) => {
-                    PokemonEvolutionItem::new(evolution.pokemon.id, evolution.item_id)
+                    PokemonEvolutionItem::new(evolution.pokemon.id, evolution.item.id)
                 }
                 evolution::TRADE(evolution) => PokemonEvolutionTrade::new(evolution.pokemon.id),
             })
@@ -66,7 +66,7 @@ pub enum PokemonEvolutionsRequestAttributesEvolutionLevelType {
 #[derive(Debug, Deserialize)]
 pub struct PokemonEvolutionsRequestAttributesEvolutionItem {
     pub evolution_type: PokemonEvolutionsRequestAttributesEvolutionItemType,
-    pub item_id: u8,
+    pub item: PokemonEvolutionsRequestAttributesEvolutionItemAttributes,
     pub pokemon: PokemonEvolutionsRequestAttributesEvolutionPokemon,
 }
 
@@ -86,6 +86,12 @@ pub struct PokemonEvolutionsRequestAttributesEvolutionTrade {
 #[allow(non_camel_case_types)]
 pub enum PokemonEvolutionsRequestAttributesEvolutionTradeType {
     trade,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PokemonEvolutionsRequestAttributesEvolutionItemAttributes {
+    #[serde(deserialize_with = "from_str")]
+    id: u8,
 }
 
 #[derive(Debug, Deserialize)]

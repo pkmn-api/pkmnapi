@@ -17,6 +17,13 @@ sort_by = "weight"
 | [GET /v1/hms/:hm_id](@/endpoints/hms.md#get-hm)   | Gets a HM    |
 | [POST /v1/hms/:hm_id](@/endpoints/hms.md#post-hm) | Updates a HM |
 
+### [Item Names](@/endpoints/item_names.md)
+
+| Endpoint                                                                  | Description            |
+|---------------------------------------------------------------------------|------------------------|
+| [GET /v1/items/names/:item_id](@/endpoints/item_names.md#get-item-name)   | Gets an item's name    |
+| [POST /v1/items/names/:item_id](@/endpoints/item_names.md#post-item-name) | Updates an item's name |
+
 ### [Map Pics](@/endpoints/map_pics.md)
 
 | Endpoint                                                         | Description    |

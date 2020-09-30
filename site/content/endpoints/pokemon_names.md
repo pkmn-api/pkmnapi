@@ -1,6 +1,6 @@
 +++
 title = "Pokémon Names"
-weight = 8
+weight = 9
 +++
 
 | Endpoint                                                 | Description              |

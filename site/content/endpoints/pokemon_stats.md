@@ -1,6 +1,6 @@
 +++
 title = "Pokémon Stats"
-weight = 10
+weight = 11
 +++
 
 | Endpoint                                                  | Description               |

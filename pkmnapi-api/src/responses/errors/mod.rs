@@ -12,6 +12,8 @@ mod etag_error_missing;
 mod hm_response_error;
 mod hm_response_error_invalid;
 mod internal_server_error;
+mod item_name_response_error;
+mod item_name_response_error_invalid;
 mod map_pic_response_error;
 mod move_name_response_error;
 mod move_name_response_error_invalid;
@@ -59,6 +61,8 @@ pub use crate::responses::errors::etag_error_missing::*;
 pub use crate::responses::errors::hm_response_error::*;
 pub use crate::responses::errors::hm_response_error_invalid::*;
 pub use crate::responses::errors::internal_server_error::*;
+pub use crate::responses::errors::item_name_response_error::*;
+pub use crate::responses::errors::item_name_response_error_invalid::*;
 pub use crate::responses::errors::map_pic_response_error::*;
 pub use crate::responses::errors::move_name_response_error::*;
 pub use crate::responses::errors::move_name_response_error_invalid::*;
@@ -107,6 +111,8 @@ pub enum ResponseError {
     ETagErrorMissing(status::Forbidden<Json<ETagErrorMissing>>),
     HMResponseError(status::NotFound<Json<HMResponseError>>),
     HMResponseErrorInvalid(status::BadRequest<Json<HMResponseErrorInvalid>>),
+    ItemNameResponseError(status::NotFound<Json<ItemNameResponseError>>),
+    ItemNameResponseErrorInvalid(status::BadRequest<Json<ItemNameResponseErrorInvalid>>),
     MapPicResponseError(status::NotFound<Json<MapPicResponseError>>),
     MoveNameResponseError(status::NotFound<Json<MoveNameResponseError>>),
     MoveNameResponseErrorInvalid(status::BadRequest<Json<MoveNameResponseErrorInvalid>>),
@@ -174,6 +180,8 @@ pub enum BaseErrorResponseId {
     error_hms_invalid,
     error_hms,
     error_internal_server,
+    error_item_names_invalid,
+    error_item_names,
     error_map_pics,
     error_move_names_invalid,
     error_move_names,

@@ -1,6 +1,6 @@
 +++
 title = "Map Pics"
-weight = 3
+weight = 4
 +++
 
 | Endpoint                                  | Description    |

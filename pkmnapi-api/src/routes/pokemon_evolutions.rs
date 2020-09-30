@@ -55,7 +55,33 @@ pub fn get_pokemon_evolutions(
         Err(e) => return Err(e),
     };
 
-    let response = PokemonEvolutionsResponse::new(&pokedex_id, &pokemon_evolutions, pokemon_names);
+    let mut item_names: HashMap<u8, ItemName> = HashMap::new();
+
+    match pokemon_evolutions
+        .iter()
+        .filter_map(|pokemon_evolution| match pokemon_evolution {
+            PokemonEvolution::LEVEL(_) => None,
+            PokemonEvolution::ITEM(evolution) => Some(evolution.item_id),
+            PokemonEvolution::TRADE(_) => None,
+        })
+        .map(|item_id| {
+            let item_name = match db.get_item_name(&item_id) {
+                Ok(item_name) => item_name,
+                Err(e) => return Err(PokemonEvolutionsResponseError::new(&e.to_string())),
+            };
+
+            item_names.insert(item_id, item_name);
+
+            Ok(())
+        })
+        .collect::<Result<Vec<_>, ResponseError>>()
+    {
+        Ok(_) => {}
+        Err(e) => return Err(e),
+    };
+
+    let response =
+        PokemonEvolutionsResponse::new(&pokedex_id, &pokemon_evolutions, pokemon_names, item_names);
 
     Ok(Json(response))
 }

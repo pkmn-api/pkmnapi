@@ -27,6 +27,7 @@ pub struct BaseResponseAll<T> {
 #[allow(non_camel_case_types)]
 pub enum BaseResponseType {
     hms,
+    item_names,
     move_names,
     pokedex_entries,
     pokedex_texts,

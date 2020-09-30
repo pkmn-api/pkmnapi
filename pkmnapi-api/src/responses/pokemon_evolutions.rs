@@ -1,8 +1,9 @@
-use pkmnapi_db::types::{PokemonEvolution, PokemonName};
+use pkmnapi_db::types::{ItemName, PokemonEvolution, PokemonName};
 use serde::Serialize;
 use std::collections::HashMap;
 
 use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};
+use crate::responses::item_names::ItemNameResponseData;
 use crate::responses::links::Links;
 use crate::responses::pokemon_names::PokemonNameResponseData;
 use crate::utils;
@@ -15,6 +16,7 @@ impl PokemonEvolutionsResponse {
         pokedex_id: &u8,
         pokemon_evolutions: &Vec<PokemonEvolution>,
         pokemon_names: HashMap<u8, PokemonName>,
+        item_names: HashMap<u8, ItemName>,
     ) -> PokemonEvolutionsResponse {
         PokemonEvolutionsResponse {
             data: BaseResponseData {
@@ -27,6 +29,7 @@ impl PokemonEvolutionsResponse {
                             PokemonEvolutionsResponseAttributesEvolution::new(
                                 pokemon_evolution,
                                 &pokemon_names,
+                                &item_names,
                             )
                         })
                         .collect(),
@@ -55,7 +58,7 @@ pub struct PokemonEvolutionsResponseAttributesEvolution {
     pub level: Option<u8>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub item_id: Option<u8>,
+    pub item: Option<ItemNameResponseData>,
     pub pokemon: PokemonNameResponseData,
 }
 
@@ -63,12 +66,13 @@ impl PokemonEvolutionsResponseAttributesEvolution {
     pub fn new(
         pokemon_evolution: &PokemonEvolution,
         pokemon_names: &HashMap<u8, PokemonName>,
+        item_names: &HashMap<u8, ItemName>,
     ) -> Self {
         match pokemon_evolution {
             PokemonEvolution::LEVEL(evolution) => PokemonEvolutionsResponseAttributesEvolution {
                 evolution_type: PokemonEvolutionsResponseAttributesEvolutionType::level,
                 level: Some(evolution.level),
-                item_id: None,
+                item: None,
                 pokemon: PokemonNameResponseData::new(
                     &evolution.pokedex_id,
                     &pokemon_names.get(&evolution.pokedex_id).unwrap(),
@@ -77,7 +81,10 @@ impl PokemonEvolutionsResponseAttributesEvolution {
             PokemonEvolution::ITEM(evolution) => PokemonEvolutionsResponseAttributesEvolution {
                 evolution_type: PokemonEvolutionsResponseAttributesEvolutionType::item,
                 level: None,
-                item_id: Some(evolution.item_id),
+                item: Some(ItemNameResponseData::new(
+                    &evolution.item_id,
+                    &item_names.get(&evolution.item_id).unwrap(),
+                )),
                 pokemon: PokemonNameResponseData::new(
                     &evolution.pokedex_id,
                     &pokemon_names.get(&evolution.pokedex_id).unwrap(),
@@ -86,7 +93,7 @@ impl PokemonEvolutionsResponseAttributesEvolution {
             PokemonEvolution::TRADE(evolution) => PokemonEvolutionsResponseAttributesEvolution {
                 evolution_type: PokemonEvolutionsResponseAttributesEvolutionType::trade,
                 level: None,
-                item_id: None,
+                item: None,
                 pokemon: PokemonNameResponseData::new(
                     &evolution.pokedex_id,
                     &pokemon_names.get(&evolution.pokedex_id).unwrap(),

@@ -1,6 +1,6 @@
 +++
 title = "Pokémon Evolutions"
-weight = 7
+weight = 8
 +++
 
 | Endpoint                                                            | Description                    |
@@ -44,7 +44,13 @@ Authorization: Bearer <access_token>
 | `data.attributes.evolutions`                           | array  |                                                                               |
 | `data.attributes.evolutions[].evolution_type`          | string | Pokémon evolution type. (must be "level", "item", or "trade")                 |
 | `data.attributes.evolutions[].level`                   | number | Level at which Pokémon evolves. (only present if `evolution_type` is "level") |
-| `data.attributes.evolutions[].item_id`                 | number | Item that evolves the Pokémon. (only present if `evolution_type` is "item")   |
+| `data.attributes.evolutions[].item`                    | number | Item that evolves the Pokémon. (only present if `evolution_type` is "item")   |
+| `data.attributes.evolutions[].item.id`                 | string | Item ID.                                                                      |
+| `data.attributes.evolutions[].item.type`               | string | Type of resource. Must be "item_names".                                       |
+| `data.attributes.evolutions[].item.attributes`         | object |                                                                               |
+| `data.attributes.evolutions[].item.attributes.name`    | string | Item name.                                                                    |
+| `data.attributes.evolutions[].item.links`              | object |                                                                               |
+| `data.attributes.evolutions[].item.links.self`         | string | Link to item resource.                                                        |
 | `data.attributes.evolutions[].pokemon`                 | object | Pokémon.                                                                      |
 | `data.attributes.evolutions[].pokemon.id`              | string | Pokédex ID.                                                                   |
 | `data.attributes.evolutions[].pokemon.type`            | string | Type of resource. Must be "pokemon_names".                                    |
@@ -120,7 +126,8 @@ Updates a Pokémon's evolutions
 | body   | `data.attributes.evolutions`                  | array  | ✔️                                  |                                                               |
 | body   | `data.attributes.evolutions[].evolution_type` | string | ✔️                                  | Pokémon evolution type. (must be "level", "item", or "trade") |
 | body   | `data.attributes.evolutions[].level`          | number | ✔️ (if `evolution_type` is "level") | Level at which Pokémon evolves.                               |
-| body   | `data.attributes.evolutions[].item_id`        | number | ✔️ (if `evolution_type` is "item")  | Item that evolves the Pokémon.                                |
+| body   | `data.attributes.evolutions[].item`           | number | ✔️ (if `evolution_type` is "item")  | Item that evolves the Pokémon.                                |
+| body   | `data.attributes.evolutions[].item.id`        | string | ✔️ (if `evolution_type` is "item")  | Item ID.                                                      |
 | body   | `data.attributes.evolutions[].pokemon`        | object | ✔️                                  | Pokémon.                                                      |
 | body   | `data.attributes.evolutions[].pokemon.id`     | string | ✔️                                  | Pokédex ID.                                                   |
 {% end %}
