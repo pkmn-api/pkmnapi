@@ -30,6 +30,7 @@ pub enum BaseResponseType {
     move_names,
     pokedex_entries,
     pokedex_texts,
+    pokemon_evolutions,
     pokemon_names,
     pokemon_stats,
     rom_patches,

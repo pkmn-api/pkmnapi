@@ -69,6 +69,8 @@ impl Pkmnapi {
                     routes::pokedex_entries::post_pokedex_entry,
                     routes::pokedex_texts::get_pokedex_text,
                     routes::pokedex_texts::post_pokedex_text,
+                    routes::pokemon_evolutions::get_pokemon_evolutions,
+                    routes::pokemon_evolutions::post_pokemon_evolutions,
                     routes::pokemon_names::get_pokemon_name,
                     routes::pokemon_names::post_pokemon_name,
                     routes::pokemon_pics::get_pokemon_pic_jpeg,

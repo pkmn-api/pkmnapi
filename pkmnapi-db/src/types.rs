@@ -1570,3 +1570,98 @@ pub enum PartyLevelType {
     SAME(u8),
     DIFFERENT,
 }
+
+#[derive(Debug, PartialEq)]
+pub enum PokemonEvolution {
+    LEVEL(PokemonEvolutionLevel),
+    ITEM(PokemonEvolutionItem),
+    TRADE(PokemonEvolutionTrade),
+}
+
+impl From<&[u8]> for PokemonEvolution {
+    fn from(rom: &[u8]) -> Self {
+        let mut rom = rom.iter();
+        let id = rom.next().unwrap();
+
+        match id {
+            0x01 => PokemonEvolution::LEVEL(PokemonEvolutionLevel {
+                level: *rom.next().unwrap(),
+                internal_id: *rom.next().unwrap() - 1,
+                pokedex_id: 0x00,
+            }),
+            0x02 => PokemonEvolution::ITEM(PokemonEvolutionItem {
+                item_id: *rom.next().unwrap(),
+                internal_id: *rom.skip(1).next().unwrap() - 1,
+                pokedex_id: 0x00,
+            }),
+            0x03 => PokemonEvolution::TRADE(PokemonEvolutionTrade {
+                internal_id: *rom.skip(1).next().unwrap() - 1,
+                pokedex_id: 0x00,
+            }),
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl PokemonEvolution {
+    pub fn to_raw(&self) -> Vec<u8> {
+        match self {
+            PokemonEvolution::LEVEL(evolution) => {
+                vec![0x01, evolution.level, evolution.internal_id + 1]
+            }
+            PokemonEvolution::ITEM(evolution) => {
+                vec![0x02, evolution.item_id, 0x01, evolution.internal_id + 1]
+            }
+            PokemonEvolution::TRADE(evolution) => vec![0x03, 0x01, evolution.internal_id + 1],
+        }
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct PokemonEvolutionLevel {
+    pub level: u8,
+    pub pokedex_id: u8,
+    pub(crate) internal_id: u8,
+}
+
+impl PokemonEvolutionLevel {
+    pub fn new(pokedex_id: u8, level: u8) -> PokemonEvolution {
+        PokemonEvolution::LEVEL(PokemonEvolutionLevel {
+            level,
+            pokedex_id,
+            internal_id: 0,
+        })
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct PokemonEvolutionItem {
+    pub item_id: u8,
+    pub pokedex_id: u8,
+    pub(crate) internal_id: u8,
+}
+
+impl PokemonEvolutionItem {
+    pub fn new(pokedex_id: u8, item_id: u8) -> PokemonEvolution {
+        PokemonEvolution::ITEM(PokemonEvolutionItem {
+            item_id,
+            pokedex_id,
+            internal_id: 0,
+        })
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct PokemonEvolutionTrade {
+    pub pokedex_id: u8,
+    pub(crate) internal_id: u8,
+}
+
+impl PokemonEvolutionTrade {
+    pub fn new(pokedex_id: u8) -> PokemonEvolution {
+        PokemonEvolution::TRADE(PokemonEvolutionTrade {
+            pokedex_id,
+            internal_id: 0,
+        })
+    }
+}

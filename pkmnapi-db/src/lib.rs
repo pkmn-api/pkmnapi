@@ -2459,4 +2459,300 @@ impl PkmnapiDB {
 
         Ok(Patch::new(&pointer, &trainer_parties_data))
     }
+
+    /// Get title Pokédex IDs
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::*;
+    /// use std::fs;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let pokemon_title = db.get_pokemon_title().unwrap();
+    ///
+    /// assert_eq!(
+    ///     pokemon_title,
+    ///     vec![
+    ///         0xB0,
+    ///         0xB1,
+    ///         0x99,
+    ///         0x70,
+    ///         0x03,
+    ///         0x1A,
+    ///         0x54,
+    ///         0x04,
+    ///         0x01,
+    ///         0x94,
+    ///         0x19,
+    ///         0x4C,
+    ///         0x96,
+    ///         0x22,
+    ///         0xA3,
+    ///         0x85,
+    ///     ]
+    /// );
+    /// ```
+    pub fn get_pokemon_title(&self) -> Result<Vec<u8>, error::Error> {
+        let offset_base = ROM_PAGE * 0x02;
+        let offset = offset_base + 0x0588;
+
+        let pokemon_title = self.rom[offset..(offset + 0x10)].to_vec();
+
+        Ok(pokemon_title)
+    }
+
+    /// Set title Pokédex IDs
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::*;
+    /// use std::fs;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let patch = db.set_pokemon_title(&vec![
+    ///     0x85,
+    ///     0x85,
+    ///     0x85,
+    ///     0x85,
+    ///     0x85,
+    ///     0x85,
+    ///     0x85,
+    ///     0x85,
+    ///     0x85,
+    ///     0x85,
+    ///     0x85,
+    ///     0x85,
+    ///     0x85,
+    ///     0x85,
+    ///     0x85,
+    ///     0x85,
+    /// ]).unwrap();
+    ///
+    /// assert_eq!(
+    ///     patch,
+    ///     Patch {
+    ///         offset: 0x4588,
+    ///         length: 0x10,
+    ///         data: vec![0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85, 0x85]
+    ///     }
+    /// );
+    /// ```
+    pub fn set_pokemon_title(&self, pokemon_title: &Vec<u8>) -> Result<Patch, error::Error> {
+        let offset_base = ROM_PAGE * 0x02;
+        let offset = offset_base + 0x0588;
+
+        let data = pokemon_title.to_vec();
+        let data_len = data.len();
+        let max_len = 0x10usize;
+
+        if data_len != max_len {
+            return Err(error::Error::PokemonTitleWrongSize(max_len, data_len));
+        }
+
+        Ok(Patch::new(&offset, &data))
+    }
+
+    /// Get Pokémon evolutions by Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::types::*;
+    /// use std::fs;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let pokemon_evolutions = db.get_pokemon_evolutions(&1).unwrap();
+    ///
+    /// assert_eq!(
+    ///     pokemon_evolutions,
+    ///     vec![
+    ///         PokemonEvolutionLevel::new(2, 16)
+    ///     ]
+    /// );
+    /// ```
+    pub fn get_pokemon_evolutions(
+        &self,
+        pokedex_id: &u8,
+    ) -> Result<Vec<PokemonEvolution>, error::Error> {
+        let offset_base = ROM_PAGE * 0x1D;
+        let offset = offset_base + 0x105C;
+
+        let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
+
+        let pointer_offset = offset + ((internal_id as usize) * 0x02);
+        let pointer = (offset_base - (ROM_PAGE * 0x03)) + {
+            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
+
+            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
+        };
+
+        let evolution_data = self.rom[pointer..(pointer + 0x0D)].to_vec();
+        let mut pokemon_evolutions = vec![];
+        let mut i = 0;
+
+        while i < evolution_data.len() {
+            let id = evolution_data[i];
+
+            if id == 0x00 {
+                break;
+            }
+
+            pokemon_evolutions.push(PokemonEvolution::from(&evolution_data[i..(i + 4)]));
+
+            i = match id {
+                0x01 => i + 3,
+                0x02 => i + 4,
+                0x03 => i + 3,
+                _ => unreachable!(),
+            };
+        }
+
+        let pokemon_evolutions = pokemon_evolutions
+            .iter()
+            .map(|pokemon_evolution| match pokemon_evolution {
+                PokemonEvolution::LEVEL(evolution) => {
+                    PokemonEvolution::LEVEL(PokemonEvolutionLevel {
+                        pokedex_id: self
+                            .internal_id_to_pokedex_id(&evolution.internal_id)
+                            .unwrap(),
+                        internal_id: 0,
+                        ..*evolution
+                    })
+                }
+                PokemonEvolution::ITEM(evolution) => PokemonEvolution::ITEM(PokemonEvolutionItem {
+                    pokedex_id: self
+                        .internal_id_to_pokedex_id(&evolution.internal_id)
+                        .unwrap(),
+                    internal_id: 0,
+                    ..*evolution
+                }),
+                PokemonEvolution::TRADE(evolution) => {
+                    PokemonEvolution::TRADE(PokemonEvolutionTrade {
+                        pokedex_id: self
+                            .internal_id_to_pokedex_id(&evolution.internal_id)
+                            .unwrap(),
+                        internal_id: 0,
+                        ..*evolution
+                    })
+                }
+            })
+            .collect();
+
+        Ok(pokemon_evolutions)
+    }
+
+    /// Set Pokémon evolutions by Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
+    /// use std::fs;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let patch = db.set_pokemon_evolutions(&1, &vec![
+    ///     PokemonEvolutionLevel::new(2, 16)
+    /// ]).unwrap();
+    ///
+    /// assert_eq!(
+    ///     patch,
+    ///     Patch {
+    ///         offset: 0x3B844,
+    ///         length: 0x03,
+    ///         data: vec![0x01, 0x10, 0x09]
+    ///     }
+    /// );
+    /// ```
+    pub fn set_pokemon_evolutions(
+        &self,
+        pokedex_id: &u8,
+        pokemon_evolutions: &Vec<PokemonEvolution>,
+    ) -> Result<Patch, error::Error> {
+        let old_pokemon_evolutions = self.get_pokemon_evolutions(pokedex_id)?;
+        let old_pokemon_evolutions_data: Vec<u8> = old_pokemon_evolutions
+            .iter()
+            .map(|pokemon_evolution| pokemon_evolution.to_raw())
+            .flatten()
+            .collect();
+        let old_pokemon_evolutions_data_len = old_pokemon_evolutions_data.len();
+
+        let pokemon_evolutions_data: Vec<u8> = pokemon_evolutions
+            .iter()
+            .map(|pokemon_evolution| {
+                let pokemon_evolution = match pokemon_evolution {
+                    PokemonEvolution::LEVEL(evolution) => {
+                        PokemonEvolution::LEVEL(PokemonEvolutionLevel {
+                            internal_id: self
+                                .pokedex_id_to_internal_id(&evolution.pokedex_id)
+                                .unwrap(),
+                            ..*evolution
+                        })
+                    }
+                    PokemonEvolution::ITEM(evolution) => {
+                        PokemonEvolution::ITEM(PokemonEvolutionItem {
+                            internal_id: self
+                                .pokedex_id_to_internal_id(&evolution.pokedex_id)
+                                .unwrap(),
+                            ..*evolution
+                        })
+                    }
+                    PokemonEvolution::TRADE(evolution) => {
+                        PokemonEvolution::TRADE(PokemonEvolutionTrade {
+                            internal_id: self
+                                .pokedex_id_to_internal_id(&evolution.pokedex_id)
+                                .unwrap(),
+                            ..*evolution
+                        })
+                    }
+                };
+
+                pokemon_evolution.to_raw()
+            })
+            .flatten()
+            .collect();
+        let pokemon_evolutions_data_len = pokemon_evolutions_data.len();
+
+        if old_pokemon_evolutions_data_len != pokemon_evolutions_data_len {
+            return Err(error::Error::PokemonEvolutionWrongSize(
+                old_pokemon_evolutions_data_len,
+                pokemon_evolutions_data_len,
+            ));
+        }
+
+        let offset_base = ROM_PAGE * 0x1D;
+        let offset = offset_base + 0x105C;
+
+        let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
+
+        let pointer_offset = offset + ((internal_id as usize) * 0x02);
+        let pointer = (offset_base - (ROM_PAGE * 0x03)) + {
+            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
+
+            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
+        };
+
+        Ok(Patch::new(&pointer, &pokemon_evolutions_data))
+    }
 }

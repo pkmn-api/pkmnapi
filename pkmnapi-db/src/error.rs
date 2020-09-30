@@ -18,6 +18,8 @@ pub enum Error {
     PicWrongSize,
     PokedexEntrySpeciesWrongSize(usize, usize),
     PokedexTextWrongSize(usize, usize),
+    PokemonEvolutionWrongSize(usize, usize),
+    PokemonTitleWrongSize(usize, usize),
     PokedexIDInvalid(u8),
     SavBagItemsWrongSize(usize, usize),
     SavBoxItemsWrongSize(usize, usize),
@@ -101,6 +103,14 @@ impl fmt::Display for Error {
             ),
             Error::PokedexTextWrongSize(expected, actual) => format!(
                 "Pokédex text length mismatch: should be {} characters or fewer, found {}",
+                expected, actual
+            ),
+            Error::PokemonEvolutionWrongSize(expected, actual) => format!(
+                "Pokémon evolutions length mismatch, should be exactly {} bytes, found {}",
+                expected, actual
+            ),
+            Error::PokemonTitleWrongSize(expected, actual) => format!(
+                "Pokémon title length mismatch: should be {}, found {}",
                 expected, actual
             ),
             Error::SavBagItemsWrongSize(expected, actual) => format!(

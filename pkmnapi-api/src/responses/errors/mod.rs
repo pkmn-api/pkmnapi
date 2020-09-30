@@ -20,6 +20,8 @@ mod pokedex_entry_response_error;
 mod pokedex_entry_response_error_invalid;
 mod pokedex_text_response_error;
 mod pokedex_text_response_error_invalid;
+mod pokemon_evolutions_response_error;
+mod pokemon_evolutions_response_error_invalid;
 mod pokemon_name_response_error;
 mod pokemon_name_response_error_invalid;
 mod pokemon_pic_response_error;
@@ -65,6 +67,8 @@ pub use crate::responses::errors::pokedex_entry_response_error::*;
 pub use crate::responses::errors::pokedex_entry_response_error_invalid::*;
 pub use crate::responses::errors::pokedex_text_response_error::*;
 pub use crate::responses::errors::pokedex_text_response_error_invalid::*;
+pub use crate::responses::errors::pokemon_evolutions_response_error::*;
+pub use crate::responses::errors::pokemon_evolutions_response_error_invalid::*;
 pub use crate::responses::errors::pokemon_name_response_error::*;
 pub use crate::responses::errors::pokemon_name_response_error_invalid::*;
 pub use crate::responses::errors::pokemon_pic_response_error::*;
@@ -111,6 +115,10 @@ pub enum ResponseError {
     PokedexEntryResponseErrorInvalid(status::BadRequest<Json<PokedexEntryResponseErrorInvalid>>),
     PokedexTextResponseError(status::NotFound<Json<PokedexTextResponseError>>),
     PokedexTextResponseErrorInvalid(status::BadRequest<Json<PokedexTextResponseErrorInvalid>>),
+    PokemonEvolutionsResponseError(status::NotFound<Json<PokemonEvolutionsResponseError>>),
+    PokemonEvolutionsResponseErrorInvalid(
+        status::BadRequest<Json<PokemonEvolutionsResponseErrorInvalid>>,
+    ),
     PokemonNameResponseError(status::NotFound<Json<PokemonNameResponseError>>),
     PokemonNameResponseErrorInvalid(status::BadRequest<Json<PokemonNameResponseErrorInvalid>>),
     PokemonPicResponseError(status::NotFound<Json<PokemonPicResponseError>>),
@@ -174,6 +182,8 @@ pub enum BaseErrorResponseId {
     error_pokedex_entries,
     error_pokedex_texts_invalid,
     error_pokedex_texts,
+    error_pokemon_evolutions_invalid,
+    error_pokemon_evolutions,
     error_pokemon_names_invalid,
     error_pokemon_names,
     error_pokemon_pics,

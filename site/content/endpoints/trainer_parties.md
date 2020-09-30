@@ -1,6 +1,6 @@
 +++
 title = "Trainer Parties"
-weight = 17
+weight = 18
 +++
 
 | Endpoint                                                       | Description                 |
@@ -46,7 +46,7 @@ Authorization: Bearer <access_token>
 | `data.attributes.parties[].party[].level`                   | number | Level of Pokémon.                            |
 | `data.attributes.parties[].party[].pokemon`                 | object | Pokémon.                                     |
 | `data.attributes.parties[].party[].pokemon.id`              | string | Pokédex ID.                                  |
-| `data.attributes.parties[].party[].pokemon.type`            | string | Type of resource. Must be "pokemon_names"    |
+| `data.attributes.parties[].party[].pokemon.type`            | string | Type of resource. Must be "pokemon_names".   |
 | `data.attributes.parties[].party[].pokemon.attributes`      | object |                                              |
 | `data.attributes.parties[].party[].pokemon.attributes.name` | string | Pokémon name.                                |
 | `data.attributes.parties[].party[].pokemon.links`           | object |                                              |

@@ -44,6 +44,13 @@ sort_by = "weight"
 | [GET /v1/pokedex/texts/:pokedex_id](@/endpoints/pokedex_texts.md#get-pokedex-text)   | Gets a Pokédex text    |
 | [POST /v1/pokedex/texts/:pokedex_id](@/endpoints/pokedex_texts.md#post-pokedex-text) | Updates a Pokédex text |
 
+### [Pokémon Evolutions](@/endpoints/pokemon_evolutions.md)
+
+| Endpoint                                                                                             | Description                    |
+|------------------------------------------------------------------------------------------------------|--------------------------------|
+| [GET /v1/pokemon/evolutions/:pokedex_id](@/endpoints/pokemon_evolutions.md#get-pokemon-evolutions)   | Gets a Pokémon's evolutions    |
+| [POST /v1/pokemon/evolutions/:pokedex_id](@/endpoints/pokemon_evolutions.md#post-pokemon-evolutions) | Updates a Pokémon's evolutions |
+
 ### [Pokémon Names](@/endpoints/pokemon_names.md)
 
 | Endpoint                                                                             | Description              |

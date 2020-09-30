@@ -17,6 +17,7 @@ template = "base.html"
 It is possible to retrieve and update:
 
 * [Pokémon pics](@/endpoints/pokemon_pics.md)
+* [Pokémon evolutions](@/endpoints/pokemon_evolutions.md)
 * [Pokémon names](@/endpoints/pokemon_names.md)
 * [Pokédex entries](@endpoints/pokedex_entries.md)
 * [Gym leaders' parties](@/endpoints/trainer_parties.md)
