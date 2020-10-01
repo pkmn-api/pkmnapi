@@ -116,12 +116,19 @@ sort_by = "weight"
 |-------------------------------------------------|----------------|
 | [GET /status](@/endpoints/status.md#get-status) | Get API status |
 
-### [TMs](@/endpoints/tms.md)
+### [TM Moves](@/endpoints/tm_moves.md)
 
-| Endpoint                                          | Description  |
-|---------------------------------------------------|--------------|
-| [GET /v1/tms/:tm_id](@/endpoints/tms.md#get-tm)   | Gets a TM    |
-| [POST /v1/tms/:tm_id](@/endpoints/tms.md#post-tm) | Updates a TM |
+| Endpoint                                                          | Description         |
+|-------------------------------------------------------------------|---------------------|
+| [GET /v1/tms/moves/:tm_id](@/endpoints/tm_moves.md#get-tm-move)   | Gets a TM's move    |
+| [POST /v1/tms/moves/:tm_id](@/endpoints/tm_moves.md#post-tm-move) | Updates a TM's move |
+
+### [TM Prices](@/endpoints/tm_prices.md)
+
+| Endpoint                                                             | Description          |
+|----------------------------------------------------------------------|----------------------|
+| [GET /v1/tms/prices/:tm_id](@/endpoints/tm_prices.md#get-tm-price)   | Gets a TM's price    |
+| [POST /v1/tms/prices/:tm_id](@/endpoints/tm_prices.md#post-tm-price) | Updates a TM's price |
 
 ### [Trainer Names](@/endpoints/trainer_names.md)
 

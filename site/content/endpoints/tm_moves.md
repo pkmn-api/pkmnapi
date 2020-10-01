@@ -1,18 +1,18 @@
 +++
-title = "TMs"
+title = "TM Moves"
 weight = 17
 +++
 
-| Endpoint                        | Description  |
-|---------------------------------|--------------|
-| [GET /v1/tms/:tm_id](#get-tm)   | Gets a TM    |
-| [POST /v1/tms/:tm_id](#post-tm) | Updates a TM |
+| Endpoint                                   | Description         |
+|--------------------------------------------|---------------------|
+| [GET /v1/tms/moves/:tm_id](#get-tm-move)   | Gets a TM's move    |
+| [POST /v1/tms/moves/:tm_id](#post-tm-move) | Updates a TM's move |
 
 ---
 
-### GET /v1/tms/:tm_id {#get-tm}
+### GET /v1/tms/moves/:tm_id {#get-tm-move}
 
-Gets a TM
+Gets a TM's move
 
 #### Request Parameters
 
@@ -25,7 +25,7 @@ Gets a TM
 **Header:**
 
 {% api_headers() %}
-GET /v1/tms/1
+GET /v1/tms/moves/1
 Host: {{API_HOST}}
 Authorization: Bearer <access_token>
 {% end %}
@@ -39,7 +39,7 @@ Authorization: Bearer <access_token>
 {% api_response_params() %}
 | `data`                                 | object |                                         |
 | `data.id`                              | string | TM ID. (identical to `:tm_id`)          |
-| `data.type`                            | string | Type of resource. Must be "tms".        |
+| `data.type`                            | string | Type of resource. Must be "tm_moves".   |
 | `data.attributes`                      | object |                                         |
 | `data.attributes.move`                 | object |                                         |
 | `data.attributes.move.id`              | string | Move ID.                                |
@@ -70,7 +70,7 @@ Server: pkmnapi/0.1.0
 {
     "data": {
         "id": "1",
-        "type": "tms",
+        "type": "tm_moves",
         "attributes": {
             "move": {
                 "id": "5",
@@ -84,31 +84,31 @@ Server: pkmnapi/0.1.0
             }
         },
         "links": {
-            "self": "{{API_DOMAIN}}/v1/tms/1"
+            "self": "{{API_DOMAIN}}/v1/tms/moves/1"
         }
     },
     "links": {
-        "self": "{{API_DOMAIN}}/v1/tms/1"
+        "self": "{{API_DOMAIN}}/v1/tms/moves/1"
     }
 }
 {% end %}
 
 ---
 
-### POST /v1/tms/:tm_id {#post-tm}
+### POST /v1/tms/moves/:tm_id {#post-tm-move}
 
-Updates a TM
+Updates a TM's move
 
 #### Request Parameters
 
 {% api_request_params() %}
-| url    | `:tm_id`                  | string | ✔️ | TM ID.                       |
-| header | `X-Patch-Description`     | string |   | Description of change.       |
-| body   | `data`                    | object | ✔️ |                              |
-| body   | `data.type`               | string | ✔️ | Type of data. Must be "tms". |
-| body   | `data.attributes`         | object | ✔️ |                              |
-| body   | `data.attributes.move`    | object | ✔️ |                              |
-| body   | `data.attributes.move.id` | string | ✔️ | Move ID.                     |
+| url    | `:tm_id`                  | string | ✔️ | TM ID.                            |
+| header | `X-Patch-Description`     | string |   | Description of change.            |
+| body   | `data`                    | object | ✔️ |                                   |
+| body   | `data.type`               | string | ✔️ | Type of data. Must be "tm_moves". |
+| body   | `data.attributes`         | object | ✔️ |                                   |
+| body   | `data.attributes.move`    | object | ✔️ |                                   |
+| body   | `data.attributes.move.id` | string | ✔️ | Move ID.                          |
 {% end %}
 
 #### Example Request
@@ -116,7 +116,7 @@ Updates a TM
 **Header:**
 
 {% api_headers() %}
-POST /v1/tms/1
+POST /v1/tms/moves/1
 Host: {{API_HOST}}
 Authorization: Bearer <access_token>
 Content-Type: application/json
@@ -128,7 +128,7 @@ X-Patch-Description: Update MEGA PUNCH to TELEPORT
 {% api_request() %}
 {
     "data": {
-        "type": "tms",
+        "type": "tm_moves",
         "attributes": {
             "move": {
                 "id": "100"
