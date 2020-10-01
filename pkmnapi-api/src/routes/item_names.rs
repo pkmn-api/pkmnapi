@@ -27,7 +27,12 @@ pub fn get_item_name(
 
     let item_name = match db.get_item_name(&item_id) {
         Ok(item_name) => item_name,
-        Err(e) => return Err(ItemNameResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_item_names,
+                Some(e.to_string()),
+            ))
+        }
     };
     let response = ItemNameResponse::new(&item_id, &item_name);
 
@@ -51,11 +56,15 @@ pub fn post_item_name(
     let data = match data {
         Ok(data) => data.into_inner(),
         Err(JsonError::Parse(_, e)) => {
-            return Err(ItemNameResponseErrorInvalid::new(&e.to_string()));
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_item_names_invalid,
+                Some(e.to_string()),
+            ));
         }
         _ => {
-            return Err(ItemNameResponseErrorInvalid::new(
-                &"An unknown error occurred".to_owned(),
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_item_names_invalid,
+                Some("An unknown error occurred".to_owned()),
             ));
         }
     };
@@ -68,7 +77,12 @@ pub fn post_item_name(
 
     let patch = match db.set_item_name(&item_id, &item_name) {
         Ok(patch) => patch,
-        Err(e) => return Err(ItemNameResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_item_names,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let patch_description = match patch_description {
@@ -76,15 +90,17 @@ pub fn post_item_name(
         Err(_) => None,
     };
 
-    match sql.insert_rom_patch(
+    if let Err(e) = sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),
         patch_description,
     ) {
-        Ok(_) => {}
-        Err(e) => return Err(ItemNameResponseError::new(&e.to_string())),
-    };
+        return Err(NotFoundError::new(
+            BaseErrorResponseId::error_item_names,
+            Some(e.to_string()),
+        ));
+    }
 
     Ok(status::Accepted(Some(json!({}))))
 }

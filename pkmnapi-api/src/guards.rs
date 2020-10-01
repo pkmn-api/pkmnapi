@@ -130,17 +130,16 @@ impl<'a, 'r> FromRequest<'a, 'r> for RateLimit {
             None => "unknown".to_owned(),
         };
 
-        match lim.check_key(&ip) {
-            Ok(_) => Outcome::Success(RateLimit),
-            Err(e) => {
-                let clock = QuantaClock::default();
-                let wait_time = e.wait_time_from(clock.now()).as_secs();
+        if let Err(e) = lim.check_key(&ip) {
+            let clock = QuantaClock::default();
+            let wait_time = e.wait_time_from(clock.now()).as_secs();
 
-                Outcome::Failure((
-                    Status::TooManyRequests,
-                    RateLimitError::TooManyRequests(wait_time),
-                ))
-            }
+            Outcome::Failure((
+                Status::TooManyRequests,
+                RateLimitError::TooManyRequests(wait_time),
+            ))
+        } else {
+            Outcome::Success(RateLimit)
         }
     }
 }

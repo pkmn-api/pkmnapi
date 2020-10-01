@@ -4,25 +4,25 @@ use serde::Serialize;
 
 use crate::responses::errors::*;
 
-pub type RomResponseErrorInvalidRom = BaseErrorResponse<RomResponseErrorInvalidRomAttributes>;
+pub type RomErrorInvalidRom = BaseErrorResponse<RomErrorInvalidRomAttributes>;
 
-impl RomResponseErrorInvalidRom {
+impl RomErrorInvalidRom {
     pub fn new() -> ResponseError {
-        let response = RomResponseErrorInvalidRom {
+        let response = RomErrorInvalidRom {
             data: BaseErrorResponseData {
                 id: BaseErrorResponseId::error_roms_invalid_rom,
                 _type: BaseErrorResponseType::errors,
-                attributes: RomResponseErrorInvalidRomAttributes {
+                attributes: RomErrorInvalidRomAttributes {
                     message: "Invalid ROM provided".to_owned(),
                 },
             },
         };
 
-        ResponseError::RomResponseErrorInvalidRom(status::BadRequest(Some(Json(response))))
+        ResponseError::RomErrorInvalidRom(status::BadRequest(Some(Json(response))))
     }
 }
 
 #[derive(Debug, Serialize)]
-pub struct RomResponseErrorInvalidRomAttributes {
+pub struct RomErrorInvalidRomAttributes {
     pub message: String,
 }

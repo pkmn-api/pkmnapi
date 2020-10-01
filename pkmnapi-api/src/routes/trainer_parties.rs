@@ -27,12 +27,17 @@ pub fn get_trainer_parties(
 
     let trainer_parties = match db.get_trainer_parties(&trainer_id) {
         Ok(trainer_parties) => trainer_parties,
-        Err(e) => return Err(TrainerPartiesResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_trainer_parties,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let mut pokemon_names: HashMap<u8, PokemonName> = HashMap::new();
 
-    match trainer_parties
+    if let Err(e) = trainer_parties
         .iter()
         .map(|trainer_party| {
             trainer_party
@@ -44,7 +49,12 @@ pub fn get_trainer_parties(
         .map(|pokedex_id| {
             let pokemon_name = match db.get_pokemon_name(&pokedex_id) {
                 Ok(pokemon_name) => pokemon_name,
-                Err(e) => return Err(TrainerPartiesResponseError::new(&e.to_string())),
+                Err(e) => {
+                    return Err(NotFoundError::new(
+                        BaseErrorResponseId::error_trainer_parties,
+                        Some(e.to_string()),
+                    ))
+                }
             };
 
             pokemon_names.insert(pokedex_id, pokemon_name);
@@ -53,9 +63,8 @@ pub fn get_trainer_parties(
         })
         .collect::<Result<Vec<_>, ResponseError>>()
     {
-        Ok(_) => {}
-        Err(e) => return Err(e),
-    };
+        return Err(e);
+    }
 
     let response = TrainerPartiesResponse::new(&trainer_id, &trainer_parties, pokemon_names);
 
@@ -83,11 +92,15 @@ pub fn post_trainer_parties(
     let data = match data {
         Ok(data) => data.into_inner(),
         Err(JsonError::Parse(_, e)) => {
-            return Err(TrainerPartiesResponseErrorInvalid::new(&e.to_string()));
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_trainer_parties_invalid,
+                Some(e.to_string()),
+            ));
         }
         _ => {
-            return Err(TrainerPartiesResponseErrorInvalid::new(
-                &"An unknown error occurred".to_owned(),
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_trainer_parties_invalid,
+                Some("An unknown error occurred".to_owned()),
             ));
         }
     };
@@ -98,7 +111,12 @@ pub fn post_trainer_parties(
 
     let patch = match db.set_trainer_parties(&trainer_id, &trainer_parties) {
         Ok(patch) => patch,
-        Err(e) => return Err(TrainerPartiesResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_trainer_parties,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let patch_description = match patch_description {
@@ -106,15 +124,17 @@ pub fn post_trainer_parties(
         Err(_) => None,
     };
 
-    match sql.insert_rom_patch(
+    if let Err(e) = sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),
         patch_description,
     ) {
-        Ok(_) => {}
-        Err(e) => return Err(TrainerPartiesResponseError::new(&e.to_string())),
-    };
+        return Err(NotFoundError::new(
+            BaseErrorResponseId::error_trainer_parties,
+            Some(e.to_string()),
+        ));
+    }
 
     Ok(status::Accepted(Some(json!({}))))
 }

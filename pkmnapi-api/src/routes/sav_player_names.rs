@@ -26,17 +26,19 @@ pub fn get_sav_player_name(
 
     let sav = match db.sav {
         Some(sav) => sav,
-        None => return Err(SavResponseErrorNoSav::new()),
+        None => return Err(SavErrorNoSav::new()),
     };
 
-    let player_id = match sav.get_player_id() {
-        Ok(player_id) => player_id,
-        Err(_) => 0x00,
-    };
+    let player_id = sav.get_player_id().unwrap_or(0x00);
 
     let player_name = match sav.get_player_name() {
         Ok(player_name) => player_name,
-        Err(e) => return Err(SavPlayerNameResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_sav_player_names,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let response = SavPlayerNameResponse::new(&player_id, &player_name);
@@ -60,11 +62,15 @@ pub fn post_sav_player_name(
     let data = match data {
         Ok(data) => data.into_inner(),
         Err(JsonError::Parse(_, e)) => {
-            return Err(SavPlayerNameResponseErrorInvalid::new(&e.to_string()));
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_sav_player_names_invalid,
+                Some(e.to_string()),
+            ));
         }
         _ => {
-            return Err(SavPlayerNameResponseErrorInvalid::new(
-                &"An unknown error occurred".to_owned(),
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_sav_player_names_invalid,
+                Some("An unknown error occurred".to_owned()),
             ));
         }
     };
@@ -73,7 +79,7 @@ pub fn post_sav_player_name(
 
     let sav = match db.sav {
         Some(sav) => sav,
-        None => return Err(SavResponseErrorNoSav::new()),
+        None => return Err(SavErrorNoSav::new()),
     };
 
     let player_name = SavePlayerName {
@@ -82,7 +88,12 @@ pub fn post_sav_player_name(
 
     let patch = match sav.set_player_name(&player_name) {
         Ok(patch) => patch,
-        Err(e) => return Err(SavPlayerNameResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_sav_player_names,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let patch_description = match patch_description {
@@ -90,15 +101,17 @@ pub fn post_sav_player_name(
         Err(_) => None,
     };
 
-    match sql.insert_sav_patch(
+    if let Err(e) = sql.insert_sav_patch(
         &connection,
         &access_token,
         &patch.to_raw(),
         patch_description,
     ) {
-        Ok(_) => {}
-        Err(e) => return Err(SavPlayerNameResponseError::new(&e.to_string())),
-    };
+        return Err(NotFoundError::new(
+            BaseErrorResponseId::error_sav_player_names,
+            Some(e.to_string()),
+        ));
+    }
 
     Ok(status::Accepted(Some(json!({}))))
 }

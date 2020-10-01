@@ -69,10 +69,9 @@ pub fn post_access_token(
             PkmnapiEmailTemplate::AccessToken(access_token.clone()),
         );
 
-        match email.send() {
-            Ok(_) => {}
-            Err(e) => return Err(AccessTokenErrorEmail::new(&e)),
-        };
+        if let Err(e) = email.send() {
+            return Err(AccessTokenErrorEmail::new(&e));
+        }
 
         json!({})
     };

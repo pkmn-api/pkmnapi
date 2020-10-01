@@ -28,17 +28,32 @@ pub fn get_trainer_pic_png<'a>(
 
     let pic = match db.get_trainer_pic(&trainer_id) {
         Ok(pic) => pic,
-        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_trainer_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let trainer_name = match db.get_trainer_name(&trainer_id) {
         Ok(trainer_name) => trainer_name,
-        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_trainer_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let img = match pic.to_png(mirror.is_some()) {
         Ok(img) => img,
-        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_trainer_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let response = Response::build()
@@ -74,17 +89,32 @@ pub fn get_trainer_pic_jpeg<'a>(
 
     let pic = match db.get_trainer_pic(&trainer_id) {
         Ok(pic) => pic,
-        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_trainer_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let trainer_name = match db.get_trainer_name(&trainer_id) {
         Ok(trainer_name) => trainer_name,
-        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_trainer_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let img = match pic.to_jpeg(mirror.is_some()) {
         Ok(img) => img,
-        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_trainer_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let response = Response::build()
@@ -132,14 +162,24 @@ pub fn post_trainer_pic_png<'a>(
 
     let pic = match Pic::from_png(raw_data) {
         Ok(pic) => pic,
-        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_trainer_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let encoding_method = PicEncodingMethod::from(method.unwrap_or(0x01), primary.unwrap_or(0x00));
 
     let patch = match db.set_trainer_pic(&trainer_id, &pic, encoding_method) {
         Ok(patch) => patch,
-        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_trainer_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let patch_description = match patch_description {
@@ -147,15 +187,17 @@ pub fn post_trainer_pic_png<'a>(
         Err(_) => None,
     };
 
-    match sql.insert_rom_patch(
+    if let Err(e) = sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),
         patch_description,
     ) {
-        Ok(_) => {}
-        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
-    };
+        return Err(NotFoundError::new(
+            BaseErrorResponseId::error_trainer_pics,
+            Some(e.to_string()),
+        ));
+    }
 
     Ok(status::Accepted(Some(json!({}))))
 }
@@ -193,14 +235,24 @@ pub fn post_trainer_pic_jpeg<'a>(
 
     let pic = match Pic::from_jpeg(raw_data) {
         Ok(pic) => pic,
-        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_trainer_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let encoding_method = PicEncodingMethod::from(method.unwrap_or(0x01), primary.unwrap_or(0x00));
 
     let patch = match db.set_trainer_pic(&trainer_id, &pic, encoding_method) {
         Ok(patch) => patch,
-        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_trainer_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let patch_description = match patch_description {
@@ -208,15 +260,17 @@ pub fn post_trainer_pic_jpeg<'a>(
         Err(_) => None,
     };
 
-    match sql.insert_rom_patch(
+    if let Err(e) = sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),
         patch_description,
     ) {
-        Ok(_) => {}
-        Err(e) => return Err(TrainerPicResponseError::new(&e.to_string())),
-    };
+        return Err(NotFoundError::new(
+            BaseErrorResponseId::error_trainer_pics,
+            Some(e.to_string()),
+        ));
+    }
 
     Ok(status::Accepted(Some(json!({}))))
 }

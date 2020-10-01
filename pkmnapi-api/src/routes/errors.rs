@@ -9,7 +9,10 @@ use crate::responses::errors::*;
 
 #[catch(404)]
 pub fn not_found(_req: &Request) -> Result<ResponseError, ResponseError> {
-    Ok(NotFoundError::new())
+    Ok(NotFoundError::new(
+        BaseErrorResponseId::error_not_found,
+        None,
+    ))
 }
 
 #[catch(429)]

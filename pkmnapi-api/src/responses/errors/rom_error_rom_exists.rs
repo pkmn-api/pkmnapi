@@ -4,25 +4,25 @@ use serde::Serialize;
 
 use crate::responses::errors::*;
 
-pub type RomResponseErrorRomExists = BaseErrorResponse<RomResponseErrorRomExistsAttributes>;
+pub type RomErrorRomExists = BaseErrorResponse<RomErrorRomExistsAttributes>;
 
-impl RomResponseErrorRomExists {
+impl RomErrorRomExists {
     pub fn new() -> ResponseError {
-        let response = RomResponseErrorRomExists {
+        let response = RomErrorRomExists {
             data: BaseErrorResponseData {
                 id: BaseErrorResponseId::error_roms_rom_exists,
                 _type: BaseErrorResponseType::errors,
-                attributes: RomResponseErrorRomExistsAttributes {
+                attributes: RomErrorRomExistsAttributes {
                     message: "ROM already exists".to_owned(),
                 },
             },
         };
 
-        ResponseError::RomResponseErrorRomExists(status::Forbidden(Some(Json(response))))
+        ResponseError::RomErrorRomExists(status::Forbidden(Some(Json(response))))
     }
 }
 
 #[derive(Debug, Serialize)]
-pub struct RomResponseErrorRomExistsAttributes {
+pub struct RomErrorRomExistsAttributes {
     pub message: String,
 }

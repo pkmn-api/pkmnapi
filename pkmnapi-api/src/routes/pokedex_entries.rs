@@ -27,7 +27,12 @@ pub fn get_pokedex_entry(
 
     let pokedex_entry = match db.get_pokedex_entry(&pokedex_id) {
         Ok(pokedex_entry) => pokedex_entry,
-        Err(e) => return Err(PokedexEntryResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokedex_entries,
+                Some(e.to_string()),
+            ))
+        }
     };
     let response = PokedexEntryResponse::new(&pokedex_id, &pokedex_entry);
 
@@ -55,11 +60,15 @@ pub fn post_pokedex_entry(
     let data = match data {
         Ok(data) => data.into_inner(),
         Err(JsonError::Parse(_, e)) => {
-            return Err(PokedexEntryResponseErrorInvalid::new(&e.to_string()));
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_pokedex_entries_invalid,
+                Some(e.to_string()),
+            ));
         }
         _ => {
-            return Err(PokedexEntryResponseErrorInvalid::new(
-                &"An unknown error occurred".to_owned(),
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_pokedex_entries_invalid,
+                Some("An unknown error occurred".to_owned()),
             ));
         }
     };
@@ -74,7 +83,12 @@ pub fn post_pokedex_entry(
 
     let patch = match db.set_pokedex_entry(&pokedex_id, &pokedex_entry) {
         Ok(patch) => patch,
-        Err(e) => return Err(PokedexEntryResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokedex_entries,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let patch_description = match patch_description {
@@ -82,15 +96,17 @@ pub fn post_pokedex_entry(
         Err(_) => None,
     };
 
-    match sql.insert_rom_patch(
+    if let Err(e) = sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),
         patch_description,
     ) {
-        Ok(_) => {}
-        Err(e) => return Err(PokedexEntryResponseError::new(&e.to_string())),
-    };
+        return Err(NotFoundError::new(
+            BaseErrorResponseId::error_pokedex_entries,
+            Some(e.to_string()),
+        ));
+    }
 
     Ok(status::Accepted(Some(json!({}))))
 }

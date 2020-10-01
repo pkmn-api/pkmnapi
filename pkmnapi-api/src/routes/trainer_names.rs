@@ -27,7 +27,12 @@ pub fn get_trainer_name(
 
     let trainer_name = match db.get_trainer_name(&trainer_id) {
         Ok(trainer_name) => trainer_name,
-        Err(e) => return Err(TrainerNameResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_trainer_names,
+                Some(e.to_string()),
+            ))
+        }
     };
     let response = TrainerNameResponse::new(&trainer_id, &trainer_name);
 
@@ -55,11 +60,15 @@ pub fn post_trainer_name(
     let data = match data {
         Ok(data) => data.into_inner(),
         Err(JsonError::Parse(_, e)) => {
-            return Err(TrainerNameResponseErrorInvalid::new(&e.to_string()));
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_trainer_names_invalid,
+                Some(e.to_string()),
+            ));
         }
         _ => {
-            return Err(TrainerNameResponseErrorInvalid::new(
-                &"An unknown error occurred".to_owned(),
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_trainer_names_invalid,
+                Some("An unknown error occurred".to_owned()),
             ));
         }
     };
@@ -72,7 +81,12 @@ pub fn post_trainer_name(
 
     let patch = match db.set_trainer_name(&trainer_id, &trainer_name) {
         Ok(patch) => patch,
-        Err(e) => return Err(TrainerNameResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_trainer_names,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let patch_description = match patch_description {
@@ -80,15 +94,17 @@ pub fn post_trainer_name(
         Err(_) => None,
     };
 
-    match sql.insert_rom_patch(
+    if let Err(e) = sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),
         patch_description,
     ) {
-        Ok(_) => {}
-        Err(e) => return Err(TrainerNameResponseError::new(&e.to_string())),
-    };
+        return Err(NotFoundError::new(
+            BaseErrorResponseId::error_trainer_names,
+            Some(e.to_string()),
+        ));
+    }
 
     Ok(status::Accepted(Some(json!({}))))
 }

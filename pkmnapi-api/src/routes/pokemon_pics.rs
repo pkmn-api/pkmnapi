@@ -34,17 +34,32 @@ pub fn get_pokemon_pic_png<'a>(
 
     let pic = match db.get_pokemon_pic(&pokedex_id, &PokemonPicFace::from(face)) {
         Ok(pic) => pic,
-        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokemon_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let pokemon_name = match db.get_pokemon_name(&pokedex_id) {
         Ok(pokemon_name) => pokemon_name,
-        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokemon_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let img = match pic.to_png(mirror.is_some()) {
         Ok(img) => img,
-        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokemon_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let response = Response::build()
@@ -81,17 +96,32 @@ pub fn get_pokemon_pic_jpeg<'a>(
 
     let pic = match db.get_pokemon_pic(&pokedex_id, &PokemonPicFace::from(face)) {
         Ok(pic) => pic,
-        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokemon_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let pokemon_name = match db.get_pokemon_name(&pokedex_id) {
         Ok(pokemon_name) => pokemon_name,
-        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokemon_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let img = match pic.to_jpeg(mirror.is_some()) {
         Ok(img) => img,
-        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokemon_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let response = Response::build()
@@ -140,7 +170,12 @@ pub fn post_pokemon_pic_png<'a>(
 
     let pic = match Pic::from_png(raw_data) {
         Ok(pic) => pic,
-        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokemon_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let encoding_method = PicEncodingMethod::from(method.unwrap_or(0x01), primary.unwrap_or(0x00));
@@ -152,7 +187,12 @@ pub fn post_pokemon_pic_png<'a>(
         encoding_method,
     ) {
         Ok(patch) => patch,
-        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokemon_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let patch_description = match patch_description {
@@ -160,15 +200,17 @@ pub fn post_pokemon_pic_png<'a>(
         Err(_) => None,
     };
 
-    match sql.insert_rom_patch(
+    if let Err(e) = sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),
         patch_description,
     ) {
-        Ok(_) => {}
-        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
-    };
+        return Err(NotFoundError::new(
+            BaseErrorResponseId::error_pokemon_pics,
+            Some(e.to_string()),
+        ));
+    }
 
     Ok(status::Accepted(Some(json!({}))))
 }
@@ -207,7 +249,12 @@ pub fn post_pokemon_pic_jpeg<'a>(
 
     let pic = match Pic::from_jpeg(raw_data) {
         Ok(pic) => pic,
-        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokemon_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let encoding_method = PicEncodingMethod::from(method.unwrap_or(0x01), primary.unwrap_or(0x00));
@@ -219,7 +266,12 @@ pub fn post_pokemon_pic_jpeg<'a>(
         encoding_method,
     ) {
         Ok(patch) => patch,
-        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokemon_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let patch_description = match patch_description {
@@ -227,15 +279,17 @@ pub fn post_pokemon_pic_jpeg<'a>(
         Err(_) => None,
     };
 
-    match sql.insert_rom_patch(
+    if let Err(e) = sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),
         patch_description,
     ) {
-        Ok(_) => {}
-        Err(e) => return Err(PokemonPicResponseError::new(&e.to_string())),
-    };
+        return Err(NotFoundError::new(
+            BaseErrorResponseId::error_pokemon_pics,
+            Some(e.to_string()),
+        ));
+    }
 
     Ok(status::Accepted(Some(json!({}))))
 }

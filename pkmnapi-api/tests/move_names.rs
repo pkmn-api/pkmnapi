@@ -65,7 +65,7 @@ fn get_move_name_404() {
 }
 
 #[test]
-fn post_moves_202() {
+fn post_move_name_202() {
     let (client, access_token) = common::setup_with_access_token();
 
     common::post_rom(&client, &access_token);
@@ -102,7 +102,7 @@ fn post_moves_202() {
 }
 
 #[test]
-fn post_moves_401() {
+fn post_move_name_401() {
     let client = common::setup();
 
     let request = client
@@ -117,7 +117,7 @@ fn post_moves_401() {
 }
 
 #[test]
-fn post_moves_404() {
+fn post_move_name_404() {
     let (client, access_token) = common::setup_with_access_token();
 
     common::post_rom(&client, &access_token);

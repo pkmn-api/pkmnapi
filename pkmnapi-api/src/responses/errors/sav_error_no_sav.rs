@@ -4,25 +4,25 @@ use serde::Serialize;
 
 use crate::responses::errors::*;
 
-pub type SavResponseErrorNoSav = BaseErrorResponse<SavResponseErrorNoSavAttributes>;
+pub type SavErrorNoSav = BaseErrorResponse<SavErrorNoSavAttributes>;
 
-impl SavResponseErrorNoSav {
+impl SavErrorNoSav {
     pub fn new() -> ResponseError {
-        let response = SavResponseErrorNoSav {
+        let response = SavErrorNoSav {
             data: BaseErrorResponseData {
                 id: BaseErrorResponseId::error_savs_no_sav,
                 _type: BaseErrorResponseType::errors,
-                attributes: SavResponseErrorNoSavAttributes {
+                attributes: SavErrorNoSavAttributes {
                     message: "No SAV uploaded".to_owned(),
                 },
             },
         };
 
-        ResponseError::SavResponseErrorNoSav(status::Forbidden(Some(Json(response))))
+        ResponseError::SavErrorNoSav(status::Forbidden(Some(Json(response))))
     }
 }
 
 #[derive(Debug, Serialize)]
-pub struct SavResponseErrorNoSavAttributes {
+pub struct SavErrorNoSavAttributes {
     pub message: String,
 }

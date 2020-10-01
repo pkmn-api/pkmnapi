@@ -26,17 +26,32 @@ pub fn get_type_effect(
 
     let type_effect = match db.get_type_effect(&type_effect_id) {
         Ok(type_effect) => type_effect,
-        Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_type_effects,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let attacking_type_name = match db.get_type_name(&type_effect.attacking_type_id) {
         Ok(attacking_type_name) => attacking_type_name,
-        Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_type_effects,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let defending_type_name = match db.get_type_name(&type_effect.defending_type_id) {
         Ok(defending_type_name) => defending_type_name,
-        Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_type_effects,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let response = TypeEffectResponse::new(
@@ -69,11 +84,15 @@ pub fn post_type_effect(
     let data = match data {
         Ok(data) => data.into_inner(),
         Err(JsonError::Parse(_, e)) => {
-            return Err(TypeEffectResponseErrorInvalid::new(&e.to_string()));
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_type_effects_invalid,
+                Some(e.to_string()),
+            ));
         }
         _ => {
-            return Err(TypeEffectResponseErrorInvalid::new(
-                &"An unknown error occurred".to_owned(),
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_type_effects_invalid,
+                Some("An unknown error occurred".to_owned()),
             ));
         }
     };
@@ -88,7 +107,12 @@ pub fn post_type_effect(
 
     let patch = match db.set_type_effect(&type_effect_id, &type_effect) {
         Ok(patch) => patch,
-        Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_type_effects,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let patch_description = match patch_description {
@@ -96,15 +120,17 @@ pub fn post_type_effect(
         Err(_) => None,
     };
 
-    match sql.insert_rom_patch(
+    if let Err(e) = sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),
         patch_description,
     ) {
-        Ok(_) => {}
-        Err(e) => return Err(TypeEffectResponseError::new(&e.to_string())),
-    };
+        return Err(NotFoundError::new(
+            BaseErrorResponseId::error_type_effects,
+            Some(e.to_string()),
+        ));
+    }
 
     Ok(status::Accepted(Some(json!({}))))
 }

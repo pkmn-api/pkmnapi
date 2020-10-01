@@ -26,12 +26,22 @@ pub fn get_hm(
 
     let hm = match db.get_hm(&hm_id) {
         Ok(hm) => hm,
-        Err(e) => return Err(HMResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_hms,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let move_name = match db.get_move_name(&hm.move_id) {
         Ok(move_name) => move_name,
-        Err(e) => return Err(HMResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_hms,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let response = HMResponse::new(&hm_id, &hm, &move_name);
@@ -56,11 +66,15 @@ pub fn post_hm(
     let data = match data {
         Ok(data) => data.into_inner(),
         Err(JsonError::Parse(_, e)) => {
-            return Err(HMResponseErrorInvalid::new(&e.to_string()));
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_hms_invalid,
+                Some(e.to_string()),
+            ));
         }
         _ => {
-            return Err(HMResponseErrorInvalid::new(
-                &"An unknown error occurred".to_owned(),
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_hms_invalid,
+                Some("An unknown error occurred".to_owned()),
             ));
         }
     };
@@ -73,7 +87,12 @@ pub fn post_hm(
 
     let patch = match db.set_hm(&hm_id, &hm) {
         Ok(patch) => patch,
-        Err(e) => return Err(HMResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_hms,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let patch_description = match patch_description {
@@ -81,15 +100,17 @@ pub fn post_hm(
         Err(_) => None,
     };
 
-    match sql.insert_rom_patch(
+    if let Err(e) = sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),
         patch_description,
     ) {
-        Ok(_) => {}
-        Err(e) => return Err(HMResponseError::new(&e.to_string())),
-    };
+        return Err(NotFoundError::new(
+            BaseErrorResponseId::error_hms,
+            Some(e.to_string()),
+        ));
+    }
 
     Ok(status::Accepted(Some(json!({}))))
 }

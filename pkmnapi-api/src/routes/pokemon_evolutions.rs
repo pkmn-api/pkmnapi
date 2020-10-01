@@ -27,12 +27,17 @@ pub fn get_pokemon_evolutions(
 
     let pokemon_evolutions = match db.get_pokemon_evolutions(&pokedex_id) {
         Ok(pokemon_evolutions) => pokemon_evolutions,
-        Err(e) => return Err(PokemonEvolutionsResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokemon_evolutions,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let mut pokemon_names: HashMap<u8, PokemonName> = HashMap::new();
 
-    match pokemon_evolutions
+    if let Err(e) = pokemon_evolutions
         .iter()
         .map(|pokemon_evolution| match pokemon_evolution {
             PokemonEvolution::LEVEL(evolution) => evolution.pokedex_id,
@@ -42,7 +47,12 @@ pub fn get_pokemon_evolutions(
         .map(|pokedex_id| {
             let pokemon_name = match db.get_pokemon_name(&pokedex_id) {
                 Ok(pokemon_name) => pokemon_name,
-                Err(e) => return Err(PokemonEvolutionsResponseError::new(&e.to_string())),
+                Err(e) => {
+                    return Err(NotFoundError::new(
+                        BaseErrorResponseId::error_pokemon_evolutions,
+                        Some(e.to_string()),
+                    ))
+                }
             };
 
             pokemon_names.insert(pokedex_id, pokemon_name);
@@ -51,13 +61,12 @@ pub fn get_pokemon_evolutions(
         })
         .collect::<Result<Vec<_>, ResponseError>>()
     {
-        Ok(_) => {}
-        Err(e) => return Err(e),
-    };
+        return Err(e);
+    }
 
     let mut item_names: HashMap<u8, ItemName> = HashMap::new();
 
-    match pokemon_evolutions
+    if let Err(e) = pokemon_evolutions
         .iter()
         .filter_map(|pokemon_evolution| match pokemon_evolution {
             PokemonEvolution::LEVEL(_) => None,
@@ -67,7 +76,12 @@ pub fn get_pokemon_evolutions(
         .map(|item_id| {
             let item_name = match db.get_item_name(&item_id) {
                 Ok(item_name) => item_name,
-                Err(e) => return Err(PokemonEvolutionsResponseError::new(&e.to_string())),
+                Err(e) => {
+                    return Err(NotFoundError::new(
+                        BaseErrorResponseId::error_pokemon_evolutions,
+                        Some(e.to_string()),
+                    ))
+                }
             };
 
             item_names.insert(item_id, item_name);
@@ -76,9 +90,8 @@ pub fn get_pokemon_evolutions(
         })
         .collect::<Result<Vec<_>, ResponseError>>()
     {
-        Ok(_) => {}
-        Err(e) => return Err(e),
-    };
+        return Err(e);
+    }
 
     let response =
         PokemonEvolutionsResponse::new(&pokedex_id, &pokemon_evolutions, pokemon_names, item_names);
@@ -107,11 +120,15 @@ pub fn post_pokemon_evolutions(
     let data = match data {
         Ok(data) => data.into_inner(),
         Err(JsonError::Parse(_, e)) => {
-            return Err(PokemonEvolutionsResponseErrorInvalid::new(&e.to_string()));
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_pokemon_evolutions_invalid,
+                Some(e.to_string()),
+            ));
         }
         _ => {
-            return Err(PokemonEvolutionsResponseErrorInvalid::new(
-                &"An unknown error occurred".to_owned(),
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_pokemon_evolutions_invalid,
+                Some("An unknown error occurred".to_owned()),
             ));
         }
     };
@@ -122,7 +139,12 @@ pub fn post_pokemon_evolutions(
 
     let patch = match db.set_pokemon_evolutions(&pokedex_id, &pokemon_evolutions) {
         Ok(patch) => patch,
-        Err(e) => return Err(PokemonEvolutionsResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokemon_evolutions,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let patch_description = match patch_description {
@@ -130,15 +152,17 @@ pub fn post_pokemon_evolutions(
         Err(_) => None,
     };
 
-    match sql.insert_rom_patch(
+    if let Err(e) = sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),
         patch_description,
     ) {
-        Ok(_) => {}
-        Err(e) => return Err(PokemonEvolutionsResponseError::new(&e.to_string())),
-    };
+        return Err(NotFoundError::new(
+            BaseErrorResponseId::error_pokemon_evolutions,
+            Some(e.to_string()),
+        ));
+    }
 
     Ok(status::Accepted(Some(json!({}))))
 }

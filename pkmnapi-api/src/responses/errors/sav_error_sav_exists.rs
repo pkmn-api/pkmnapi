@@ -4,25 +4,25 @@ use serde::Serialize;
 
 use crate::responses::errors::*;
 
-pub type SavResponseErrorSavExists = BaseErrorResponse<SavResponseErrorSavExistsAttributes>;
+pub type SavErrorSavExists = BaseErrorResponse<SavErrorSavExistsAttributes>;
 
-impl SavResponseErrorSavExists {
+impl SavErrorSavExists {
     pub fn new() -> ResponseError {
-        let response = SavResponseErrorSavExists {
+        let response = SavErrorSavExists {
             data: BaseErrorResponseData {
                 id: BaseErrorResponseId::error_savs_sav_exists,
                 _type: BaseErrorResponseType::errors,
-                attributes: SavResponseErrorSavExistsAttributes {
+                attributes: SavErrorSavExistsAttributes {
                     message: "SAV already exists".to_owned(),
                 },
             },
         };
 
-        ResponseError::SavResponseErrorSavExists(status::Forbidden(Some(Json(response))))
+        ResponseError::SavErrorSavExists(status::Forbidden(Some(Json(response))))
     }
 }
 
 #[derive(Debug, Serialize)]
-pub struct SavResponseErrorSavExistsAttributes {
+pub struct SavErrorSavExistsAttributes {
     pub message: String,
 }

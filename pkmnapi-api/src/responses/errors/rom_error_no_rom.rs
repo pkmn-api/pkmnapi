@@ -4,25 +4,25 @@ use serde::Serialize;
 
 use crate::responses::errors::*;
 
-pub type RomResponseErrorNoRom = BaseErrorResponse<RomResponseErrorNoRomAttributes>;
+pub type RomErrorNoRom = BaseErrorResponse<RomErrorNoRomAttributes>;
 
-impl RomResponseErrorNoRom {
+impl RomErrorNoRom {
     pub fn new() -> ResponseError {
-        let response = RomResponseErrorNoRom {
+        let response = RomErrorNoRom {
             data: BaseErrorResponseData {
                 id: BaseErrorResponseId::error_roms_no_rom,
                 _type: BaseErrorResponseType::errors,
-                attributes: RomResponseErrorNoRomAttributes {
+                attributes: RomErrorNoRomAttributes {
                     message: "No ROM uploaded".to_owned(),
                 },
             },
         };
 
-        ResponseError::RomResponseErrorNoRom(status::Forbidden(Some(Json(response))))
+        ResponseError::RomErrorNoRom(status::Forbidden(Some(Json(response))))
     }
 }
 
 #[derive(Debug, Serialize)]
-pub struct RomResponseErrorNoRomAttributes {
+pub struct RomErrorNoRomAttributes {
     pub message: String,
 }

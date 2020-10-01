@@ -25,7 +25,7 @@ pub fn get_rom_patches(
     let connection = sql.get_connection().unwrap();
     let patches = match sql.select_rom_patches_by_access_token(&connection, &access_token) {
         Ok(patches) => patches,
-        Err(_) => return Err(RomResponseErrorNoRom::new()),
+        Err(_) => return Err(RomErrorNoRom::new()),
     };
 
     let response = RomPatchesResponse::new(&patches);
@@ -49,7 +49,7 @@ pub fn get_rom_patches_raw<'a>(
 
     let patches = match sql.select_rom_patches_by_access_token(&connection, &access_token) {
         Ok(patches) => patches,
-        Err(_) => return Err(RomResponseErrorNoRom::new()),
+        Err(_) => return Err(RomErrorNoRom::new()),
     };
 
     let header = "PATCH".chars().map(|c| c as u8).collect::<Vec<u8>>();
@@ -96,8 +96,13 @@ pub fn get_rom_patch<'a>(
     let connection = sql.get_connection().unwrap();
     let patch = match sql.select_rom_patch_by_id(&connection, &access_token, &patch_id) {
         Ok(Some(patch)) => patch,
-        Ok(None) => return Err(RomPatchResponseError::new()),
-        Err(_) => return Err(RomResponseErrorNoRom::new()),
+        Ok(None) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_rom_patches,
+                Some("No ROM patch found".to_owned()),
+            ))
+        }
+        Err(_) => return Err(RomErrorNoRom::new()),
     };
 
     let response = RomPatchResponse::new(&patch);
@@ -131,10 +136,11 @@ pub fn delete_rom_patch(
     };
 
     let connection = sql.get_connection().unwrap();
+
     match sql.delete_rom_patch_by_id(&connection, &access_token, &patch_id, &etag) {
         Ok(_) => {}
         Err(pkmnapi_sql::error::Error::ETagError) => return Err(ETagErrorMismatch::new()),
-        Err(_) => return Err(RomResponseErrorNoRom::new()),
+        Err(_) => return Err(RomErrorNoRom::new()),
     }
 
     Ok(status::NoContent)

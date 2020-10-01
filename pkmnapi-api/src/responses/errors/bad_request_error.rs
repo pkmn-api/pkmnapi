@@ -4,26 +4,25 @@ use serde::Serialize;
 
 use crate::responses::errors::*;
 
-pub type NotFoundError = BaseErrorResponse<NotFoundErrorAttributes>;
+pub type BadRequestError = BaseErrorResponse<BadRequestErrorAttributes>;
 
-impl NotFoundError {
+impl BadRequestError {
     pub fn new(id: BaseErrorResponseId, message: Option<String>) -> ResponseError {
-        let response = NotFoundError {
+        let response = BadRequestError {
             data: BaseErrorResponseData {
                 id,
                 _type: BaseErrorResponseType::errors,
-                attributes: NotFoundErrorAttributes {
-                    message: message
-                        .unwrap_or("The requested resource could not be found".to_owned()),
+                attributes: BadRequestErrorAttributes {
+                    message: message.unwrap_or("Invalid request".to_owned()),
                 },
             },
         };
 
-        ResponseError::NotFoundError(status::NotFound(Json(response)))
+        ResponseError::BadRequestError(status::BadRequest(Some(Json(response))))
     }
 }
 
 #[derive(Debug, Serialize)]
-pub struct NotFoundErrorAttributes {
+pub struct BadRequestErrorAttributes {
     pub message: String,
 }

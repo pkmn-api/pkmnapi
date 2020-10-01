@@ -24,12 +24,22 @@ pub fn get_map_pic_png<'a>(
 
     let map = match db.get_map_pic(&map_id) {
         Ok(map) => map,
-        Err(e) => return Err(MapPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_map_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let img = match map.to_png() {
         Ok(img) => img,
-        Err(e) => return Err(MapPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_map_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let response = Response::build()
@@ -60,12 +70,22 @@ pub fn get_map_pic_jpeg<'a>(
 
     let map = match db.get_map_pic(&map_id) {
         Ok(map) => map,
-        Err(e) => return Err(MapPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_map_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let img = match map.to_jpeg() {
         Ok(img) => img,
-        Err(e) => return Err(MapPicResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_map_pics,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let response = Response::build()

@@ -31,15 +31,14 @@ pub fn post_sav<'a>(
         sav
     };
 
-    match Sav::new(&sav) {
-        Ok(_) => {}
-        Err(_) => return Err(SavResponseErrorInvalidSav::new()),
-    };
+    if let Err(_) = Sav::new(&sav) {
+        return Err(SavErrorInvalidSav::new());
+    }
 
     let connection = sql.get_connection().unwrap();
     let sav_sql = match sql.update_user_sav_by_access_token(&connection, &access_token, &sav) {
         Ok(sav_sql) => sav_sql,
-        Err(_) => return Err(SavResponseErrorSavExists::new()),
+        Err(_) => return Err(SavErrorSavExists::new()),
     };
 
     let response = SavResponse::new(&sav_sql);
@@ -70,7 +69,7 @@ pub fn get_sav<'a>(
     let connection = sql.get_connection().unwrap();
     let sav_sql = match sql.select_user_sav_by_access_token(&connection, &access_token) {
         Ok(Some(sav_sql)) => sav_sql,
-        _ => return Err(SavResponseErrorNoSav::new()),
+        _ => return Err(SavErrorNoSav::new()),
     };
 
     let response = SavResponse::new(&sav_sql);
@@ -103,10 +102,11 @@ pub fn delete_sav(
     };
 
     let connection = sql.get_connection().unwrap();
+
     match sql.delete_user_sav_by_access_token(&connection, &access_token, &etag) {
         Ok(_) => {}
         Err(pkmnapi_sql::error::Error::ETagError) => return Err(ETagErrorMismatch::new()),
-        Err(_) => return Err(SavResponseErrorNoSav::new()),
+        Err(_) => return Err(SavErrorNoSav::new()),
     }
 
     Ok(status::NoContent)

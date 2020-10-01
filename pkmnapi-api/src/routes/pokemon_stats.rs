@@ -26,7 +26,12 @@ pub fn get_pokemon_stats(
 
     let pokemon_stats = match db.get_pokemon_stats(&pokedex_id) {
         Ok(pokemon_stats) => pokemon_stats,
-        Err(e) => return Err(PokemonStatsResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokemon_stats,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let type_names: Result<Vec<TypeName>, _> = pokemon_stats
@@ -34,7 +39,12 @@ pub fn get_pokemon_stats(
         .iter()
         .map(|type_id| match db.get_type_name(type_id) {
             Ok(type_name) => Ok(type_name),
-            Err(e) => return Err(PokemonStatsResponseError::new(&e.to_string())),
+            Err(e) => {
+                return Err(NotFoundError::new(
+                    BaseErrorResponseId::error_pokemon_stats,
+                    Some(e.to_string()),
+                ))
+            }
         })
         .collect();
 
@@ -69,11 +79,15 @@ pub fn post_pokemon_stats(
     let data = match data {
         Ok(data) => data.into_inner(),
         Err(JsonError::Parse(_, e)) => {
-            return Err(PokemonStatsResponseErrorInvalid::new(&e.to_string()));
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_pokemon_stats_invalid,
+                Some(e.to_string()),
+            ));
         }
         _ => {
-            return Err(PokemonStatsResponseErrorInvalid::new(
-                &"An unknown error occurred".to_owned(),
+            return Err(BadRequestError::new(
+                BaseErrorResponseId::error_pokemon_stats_invalid,
+                Some("An unknown error occurred".to_owned()),
             ));
         }
     };
@@ -98,7 +112,12 @@ pub fn post_pokemon_stats(
 
     let patch = match db.set_pokemon_stats(&pokedex_id, &pokemon_stats) {
         Ok(patch) => patch,
-        Err(e) => return Err(PokemonStatsResponseError::new(&e.to_string())),
+        Err(e) => {
+            return Err(NotFoundError::new(
+                BaseErrorResponseId::error_pokemon_stats,
+                Some(e.to_string()),
+            ))
+        }
     };
 
     let patch_description = match patch_description {
@@ -106,15 +125,17 @@ pub fn post_pokemon_stats(
         Err(_) => None,
     };
 
-    match sql.insert_rom_patch(
+    if let Err(e) = sql.insert_rom_patch(
         &connection,
         &access_token,
         &patch.to_raw(),
         patch_description,
     ) {
-        Ok(_) => {}
-        Err(e) => return Err(PokemonStatsResponseError::new(&e.to_string())),
-    };
+        return Err(NotFoundError::new(
+            BaseErrorResponseId::error_pokemon_stats,
+            Some(e.to_string()),
+        ));
+    }
 
     Ok(status::Accepted(Some(json!({}))))
 }

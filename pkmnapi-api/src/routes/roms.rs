@@ -33,7 +33,7 @@ pub fn post_rom<'a>(
 
     let db = match PkmnapiDB::new(&rom, None) {
         Ok(db) => db,
-        Err(_) => return Err(RomResponseErrorInvalidRom::new()),
+        Err(_) => return Err(RomErrorInvalidRom::new()),
     };
 
     let connection = sql.get_connection().unwrap();
@@ -44,7 +44,7 @@ pub fn post_rom<'a>(
         &rom,
     ) {
         Ok(rom_sql) => rom_sql,
-        Err(_) => return Err(RomResponseErrorRomExists::new()),
+        Err(_) => return Err(RomErrorRomExists::new()),
     };
 
     let response = RomResponse::new(&rom_sql);
@@ -75,7 +75,7 @@ pub fn get_rom<'a>(
     let connection = sql.get_connection().unwrap();
     let rom_sql = match sql.select_user_rom_by_access_token(&connection, &access_token) {
         Ok(Some(rom_sql)) => rom_sql,
-        _ => return Err(RomResponseErrorNoRom::new()),
+        _ => return Err(RomErrorNoRom::new()),
     };
 
     let response = RomResponse::new(&rom_sql);
@@ -108,10 +108,11 @@ pub fn delete_rom(
     };
 
     let connection = sql.get_connection().unwrap();
+
     match sql.delete_user_rom_by_access_token(&connection, &access_token, &etag) {
         Ok(_) => {}
         Err(pkmnapi_sql::error::Error::ETagError) => return Err(ETagErrorMismatch::new()),
-        Err(_) => return Err(RomResponseErrorNoRom::new()),
+        Err(_) => return Err(RomErrorNoRom::new()),
     }
 
     Ok(status::NoContent)
