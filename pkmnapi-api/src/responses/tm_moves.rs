@@ -6,31 +6,31 @@ use crate::responses::links::Links;
 use crate::responses::move_names::MoveNameResponseData;
 use crate::utils;
 
-pub type TMResponse = BaseResponse<TMResponseAttributes>;
+pub type TMMoveResponse = BaseResponse<TMMoveResponseAttributes>;
 
-impl TMResponse {
-    /// Create a new `TMResponse`
-    pub fn new(tm_id: &u8, tm: &TM, move_name: &MoveName) -> TMResponse {
-        TMResponse {
+impl TMMoveResponse {
+    /// Create a new `TMMoveResponse`
+    pub fn new(tm_id: &u8, tm: &TM, move_name: &MoveName) -> TMMoveResponse {
+        TMMoveResponse {
             data: BaseResponseData {
                 id: tm_id.to_string(),
-                _type: BaseResponseType::tms,
-                attributes: TMResponseAttributes {
+                _type: BaseResponseType::tm_moves,
+                attributes: TMMoveResponseAttributes {
                     _move: MoveNameResponseData::new(&tm.move_id, move_name),
                 },
                 links: Links {
-                    _self: utils::generate_url("tms", Some(&tm_id.to_string())),
+                    _self: utils::generate_url("tms/moves", Some(&tm_id.to_string())),
                 },
             },
             links: Links {
-                _self: utils::generate_url("tms", Some(&tm_id.to_string())),
+                _self: utils::generate_url("tms/moves", Some(&tm_id.to_string())),
             },
         }
     }
 }
 
 #[derive(Debug, Serialize)]
-pub struct TMResponseAttributes {
+pub struct TMMoveResponseAttributes {
     #[serde(rename = "move")]
     pub _move: MoveNameResponseData,
 }

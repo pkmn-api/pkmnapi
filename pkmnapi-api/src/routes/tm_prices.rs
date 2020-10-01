@@ -5,18 +5,18 @@ use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
 
 use crate::guards::*;
-use crate::requests::hms::*;
+use crate::requests::tm_prices::*;
 use crate::responses::errors::*;
-use crate::responses::hms::*;
+use crate::responses::tm_prices::*;
 use crate::utils;
 
-#[get("/hms/<hm_id>")]
-pub fn get_hm(
+#[get("/tms/prices/<tm_id>")]
+pub fn get_tm_price(
     sql: State<PkmnapiSQL>,
     _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
-    hm_id: u8,
-) -> Result<Json<HMResponse>, ResponseError> {
+    tm_id: u8,
+) -> Result<Json<TMPriceResponse>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
@@ -24,39 +24,29 @@ pub fn get_hm(
 
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let hm = match db.get_hm(&hm_id) {
-        Ok(hm) => hm,
+    let tm_price = match db.get_tm_price(&tm_id) {
+        Ok(tm_price) => tm_price,
         Err(e) => {
             return Err(NotFoundError::new(
-                BaseErrorResponseId::error_hms,
+                BaseErrorResponseId::error_tm_prices,
                 Some(e.to_string()),
             ))
         }
     };
 
-    let move_name = match db.get_move_name(&hm.move_id) {
-        Ok(move_name) => move_name,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_hms,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let response = HMResponse::new(&hm_id, &hm, &move_name);
+    let response = TMPriceResponse::new(&tm_id, &tm_price);
 
     Ok(Json(response))
 }
 
-#[post("/hms/<hm_id>", format = "application/json", data = "<data>")]
-pub fn post_hm(
+#[post("/tms/prices/<tm_id>", format = "application/json", data = "<data>")]
+pub fn post_tm_price(
     sql: State<PkmnapiSQL>,
     _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
-    data: Result<Json<HMRequest>, JsonError>,
-    hm_id: u8,
+    data: Result<Json<TMPriceRequest>, JsonError>,
+    tm_id: u8,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
@@ -67,13 +57,13 @@ pub fn post_hm(
         Ok(data) => data.into_inner(),
         Err(JsonError::Parse(_, e)) => {
             return Err(BadRequestError::new(
-                BaseErrorResponseId::error_hms_invalid,
+                BaseErrorResponseId::error_tm_prices_invalid,
                 Some(e.to_string()),
             ));
         }
         _ => {
             return Err(BadRequestError::new(
-                BaseErrorResponseId::error_hms_invalid,
+                BaseErrorResponseId::error_tm_prices_invalid,
                 Some("An unknown error occurred".to_owned()),
             ));
         }
@@ -81,15 +71,15 @@ pub fn post_hm(
 
     let (db, connection) = utils::get_db(&sql, &access_token)?;
 
-    let hm = HM {
-        move_id: data.get_move_id(),
+    let tm_price = TMPrice {
+        value: data.get_price(),
     };
 
-    let patch = match db.set_hm(&hm_id, &hm) {
+    let patch = match db.set_tm_price(&tm_id, &tm_price) {
         Ok(patch) => patch,
         Err(e) => {
             return Err(NotFoundError::new(
-                BaseErrorResponseId::error_hms,
+                BaseErrorResponseId::error_tm_prices,
                 Some(e.to_string()),
             ))
         }
@@ -107,7 +97,7 @@ pub fn post_hm(
         patch_description,
     ) {
         return Err(NotFoundError::new(
-            BaseErrorResponseId::error_hms,
+            BaseErrorResponseId::error_tm_prices,
             Some(e.to_string()),
         ));
     }

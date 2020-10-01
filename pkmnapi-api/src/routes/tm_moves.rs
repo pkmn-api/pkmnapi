@@ -5,18 +5,18 @@ use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
 
 use crate::guards::*;
-use crate::requests::tms::*;
+use crate::requests::tm_moves::*;
 use crate::responses::errors::*;
-use crate::responses::tms::*;
+use crate::responses::tm_moves::*;
 use crate::utils;
 
-#[get("/tms/<tm_id>")]
-pub fn get_tm(
+#[get("/tms/moves/<tm_id>")]
+pub fn get_tm_move(
     sql: State<PkmnapiSQL>,
     _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     tm_id: u8,
-) -> Result<Json<TMResponse>, ResponseError> {
+) -> Result<Json<TMMoveResponse>, ResponseError> {
     let access_token = match access_token {
         Ok(access_token) => access_token.into_inner(),
         Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
@@ -28,7 +28,7 @@ pub fn get_tm(
         Ok(tm) => tm,
         Err(e) => {
             return Err(NotFoundError::new(
-                BaseErrorResponseId::error_tms,
+                BaseErrorResponseId::error_tm_moves,
                 Some(e.to_string()),
             ))
         }
@@ -38,24 +38,24 @@ pub fn get_tm(
         Ok(move_name) => move_name,
         Err(e) => {
             return Err(NotFoundError::new(
-                BaseErrorResponseId::error_tms,
+                BaseErrorResponseId::error_tm_moves,
                 Some(e.to_string()),
             ))
         }
     };
 
-    let response = TMResponse::new(&tm_id, &tm, &move_name);
+    let response = TMMoveResponse::new(&tm_id, &tm, &move_name);
 
     Ok(Json(response))
 }
 
-#[post("/tms/<tm_id>", format = "application/json", data = "<data>")]
-pub fn post_tm(
+#[post("/tms/moves/<tm_id>", format = "application/json", data = "<data>")]
+pub fn post_tm_move(
     sql: State<PkmnapiSQL>,
     _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
-    data: Result<Json<TMRequest>, JsonError>,
+    data: Result<Json<TMMoveRequest>, JsonError>,
     tm_id: u8,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
     let access_token = match access_token {
@@ -67,13 +67,13 @@ pub fn post_tm(
         Ok(data) => data.into_inner(),
         Err(JsonError::Parse(_, e)) => {
             return Err(BadRequestError::new(
-                BaseErrorResponseId::error_tms_invalid,
+                BaseErrorResponseId::error_tm_moves_invalid,
                 Some(e.to_string()),
             ));
         }
         _ => {
             return Err(BadRequestError::new(
-                BaseErrorResponseId::error_tms_invalid,
+                BaseErrorResponseId::error_tm_moves_invalid,
                 Some("An unknown error occurred".to_owned()),
             ));
         }
@@ -82,14 +82,14 @@ pub fn post_tm(
     let (db, connection) = utils::get_db(&sql, &access_token)?;
 
     let tm = TM {
-        move_id: data.get_move_id().parse::<u8>().unwrap(),
+        move_id: data.get_move_id(),
     };
 
     let patch = match db.set_tm(&tm_id, &tm) {
         Ok(patch) => patch,
         Err(e) => {
             return Err(NotFoundError::new(
-                BaseErrorResponseId::error_tms,
+                BaseErrorResponseId::error_tm_moves,
                 Some(e.to_string()),
             ))
         }
@@ -107,7 +107,7 @@ pub fn post_tm(
         patch_description,
     ) {
         return Err(NotFoundError::new(
-            BaseErrorResponseId::error_tms,
+            BaseErrorResponseId::error_tm_moves,
             Some(e.to_string()),
         ));
     }

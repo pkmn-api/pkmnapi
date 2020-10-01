@@ -5,12 +5,12 @@ use crate::requests::base::BaseRequest;
 pub type TypeEffectRequest = BaseRequest<TypeEffectRequestType, TypeEffectRequestAttributes>;
 
 impl TypeEffectRequest {
-    pub fn get_attacking_type_id(&self) -> &String {
-        &self.data.attributes.attacking_type.id
+    pub fn get_attacking_type_id(&self) -> u8 {
+        self.data.attributes.attacking_type.id
     }
 
-    pub fn get_defending_type_id(&self) -> &String {
-        &self.data.attributes.defending_type.id
+    pub fn get_defending_type_id(&self) -> u8 {
+        self.data.attributes.defending_type.id
     }
 
     pub fn get_multiplier(&self) -> f32 {
@@ -33,5 +33,6 @@ pub struct TypeEffectRequestAttributes {
 
 #[derive(Debug, Deserialize)]
 pub struct TypeEffectRequestAttributesType {
-    id: String,
+    #[serde(deserialize_with = "crate::utils::from_numeric_str")]
+    id: u8,
 }

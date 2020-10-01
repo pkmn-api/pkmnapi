@@ -100,8 +100,8 @@ pub fn post_type_effect(
     let (db, connection) = utils::get_db(&sql, &access_token)?;
 
     let type_effect = TypeEffect {
-        attacking_type_id: data.get_attacking_type_id().parse::<u8>().unwrap(),
-        defending_type_id: data.get_defending_type_id().parse::<u8>().unwrap(),
+        attacking_type_id: data.get_attacking_type_id(),
+        defending_type_id: data.get_defending_type_id(),
         multiplier: data.get_multiplier(),
     };
 

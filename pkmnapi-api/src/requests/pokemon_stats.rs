@@ -25,12 +25,12 @@ impl PokemonStatsRequest {
         self.data.attributes.base_special
     }
 
-    pub fn get_type_ids(&self) -> Vec<&String> {
+    pub fn get_type_ids(&self) -> Vec<u8> {
         self.data
             .attributes
             .types
             .iter()
-            .map(|_type| &_type.id)
+            .map(|_type| _type.id)
             .collect()
     }
 
@@ -63,5 +63,6 @@ pub struct PokemonStatsRequestAttributes {
 
 #[derive(Debug, Deserialize)]
 pub struct PokemonStatsRequestAttributesType {
-    id: String,
+    #[serde(deserialize_with = "crate::utils::from_numeric_str")]
+    id: u8,
 }

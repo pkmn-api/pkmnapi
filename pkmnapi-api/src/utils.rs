@@ -1,7 +1,11 @@
 use pkmnapi_db::*;
 use pkmnapi_sql::*;
 use rocket::State;
+use serde::de::{self, Deserializer};
+use serde::Deserialize;
 use std::env;
+use std::fmt::Display;
+use std::str::FromStr;
 
 use crate::responses::errors::*;
 
@@ -65,4 +69,15 @@ pub fn generate_url(route: &str, resource: Option<&String>) -> String {
     };
 
     format!("{}/v{}/{}{}", domain, version, route, resource)
+}
+
+pub fn from_numeric_str<'de, T, D>(deserializer: D) -> Result<T, D::Error>
+where
+    T: FromStr,
+    T::Err: Display,
+    D: Deserializer<'de>,
+{
+    let s = String::deserialize(deserializer)?;
+
+    T::from_str(&s).map_err(de::Error::custom)
 }

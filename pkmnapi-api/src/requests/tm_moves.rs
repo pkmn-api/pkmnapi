@@ -2,9 +2,9 @@ use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;
 
-pub type HMRequest = BaseRequest<HMRequestType, HMRequestAttributes>;
+pub type TMMoveRequest = BaseRequest<TMMoveRequestType, TMMoveRequestAttributes>;
 
-impl HMRequest {
+impl TMMoveRequest {
     pub fn get_move_id(&self) -> u8 {
         self.data.attributes._move.id
     }
@@ -12,18 +12,18 @@ impl HMRequest {
 
 #[derive(Debug, Deserialize)]
 #[allow(non_camel_case_types)]
-pub enum HMRequestType {
-    hms,
+pub enum TMMoveRequestType {
+    tm_moves,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct HMRequestAttributes {
+pub struct TMMoveRequestAttributes {
     #[serde(rename = "move")]
-    pub _move: HMRequestAttributesMove,
+    pub _move: TMMoveRequestAttributesMove,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct HMRequestAttributesMove {
+pub struct TMMoveRequestAttributesMove {
     #[serde(deserialize_with = "crate::utils::from_numeric_str")]
     pub id: u8,
 }

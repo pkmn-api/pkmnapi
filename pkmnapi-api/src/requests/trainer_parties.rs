@@ -17,10 +17,7 @@ impl TrainerPartiesRequest {
                     .party
                     .iter()
                     .map(|party_pokemon| {
-                        PartyPokemon::new(
-                            party_pokemon.level,
-                            party_pokemon.pokemon.id.parse().unwrap_or(0x01),
-                        )
+                        PartyPokemon::new(party_pokemon.level, party_pokemon.pokemon.id)
                     })
                     .collect();
 
@@ -54,5 +51,6 @@ pub struct TrainerPartiesRequestAttributesPartyPokemon {
 
 #[derive(Debug, Deserialize)]
 pub struct TrainerPartiesRequestAttributesPartyPokemonAttributes {
-    pub id: String,
+    #[serde(deserialize_with = "crate::utils::from_numeric_str")]
+    pub id: u8,
 }

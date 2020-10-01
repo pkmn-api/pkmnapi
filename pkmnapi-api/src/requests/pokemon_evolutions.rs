@@ -1,10 +1,7 @@
 use pkmnapi_db::types::{
     PokemonEvolution, PokemonEvolutionItem, PokemonEvolutionLevel, PokemonEvolutionTrade,
 };
-use serde::de::{self, Deserializer};
 use serde::Deserialize;
-use std::fmt::Display;
-use std::str::FromStr;
 
 use crate::requests::base::BaseRequest;
 
@@ -90,23 +87,12 @@ pub enum PokemonEvolutionsRequestAttributesEvolutionTradeType {
 
 #[derive(Debug, Deserialize)]
 pub struct PokemonEvolutionsRequestAttributesEvolutionItemAttributes {
-    #[serde(deserialize_with = "from_str")]
+    #[serde(deserialize_with = "crate::utils::from_numeric_str")]
     id: u8,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct PokemonEvolutionsRequestAttributesEvolutionPokemon {
-    #[serde(deserialize_with = "from_str")]
+    #[serde(deserialize_with = "crate::utils::from_numeric_str")]
     id: u8,
-}
-
-fn from_str<'de, T, D>(deserializer: D) -> Result<T, D::Error>
-where
-    T: FromStr,
-    T::Err: Display,
-    D: Deserializer<'de>,
-{
-    let s = String::deserialize(deserializer)?;
-
-    T::from_str(&s).map_err(de::Error::custom)
 }

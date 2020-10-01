@@ -101,11 +101,7 @@ pub fn post_pokemon_stats(
         base_defence: data.get_base_defence(),
         base_speed: data.get_base_speed(),
         base_special: data.get_base_special(),
-        type_ids: data
-            .get_type_ids()
-            .iter()
-            .map(|type_id| type_id.parse::<u8>().unwrap())
-            .collect(),
+        type_ids: data.get_type_ids(),
         catch_rate: data.get_catch_rate(),
         base_exp_yield: data.get_base_exp_yield(),
     };
