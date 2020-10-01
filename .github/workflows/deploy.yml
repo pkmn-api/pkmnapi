@@ -1,0 +1,20 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Deploy
+      uses: akhileshns/heroku-deploy@master
+      with:
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+        heroku_app_name: "pkmn-api"
+        heroku_email: ${{ secrets.HEROKU_EMAIL }}
+        buildpack: "https://github.com/emk/heroku-buildpack-rust"
