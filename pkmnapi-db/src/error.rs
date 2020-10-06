@@ -2,6 +2,9 @@ use std::fmt;
 
 #[derive(Debug, PartialEq)]
 pub enum Error {
+    CryCouldNotCreate,
+    CryCouldNotFinalize,
+    CryCouldNotWriteSample,
     HeaderParseError(String),
     HeaderTooSmall,
     HMIDInvalid(u8, usize, usize),
@@ -51,6 +54,9 @@ impl fmt::Display for Error {
     /// ```
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let output = match self {
+            Error::CryCouldNotCreate => "Could not create cry".to_owned(),
+            Error::CryCouldNotFinalize => "Could not finalize cry".to_owned(),
+            Error::CryCouldNotWriteSample => "Could not write cry sample".to_owned(),
             Error::HeaderParseError(string) => string.to_owned(),
             Error::HeaderTooSmall => "Header too small".to_owned(),
             Error::HMIDInvalid(hm_id, min, max) => {

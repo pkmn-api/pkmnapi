@@ -1,6 +1,6 @@
 +++
 title = "Pokémon Evolutions"
-weight = 8
+weight = 9
 +++
 
 | Endpoint                                                            | Description                    |

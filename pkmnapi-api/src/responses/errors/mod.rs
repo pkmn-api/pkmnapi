@@ -93,6 +93,8 @@ pub enum BaseErrorResponseId {
     error_pokedex_entries,
     error_pokedex_texts_invalid,
     error_pokedex_texts,
+    error_pokemon_cries_invalid,
+    error_pokemon_cries,
     error_pokemon_evolutions_invalid,
     error_pokemon_evolutions,
     error_pokemon_names_invalid,

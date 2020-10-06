@@ -1,0 +1,1391 @@
+use pkmnapi_db::cry::*;
+use pkmnapi_db::patch::*;
+
+mod common;
+
+macro_rules! set_pokemon_cry_test {
+    ($test_name: ident, $pokedex_id: expr, $base: expr, $pitch: expr, $length: expr, $patch_offset: expr, $patch_data: expr) => {
+        #[test]
+        #[ignore]
+        #[allow(non_snake_case)]
+        fn $test_name() {
+            let db = common::load_rom();
+
+            match db.set_pokemon_cry(
+                &$pokedex_id,
+                &Cry {
+                    base: $base,
+                    pitch: $pitch,
+                    length: $length,
+                    ..Default::default()
+                },
+            ) {
+                Ok(patch) => assert_eq!(
+                    patch,
+                    Patch {
+                        offset: $patch_offset,
+                        length: $patch_data.len(),
+                        data: $patch_data
+                    },
+                    "Searched for Pokédex ID: {}",
+                    $pokedex_id
+                ),
+                Err(_) => panic!(format!("Could not find Pokédex ID: {}", $pokedex_id)),
+            };
+        }
+    };
+}
+
+#[rustfmt::skip::macros(set_pokemon_cry_test)]
+
+set_pokemon_cry_test!(set_pokemon_cry_1, 1, 0x01, 0x02, 0x03, 0x3960E, vec![0x01, 0x02, 0x03]);
+set_pokemon_cry_test!(
+    set_pokemon_cry_2,
+    2,
+    0x01,
+    0x02,
+    0x03,
+    0x3945E,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_3,
+    3,
+    0x01,
+    0x02,
+    0x03,
+    0x39611,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_4,
+    4,
+    0x01,
+    0x02,
+    0x03,
+    0x39653,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_5,
+    5,
+    0x01,
+    0x02,
+    0x03,
+    0x39659,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_6,
+    6,
+    0x01,
+    0x02,
+    0x03,
+    0x3965F,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_7,
+    7,
+    0x01,
+    0x02,
+    0x03,
+    0x39656,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_8,
+    8,
+    0x01,
+    0x02,
+    0x03,
+    0x3965C,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_9,
+    9,
+    0x01,
+    0x02,
+    0x03,
+    0x39497,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_10,
+    10,
+    0x01,
+    0x02,
+    0x03,
+    0x395B4,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_11,
+    11,
+    0x01,
+    0x02,
+    0x03,
+    0x395B7,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_12,
+    12,
+    0x01,
+    0x02,
+    0x03,
+    0x395BA,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_13,
+    13,
+    0x01,
+    0x02,
+    0x03,
+    0x39593,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_14,
+    14,
+    0x01,
+    0x02,
+    0x03,
+    0x39596,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_15,
+    15,
+    0x01,
+    0x02,
+    0x03,
+    0x39599,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_16,
+    16,
+    0x01,
+    0x02,
+    0x03,
+    0x394AF,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_17,
+    17,
+    0x01,
+    0x02,
+    0x03,
+    0x39605,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_18,
+    18,
+    0x01,
+    0x02,
+    0x03,
+    0x39608,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_19,
+    19,
+    0x01,
+    0x02,
+    0x03,
+    0x39632,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_20,
+    20,
+    0x01,
+    0x02,
+    0x03,
+    0x39635,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_21,
+    21,
+    0x01,
+    0x02,
+    0x03,
+    0x39452,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_22,
+    22,
+    0x01,
+    0x02,
+    0x03,
+    0x394AC,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_23,
+    23,
+    0x01,
+    0x02,
+    0x03,
+    0x39587,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_24,
+    24,
+    0x01,
+    0x02,
+    0x03,
+    0x394CA,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_25,
+    25,
+    0x01,
+    0x02,
+    0x03,
+    0x3953F,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_26,
+    26,
+    0x01,
+    0x02,
+    0x03,
+    0x39542,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_27,
+    27,
+    0x01,
+    0x02,
+    0x03,
+    0x39563,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_28,
+    28,
+    0x01,
+    0x02,
+    0x03,
+    0x39566,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_29,
+    29,
+    0x01,
+    0x02,
+    0x03,
+    0x39470,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_30,
+    30,
+    0x01,
+    0x02,
+    0x03,
+    0x3963B,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_31,
+    31,
+    0x01,
+    0x02,
+    0x03,
+    0x39473,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_32,
+    32,
+    0x01,
+    0x02,
+    0x03,
+    0x3944C,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_33,
+    33,
+    0x01,
+    0x02,
+    0x03,
+    0x39638,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_34,
+    34,
+    0x01,
+    0x02,
+    0x03,
+    0x39458,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_35,
+    35,
+    0x01,
+    0x02,
+    0x03,
+    0x3944F,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_36,
+    36,
+    0x01,
+    0x02,
+    0x03,
+    0x395ED,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_37,
+    37,
+    0x01,
+    0x02,
+    0x03,
+    0x39539,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_38,
+    38,
+    0x01,
+    0x02,
+    0x03,
+    0x3953C,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_39,
+    39,
+    0x01,
+    0x02,
+    0x03,
+    0x3956F,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_40,
+    40,
+    0x01,
+    0x02,
+    0x03,
+    0x39572,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_41,
+    41,
+    0x01,
+    0x02,
+    0x03,
+    0x39584,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_42,
+    42,
+    0x01,
+    0x02,
+    0x03,
+    0x395C9,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_43,
+    43,
+    0x01,
+    0x02,
+    0x03,
+    0x3966E,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_44,
+    44,
+    0x01,
+    0x02,
+    0x03,
+    0x39671,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_45,
+    45,
+    0x01,
+    0x02,
+    0x03,
+    0x39674,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_46,
+    46,
+    0x01,
+    0x02,
+    0x03,
+    0x3958A,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_47,
+    47,
+    0x01,
+    0x02,
+    0x03,
+    0x394CD,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_48,
+    48,
+    0x01,
+    0x02,
+    0x03,
+    0x39506,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_49,
+    49,
+    0x01,
+    0x02,
+    0x03,
+    0x395A8,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_50,
+    50,
+    0x01,
+    0x02,
+    0x03,
+    0x394F4,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_51,
+    51,
+    0x01,
+    0x02,
+    0x03,
+    0x395A5,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_52,
+    52,
+    0x01,
+    0x02,
+    0x03,
+    0x3952A,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_53,
+    53,
+    0x01,
+    0x02,
+    0x03,
+    0x395F3,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_54,
+    54,
+    0x01,
+    0x02,
+    0x03,
+    0x394D0,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_55,
+    55,
+    0x01,
+    0x02,
+    0x03,
+    0x395C3,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_56,
+    56,
+    0x01,
+    0x02,
+    0x03,
+    0x394EE,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_57,
+    57,
+    0x01,
+    0x02,
+    0x03,
+    0x395A2,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_58,
+    58,
+    0x01,
+    0x02,
+    0x03,
+    0x394A6,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_59,
+    59,
+    0x01,
+    0x02,
+    0x03,
+    0x3947F,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_60,
+    60,
+    0x01,
+    0x02,
+    0x03,
+    0x39518,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_61,
+    61,
+    0x01,
+    0x02,
+    0x03,
+    0x3958D,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_62,
+    62,
+    0x01,
+    0x02,
+    0x03,
+    0x39590,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_63,
+    63,
+    0x01,
+    0x02,
+    0x03,
+    0x395FF,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_64,
+    64,
+    0x01,
+    0x02,
+    0x03,
+    0x394B5,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_65,
+    65,
+    0x01,
+    0x02,
+    0x03,
+    0x39602,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_66,
+    66,
+    0x01,
+    0x02,
+    0x03,
+    0x39581,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_67,
+    67,
+    0x01,
+    0x02,
+    0x03,
+    0x394BE,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_68,
+    68,
+    0x01,
+    0x02,
+    0x03,
+    0x395BD,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_69,
+    69,
+    0x01,
+    0x02,
+    0x03,
+    0x39677,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_70,
+    70,
+    0x01,
+    0x02,
+    0x03,
+    0x3967A,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_71,
+    71,
+    0x01,
+    0x02,
+    0x03,
+    0x3967D,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_72,
+    72,
+    0x01,
+    0x02,
+    0x03,
+    0x3948B,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_73,
+    73,
+    0x01,
+    0x02,
+    0x03,
+    0x39614,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_74,
+    74,
+    0x01,
+    0x02,
+    0x03,
+    0x3963E,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_75,
+    75,
+    0x01,
+    0x02,
+    0x03,
+    0x394B8,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_76,
+    76,
+    0x01,
+    0x02,
+    0x03,
+    0x394D6,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_77,
+    77,
+    0x01,
+    0x02,
+    0x03,
+    0x3962C,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_78,
+    78,
+    0x01,
+    0x02,
+    0x03,
+    0x3962F,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_79,
+    79,
+    0x01,
+    0x02,
+    0x03,
+    0x394B2,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_80,
+    80,
+    0x01,
+    0x02,
+    0x03,
+    0x3945B,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_81,
+    81,
+    0x01,
+    0x02,
+    0x03,
+    0x3964A,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_82,
+    82,
+    0x01,
+    0x02,
+    0x03,
+    0x394E5,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_83,
+    83,
+    0x01,
+    0x02,
+    0x03,
+    0x39503,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_84,
+    84,
+    0x01,
+    0x02,
+    0x03,
+    0x39515,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_85,
+    85,
+    0x01,
+    0x02,
+    0x03,
+    0x3959F,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_86,
+    86,
+    0x01,
+    0x02,
+    0x03,
+    0x394F1,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_87,
+    87,
+    0x01,
+    0x02,
+    0x03,
+    0x395AB,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_88,
+    88,
+    0x01,
+    0x02,
+    0x03,
+    0x3946A,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_89,
+    89,
+    0x01,
+    0x02,
+    0x03,
+    0x395DB,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_90,
+    90,
+    0x01,
+    0x02,
+    0x03,
+    0x39488,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_91,
+    91,
+    0x01,
+    0x02,
+    0x03,
+    0x395E4,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_92,
+    92,
+    0x01,
+    0x02,
+    0x03,
+    0x3948E,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_93,
+    93,
+    0x01,
+    0x02,
+    0x03,
+    0x395FC,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_94,
+    94,
+    0x01,
+    0x02,
+    0x03,
+    0x3946D,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_95,
+    95,
+    0x01,
+    0x02,
+    0x03,
+    0x394A9,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_96,
+    96,
+    0x01,
+    0x02,
+    0x03,
+    0x394D3,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_97,
+    97,
+    0x01,
+    0x02,
+    0x03,
+    0x395C6,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_98,
+    98,
+    0x01,
+    0x02,
+    0x03,
+    0x3952D,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_99,
+    99,
+    0x01,
+    0x02,
+    0x03,
+    0x395E1,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_100,
+    100,
+    0x01,
+    0x02,
+    0x03,
+    0x39455,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_101,
+    101,
+    0x01,
+    0x02,
+    0x03,
+    0x395EA,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_102,
+    102,
+    0x01,
+    0x02,
+    0x03,
+    0x39467,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_103,
+    103,
+    0x01,
+    0x02,
+    0x03,
+    0x39461,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_104,
+    104,
+    0x01,
+    0x02,
+    0x03,
+    0x39476,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_105,
+    105,
+    0x01,
+    0x02,
+    0x03,
+    0x395F6,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_106,
+    106,
+    0x01,
+    0x02,
+    0x03,
+    0x394C4,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_107,
+    107,
+    0x01,
+    0x02,
+    0x03,
+    0x394C7,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_108,
+    108,
+    0x01,
+    0x02,
+    0x03,
+    0x39464,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_109,
+    109,
+    0x01,
+    0x02,
+    0x03,
+    0x394E8,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_110,
+    110,
+    0x01,
+    0x02,
+    0x03,
+    0x395F0,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_111,
+    111,
+    0x01,
+    0x02,
+    0x03,
+    0x39479,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_112,
+    112,
+    0x01,
+    0x02,
+    0x03,
+    0x39446,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_113,
+    113,
+    0x01,
+    0x02,
+    0x03,
+    0x394BB,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_114,
+    114,
+    0x01,
+    0x02,
+    0x03,
+    0x3949D,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_115,
+    115,
+    0x01,
+    0x02,
+    0x03,
+    0x39449,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_116,
+    116,
+    0x01,
+    0x02,
+    0x03,
+    0x39557,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_117,
+    117,
+    0x01,
+    0x02,
+    0x03,
+    0x3955A,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_118,
+    118,
+    0x01,
+    0x02,
+    0x03,
+    0x3961A,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_119,
+    119,
+    0x01,
+    0x02,
+    0x03,
+    0x3961D,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_120,
+    120,
+    0x01,
+    0x02,
+    0x03,
+    0x39494,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_121,
+    121,
+    0x01,
+    0x02,
+    0x03,
+    0x3960B,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_122,
+    122,
+    0x01,
+    0x02,
+    0x03,
+    0x394C1,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_123,
+    123,
+    0x01,
+    0x02,
+    0x03,
+    0x39491,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_124,
+    124,
+    0x01,
+    0x02,
+    0x03,
+    0x3951B,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_125,
+    125,
+    0x01,
+    0x02,
+    0x03,
+    0x394E2,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_126,
+    126,
+    0x01,
+    0x02,
+    0x03,
+    0x394DC,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_127,
+    127,
+    0x01,
+    0x02,
+    0x03,
+    0x3949A,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_128,
+    128,
+    0x01,
+    0x02,
+    0x03,
+    0x394F7,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_129,
+    129,
+    0x01,
+    0x02,
+    0x03,
+    0x395D2,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_130,
+    130,
+    0x01,
+    0x02,
+    0x03,
+    0x39485,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_131,
+    131,
+    0x01,
+    0x02,
+    0x03,
+    0x3947C,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_132,
+    132,
+    0x01,
+    0x02,
+    0x03,
+    0x39527,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_133,
+    133,
+    0x01,
+    0x02,
+    0x03,
+    0x39575,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_134,
+    134,
+    0x01,
+    0x02,
+    0x03,
+    0x3957E,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_135,
+    135,
+    0x01,
+    0x02,
+    0x03,
+    0x3957B,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_136,
+    136,
+    0x01,
+    0x02,
+    0x03,
+    0x39578,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_137,
+    137,
+    0x01,
+    0x02,
+    0x03,
+    0x39641,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_138,
+    138,
+    0x01,
+    0x02,
+    0x03,
+    0x39569,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_139,
+    139,
+    0x01,
+    0x02,
+    0x03,
+    0x3956C,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_140,
+    140,
+    0x01,
+    0x02,
+    0x03,
+    0x39551,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_141,
+    141,
+    0x01,
+    0x02,
+    0x03,
+    0x39554,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_142,
+    142,
+    0x01,
+    0x02,
+    0x03,
+    0x39644,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_143,
+    143,
+    0x01,
+    0x02,
+    0x03,
+    0x395CF,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_144,
+    144,
+    0x01,
+    0x02,
+    0x03,
+    0x39521,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_145,
+    145,
+    0x01,
+    0x02,
+    0x03,
+    0x39524,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_146,
+    146,
+    0x01,
+    0x02,
+    0x03,
+    0x3951E,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_147,
+    147,
+    0x01,
+    0x02,
+    0x03,
+    0x3954B,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_148,
+    148,
+    0x01,
+    0x02,
+    0x03,
+    0x3954E,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_149,
+    149,
+    0x01,
+    0x02,
+    0x03,
+    0x39509,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_150,
+    150,
+    0x01,
+    0x02,
+    0x03,
+    0x395CC,
+    vec![0x01, 0x02, 0x03]
+);
+set_pokemon_cry_test!(
+    set_pokemon_cry_151,
+    151,
+    0x01,
+    0x02,
+    0x03,
+    0x39482,
+    vec![0x01, 0x02, 0x03]
+);
