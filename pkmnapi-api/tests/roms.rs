@@ -27,10 +27,7 @@ fn post_rom_201() {
     assert_eq!(body_b.len(), 32);
     assert_eq!(
         body_c,
-        format!(
-            r#"","type":"roms","attributes":{{"name":"POKEMON RED","hash":"3d45c1ee9abd5738df46d2bdda8b57dc","valid":true}},"links":{{"self":"http://localhost:8080/v1/roms/{}"}}}},"links":{{"self":"http://localhost:8080/v1/roms/{}"}}}}"#,
-            body_b, body_b
-        )
+        r#"","type":"roms","attributes":{"name":"POKEMON RED","hash":"3d45c1ee9abd5738df46d2bdda8b57dc","valid":true},"links":{"self":"http://localhost:8080/v1/roms"}},"links":{"self":"http://localhost:8080/v1/roms"}}"#
     );
 
     let headers = response.headers();
@@ -123,10 +120,7 @@ fn get_rom_200() {
     assert_eq!(body_b.len(), 32);
     assert_eq!(
         body_c,
-        format!(
-            r#"","type":"roms","attributes":{{"name":"POKEMON RED","hash":"3d45c1ee9abd5738df46d2bdda8b57dc","valid":true}},"links":{{"self":"http://localhost:8080/v1/roms/{}"}}}},"links":{{"self":"http://localhost:8080/v1/roms/{}"}}}}"#,
-            body_b, body_b
-        )
+        r#"","type":"roms","attributes":{"name":"POKEMON RED","hash":"3d45c1ee9abd5738df46d2bdda8b57dc","valid":true},"links":{"self":"http://localhost:8080/v1/roms"}},"links":{"self":"http://localhost:8080/v1/roms"}}"#
     );
 
     common::teardown(&client);

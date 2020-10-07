@@ -27,11 +27,11 @@ impl RomResponse {
                     valid: valid_hashes.find(&rom.rom_data_id) != None,
                 },
                 links: Links {
-                    _self: utils::generate_url("roms", Some(&rom.id)),
+                    _self: utils::generate_url("roms", None),
                 },
             },
             links: Links {
-                _self: utils::generate_url("roms", Some(&rom.id)),
+                _self: utils::generate_url("roms", None),
             },
         }
     }

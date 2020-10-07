@@ -77,11 +77,11 @@ ETag: w/"abcdef0123456789abcdef0123456789"
             "valid": true
         },
         "links": {
-            "self": "{{API_DOMAIN}}/v1/roms/1337"
+            "self": "{{API_DOMAIN}}/v1/roms"
         }
     },
     "links": {
-        "self": "{{API_DOMAIN}}/v1/roms/1337"
+        "self": "{{API_DOMAIN}}/v1/roms"
     }
 }
 {% end %}
@@ -152,11 +152,11 @@ ETag: w/"abcdef0123456789abcdef0123456789"
             "valid": true
         },
         "links": {
-            "self": "{{API_DOMAIN}}/v1/roms/1337"
+            "self": "{{API_DOMAIN}}/v1/roms"
         }
     },
     "links": {
-        "self": "{{API_DOMAIN}}/v1/roms/1337"
+        "self": "{{API_DOMAIN}}/v1/roms"
     }
 }
 {% end %}
