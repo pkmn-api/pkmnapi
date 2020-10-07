@@ -92,7 +92,9 @@ fn post_pokemon_cry_202() {
 
     let request = client
         .post("/v1/pokemon/cries/1")
-        .body(r#"{"data":{"type":"pokemon_cries","attributes":{"base":13,"pitch":128,"length":10}}}"#)
+        .body(
+            r#"{"data":{"type":"pokemon_cries","attributes":{"base":13,"pitch":128,"length":10}}}"#,
+        )
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token));
 
@@ -127,7 +129,9 @@ fn post_pokemon_cry_401() {
 
     let request = client
         .post("/v1/pokemon/cries/1")
-        .body(r#"{"data":{"type":"pokemon_cries","attributes":{"base":13,"pitch":128,"length":10}}}"#)
+        .body(
+            r#"{"data":{"type":"pokemon_cries","attributes":{"base":13,"pitch":128,"length":10}}}"#,
+        )
         .header(ContentType::JSON);
 
     let mut response = request.dispatch();
@@ -144,7 +148,9 @@ fn post_pokemon_cry_404() {
 
     let request = client
         .post("/v1/pokemon/cries/200")
-        .body(r#"{"data":{"type":"pokemon_cries","attributes":{"base":13,"pitch":128,"length":10}}}"#)
+        .body(
+            r#"{"data":{"type":"pokemon_cries","attributes":{"base":13,"pitch":128,"length":10}}}"#,
+        )
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token));
 

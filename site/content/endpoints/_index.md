@@ -30,6 +30,13 @@ sort_by = "weight"
 |------------------------------------------------------------------|----------------|
 | [GET /v1/maps/pics/:map_id](@/endpoints/map_pics.md#get-map-pic) | Gets a map pic |
 
+### [Map Pokémon](@/endpoints/map_pokemon.md)
+
+| Endpoint                                                                     | Description             |
+|------------------------------------------------------------------------------|-------------------------|
+| [GET /v1/maps/pokemon/:map_id](@/endpoints/map_pokemon.md#get-map-pokemon)   | Gets a map's Pokémon    |
+| [POST /v1/maps/pokemon/:map_id](@/endpoints/map_pokemon.md#post-map-pokemon) | Updates a map's Pokémon |
+
 ### [Move Names](@/endpoints/move_names.md)
 
 | Endpoint                                                                  | Description         |

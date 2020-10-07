@@ -64,5 +64,5 @@ pub struct PokemonStatsRequestAttributes {
 #[derive(Debug, Deserialize)]
 pub struct PokemonStatsRequestAttributesType {
     #[serde(deserialize_with = "crate::utils::from_numeric_str")]
-    id: u8,
+    pub id: u8,
 }

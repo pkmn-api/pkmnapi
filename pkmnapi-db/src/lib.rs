@@ -643,6 +643,53 @@ impl PkmnapiDB {
         Ok((min_id, max_id))
     }
 
+    /// Validate map ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let map_id = 0;
+    ///
+    /// match db.map_id_validate(&map_id) {
+    ///     Ok(min_max) => assert_eq!(min_max, (0, 247)),
+    ///     Err(_) => unreachable!()
+    /// };
+    ///
+    /// let map_id = 255;
+    ///
+    /// match db.map_id_validate(&map_id) {
+    ///     Ok(_) => unreachable!(),
+    ///     Err(e) => assert_eq!(e, error::Error::MapIDInvalid(map_id, 0, 247))
+    /// };
+    /// ```
+    pub fn map_id_validate(&self, map_id: &u8) -> Result<(usize, usize), error::Error> {
+        let min_id = 0usize;
+
+        let offset_base = ROM_PAGE * 0x06;
+        let offset = offset_base + 0x0EEB;
+
+        let max_id = self.rom[offset..]
+            .chunks(2)
+            .position(|r| r == [0xFF, 0xFF])
+            .unwrap()
+            - 1 as usize;
+
+        if *map_id > (max_id as u8) {
+            return Err(error::Error::MapIDInvalid(*map_id, min_id, max_id));
+        }
+
+        Ok((min_id, max_id))
+    }
+
     /// Get type name by type ID
     ///
     /// # Example
@@ -2192,11 +2239,7 @@ impl PkmnapiDB {
     }
 
     pub fn get_map_pic(&self, map_id: &u8) -> Result<Map, error::Error> {
-        let map_id_max = 0xF7;
-
-        if map_id > &map_id_max {
-            return Err(error::Error::MapInvalid(*map_id));
-        }
+        let (_min_id, _max_id) = self.map_id_validate(map_id)?;
 
         let bank_offset_base = ROM_PAGE * 0x06;
         let bank_offset = (bank_offset_base + 0x23D) + (*map_id as usize);
@@ -2828,5 +2871,116 @@ impl PkmnapiDB {
         let pokemon_cry_data = pokemon_cry.to_raw();
 
         Ok(Patch::new(&offset, &pokemon_cry_data))
+    }
+
+    pub fn get_map_pokemon(&self, map_id: &u8) -> Result<MapPokemon, error::Error> {
+        let (_min_id, _max_id) = self.map_id_validate(map_id)?;
+
+        let offset_base = ROM_PAGE * 0x06;
+        let offset = offset_base + 0x0EEB;
+        let pointer_offset = offset + ((*map_id as usize) * 0x02);
+        let pointer = offset_base - (ROM_PAGE * 0x02) + {
+            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
+
+            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
+        };
+
+        let map_pokemon = MapPokemon::from(&self.rom[pointer..]);
+        let map_pokemon = MapPokemon {
+            grass: MapPokemonArea {
+                pokemon: map_pokemon
+                    .grass
+                    .pokemon
+                    .iter()
+                    .map(|map_pokemon_info| MapPokemonInfo {
+                        pokedex_id: self
+                            .internal_id_to_pokedex_id(&map_pokemon_info.internal_id)
+                            .unwrap(),
+                        internal_id: 0,
+                        ..*map_pokemon_info
+                    })
+                    .collect(),
+                ..map_pokemon.grass
+            },
+            water: MapPokemonArea {
+                pokemon: map_pokemon
+                    .water
+                    .pokemon
+                    .iter()
+                    .map(|map_pokemon_info| MapPokemonInfo {
+                        pokedex_id: self
+                            .internal_id_to_pokedex_id(&map_pokemon_info.internal_id)
+                            .unwrap(),
+                        internal_id: 0,
+                        ..*map_pokemon_info
+                    })
+                    .collect(),
+                ..map_pokemon.water
+            },
+        };
+
+        Ok(map_pokemon)
+    }
+
+    pub fn set_map_pokemon(
+        &self,
+        map_id: &u8,
+        map_pokemon: &MapPokemon,
+    ) -> Result<Patch, error::Error> {
+        let old_map_pokemon = self.get_map_pokemon(map_id)?;
+        let old_map_pokemon_data = old_map_pokemon.to_raw();
+        let old_map_pokemon_data_len = old_map_pokemon_data.len();
+        let map_pokemon_data = {
+            MapPokemon {
+                grass: MapPokemonArea {
+                    pokemon: map_pokemon
+                        .grass
+                        .pokemon
+                        .iter()
+                        .map(|pokemon| MapPokemonInfo {
+                            internal_id: self
+                                .pokedex_id_to_internal_id(&pokemon.pokedex_id)
+                                .unwrap(),
+                            ..*pokemon
+                        })
+                        .collect(),
+                    ..map_pokemon.grass
+                },
+                water: MapPokemonArea {
+                    pokemon: map_pokemon
+                        .water
+                        .pokemon
+                        .iter()
+                        .map(|pokemon| MapPokemonInfo {
+                            internal_id: self
+                                .pokedex_id_to_internal_id(&pokemon.pokedex_id)
+                                .unwrap(),
+                            ..*pokemon
+                        })
+                        .collect(),
+                    ..map_pokemon.water
+                },
+            }
+        }
+        .to_raw();
+        let map_pokemon_data_len = map_pokemon_data.len();
+
+        if old_map_pokemon_data_len != map_pokemon_data_len {
+            return Err(error::Error::MapPokemonWrongSize(
+                old_map_pokemon_data_len,
+                map_pokemon_data_len,
+            ));
+        }
+
+        let offset_base = ROM_PAGE * 0x06;
+        let offset = offset_base + 0x0EEB;
+        let pointer_offset = offset + ((*map_id as usize) * 0x02);
+        let pointer = offset_base - (ROM_PAGE * 0x02) + {
+            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
+
+            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
+        };
+
+        Ok(Patch::new(&pointer, &map_pokemon_data))
     }
 }

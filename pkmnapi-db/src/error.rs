@@ -12,7 +12,9 @@ pub enum Error {
     ItemIDInvalid(u8, usize, usize),
     ItemNameWrongSize(usize, usize),
     MapCouldNotWrite,
+    MapIDInvalid(u8, usize, usize),
     MapInvalid(u8),
+    MapPokemonWrongSize(usize, usize),
     MoveIDInvalid(u8, usize, usize),
     MoveNameWrongSize(usize, usize),
     PicCouldNotRead,
@@ -94,7 +96,14 @@ impl fmt::Display for Error {
                 expected, actual
             ),
             Error::MapCouldNotWrite => "Could not write image".to_owned(),
+            Error::MapIDInvalid(map_id, min, max) => {
+                format!("Invalid map ID {}: valid range is {}-{}", map_id, min, max)
+            }
             Error::MapInvalid(map_id) => format!("Invalid map ID: {}", map_id),
+            Error::MapPokemonWrongSize(expected, actual) => format!(
+                "Map Pokémon size mismatch: should be exactly {} bytes, found {}",
+                expected, actual
+            ),
             Error::MoveNameWrongSize(expected, actual) => format!(
                 "Move name length mismatch: should be exactly {} characters, found {}",
                 expected, actual

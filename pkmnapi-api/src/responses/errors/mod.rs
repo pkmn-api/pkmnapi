@@ -86,6 +86,8 @@ pub enum BaseErrorResponseId {
     error_item_names_invalid,
     error_item_names,
     error_map_pics,
+    error_map_pokemon_invalid,
+    error_map_pokemon,
     error_move_names_invalid,
     error_move_names,
     error_not_found,

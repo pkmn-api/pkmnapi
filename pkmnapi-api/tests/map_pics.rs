@@ -49,7 +49,7 @@ fn get_map_pic_png_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_map_pics","type":"errors","attributes":{"message":"Invalid map ID: 255"}}}"#
+            r#"{"data":{"id":"error_map_pics","type":"errors","attributes":{"message":"Invalid map ID 255: valid range is 0-247"}}}"#
                 .to_string()
         )
     );
@@ -106,7 +106,7 @@ fn get_map_pic_jpeg_404() {
     assert_eq!(
         response.body_string(),
         Some(
-            r#"{"data":{"id":"error_map_pics","type":"errors","attributes":{"message":"Invalid map ID: 255"}}}"#
+            r#"{"data":{"id":"error_map_pics","type":"errors","attributes":{"message":"Invalid map ID 255: valid range is 0-247"}}}"#
                 .to_string()
         )
     );

@@ -88,11 +88,11 @@ pub enum PokemonEvolutionsRequestAttributesEvolutionTradeType {
 #[derive(Debug, Deserialize)]
 pub struct PokemonEvolutionsRequestAttributesEvolutionItemAttributes {
     #[serde(deserialize_with = "crate::utils::from_numeric_str")]
-    id: u8,
+    pub id: u8,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct PokemonEvolutionsRequestAttributesEvolutionPokemon {
     #[serde(deserialize_with = "crate::utils::from_numeric_str")]
-    id: u8,
+    pub id: u8,
 }

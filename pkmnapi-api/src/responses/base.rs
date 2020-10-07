@@ -28,6 +28,7 @@ pub struct BaseResponseAll<T> {
 pub enum BaseResponseType {
     hms,
     item_names,
+    map_pokemon,
     move_names,
     pokedex_entries,
     pokedex_texts,

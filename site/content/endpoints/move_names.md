@@ -1,6 +1,6 @@
 +++
 title = "Move Names"
-weight = 5
+weight = 6
 +++
 
 | Endpoint                                         | Description         |

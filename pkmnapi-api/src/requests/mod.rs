@@ -2,6 +2,7 @@ pub mod access_tokens;
 pub mod base;
 pub mod hms;
 pub mod item_names;
+pub mod map_pokemon;
 pub mod move_names;
 pub mod pokedex_entries;
 pub mod pokedex_texts;

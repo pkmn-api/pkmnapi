@@ -34,5 +34,5 @@ pub struct TypeEffectRequestAttributes {
 #[derive(Debug, Deserialize)]
 pub struct TypeEffectRequestAttributesType {
     #[serde(deserialize_with = "crate::utils::from_numeric_str")]
-    id: u8,
+    pub id: u8,
 }
