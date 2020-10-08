@@ -36,8 +36,6 @@ use std::io::Cursor;
 use std::num::Wrapping;
 use types::*;
 
-const POKEMON_INTERNAL_MAX: usize = 190;
-
 /// Pkmnapi database
 ///
 /// # Example
@@ -204,6 +202,30 @@ impl PkmnapiDB {
         .concat();
     }
 
+    /// Pokémon internal max
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::*;
+    /// use std::fs;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let pokemon_internal_max = db.pokemon_internal_max();
+    ///
+    /// assert_eq!(pokemon_internal_max, 190);
+    /// ```
+    pub fn pokemon_internal_max(&self) -> usize {
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x38;
+        let offset = offset_base + 0x1E5F;
+
+        (self.rom[offset] as usize) - 1
+    }
+
     /// Pokémon name to Pokédex ID
     ///
     /// # Example
@@ -230,8 +252,9 @@ impl PkmnapiDB {
     pub fn pokemon_name_to_pokedex_id(&self, pokemon_name: &PokemonName) -> Option<u8> {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
         let offset = offset_base + 0x021E;
+        let pokemon_internal_max = self.pokemon_internal_max();
 
-        return (0..POKEMON_INTERNAL_MAX)
+        return (0..pokemon_internal_max)
             .map(|i| offset + (i * 0x0A))
             .enumerate()
             .filter_map(|(internal_id, offset)| {
@@ -275,8 +298,9 @@ impl PkmnapiDB {
 
         let offset_base = PkmnapiDB::ROM_PAGE * 0x20;
         let offset = offset_base + 0x1024;
+        let pokemon_internal_max = self.pokemon_internal_max();
 
-        let internal_id = match (&self.rom[offset..(offset + POKEMON_INTERNAL_MAX)])
+        let internal_id = match (&self.rom[offset..(offset + pokemon_internal_max)])
             .iter()
             .position(|r| pokedex_id == r)
         {
@@ -306,7 +330,9 @@ impl PkmnapiDB {
     /// assert_eq!(pokedex_id, 151);
     /// ```
     pub fn internal_id_to_pokedex_id(&self, internal_id: &u8) -> Result<u8> {
-        if internal_id >= &(POKEMON_INTERNAL_MAX as u8) {
+        let pokemon_internal_max = self.pokemon_internal_max();
+
+        if internal_id >= &(pokemon_internal_max as u8) {
             return Err(error::Error::InternalIDInvalid(*internal_id));
         }
 
