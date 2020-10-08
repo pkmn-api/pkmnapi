@@ -17,6 +17,13 @@ sort_by = "weight"
 | [GET /v1/hms/:hm_id](@/endpoints/hms.md#get-hm)   | Gets a HM    |
 | [POST /v1/hms/:hm_id](@/endpoints/hms.md#post-hm) | Updates a HM |
 
+### [Imgs](@/endpoints/imgs.md)
+
+| Endpoint                                                          | Description           |
+|-------------------------------------------------------------------|-----------------------|
+| [GET /v1/imgs/pokemon_logo](@/endpoints/imgs.md#get-pokemon-logo) | Gets the Pokémon logo |
+| [GET /v1/imgs/town_map](@/endpoints/imgs.md#get-town-map)         | Gets the town map     |
+
 ### [Item Names](@/endpoints/item_names.md)
 
 | Endpoint                                                                  | Description            |

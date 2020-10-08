@@ -1,0 +1,101 @@
++++
+title = "Imgs"
+weight = 3
++++
+
+| Endpoint                                       | Description           |
+|------------------------------------------------|-----------------------|
+| [GET /v1/imgs/pokemon_logo](#get-pokemon-logo) | Gets the Pokémon logo |
+| [GET /v1/imgs/town_map](#get-town-map)         | Gets the town map     |
+
+---
+
+### GET /v1/imgs/pokemon_logo {#get-pokemon-logo}
+
+Gets the Pokémon logo
+
+#### Request Parameters
+
+{% api_request_params() %}
+| header | `Accept` | string | | Type of image to return. Must be "image/png" or "image/jpeg". |
+{% end %}
+
+#### Example Request
+
+**Header:**
+
+{% api_headers() %}
+GET /v1/imgs/pokemon_logo
+Host: {{API_HOST}}
+Authorization: Bearer <access_token>
+Accept: image/png
+{% end %}
+
+**Body:**
+
+{{ api_response() }}
+
+#### Response Parameters
+
+{{ api_response_params() }}
+
+#### Example Response
+
+**Header:**
+
+{% api_headers() %}
+HTTP/1.1 200 OK
+Content-Type: image/png
+Content-Disposition: attachment; filename="pokemon_logo.png"
+Server: pkmnapi/0.1.0
+{% end %}
+
+**Body:**
+
+![pokemon_logo.png](/img/response/pokemon_logo.png)
+
+---
+
+### GET /v1/imgs/town_map {#get-town-map}
+
+Gets the town map
+
+#### Request Parameters
+
+{% api_request_params() %}
+| header | `Accept` | string | | Type of image to return. Must be "image/png" or "image/jpeg". |
+{% end %}
+
+#### Example Request
+
+**Header:**
+
+{% api_headers() %}
+GET /v1/imgs/town_map
+Host: {{API_HOST}}
+Authorization: Bearer <access_token>
+Accept: image/png
+{% end %}
+
+**Body:**
+
+{{ api_response() }}
+
+#### Response Parameters
+
+{{ api_response_params() }}
+
+#### Example Response
+
+**Header:**
+
+{% api_headers() %}
+HTTP/1.1 200 OK
+Content-Type: image/png
+Content-Disposition: attachment; filename="town_map.png"
+Server: pkmnapi/0.1.0
+{% end %}
+
+**Body:**
+
+![towm_map.png](/img/response/town_map.png)
