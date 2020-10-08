@@ -1,3 +1,23 @@
+//! Pkmnapi cry module
+//!
+//! ```
+//! use pkmnapi_db::cry::*;
+//!
+//! let cry: Cry = Default::default();
+//!
+//! assert_eq!(
+//!     cry,
+//!     Cry {
+//!         base: 0,
+//!         pitch: 0,
+//!         length: 0,
+//!         pulse0: CryChannel { commands: vec![] },
+//!         pulse1: CryChannel { commands: vec![] },
+//!         noise: CryChannel { commands: vec![] },
+//!     }
+//! );
+//! ```
+
 use byteorder::{LittleEndian, ReadBytesExt};
 use hound::{SampleFormat, WavSpec, WavWriter};
 use std::cmp;
@@ -21,9 +41,9 @@ impl Default for Cry {
             base: 0,
             pitch: 0,
             length: 0,
-            pulse0: CryChannel { commands: vec![] },
-            pulse1: CryChannel { commands: vec![] },
-            noise: CryChannel { commands: vec![] },
+            pulse0: Default::default(),
+            pulse1: Default::default(),
+            noise: Default::default(),
         }
     }
 }
@@ -344,6 +364,12 @@ impl Cry {
 #[derive(Debug, PartialEq)]
 pub struct CryChannel {
     pub commands: Vec<CryChannelCommand>,
+}
+
+impl Default for CryChannel {
+    fn default() -> Self {
+        CryChannel { commands: vec![] }
+    }
 }
 
 impl CryChannel {

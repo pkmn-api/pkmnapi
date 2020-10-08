@@ -1,10 +1,8 @@
-//! Pkmnapi database header module
+//! Pkmnapi header module
 //!
 //! ```
 //! use pkmnapi_db::header::*;
 //! use std::fs;
-//! # use std::fs::File;
-//! # use std::io::prelude::*;
 //! # use std::env;
 //! # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
 //!
@@ -49,8 +47,6 @@ impl Header {
     /// ```
     /// use pkmnapi_db::header::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
     /// # use std::env;
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
@@ -115,8 +111,6 @@ impl Header {
     /// ```
     /// use pkmnapi_db::header::*;
     /// use std::fs;
-    /// # use std::fs::File;
-    /// # use std::io::prelude::*;
     /// # use std::env;
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///

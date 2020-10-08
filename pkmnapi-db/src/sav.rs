@@ -19,7 +19,7 @@
 use crate::error;
 use crate::patch::*;
 use crate::types::*;
-use crate::ROM_PAGE;
+use crate::PkmnapiDB;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use std::io::Cursor;
 use std::num::Wrapping;
@@ -71,7 +71,7 @@ impl Sav {
     /// assert_eq!(sav.verify_checksum(), true);
     /// ```
     pub fn verify_checksum(&self) -> bool {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset_start = offset_base + 0x0598;
         let offset_end = offset_base + 0x1522;
         let offset_checksum = offset_base + 0x1523;
@@ -110,7 +110,7 @@ impl Sav {
     /// );
     /// ```
     pub fn generate_checksum(&self) -> Result<Patch, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset_start = offset_base + 0x0598;
         let offset_end = offset_base + 0x1522;
         let offset_checksum = offset_base + 0x1523;
@@ -181,7 +181,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_player_name(&self) -> Result<SavePlayerName, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x598;
 
         let save_player_name = SavePlayerName::from(&self.sav[offset..(offset + 0x0B)]);
@@ -226,7 +226,7 @@ impl Sav {
         &self,
         save_player_name: &SavePlayerName,
     ) -> Result<Patch, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x598;
 
         let save_player_name_raw = save_player_name.to_raw();
@@ -278,7 +278,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_pokemon_owned(&self) -> Result<Vec<u8>, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x5A3;
 
         let save_pokemon_owned: Vec<u8> = self.sav[offset..(offset + 19)]
@@ -331,7 +331,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_pokemon_owned(&self, save_pokemon_owned: &Vec<u8>) -> Result<Patch, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x5A3;
 
         let bits: Vec<u8> = (1..=152)
@@ -376,7 +376,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_pokemon_seen(&self) -> Result<Vec<u8>, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x5B6;
 
         let save_pokemon_seen: Vec<u8> = self.sav[offset..(offset + 19)]
@@ -429,7 +429,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_pokemon_seen(&self, save_pokemon_seen: &Vec<u8>) -> Result<Patch, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x5B6;
 
         let bits: Vec<u8> = (1..=152)
@@ -483,7 +483,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_bag_items(&self) -> Result<Vec<SaveItem>, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x5C9;
         let max_len = 20;
 
@@ -536,7 +536,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_bag_items(&self, save_bag_items: &Vec<SaveItem>) -> Result<Patch, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x5C9;
         let max_len = 20;
 
@@ -580,7 +580,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_money(&self) -> Result<u32, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x5F3;
 
         let money = self.sav[offset..(offset + 3)]
@@ -625,7 +625,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_money(&self, money: &u32) -> Result<Patch, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x5F3;
 
         let data: Vec<u8> = (0..3)
@@ -667,7 +667,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_rival_name(&self) -> Result<SaveRivalName, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x5F6;
 
         let save_rival_name = SaveRivalName::from(&self.sav[offset..(offset + 0x0B)]);
@@ -709,7 +709,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_rival_name(&self, save_rival_name: &SaveRivalName) -> Result<Patch, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x5F6;
 
         let save_rival_name_raw = save_rival_name.to_raw();
@@ -765,7 +765,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_options(&self) -> Result<SaveOptions, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x601;
 
         let save_options = SaveOptions::from(&self.sav[offset]);
@@ -808,7 +808,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_options(&self, save_options: &SaveOptions) -> Result<Patch, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x601;
 
         Ok(Patch::new(&offset, &save_options.to_raw()))
@@ -833,7 +833,7 @@ impl Sav {
     /// assert_eq!(badges, vec![0x00]);
     /// ```
     pub fn get_badges(&self) -> Result<Vec<u8>, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x602;
 
         let save_badges = (0..8)
@@ -882,7 +882,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_badges(&self, save_badges: &Vec<u8>) -> Result<Patch, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x602;
 
         let data = (0..8)
@@ -922,7 +922,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_player_id(&self) -> Result<u16, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x605;
 
         let save_player_id = {
@@ -965,7 +965,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_player_id(&self, save_player_id: &u16) -> Result<Patch, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x605;
 
         let mut data = vec![];
@@ -1006,7 +1006,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_box_items(&self) -> Result<Vec<SaveItem>, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x7E6;
         let max_len = 50;
 
@@ -1059,7 +1059,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_box_items(&self, save_box_items: &Vec<SaveItem>) -> Result<Patch, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x7E6;
         let max_len = 50;
 
@@ -1103,7 +1103,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_current_box(&self) -> Result<u8, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x84C;
 
         let current_box = self.sav[offset] & 0x7F;
@@ -1142,7 +1142,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_current_box(&self, current_box: &u8) -> Result<Patch, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x84C;
 
         let data = vec![(*current_box & 0x7F) | 0x80];
@@ -1172,7 +1172,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_coins(&self) -> Result<u16, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x850;
 
         let save_coins = {
@@ -1215,7 +1215,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_coins(&self, save_coins: &u16) -> Result<Patch, error::Error> {
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x850;
 
         let mut data = vec![];

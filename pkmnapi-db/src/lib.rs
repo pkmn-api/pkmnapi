@@ -25,6 +25,7 @@ pub mod types;
 
 use byteorder::{LittleEndian, ReadBytesExt};
 use cry::*;
+use error::Result;
 use header::*;
 use img::*;
 use map::*;
@@ -35,7 +36,6 @@ use std::io::Cursor;
 use std::num::Wrapping;
 use types::*;
 
-pub const ROM_PAGE: usize = 0x2000;
 const POKEMON_INTERNAL_MAX: usize = 190;
 
 /// Pkmnapi database
@@ -60,6 +60,8 @@ pub struct PkmnapiDB {
 }
 
 impl PkmnapiDB {
+    pub const ROM_PAGE: usize = 0x2000;
+
     /// Create new database
     ///
     /// # Example
@@ -73,7 +75,7 @@ impl PkmnapiDB {
     /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom, None).unwrap();
     /// ```
-    pub fn new(rom: &Vec<u8>, sav: Option<Vec<u8>>) -> Result<PkmnapiDB, error::Error> {
+    pub fn new(rom: &Vec<u8>, sav: Option<Vec<u8>>) -> Result<PkmnapiDB> {
         let hash = format!("{:x}", md5::compute(&rom));
         let header = Header::from(&rom)?;
         let rom = rom[..].to_vec();
@@ -226,7 +228,7 @@ impl PkmnapiDB {
     /// assert_eq!(pokedex_id, 1);
     /// ```
     pub fn pokemon_name_to_pokedex_id(&self, pokemon_name: &PokemonName) -> Option<u8> {
-        let offset_base = ROM_PAGE * 0x0E;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
         let offset = offset_base + 0x021E;
 
         return (0..POKEMON_INTERNAL_MAX)
@@ -266,12 +268,12 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(internal_id, 0x14);
     /// ```
-    pub fn pokedex_id_to_internal_id(&self, pokedex_id: &u8) -> Result<u8, error::Error> {
+    pub fn pokedex_id_to_internal_id(&self, pokedex_id: &u8) -> Result<u8> {
         if pokedex_id < &1 {
             return Err(error::Error::PokedexIDInvalid(*pokedex_id));
         }
 
-        let offset_base = ROM_PAGE * 0x20;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x20;
         let offset = offset_base + 0x1024;
 
         let internal_id = match (&self.rom[offset..(offset + POKEMON_INTERNAL_MAX)])
@@ -303,12 +305,12 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(pokedex_id, 151);
     /// ```
-    pub fn internal_id_to_pokedex_id(&self, internal_id: &u8) -> Result<u8, error::Error> {
+    pub fn internal_id_to_pokedex_id(&self, internal_id: &u8) -> Result<u8> {
         if internal_id >= &(POKEMON_INTERNAL_MAX as u8) {
             return Err(error::Error::InternalIDInvalid(*internal_id));
         }
 
-        let offset_base = ROM_PAGE * 0x20;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x20;
         let offset = (offset_base + 0x1024) + (*internal_id as usize);
 
         Ok(self.rom[offset])
@@ -342,10 +344,10 @@ impl PkmnapiDB {
     ///     Err(e) => assert_eq!(e, error::Error::TypeIDInvalid(type_id, 0, 26))
     /// };
     /// ```
-    pub fn type_id_validate(&self, type_id: &u8) -> Result<(usize, usize), error::Error> {
+    pub fn type_id_validate(&self, type_id: &u8) -> Result<(usize, usize)> {
         let min_id = 0usize;
 
-        let offset_base = ROM_PAGE * 0x10;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x10;
         let pointer_base = offset_base + 0x7DAE;
 
         let max_index = (&self.rom[pointer_base..])
@@ -389,13 +391,10 @@ impl PkmnapiDB {
     ///     Err(e) => assert_eq!(e, error::Error::TypeEffectIDInvalid(type_effect_id, 0, 81))
     /// };
     /// ```
-    pub fn type_effect_id_validate(
-        &self,
-        type_effect_id: &u8,
-    ) -> Result<(usize, usize), error::Error> {
+    pub fn type_effect_id_validate(&self, type_effect_id: &u8) -> Result<(usize, usize)> {
         let min_id = 0usize;
 
-        let offset_base = ROM_PAGE * 0x1F;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1F;
         let pointer = offset_base + 0x0474;
 
         let max_index = (&self.rom[pointer..])
@@ -443,10 +442,10 @@ impl PkmnapiDB {
     ///     Err(e) => assert_eq!(e, error::Error::TrainerIDInvalid(trainer_id, 1, 47))
     /// };
     /// ```
-    pub fn trainer_id_validate(&self, trainer_id: &u8) -> Result<(usize, usize), error::Error> {
+    pub fn trainer_id_validate(&self, trainer_id: &u8) -> Result<(usize, usize)> {
         let min_id = 1usize;
 
-        let offset_base = (ROM_PAGE * 0x1C) + 0x19FF;
+        let offset_base = (PkmnapiDB::ROM_PAGE * 0x1C) + 0x19FF;
 
         let max_offset = (&self.rom[offset_base..])
             .iter()
@@ -492,10 +491,10 @@ impl PkmnapiDB {
     ///     Err(e) => assert_eq!(e, error::Error::HMIDInvalid(hm_id, 1, 5))
     /// };
     /// ```
-    pub fn hm_id_validate(&self, hm_id: &u8) -> Result<(usize, usize), error::Error> {
+    pub fn hm_id_validate(&self, hm_id: &u8) -> Result<(usize, usize)> {
         let min_id = 1usize;
 
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset_base = offset_base + 0x1052;
 
         let max_id = (&self.rom[offset_base..])
@@ -538,7 +537,7 @@ impl PkmnapiDB {
     ///     Err(e) => assert_eq!(e, error::Error::TMIDInvalid(tm_id, 1, 50))
     /// };
     /// ```
-    pub fn tm_id_validate(&self, tm_id: &u8) -> Result<(usize, usize), error::Error> {
+    pub fn tm_id_validate(&self, tm_id: &u8) -> Result<(usize, usize)> {
         let min_id = 1usize;
         let max_id = 50usize;
 
@@ -577,10 +576,10 @@ impl PkmnapiDB {
     ///     Err(e) => assert_eq!(e, error::Error::ItemIDInvalid(item_id, 1, 97))
     /// };
     /// ```
-    pub fn item_id_validate(&self, item_id: &u8) -> Result<(usize, usize), error::Error> {
+    pub fn item_id_validate(&self, item_id: &u8) -> Result<(usize, usize)> {
         let min_id = 1usize;
 
-        let offset_base = ROM_PAGE * 0x02;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
         let offset_base = offset_base + 0x072B;
 
         let max_offset = (&self.rom[offset_base..])
@@ -627,10 +626,10 @@ impl PkmnapiDB {
     ///     Err(e) => assert_eq!(e, error::Error::MoveIDInvalid(move_id, 1, 165))
     /// };
     /// ```
-    pub fn move_id_validate(&self, move_id: &u8) -> Result<(usize, usize), error::Error> {
+    pub fn move_id_validate(&self, move_id: &u8) -> Result<(usize, usize)> {
         let min_id = 1usize;
 
-        let offset_base = ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
 
         let max_index = self.rom[offset_base..]
             .chunks(2)
@@ -673,10 +672,10 @@ impl PkmnapiDB {
     ///     Err(e) => assert_eq!(e, error::Error::MapIDInvalid(map_id, 0, 247))
     /// };
     /// ```
-    pub fn map_id_validate(&self, map_id: &u8) -> Result<(usize, usize), error::Error> {
+    pub fn map_id_validate(&self, map_id: &u8) -> Result<(usize, usize)> {
         let min_id = 0usize;
 
-        let offset_base = ROM_PAGE * 0x06;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x06;
         let offset = offset_base + 0x0EEB;
 
         let max_id = self.rom[offset..]
@@ -716,10 +715,10 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_type_name(&self, type_id: &u8) -> Result<TypeName, error::Error> {
+    pub fn get_type_name(&self, type_id: &u8) -> Result<TypeName> {
         let _max_id = self.type_id_validate(type_id)?;
 
-        let offset_base = ROM_PAGE * 0x10;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x10;
         let pointer_base = offset_base + 0x7DAE;
         let pointer_offset = pointer_base + ((*type_id as usize) * 2);
         let pointer = offset_base + {
@@ -767,7 +766,7 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_type_name(&self, type_id: &u8, type_name: &TypeName) -> Result<Patch, error::Error> {
+    pub fn set_type_name(&self, type_id: &u8, type_name: &TypeName) -> Result<Patch> {
         let old_type_name = self.get_type_name(type_id)?;
         let old_type_name_len = old_type_name.name.value.len();
         let type_name_raw = type_name.to_raw();
@@ -780,7 +779,7 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = ROM_PAGE * 0x10;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x10;
         let pointer_offset = (offset_base + 0x7DAE) + ((*type_id as usize) * 2);
         let pointer = offset_base + {
             let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
@@ -818,10 +817,10 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_type_effect(&self, type_effect_id: &u8) -> Result<TypeEffect, error::Error> {
+    pub fn get_type_effect(&self, type_effect_id: &u8) -> Result<TypeEffect> {
         let _max_id = self.type_effect_id_validate(type_effect_id)?;
 
-        let offset_base = ROM_PAGE * 0x1F;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1F;
         let pointer = (offset_base + 0x0474) + ((*type_effect_id as usize) * 0x03);
 
         let type_effect = TypeEffect::from(&self.rom[pointer..(pointer + 3)]);
@@ -864,14 +863,10 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_type_effect(
-        &self,
-        type_effect_id: &u8,
-        type_effect: &TypeEffect,
-    ) -> Result<Patch, error::Error> {
+    pub fn set_type_effect(&self, type_effect_id: &u8, type_effect: &TypeEffect) -> Result<Patch> {
         let _max_id = self.type_effect_id_validate(type_effect_id)?;
 
-        let offset_base = ROM_PAGE * 0x1F;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1F;
         let pointer = offset_base + 0x0474 + ((*type_effect_id as usize) * 3);
 
         let type_effect_raw = type_effect.to_raw();
@@ -910,14 +905,14 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_pokemon_stats(&self, pokedex_id: &u8) -> Result<PokemonStats, error::Error> {
+    pub fn get_pokemon_stats(&self, pokedex_id: &u8) -> Result<PokemonStats> {
         let _internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let offset = {
             if pokedex_id == &151 {
                 0x425B
             } else {
-                let offset_base = ROM_PAGE * 0x1C;
+                let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
 
                 (offset_base + 0x03DE) + (((*pokedex_id as usize) - 1) * 0x1C)
             }
@@ -973,10 +968,10 @@ impl PkmnapiDB {
         &self,
         pokedex_id: &u8,
         pokemon_stats: &PokemonStats,
-    ) -> Result<Patch, error::Error> {
+    ) -> Result<Patch> {
         let _internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = (offset_base + 0x03DE) + (((*pokedex_id as usize) - 1) * 0x1C);
 
         let pokemon_stats_raw = pokemon_stats.to_raw();
@@ -1008,10 +1003,10 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_pokemon_name(&self, pokedex_id: &u8) -> Result<PokemonName, error::Error> {
+    pub fn get_pokemon_name(&self, pokedex_id: &u8) -> Result<PokemonName> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = ROM_PAGE * 0x0E;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
         let offset = (offset_base + 0x021E) + ((internal_id as usize) * 0x0A);
 
         let pokemon_name = PokemonName::from(&self.rom[offset..(offset + 0x0A)]);
@@ -1053,14 +1048,10 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_pokemon_name(
-        &self,
-        pokedex_id: &u8,
-        pokemon_name: &PokemonName,
-    ) -> Result<Patch, error::Error> {
+    pub fn set_pokemon_name(&self, pokedex_id: &u8, pokemon_name: &PokemonName) -> Result<Patch> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = ROM_PAGE * 0x0E;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
         let offset = (offset_base + 0x021E) + ((internal_id as usize) * 0x0A);
 
         let pokemon_name_len = pokemon_name.name.value.len();
@@ -1099,10 +1090,10 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_move_stats(&self, move_id: &u8) -> Result<MoveStats, error::Error> {
+    pub fn get_move_stats(&self, move_id: &u8) -> Result<MoveStats> {
         let (_min_id, _max_id) = self.move_id_validate(move_id)?;
 
-        let offset_base = ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = offset_base + (((*move_id as usize) - 1) * 0x06);
 
         let move_stats = MoveStats::from(&self.rom[offset..(offset + 6)]);
@@ -1148,14 +1139,10 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_move_stats(
-        &self,
-        move_id: &u8,
-        move_stats: &MoveStats,
-    ) -> Result<Patch, error::Error> {
+    pub fn set_move_stats(&self, move_id: &u8, move_stats: &MoveStats) -> Result<Patch> {
         let (_min_id, _max_id) = self.move_id_validate(move_id)?;
 
-        let offset_base = ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = offset_base + (((*move_id as usize) - 1) * 0x06);
 
         let move_stats_raw = move_stats.to_raw();
@@ -1187,10 +1174,10 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_move_name(&self, move_id: &u8) -> Result<MoveName, error::Error> {
+    pub fn get_move_name(&self, move_id: &u8) -> Result<MoveName> {
         let (min_id, max_id) = self.move_id_validate(move_id)?;
 
-        let offset_base = ROM_PAGE * 0x58;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x58;
         let offset = match {
             if move_id == &1 {
                 Some(offset_base)
@@ -1260,7 +1247,7 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_move_name(&self, move_id: &u8, move_name: &MoveName) -> Result<Patch, error::Error> {
+    pub fn set_move_name(&self, move_id: &u8, move_name: &MoveName) -> Result<Patch> {
         let (min_id, max_id) = self.move_id_validate(move_id)?;
 
         let old_move_name = self.get_move_name(move_id)?;
@@ -1275,7 +1262,7 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = ROM_PAGE * 0x58;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x58;
         let offset = match {
             if move_id == &1 {
                 Some(offset_base)
@@ -1327,10 +1314,10 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(hm, HM { move_id: 0x0F });
     /// ```
-    pub fn get_hm(&self, hm_id: &u8) -> Result<HM, error::Error> {
+    pub fn get_hm(&self, hm_id: &u8) -> Result<HM> {
         let _max_id = self.hm_id_validate(hm_id)?;
 
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = (offset_base + 0x1052) + ((*hm_id as usize) - 1);
 
         let hm = HM::from(self.rom[offset]);
@@ -1364,10 +1351,10 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_hm(&self, hm_id: &u8, hm: &HM) -> Result<Patch, error::Error> {
+    pub fn set_hm(&self, hm_id: &u8, hm: &HM) -> Result<Patch> {
         let _max_id = self.hm_id_validate(hm_id)?;
 
-        let offset_base = ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = (offset_base + 0x1052) + ((*hm_id as usize) - 1);
 
         Ok(Patch::new(&offset, &hm.to_raw()))
@@ -1391,10 +1378,10 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(tm, TM { move_id: 0x05 });
     /// ```
-    pub fn get_tm(&self, tm_id: &u8) -> Result<TM, error::Error> {
+    pub fn get_tm(&self, tm_id: &u8) -> Result<TM> {
         let _max_id = self.tm_id_validate(tm_id)?;
 
-        let offset_base = ROM_PAGE * 0x09;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x09;
         let offset = (offset_base + 0x1773) + ((*tm_id as usize) - 1);
 
         let tm = TM::from(self.rom[offset]);
@@ -1428,10 +1415,10 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_tm(&self, tm_id: &u8, tm: &TM) -> Result<Patch, error::Error> {
+    pub fn set_tm(&self, tm_id: &u8, tm: &TM) -> Result<Patch> {
         let _max_id = self.tm_id_validate(tm_id)?;
 
-        let offset_base = ROM_PAGE * 0x09;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x09;
         let offset = (offset_base + 0x1773) + ((*tm_id as usize) - 1);
 
         Ok(Patch::new(&offset, &tm.to_raw()))
@@ -1455,10 +1442,10 @@ impl PkmnapiDB {
     ///
     /// assert_eq!(tm_price, TMPrice { value: 3000 });
     /// ```
-    pub fn get_tm_price(&self, tm_id: &u8) -> Result<TMPrice, error::Error> {
+    pub fn get_tm_price(&self, tm_id: &u8) -> Result<TMPrice> {
         let _max_id = self.tm_id_validate(tm_id)?;
 
-        let offset_base = ROM_PAGE * 0x3D;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x3D;
         let offset = (offset_base + 0x1FA7) + (((*tm_id as usize - 1) as f32 / 2.0) as usize);
         let value = {
             if ((tm_id - 1) % 2) == 0 {
@@ -1499,10 +1486,10 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_tm_price(&self, tm_id: &u8, tm_price: &TMPrice) -> Result<Patch, error::Error> {
+    pub fn set_tm_price(&self, tm_id: &u8, tm_price: &TMPrice) -> Result<Patch> {
         let _max_id = self.tm_id_validate(tm_id)?;
 
-        let offset_base = ROM_PAGE * 0x3D;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x3D;
         let offset = (offset_base + 0x1FA7) + ((((*tm_id as usize) - 1) as f32 / 2.0) as usize);
         let value = {
             if ((tm_id - 1) % 2) == 0 {
@@ -1538,10 +1525,10 @@ impl PkmnapiDB {
     ///     weight: 150
     /// });
     /// ```
-    pub fn get_pokedex_entry(&self, pokedex_id: &u8) -> Result<PokedexEntry, error::Error> {
+    pub fn get_pokedex_entry(&self, pokedex_id: &u8) -> Result<PokedexEntry> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = ROM_PAGE * 0x1E;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1E;
         let pointer_offset = (offset_base + 0x447E) + ((internal_id as usize) * 2);
 
         let pointer = offset_base + {
@@ -1592,7 +1579,7 @@ impl PkmnapiDB {
         &self,
         pokedex_id: &u8,
         pokedex_entry: &PokedexEntry,
-    ) -> Result<Patch, error::Error> {
+    ) -> Result<Patch> {
         let old_pokedex_entry_species = self.get_pokedex_entry(pokedex_id)?;
         let old_pokedex_entry_species_len = old_pokedex_entry_species.species.value.len();
         let pokedex_entry_species_len = pokedex_entry.species.value.len();
@@ -1606,7 +1593,7 @@ impl PkmnapiDB {
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = ROM_PAGE * 0x1E;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1E;
         let pointer_offset = (offset_base + 0x447E) + ((internal_id as usize) * 2);
 
         let pointer = offset_base + {
@@ -1639,10 +1626,10 @@ impl PkmnapiDB {
     ///     text: ROMString::from("A strange seed was\nplanted on its\nback at birth.¶The plant sprouts\nand grows with\nthis #MON"),
     /// });
     /// ```
-    pub fn get_pokedex_text(&self, pokedex_id: &u8) -> Result<PokedexText, error::Error> {
+    pub fn get_pokedex_text(&self, pokedex_id: &u8) -> Result<PokedexText> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = ROM_PAGE * 0x1E;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1E;
         let pointer_offset = (offset_base + 0x447E) + ((internal_id as usize) * 2);
 
         let pointer = offset_base + {
@@ -1657,8 +1644,8 @@ impl PkmnapiDB {
         let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 3)]);
 
         let pointer = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
-        let pointer_base = (ROM_PAGE * 2) * { cursor.read_u8().unwrap_or(0) as usize };
-        let pointer = pointer + pointer_base - (ROM_PAGE * 2);
+        let pointer_base = (PkmnapiDB::ROM_PAGE * 2) * { cursor.read_u8().unwrap_or(0) as usize };
+        let pointer = pointer + pointer_base - (PkmnapiDB::ROM_PAGE * 2);
 
         let pokedex_text = PokedexText::from(&self.rom[pointer..]);
 
@@ -1696,11 +1683,7 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_pokedex_text(
-        &self,
-        pokedex_id: &u8,
-        pokedex_text: &PokedexText,
-    ) -> Result<Patch, error::Error> {
+    pub fn set_pokedex_text(&self, pokedex_id: &u8, pokedex_text: &PokedexText) -> Result<Patch> {
         let old_pokedex_text = self.get_pokedex_text(pokedex_id)?;
         let old_pokedex_text_len = old_pokedex_text.text.value.len();
         let pokedex_text_raw = pokedex_text.text.to_string();
@@ -1715,7 +1698,7 @@ impl PkmnapiDB {
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = ROM_PAGE * 0x1E;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1E;
         let pointer_offset = (offset_base + 0x447E) + ((internal_id as usize) * 2);
 
         let pointer = offset_base + {
@@ -1730,8 +1713,8 @@ impl PkmnapiDB {
         let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 3)]);
 
         let pointer = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
-        let pointer_base = (ROM_PAGE * 2) * { cursor.read_u8().unwrap_or(0) as usize };
-        let pointer = pointer + pointer_base - (ROM_PAGE * 2);
+        let pointer_base = (PkmnapiDB::ROM_PAGE * 2) * { cursor.read_u8().unwrap_or(0) as usize };
+        let pointer = pointer + pointer_base - (PkmnapiDB::ROM_PAGE * 2);
 
         Ok(Patch::new(&pointer, &pokedex_text.to_raw()))
     }
@@ -1760,18 +1743,18 @@ impl PkmnapiDB {
         &self,
         pokedex_id: &u8,
         pokemon_pic_face: &PokemonPicFace,
-    ) -> Result<Pic, error::Error> {
+    ) -> Result<Pic> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let (offset, bank_offset) = {
             if pokedex_id == &151 {
-                let offset_base = ROM_PAGE * 0x02;
+                let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
                 let offset = offset_base + 0x025B;
                 let bank_offset = (self.rom[0x163A] - 1) * 0x02;
 
                 (offset, bank_offset as usize)
             } else {
-                let offset_base = ROM_PAGE * 0x1C;
+                let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
                 let offset = (offset_base + 0x03DE) + (((*pokedex_id as usize) - 1) * 0x1C);
 
                 let bank_offset = match internal_id {
@@ -1792,7 +1775,7 @@ impl PkmnapiDB {
         let pointer_front = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
         let pointer_back = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
 
-        let offset_base = ROM_PAGE * bank_offset;
+        let offset_base = PkmnapiDB::ROM_PAGE * bank_offset;
         let offset_front = offset_base + pointer_front;
         let offset_back = offset_base + pointer_back;
 
@@ -1840,7 +1823,7 @@ impl PkmnapiDB {
         pokemon_pic_face: &PokemonPicFace,
         pic: &Pic,
         encoding_method: PicEncodingMethod,
-    ) -> Result<Patch, error::Error> {
+    ) -> Result<Patch> {
         let old_pixels = self.get_pokemon_pic(pokedex_id, pokemon_pic_face)?;
         let pixels = pic.encode(encoding_method);
 
@@ -1852,13 +1835,13 @@ impl PkmnapiDB {
 
         let (offset, bank_offset) = {
             if pokedex_id == &151 {
-                let offset_base = ROM_PAGE * 0x02;
+                let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
                 let offset = offset_base + 0x025B;
                 let bank_offset = (self.rom[0x163A] - 1) * 0x02;
 
                 (offset, bank_offset as usize)
             } else {
-                let offset_base = ROM_PAGE * 0x1C;
+                let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
                 let offset = (offset_base + 0x03DE) + (((*pokedex_id as usize) - 1) * 0x1C);
 
                 let bank_offset = match internal_id {
@@ -1879,7 +1862,7 @@ impl PkmnapiDB {
         let pointer_front = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
         let pointer_back = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
 
-        let offset_base = ROM_PAGE * bank_offset;
+        let offset_base = PkmnapiDB::ROM_PAGE * bank_offset;
         let offset_front = offset_base + pointer_front;
         let offset_back = offset_base + pointer_back;
 
@@ -1915,8 +1898,8 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_trainer_name(&self, trainer_id: &u8) -> Result<TrainerName, error::Error> {
-        let offset_base = (ROM_PAGE * 0x1C) + 0x19FF;
+    pub fn get_trainer_name(&self, trainer_id: &u8) -> Result<TrainerName> {
+        let offset_base = (PkmnapiDB::ROM_PAGE * 0x1C) + 0x19FF;
 
         let (min_id, max_id) = self.trainer_id_validate(trainer_id)?;
 
@@ -1989,11 +1972,7 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_trainer_name(
-        &self,
-        trainer_id: &u8,
-        trainer_name: &TrainerName,
-    ) -> Result<Patch, error::Error> {
+    pub fn set_trainer_name(&self, trainer_id: &u8, trainer_name: &TrainerName) -> Result<Patch> {
         let (min_id, max_id) = self.trainer_id_validate(trainer_id)?;
 
         let old_trainer_name = self.get_trainer_name(trainer_id)?;
@@ -2008,7 +1987,7 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = (ROM_PAGE * 0x1C) + 0x19FF;
+        let offset_base = (PkmnapiDB::ROM_PAGE * 0x1C) + 0x19FF;
 
         let offset = match {
             if trainer_id == &1 {
@@ -2043,15 +2022,15 @@ impl PkmnapiDB {
         Ok(Patch::new(&offset, &trainer_name_raw))
     }
 
-    pub fn get_trainer_pic(&self, trainer_id: &u8) -> Result<Pic, error::Error> {
-        let offset_base = ROM_PAGE * 0x1C;
+    pub fn get_trainer_pic(&self, trainer_id: &u8) -> Result<Pic> {
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset_base = offset_base + 0x1914;
 
         let (_min_id, _max_id) = self.trainer_id_validate(trainer_id)?;
 
         let offset = offset_base + (((*trainer_id - 1) as usize) * 0x05);
 
-        let pointer_base = ROM_PAGE * 0x24;
+        let pointer_base = PkmnapiDB::ROM_PAGE * 0x24;
         let pointer = pointer_base + {
             let mut cursor = Cursor::new(&self.rom[offset..(offset + 2)]);
 
@@ -2068,7 +2047,7 @@ impl PkmnapiDB {
         trainer_id: &u8,
         pic: &Pic,
         encoding_method: PicEncodingMethod,
-    ) -> Result<Patch, error::Error> {
+    ) -> Result<Patch> {
         let old_pixels = self.get_trainer_pic(trainer_id)?;
         let pixels = pic.encode(encoding_method);
 
@@ -2076,11 +2055,11 @@ impl PkmnapiDB {
             return Err(error::Error::PicTooLarge);
         }
 
-        let offset_base = ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset_base = offset_base + 0x1914;
         let offset = offset_base + (((*trainer_id - 1) as usize) * 0x05);
 
-        let pointer_base = ROM_PAGE * 0x24;
+        let pointer_base = PkmnapiDB::ROM_PAGE * 0x24;
         let pointer = pointer_base + {
             let mut cursor = Cursor::new(&self.rom[offset..(offset + 2)]);
 
@@ -2114,10 +2093,10 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn get_item_name(&self, item_id: &u8) -> Result<ItemName, error::Error> {
+    pub fn get_item_name(&self, item_id: &u8) -> Result<ItemName> {
         let (min_id, max_id) = self.item_id_validate(item_id)?;
 
-        let offset_base = ROM_PAGE * 0x02;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
         let offset_base = offset_base + 0x072B;
 
         let offset = match {
@@ -2189,7 +2168,7 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_item_name(&self, item_id: &u8, item_name: &ItemName) -> Result<Patch, error::Error> {
+    pub fn set_item_name(&self, item_id: &u8, item_name: &ItemName) -> Result<Patch> {
         let (min_id, max_id) = self.item_id_validate(item_id)?;
 
         let old_item_name = self.get_item_name(item_id)?;
@@ -2204,7 +2183,7 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = ROM_PAGE * 0x02;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
         let offset_base = offset_base + 0x072B;
 
         let offset = match {
@@ -2240,14 +2219,14 @@ impl PkmnapiDB {
         Ok(Patch::new(&offset, &item_name_raw))
     }
 
-    pub fn get_map_pic(&self, map_id: &u8) -> Result<Map, error::Error> {
+    pub fn get_map_pic(&self, map_id: &u8) -> Result<Map> {
         let (_min_id, _max_id) = self.map_id_validate(map_id)?;
 
-        let bank_offset_base = ROM_PAGE * 0x06;
+        let bank_offset_base = PkmnapiDB::ROM_PAGE * 0x06;
         let bank_offset = (bank_offset_base + 0x23D) + (*map_id as usize);
         let bank_id = self.rom[bank_offset];
 
-        let bank = ((bank_id as usize) - 0x01) * (ROM_PAGE * 0x02);
+        let bank = ((bank_id as usize) - 0x01) * (PkmnapiDB::ROM_PAGE * 0x02);
 
         if bank == 0x00 {
             return Err(error::Error::MapInvalid(*map_id));
@@ -2263,7 +2242,8 @@ impl PkmnapiDB {
         let tileset = self.rom[header_pointer];
 
         let tileset_bank_pointer = 0xC7BE + ((tileset as usize) * 0x0C);
-        let tileset_bank = ((self.rom[tileset_bank_pointer] as usize) - 0x01) * (ROM_PAGE * 0x02);
+        let tileset_bank =
+            ((self.rom[tileset_bank_pointer] as usize) - 0x01) * (PkmnapiDB::ROM_PAGE * 0x02);
         let tileset_block_pointer = tileset_bank + {
             let mut cursor =
                 Cursor::new(&self.rom[(tileset_bank_pointer + 1)..(tileset_bank_pointer + 3)]);
@@ -2359,21 +2339,21 @@ impl PkmnapiDB {
         Ok(map)
     }
 
-    pub fn get_trainer_parties(&self, trainer_id: &u8) -> Result<Vec<Party>, error::Error> {
+    pub fn get_trainer_parties(&self, trainer_id: &u8) -> Result<Vec<Party>> {
         let (min_id, max_id) = self.trainer_id_validate(trainer_id)?;
 
-        let offset_base = ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = offset_base + 0x1D3B;
 
         let pointer_min_offset = offset + ((*trainer_id as usize) - 1) * 0x02;
-        let pointer_min = (offset_base - (ROM_PAGE * 2)) + {
+        let pointer_min = (offset_base - (PkmnapiDB::ROM_PAGE * 2)) + {
             let mut cursor = Cursor::new(&self.rom[pointer_min_offset..(pointer_min_offset + 2)]);
 
             cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
         };
 
         let pointer_max_offset = offset + (*trainer_id as usize) * 0x02;
-        let pointer_max = (offset_base - (ROM_PAGE * 2)) + {
+        let pointer_max = (offset_base - (PkmnapiDB::ROM_PAGE * 2)) + {
             let mut cursor = Cursor::new(&self.rom[pointer_max_offset..(pointer_max_offset + 2)]);
 
             cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
@@ -2445,7 +2425,7 @@ impl PkmnapiDB {
         &self,
         trainer_id: &u8,
         trainer_parties: &Vec<Party>,
-    ) -> Result<Patch, error::Error> {
+    ) -> Result<Patch> {
         let old_trainer_parties = self.get_trainer_parties(trainer_id)?;
         let old_trainer_parties_len = old_trainer_parties.len();
         let old_trainer_parties_data: Vec<u8> = old_trainer_parties
@@ -2494,11 +2474,11 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = offset_base + 0x1D3B;
 
         let pointer_offset = offset + ((*trainer_id as usize) - 1) * 0x02;
-        let pointer = (offset_base - (ROM_PAGE * 2)) + {
+        let pointer = (offset_base - (PkmnapiDB::ROM_PAGE * 2)) + {
             let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
 
             cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
@@ -2544,8 +2524,8 @@ impl PkmnapiDB {
     ///     ]
     /// );
     /// ```
-    pub fn get_pokemon_title(&self) -> Result<Vec<u8>, error::Error> {
-        let offset_base = ROM_PAGE * 0x02;
+    pub fn get_pokemon_title(&self) -> Result<Vec<u8>> {
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
         let offset = offset_base + 0x0588;
 
         let pokemon_title = self.rom[offset..(offset + 0x10)].to_vec();
@@ -2595,8 +2575,8 @@ impl PkmnapiDB {
     ///     }
     /// );
     /// ```
-    pub fn set_pokemon_title(&self, pokemon_title: &Vec<u8>) -> Result<Patch, error::Error> {
-        let offset_base = ROM_PAGE * 0x02;
+    pub fn set_pokemon_title(&self, pokemon_title: &Vec<u8>) -> Result<Patch> {
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
         let offset = offset_base + 0x0588;
 
         let data = pokemon_title.to_vec();
@@ -2633,17 +2613,14 @@ impl PkmnapiDB {
     ///     ]
     /// );
     /// ```
-    pub fn get_pokemon_evolutions(
-        &self,
-        pokedex_id: &u8,
-    ) -> Result<Vec<PokemonEvolution>, error::Error> {
-        let offset_base = ROM_PAGE * 0x1D;
+    pub fn get_pokemon_evolutions(&self, pokedex_id: &u8) -> Result<Vec<PokemonEvolution>> {
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1D;
         let offset = offset_base + 0x105C;
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let pointer_offset = offset + ((internal_id as usize) * 0x02);
-        let pointer = (offset_base - (ROM_PAGE * 0x03)) + {
+        let pointer = (offset_base - (PkmnapiDB::ROM_PAGE * 0x03)) + {
             let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
 
             cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
@@ -2736,7 +2713,7 @@ impl PkmnapiDB {
         &self,
         pokedex_id: &u8,
         pokemon_evolutions: &Vec<PokemonEvolution>,
-    ) -> Result<Patch, error::Error> {
+    ) -> Result<Patch> {
         let old_pokemon_evolutions = self.get_pokemon_evolutions(pokedex_id)?;
         let old_pokemon_evolutions_data: Vec<u8> = old_pokemon_evolutions
             .iter()
@@ -2788,13 +2765,13 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = ROM_PAGE * 0x1D;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1D;
         let offset = offset_base + 0x105C;
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let pointer_offset = offset + ((internal_id as usize) * 0x02);
-        let pointer = (offset_base - (ROM_PAGE * 0x03)) + {
+        let pointer = (offset_base - (PkmnapiDB::ROM_PAGE * 0x03)) + {
             let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
 
             cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
@@ -2803,17 +2780,17 @@ impl PkmnapiDB {
         Ok(Patch::new(&pointer, &pokemon_evolutions_data))
     }
 
-    pub fn get_pokemon_cry(&self, pokedex_id: &u8) -> Result<Cry, error::Error> {
+    pub fn get_pokemon_cry(&self, pokedex_id: &u8) -> Result<Cry> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = (offset_base + 0x1446) + ((internal_id as usize) * 0x03);
 
         let base = self.rom[offset];
         let pitch = self.rom[offset + 1];
         let length = self.rom[offset + 2];
 
-        let offset_base = ROM_PAGE * 0x04;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x04;
         let offset = (offset_base + 0x3C) + ((base as usize) * 0x09);
 
         let cry: Cry = (0..3)
@@ -2824,7 +2801,7 @@ impl PkmnapiDB {
                 cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
             })
             .map(|channel_offset| {
-                let offset_base = ROM_PAGE * 0x02;
+                let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
                 let offset = offset_base + channel_offset;
 
                 self.rom[offset..]
@@ -2860,14 +2837,10 @@ impl PkmnapiDB {
         Ok(cry)
     }
 
-    pub fn set_pokemon_cry(
-        &self,
-        pokedex_id: &u8,
-        pokemon_cry: &Cry,
-    ) -> Result<Patch, error::Error> {
+    pub fn set_pokemon_cry(&self, pokedex_id: &u8, pokemon_cry: &Cry) -> Result<Patch> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = (offset_base + 0x1446) + ((internal_id as usize) * 0x03);
 
         let pokemon_cry_data = pokemon_cry.to_raw();
@@ -2875,13 +2848,13 @@ impl PkmnapiDB {
         Ok(Patch::new(&offset, &pokemon_cry_data))
     }
 
-    pub fn get_map_pokemon(&self, map_id: &u8) -> Result<MapPokemon, error::Error> {
+    pub fn get_map_pokemon(&self, map_id: &u8) -> Result<MapPokemon> {
         let (_min_id, _max_id) = self.map_id_validate(map_id)?;
 
-        let offset_base = ROM_PAGE * 0x06;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x06;
         let offset = offset_base + 0x0EEB;
         let pointer_offset = offset + ((*map_id as usize) * 0x02);
-        let pointer = offset_base - (ROM_PAGE * 0x02) + {
+        let pointer = offset_base - (PkmnapiDB::ROM_PAGE * 0x02) + {
             let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
 
             cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
@@ -2924,11 +2897,7 @@ impl PkmnapiDB {
         Ok(map_pokemon)
     }
 
-    pub fn set_map_pokemon(
-        &self,
-        map_id: &u8,
-        map_pokemon: &MapPokemon,
-    ) -> Result<Patch, error::Error> {
+    pub fn set_map_pokemon(&self, map_id: &u8, map_pokemon: &MapPokemon) -> Result<Patch> {
         let old_map_pokemon = self.get_map_pokemon(map_id)?;
         let old_map_pokemon_data = old_map_pokemon.to_raw();
         let old_map_pokemon_data_len = old_map_pokemon_data.len();
@@ -2974,10 +2943,10 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = ROM_PAGE * 0x06;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x06;
         let offset = offset_base + 0x0EEB;
         let pointer_offset = offset + ((*map_id as usize) * 0x02);
-        let pointer = offset_base - (ROM_PAGE * 0x02) + {
+        let pointer = offset_base - (PkmnapiDB::ROM_PAGE * 0x02) + {
             let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
 
             cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
@@ -2986,8 +2955,8 @@ impl PkmnapiDB {
         Ok(Patch::new(&pointer, &map_pokemon_data))
     }
 
-    pub fn get_pokemon_logo_img(&self) -> Result<Img, error::Error> {
-        let offset_base = ROM_PAGE * 0x08;
+    pub fn get_pokemon_logo_img(&self) -> Result<Img> {
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x08;
         let offset = offset_base + 0x1380;
 
         let tiles: Vec<Vec<u8>> = (0..(16 * 7))
@@ -3018,8 +2987,8 @@ impl PkmnapiDB {
         Ok(pokemon_logo)
     }
 
-    pub fn get_town_map_img(&self) -> Result<Img, error::Error> {
-        let graphics_offset_base = ROM_PAGE * 0x09;
+    pub fn get_town_map_img(&self) -> Result<Img> {
+        let graphics_offset_base = PkmnapiDB::ROM_PAGE * 0x09;
         let graphics_offset = graphics_offset_base + 0x05A8;
 
         let graphics_tiles: Vec<Vec<u8>> = (0..(4 * 4))
@@ -3045,7 +3014,7 @@ impl PkmnapiDB {
             })
             .collect();
 
-        let offset_base = ROM_PAGE * 0x38;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x38;
         let offset = offset_base + 0x1100;
 
         let tiles: Vec<Vec<u8>> = self.rom[offset..]

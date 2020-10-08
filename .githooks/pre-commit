@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# get changed rust files
+FILES=`git diff --cached --name-only --diff-filter=ACMR "*.rs" | tr '\n' ' '`
+
+# no changed rust files?
+if [ -z "$FILES" ]
+then
+    exit 0
+fi
+
+# format changed rust files
+make fmt_some FILES="$FILES"
+
+# add changed rust files
+echo "$FILES" | xargs git add
+
+exit 0

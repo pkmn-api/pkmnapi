@@ -902,6 +902,31 @@ impl PokedexText {
     }
 }
 
+/// Pokémon pic face
+///
+/// ```
+/// use pkmnapi_db::types::*;
+///
+/// let pic_face = PokemonPicFace::from(Some("front".to_owned()));
+///
+/// assert_eq!(pic_face, PokemonPicFace::FRONT);
+///
+/// let pic_face = PokemonPicFace::from(Some("back".to_owned()));
+///
+/// assert_eq!(pic_face, PokemonPicFace::BACK);
+///
+/// let pic_face = PokemonPicFace::from(Some("BACK".to_owned()));
+///
+/// assert_eq!(pic_face, PokemonPicFace::BACK);
+///
+/// let pic_face = PokemonPicFace::from(Some("UnKnOwN".to_owned()));
+///
+/// assert_eq!(pic_face, PokemonPicFace::FRONT);
+///
+/// let pic_face = PokemonPicFace::from(None);
+///
+/// assert_eq!(pic_face, PokemonPicFace::FRONT);
+/// ```
 #[derive(Debug, PartialEq)]
 pub enum PokemonPicFace {
     FRONT,
@@ -1312,6 +1337,15 @@ impl SaveRivalName {
     }
 }
 
+/// Save text speed
+///
+/// ```
+/// use pkmnapi_db::types::*;
+///
+/// let save_text_speed_slow = SaveTextSpeed::SLOW;
+/// let save_text_speed_medium = SaveTextSpeed::MEDIUM;
+/// let save_text_speed_fast = SaveTextSpeed::FAST;
+/// ```
 #[derive(Debug, PartialEq)]
 pub enum SaveTextSpeed {
     SLOW,
@@ -1349,6 +1383,25 @@ impl From<&u8> for SaveTextSpeed {
 }
 
 impl SaveTextSpeed {
+    /// Save text speed to value
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let save_text_speed_fast = SaveTextSpeed::FAST;
+    ///
+    /// assert_eq!(save_text_speed_fast.value(), 0x01);
+    ///
+    /// let save_text_speed_medium = SaveTextSpeed::MEDIUM;
+    ///
+    /// assert_eq!(save_text_speed_medium.value(), 0x03);
+    ///
+    /// let save_text_speed_slow = SaveTextSpeed::SLOW;
+    ///
+    /// assert_eq!(save_text_speed_slow.value(), 0x05);
+    /// ```
     pub fn value(&self) -> u8 {
         match self {
             SaveTextSpeed::FAST => 0x01,
@@ -1358,6 +1411,14 @@ impl SaveTextSpeed {
     }
 }
 
+/// Save battle animation
+///
+/// ```
+/// use pkmnapi_db::types::*;
+///
+/// let save_battle_animation_on = SaveBattleAnimation::ON;
+/// let save_battle_animation_off = SaveBattleAnimation::OFF;
+/// ```
 #[derive(Debug, PartialEq)]
 pub enum SaveBattleAnimation {
     ON,
@@ -1389,6 +1450,21 @@ impl From<&u8> for SaveBattleAnimation {
 }
 
 impl SaveBattleAnimation {
+    /// Save battle animation to value
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let save_battle_animation_on = SaveBattleAnimation::ON;
+    ///
+    /// assert_eq!(save_battle_animation_on.value(), 0x00);
+    ///
+    /// let save_battle_animation_off = SaveBattleAnimation::OFF;
+    ///
+    /// assert_eq!(save_battle_animation_off.value(), 0x01);
+    /// ```
     pub fn value(&self) -> u8 {
         match self {
             SaveBattleAnimation::ON => 0x00,
@@ -1397,6 +1473,14 @@ impl SaveBattleAnimation {
     }
 }
 
+/// Save battle style
+///
+/// ```
+/// use pkmnapi_db::types::*;
+///
+/// let save_battle_style_shift = SaveBattleStyle::SHIFT;
+/// let save_battle_style_set = SaveBattleStyle::SET;
+/// ```
 #[derive(Debug, PartialEq)]
 pub enum SaveBattleStyle {
     SHIFT,
@@ -1428,6 +1512,21 @@ impl From<&u8> for SaveBattleStyle {
 }
 
 impl SaveBattleStyle {
+    /// Save battle style to value
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let save_battle_style_shift = SaveBattleStyle::SHIFT;
+    ///
+    /// assert_eq!(save_battle_style_shift.value(), 0x00);
+    ///
+    /// let save_battle_style_set = SaveBattleStyle::SET;
+    ///
+    /// assert_eq!(save_battle_style_set.value(), 0x01);
+    /// ```
     pub fn value(&self) -> u8 {
         match self {
             SaveBattleStyle::SHIFT => 0x00,
@@ -1436,6 +1535,24 @@ impl SaveBattleStyle {
     }
 }
 
+/// Save options
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi_db::types::*;
+///
+/// let save_options = SaveOptions::from(&0xC5);
+///
+/// assert_eq!(
+///     save_options,
+///     SaveOptions {
+///         text_speed: SaveTextSpeed::SLOW,
+///         battle_animation: SaveBattleAnimation::OFF,
+///         battle_style: SaveBattleStyle::SET
+///     }
+/// );
+/// ```
 #[derive(Debug, PartialEq)]
 pub struct SaveOptions {
     pub text_speed: SaveTextSpeed,
@@ -1444,6 +1561,24 @@ pub struct SaveOptions {
 }
 
 impl From<&u8> for SaveOptions {
+    /// Convert &u8 to save options
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let save_options = SaveOptions::from(&0xC5);
+    ///
+    /// assert_eq!(
+    ///     save_options,
+    ///     SaveOptions {
+    ///         text_speed: SaveTextSpeed::SLOW,
+    ///         battle_animation: SaveBattleAnimation::OFF,
+    ///         battle_style: SaveBattleStyle::SET
+    ///     }
+    /// );
+    /// ```
     fn from(sav: &u8) -> Self {
         SaveOptions {
             text_speed: SaveTextSpeed::from(&(sav & 0x0F)),
@@ -1565,12 +1700,46 @@ impl PartyPokemon {
     }
 }
 
+/// Level type of all party Pokémon
+///
+/// ```
+/// use pkmnapi_db::types::*;
+///
+/// let party_level_type_same = PartyLevelType::SAME(42);
+/// let party_level_type_different = PartyLevelType::DIFFERENT;
+/// ```
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PartyLevelType {
     SAME(u8),
     DIFFERENT,
 }
 
+/// Pokémon evolution type
+///
+/// ```
+/// use pkmnapi_db::types::*;
+///
+/// let pokemon_evolution_level = PokemonEvolutionLevel::new(0, 0);
+///
+/// assert_eq!(
+///     pokemon_evolution_level,
+///     PokemonEvolution::LEVEL(Default::default())
+/// );
+///
+/// let pokemon_evolution_item = PokemonEvolutionItem::new(0, 0);
+///
+/// assert_eq!(
+///     pokemon_evolution_item,
+///     PokemonEvolution::ITEM(Default::default())
+/// );
+///
+/// let pokemon_evolution_trade = PokemonEvolutionTrade::new(0);
+///
+/// assert_eq!(
+///     pokemon_evolution_trade,
+///     PokemonEvolution::TRADE(Default::default())
+/// );
+/// ```
 #[derive(Debug, PartialEq)]
 pub enum PokemonEvolution {
     LEVEL(PokemonEvolutionLevel),
@@ -1604,6 +1773,28 @@ impl From<&[u8]> for PokemonEvolution {
 }
 
 impl PokemonEvolution {
+    /// Pokémon evolution to raw bytes
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let pokemon_evolution_level = PokemonEvolutionLevel::new(112, 32);
+    /// let raw = pokemon_evolution_level.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x01, 0x20, 0x01]);
+    ///
+    /// let pokemon_evolution_item = PokemonEvolutionItem::new(112, 32);
+    /// let raw = pokemon_evolution_item.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x02, 0x20, 0x01, 0x01]);
+    ///
+    /// let pokemon_evolution_trade = PokemonEvolutionTrade::new(112);
+    /// let raw = pokemon_evolution_trade.to_raw();
+    ///
+    /// assert_eq!(raw, vec![0x03, 0x01, 0x01]);
+    /// ```
     pub fn to_raw(&self) -> Vec<u8> {
         match self {
             PokemonEvolution::LEVEL(evolution) => {
@@ -1617,6 +1808,18 @@ impl PokemonEvolution {
     }
 }
 
+/// Pokémon evolution by level
+///
+/// ```
+/// use pkmnapi_db::types::*;
+///
+/// let pokemon_evolution_level = PokemonEvolutionLevel::new(0, 0);
+///
+/// assert_eq!(
+///     pokemon_evolution_level,
+///     PokemonEvolution::LEVEL(Default::default())
+/// );
+/// ```
 #[derive(Debug, PartialEq)]
 pub struct PokemonEvolutionLevel {
     pub level: u8,
@@ -1624,16 +1827,50 @@ pub struct PokemonEvolutionLevel {
     pub(crate) internal_id: u8,
 }
 
+impl Default for PokemonEvolutionLevel {
+    fn default() -> Self {
+        PokemonEvolutionLevel {
+            level: 0,
+            pokedex_id: 0,
+            internal_id: 0,
+        }
+    }
+}
+
 impl PokemonEvolutionLevel {
+    /// Create new Pokémon evolution by level
+    ///
+    /// ```
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let pokemon_evolution_level = PokemonEvolutionLevel::new(0, 0);
+    ///
+    /// assert_eq!(
+    ///     pokemon_evolution_level,
+    ///     PokemonEvolution::LEVEL(Default::default())
+    /// );
+    /// ```
     pub fn new(pokedex_id: u8, level: u8) -> PokemonEvolution {
         PokemonEvolution::LEVEL(PokemonEvolutionLevel {
             level,
             pokedex_id,
-            internal_id: 0,
+            ..Default::default()
         })
     }
 }
 
+/// Pokémon evolution by item
+///
+/// ```
+/// use pkmnapi_db::types::*;
+///
+/// let pokemon_evolution_item = PokemonEvolutionItem::new(0, 0);
+///
+/// assert_eq!(
+///     pokemon_evolution_item,
+///     PokemonEvolution::ITEM(Default::default())
+/// );
+/// ```
 #[derive(Debug, PartialEq)]
 pub struct PokemonEvolutionItem {
     pub item_id: u8,
@@ -1641,27 +1878,82 @@ pub struct PokemonEvolutionItem {
     pub(crate) internal_id: u8,
 }
 
+impl Default for PokemonEvolutionItem {
+    fn default() -> Self {
+        PokemonEvolutionItem {
+            item_id: 0,
+            pokedex_id: 0,
+            internal_id: 0,
+        }
+    }
+}
+
 impl PokemonEvolutionItem {
+    /// Create new Pokémon evolution by item
+    ///
+    /// ```
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let pokemon_evolution_item = PokemonEvolutionItem::new(0, 0);
+    ///
+    /// assert_eq!(
+    ///     pokemon_evolution_item,
+    ///     PokemonEvolution::ITEM(Default::default())
+    /// );
+    /// ```
     pub fn new(pokedex_id: u8, item_id: u8) -> PokemonEvolution {
         PokemonEvolution::ITEM(PokemonEvolutionItem {
             item_id,
             pokedex_id,
-            internal_id: 0,
+            ..Default::default()
         })
     }
 }
 
+/// Pokémon evolution by trade
+///
+/// ```
+/// use pkmnapi_db::types::*;
+///
+/// let pokemon_evolution_trade = PokemonEvolutionTrade::new(0);
+///
+/// assert_eq!(
+///     pokemon_evolution_trade,
+///     PokemonEvolution::TRADE(Default::default())
+/// );
+/// ```
 #[derive(Debug, PartialEq)]
 pub struct PokemonEvolutionTrade {
     pub pokedex_id: u8,
     pub(crate) internal_id: u8,
 }
 
+impl Default for PokemonEvolutionTrade {
+    fn default() -> Self {
+        PokemonEvolutionTrade {
+            pokedex_id: 0,
+            internal_id: 0,
+        }
+    }
+}
+
 impl PokemonEvolutionTrade {
+    /// Create new Pokémon evolution by trade
+    ///
+    /// ```
+    /// use pkmnapi_db::types::*;
+    ///
+    /// let pokemon_evolution_trade = PokemonEvolutionTrade::new(0);
+    ///
+    /// assert_eq!(
+    ///     pokemon_evolution_trade,
+    ///     PokemonEvolution::TRADE(Default::default())
+    /// );
+    /// ```
     pub fn new(pokedex_id: u8) -> PokemonEvolution {
         PokemonEvolution::TRADE(PokemonEvolutionTrade {
             pokedex_id,
-            internal_id: 0,
+            ..Default::default()
         })
     }
 }

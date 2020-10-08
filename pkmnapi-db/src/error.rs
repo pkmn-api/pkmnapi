@@ -1,4 +1,16 @@
-use std::fmt;
+//! Pkmnapi error module
+//!
+//! ```
+//! use pkmnapi_db::error::*;
+//!
+//! let err = Error::PokedexIDInvalid(255);
+//!
+//! assert_eq!(err.to_string(), "Invalid Pokédex ID: 255");
+//! ```
+
+use std::{fmt, result};
+
+pub type Result<T> = result::Result<T, Error>;
 
 #[derive(Debug, PartialEq)]
 pub enum Error {

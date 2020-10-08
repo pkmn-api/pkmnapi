@@ -13,6 +13,16 @@
 use std::fmt;
 
 /// Representation of a ROM string
+///
+/// # Example
+///
+/// ```
+/// use pkmnapi_db::string::*;
+///
+/// let string = ROMString::new(&[0x80, 0x81, 0x82, 0x50]);
+///
+/// assert_eq!(string.value, vec![0x80, 0x81, 0x82, 0x50]);
+/// ```
 #[derive(Debug, PartialEq)]
 pub struct ROMString {
     pub value: Vec<u8>,
