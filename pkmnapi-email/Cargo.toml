@@ -8,3 +8,4 @@ edition = "2018"
 dotenv = "0.15.0"
 lettre = "0.9.3"
 lettre_email = "0.9.4"
+tera = { version = "1.5.0", default-features = false }

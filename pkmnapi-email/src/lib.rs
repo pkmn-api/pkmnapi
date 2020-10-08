@@ -14,12 +14,17 @@
 extern crate dotenv;
 extern crate lettre;
 extern crate lettre_email;
+extern crate tera;
 
 use dotenv::dotenv;
 use lettre::smtp::authentication::IntoCredentials;
 use lettre::{SmtpClient, Transport};
 use lettre_email::{EmailBuilder, Mailbox};
 use std::env;
+use tera::Tera;
+
+static ACCESS_TOKEN_TXT: &'static str = include_str!("../templates/access_token.txt");
+static ACCESS_TOKEN_HTML: &'static str = include_str!("../templates/access_token.html");
 
 /// PkmnapiEmail
 ///
@@ -71,14 +76,18 @@ impl PkmnapiEmail {
         let smtp_user = env::var("SMTP_USER").unwrap();
         let smtp_pass = env::var("SMTP_PASS").unwrap();
 
+        let subject = self.template.subject()?;
+        let body_html = self.template.body_html(&subject)?;
+        let body_text = self.template.body_text()?;
+
         let email = match EmailBuilder::new()
             .to(self.to_email.clone())
             .from(Mailbox::new_with_name(
                 "Pkmnapi".to_owned(),
                 smtp_user.clone(),
             ))
-            .subject(self.template.subject())
-            .text(self.template.body())
+            .subject(subject)
+            .alternative(body_html, body_text)
             .build()
         {
             Ok(email) => email.into(),
@@ -104,17 +113,50 @@ pub enum PkmnapiEmailTemplate {
 }
 
 impl PkmnapiEmailTemplate {
-    pub fn subject(&self) -> String {
-        match self {
+    pub fn subject(&self) -> Result<String, String> {
+        let subject = match self {
             PkmnapiEmailTemplate::AccessToken(_) => "Pkmnapi access token".to_owned(),
-        }
+        };
+
+        Ok(subject)
     }
 
-    pub fn body(&self) -> String {
-        match self {
+    pub fn body_html(&self, subject: &String) -> Result<String, String> {
+        let body = match self {
             PkmnapiEmailTemplate::AccessToken(access_token) => {
-                format!("This is your Pkmnapi access token: {}", access_token)
+                let mut context = tera::Context::new();
+
+                context.insert("subject", &subject);
+                context.insert("access_token", &access_token);
+
+                let body = match Tera::one_off(ACCESS_TOKEN_HTML, &context, true) {
+                    Ok(body) => body,
+                    Err(e) => return Err(e.to_string()),
+                };
+
+                body
             }
-        }
+        };
+
+        Ok(body)
+    }
+
+    pub fn body_text(&self) -> Result<String, String> {
+        let body = match self {
+            PkmnapiEmailTemplate::AccessToken(access_token) => {
+                let mut context = tera::Context::new();
+
+                context.insert("access_token", &access_token);
+
+                let body = match Tera::one_off(ACCESS_TOKEN_TXT, &context, true) {
+                    Ok(body) => body,
+                    Err(e) => return Err(e.to_string()),
+                };
+
+                body
+            }
+        };
+
+        Ok(body)
     }
 }
