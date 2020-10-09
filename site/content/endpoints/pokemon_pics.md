@@ -3,10 +3,10 @@ title = "Pokémon Pics"
 weight = 13
 +++
 
-| Endpoint                                              | Description             |
-|-------------------------------------------------------|-------------------------|
-| [GET /v1/pokemon/pics/:pokedex_id](#get-pokemon-pic)  | Gets a Pokémon's pic    |
-| [GET /v1/pokemon/pics/:pokedex_id](#post-pokemon-pic) | Updates a Pokémon's pic |
+| Endpoint                                               | Description             |
+|--------------------------------------------------------|-------------------------|
+| [GET /v1/pokemon/pics/:pokedex_id](#get-pokemon-pic)   | Gets a Pokémon's pic    |
+| [POST /v1/pokemon/pics/:pokedex_id](#post-pokemon-pic) | Updates a Pokémon's pic |
 
 ---
 

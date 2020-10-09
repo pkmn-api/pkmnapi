@@ -88,6 +88,105 @@ impl Img {
         })
     }
 
+    fn from(data: Vec<u8>, format: ImageFormat) -> Result<Self, error::Error> {
+        let raw = match image::load_from_memory_with_format(&data, format) {
+            Ok(img) => img,
+            Err(_) => return Err(error::Error::ImgCouldNotRead),
+        };
+
+        let img = match raw.as_luma8() {
+            Some(img) => img,
+            None => return Err(error::Error::ImgCouldNotRead),
+        };
+
+        let width = ((img.width() as f32) / 8.0) as u32;
+        let height = ((img.height() as f32) / 8.0) as u32;
+        let pixels: Vec<u8> = img
+            .enumerate_pixels()
+            .map(|(_, _, pixel)| {
+                let pixel = 3 - (((pixel.0[0] as f32) / 85.0) as u8);
+
+                pixel
+            })
+            .collect();
+
+        Ok(Img {
+            width,
+            height,
+            pixels,
+        })
+    }
+
+    pub fn from_png(data: Vec<u8>) -> Result<Self, error::Error> {
+        Img::from(data, ImageFormat::Png)
+    }
+
+    pub fn from_jpeg(data: Vec<u8>) -> Result<Self, error::Error> {
+        Img::from(data, ImageFormat::Jpeg)
+    }
+
+    pub fn to_2bpp(&self) -> Result<Vec<u8>, error::Error> {
+        let tile_indices: Vec<u32> = (0..self.height)
+            .map(|tile_y| {
+                (0..self.width)
+                    .map(|tile_x| (tile_x * 8) + (tile_y * 8 * self.width * 8))
+                    .collect::<Vec<u32>>()
+            })
+            .flatten()
+            .collect::<Vec<u32>>();
+
+        let bpp2: Vec<u8> = tile_indices
+            .iter()
+            .map(|index| {
+                let pixels: Vec<u8> = (0..8)
+                    .map(|pixel_y| {
+                        (0..8)
+                            .map(|pixel_x| {
+                                let pixel_index =
+                                    (index + pixel_x + (pixel_y * self.width * 8)) as usize;
+
+                                self.pixels[pixel_index]
+                            })
+                            .collect::<Vec<u8>>()
+                    })
+                    .flatten()
+                    .collect::<Vec<u8>>();
+                let hi_bytes = pixels
+                    .chunks(8)
+                    .map(|row| {
+                        row.iter()
+                            .map(|pixel| (pixel & 0x02) >> 0x01)
+                            .enumerate()
+                            .fold(0, |acc, (i, bit)| acc | (bit << (7 - i)))
+                            as u8
+                    })
+                    .collect::<Vec<u8>>();
+                let lo_bytes = pixels
+                    .chunks(8)
+                    .map(|row| {
+                        row.iter()
+                            .map(|pixel| pixel & 0x01)
+                            .enumerate()
+                            .fold(0, |acc, (i, bit)| acc | (bit << (7 - i)))
+                            as u8
+                    })
+                    .collect::<Vec<u8>>();
+
+                let tile: Vec<u8> = lo_bytes
+                    .iter()
+                    .zip(hi_bytes.iter())
+                    .map(|(lo, hi)| vec![*lo, *hi])
+                    .flatten()
+                    .collect();
+
+                tile
+            })
+            .flatten()
+            .collect();
+
+        Ok(bpp2)
+    }
+
     fn to_img(&self, format: ImageFormat) -> Result<Vec<u8>, error::Error> {
         let width = self.width * 8;
         let height = self.height * 8;

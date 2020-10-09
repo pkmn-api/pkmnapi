@@ -19,10 +19,11 @@ sort_by = "weight"
 
 ### [Imgs](@/endpoints/imgs.md)
 
-| Endpoint                                                          | Description           |
-|-------------------------------------------------------------------|-----------------------|
-| [GET /v1/imgs/pokemon_logo](@/endpoints/imgs.md#get-pokemon-logo) | Gets the Pokémon logo |
-| [GET /v1/imgs/town_map](@/endpoints/imgs.md#get-town-map)         | Gets the town map     |
+| Endpoint                                                            | Description              |
+|---------------------------------------------------------------------|--------------------------|
+| [GET /v1/imgs/pokemon_logo](@/endpoints/imgs.md#get-pokemon-logo)   | Gets the Pokémon logo    |
+| [POST /v1/imgs/pokemon_logo](@/endpoints/imgs.md#post-pokemon-logo) | Updates the Pokémon logo |
+| [GET /v1/imgs/town_map](@/endpoints/imgs.md#get-town-map)           | Gets the town map        |
 
 ### [Item Names](@/endpoints/item_names.md)
 

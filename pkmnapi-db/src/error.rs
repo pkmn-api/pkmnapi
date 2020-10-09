@@ -20,6 +20,8 @@ pub enum Error {
     HeaderParseError(String),
     HeaderTooSmall,
     HMIDInvalid(u8, usize, usize),
+    ImgCouldNotRead,
+    ImgCouldNotWrite,
     InternalIDInvalid(u8),
     ItemIDInvalid(u8, usize, usize),
     ItemNameWrongSize(usize, usize),
@@ -36,6 +38,7 @@ pub enum Error {
     PokedexEntrySpeciesWrongSize(usize, usize),
     PokedexTextWrongSize(usize, usize),
     PokemonEvolutionWrongSize(usize, usize),
+    PokemonLogoWrongSize(usize, usize),
     PokemonTitleWrongSize(usize, usize),
     PokedexIDInvalid(u8),
     SavBagItemsWrongSize(usize, usize),
@@ -103,6 +106,8 @@ impl fmt::Display for Error {
                 "Invalid type ID {}: valid range is {}-{}",
                 type_id, min, max
             ),
+            Error::ImgCouldNotRead => "Could not read image".to_owned(),
+            Error::ImgCouldNotWrite => "Could not write image".to_owned(),
             Error::ItemNameWrongSize(expected, actual) => format!(
                 "Item name length mismatch: should be exactly {} characters, found {}",
                 expected, actual
@@ -134,6 +139,10 @@ impl fmt::Display for Error {
             ),
             Error::PokemonEvolutionWrongSize(expected, actual) => format!(
                 "Pokémon evolutions length mismatch, should be exactly {} bytes, found {}",
+                expected, actual
+            ),
+            Error::PokemonLogoWrongSize(expected, actual) => format!(
+                "Pokémon logo size mismatch: should be exactly {} bytes, found {}",
                 expected, actual
             ),
             Error::PokemonTitleWrongSize(expected, actual) => format!(

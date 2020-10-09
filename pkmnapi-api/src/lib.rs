@@ -65,6 +65,8 @@ impl Pkmnapi {
                     routes::imgs::get_pokemon_logo_png,
                     routes::imgs::get_town_map_jpeg,
                     routes::imgs::get_town_map_png,
+                    routes::imgs::post_pokemon_logo_jpeg,
+                    routes::imgs::post_pokemon_logo_png,
                     routes::item_names::get_item_name,
                     routes::item_names::post_item_name,
                     routes::map_pics::get_map_pic_jpeg,
