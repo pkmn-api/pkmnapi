@@ -1,7 +1,7 @@
 mod common;
 
 macro_rules! get_map_pic_test {
-    ($test_name: ident, $map_id: expr, $map_width: expr, $map_height: expr) => {
+    ($test_name:ident, $map_id:expr, $map_width:expr, $map_height:expr) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]
@@ -17,7 +17,7 @@ macro_rules! get_map_pic_test {
             };
         }
     };
-    ($test_name: ident, $map_id: expr, $map_width: expr, $map_height: expr, $panic_msg: expr) => {
+    ($test_name:ident, $map_id:expr, $map_width:expr, $map_height:expr, $panic_msg:expr) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

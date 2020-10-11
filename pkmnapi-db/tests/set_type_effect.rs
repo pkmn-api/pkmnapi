@@ -4,7 +4,15 @@ use pkmnapi_db::types::*;
 mod common;
 
 macro_rules! set_type_effect_test {
-    ($test_name: ident, $type_effect_id: expr, $attacking_type_id: expr, $defending_type_id: expr, $multiplier: expr, $patch_offset: expr, $patch_data: expr) => {
+    (
+        $test_name:ident,
+        $type_effect_id:expr,
+        $attacking_type_id:expr,
+        $defending_type_id:expr,
+        $multiplier:expr,
+        $patch_offset:expr,
+        $patch_data:expr
+    ) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

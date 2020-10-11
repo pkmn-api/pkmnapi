@@ -3,7 +3,14 @@ use pkmnapi_db::types::*;
 mod common;
 
 macro_rules! get_map_pokemon_test {
-    ($test_name: ident, $map_id: expr, $grass_encounter_rate: expr, $grass_pokemon: expr, $water_encounter_rate: expr, $water_pokemon: expr) => {
+    (
+        $test_name:ident,
+        $map_id:expr,
+        $grass_encounter_rate:expr,
+        $grass_pokemon:expr,
+        $water_encounter_rate:expr,
+        $water_pokemon:expr
+    ) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

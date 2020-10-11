@@ -18,37 +18,27 @@ pub fn post_sav<'a>(
     data: Data,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Response<'a>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
-    let sav = {
-        let mut sav = Vec::new();
-
-        data.stream_to(&mut sav).unwrap();
-
-        sav
-    };
+    let access_token = utils::get_access_token(access_token)?;
+    let sav = utils::get_data_raw(data);
 
     if let Err(_) = Sav::new(&sav) {
         return Err(SavErrorInvalidSav::new());
     }
 
     let connection = sql.get_connection().unwrap();
-    let sav_sql = match sql.update_user_sav_by_access_token(&connection, &access_token, &sav) {
-        Ok(sav_sql) => sav_sql,
+    let sav = match sql.update_user_sav_by_access_token(&connection, &access_token, &sav) {
+        Ok(sav) => sav,
         Err(_) => return Err(SavErrorSavExists::new()),
     };
 
-    let response = SavResponse::new(&sav_sql);
+    let response = SavResponse::new(&sav);
     let body = serde_json::to_string(&response).unwrap();
 
     let response = Response::build()
         .status(Status::Created)
         .header(ContentType::JSON)
         .header(Header::new("Location", utils::generate_url("savs", None)))
-        .header(Header::new("ETag", sav_sql.etag))
+        .header(Header::new("ETag", sav.etag))
         .sized_body(Cursor::new(body))
         .finalize();
 
@@ -61,23 +51,20 @@ pub fn get_sav<'a>(
     _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Response<'a>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
+    let access_token = utils::get_access_token(access_token)?;
 
     let connection = sql.get_connection().unwrap();
-    let sav_sql = match sql.select_user_sav_by_access_token(&connection, &access_token) {
-        Ok(Some(sav_sql)) => sav_sql,
+    let sav = match sql.select_user_sav_by_access_token(&connection, &access_token) {
+        Ok(Some(sav)) => sav,
         _ => return Err(SavErrorNoSav::new()),
     };
 
-    let response = SavResponse::new(&sav_sql);
+    let response = SavResponse::new(&sav);
     let body = serde_json::to_string(&response).unwrap();
 
     let response = Response::build()
         .header(ContentType::JSON)
-        .header(Header::new("ETag", sav_sql.etag))
+        .header(Header::new("ETag", sav.etag))
         .sized_body(Cursor::new(body))
         .finalize();
 
@@ -91,16 +78,8 @@ pub fn delete_sav(
     access_token: Result<AccessToken, AccessTokenError>,
     if_match: Result<IfMatch, IfMatchError>,
 ) -> Result<status::NoContent, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
-    let etag = match if_match {
-        Ok(if_match) => if_match.into_inner(),
-        Err(_) => return Err(ETagErrorMissing::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
+    let etag = utils::get_etag(if_match)?;
     let connection = sql.get_connection().unwrap();
 
     match sql.delete_user_sav_by_access_token(&connection, &access_token, &etag) {

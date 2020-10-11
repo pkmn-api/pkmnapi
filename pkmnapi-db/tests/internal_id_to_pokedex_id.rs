@@ -1,7 +1,7 @@
 mod common;
 
 macro_rules! internal_id_to_pokedex_id_test {
-    ($test_name: ident, $internal_id: expr, $pokedex_id: expr) => {
+    ($test_name:ident, $internal_id:expr, $pokedex_id:expr) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

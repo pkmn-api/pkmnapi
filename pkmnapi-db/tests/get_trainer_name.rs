@@ -4,7 +4,7 @@ use pkmnapi_db::types::*;
 mod common;
 
 macro_rules! get_trainer_name_test {
-    ($test_name: ident, $trainer_id: expr, $trainer_name: expr) => {
+    ($test_name:ident, $trainer_id:expr, $trainer_name:expr) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

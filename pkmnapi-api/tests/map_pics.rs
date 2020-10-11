@@ -1,115 +1,121 @@
-use rocket::http::{Accept, ContentType, Status};
+use rocket::http::{Accept, Status};
+use serde_json::json;
+use std::fs;
 
 mod common;
 
-#[test]
-fn get_map_pic_png_200() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
-
+test!(get_map_pic_png_200, (client, access_token) {
     let request = client
         .get("/v1/maps/pics/1")
         .header(common::auth_header(&access_token));
 
-    let response = request.dispatch();
+    let mut response = request.dispatch();
+    let response_body = response.body_bytes().unwrap();
+    let headers = response.headers();
 
+    let body = fs::read("tests/data/map-01.png").unwrap();
+
+    assert_eq!(response_body, body);
     assert_eq!(response.status(), Status::Ok);
-    assert_eq!(response.content_type(), Some(ContentType::PNG));
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Disposition", "attachment; filename=\"map-1.png\""),
+        ("Content-Type", "image/png"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
-#[test]
-fn get_map_pic_png_401() {
-    let client = common::setup();
-
+test!(get_map_pic_png_401, (client) {
     let request = client.get("/v1/maps/pics/1");
 
     let mut response = request.dispatch();
 
-    common::assert_unauthorized(&mut response);
-    common::teardown(&client);
-}
+    common::assert_unauthorized(&mut response)
+});
 
-#[test]
-fn get_map_pic_png_404() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
-
+test!(get_map_pic_png_404, (client, access_token) {
     let request = client
         .get("/v1/maps/pics/255")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({
+        "data": {
+            "id": "error_map_pics",
+            "type": "errors",
+            "attributes": {
+                "message": "Invalid map ID 255: valid range is 0-247"
+            }
+        }
+    });
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::NotFound);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(
-        response.body_string(),
-        Some(
-            r#"{"data":{"id":"error_map_pics","type":"errors","attributes":{"message":"Invalid map ID 255: valid range is 0-247"}}}"#
-                .to_string()
-        )
-    );
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
-#[test]
-fn get_map_pic_jpeg_200() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
-
+test!(get_map_pic_jpeg_200, (client, access_token) {
     let request = client
         .get("/v1/maps/pics/1")
         .header(Accept::JPEG)
         .header(common::auth_header(&access_token));
 
-    let response = request.dispatch();
+    let mut response = request.dispatch();
+    let response_body = response.body_bytes().unwrap();
+    let headers = response.headers();
 
+    let body = fs::read("tests/data/map-01.jpg").unwrap();
+
+    assert_eq!(response_body, body);
     assert_eq!(response.status(), Status::Ok);
-    assert_eq!(response.content_type(), Some(ContentType::JPEG));
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Disposition", "attachment; filename=\"map-1.jpg\""),
+        ("Content-Type", "image/jpeg"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
-#[test]
-fn get_map_pic_jpeg_401() {
-    let client = common::setup();
-
+test!(get_map_pic_jpeg_401, (client) {
     let request = client.get("/v1/maps/pics/1").header(Accept::JPEG);
 
     let mut response = request.dispatch();
 
-    common::assert_unauthorized(&mut response);
-    common::teardown(&client);
-}
+    common::assert_unauthorized(&mut response)
+});
 
-#[test]
-fn get_map_pic_jpeg_404() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
-
+test!(get_map_pic_jpeg_404, (client, access_token) {
     let request = client
         .get("/v1/maps/pics/255")
         .header(Accept::JPEG)
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({
+        "data": {
+            "id": "error_map_pics",
+            "type": "errors",
+            "attributes": {
+                "message": "Invalid map ID 255: valid range is 0-247"
+            }
+        }
+    });
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::NotFound);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(
-        response.body_string(),
-        Some(
-            r#"{"data":{"id":"error_map_pics","type":"errors","attributes":{"message":"Invalid map ID 255: valid range is 0-247"}}}"#
-                .to_string()
-        )
-    );
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});

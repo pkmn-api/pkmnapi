@@ -17,11 +17,7 @@ pub fn get_pokemon_logo_png<'a>(
     _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Response<'a>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let pokemong_logo = match db.get_pokemon_logo_img() {
@@ -62,11 +58,7 @@ pub fn get_pokemon_logo_jpeg<'a>(
     _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Response<'a>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let pokemong_logo = match db.get_pokemon_logo_img() {
@@ -109,20 +101,9 @@ pub fn post_pokemon_logo_png<'a>(
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, connection) = utils::get_db(&sql, &access_token)?;
-
-    let raw_data = {
-        let mut raw_data = Vec::new();
-
-        data.stream_to(&mut raw_data).unwrap();
-
-        raw_data
-    };
+    let raw_data = utils::get_data_raw(data);
 
     let img = match Img::from_png(raw_data) {
         Ok(img) => img,
@@ -144,22 +125,14 @@ pub fn post_pokemon_logo_png<'a>(
         }
     };
 
-    let patch_description = match patch_description {
-        Ok(patch_description) => patch_description.into_inner(),
-        Err(_) => None,
-    };
-
-    if let Err(e) = sql.insert_rom_patch(
-        &connection,
-        &access_token,
-        &patch.to_raw(),
+    utils::insert_rom_patch(
+        sql,
+        connection,
+        access_token,
+        patch,
         patch_description,
-    ) {
-        return Err(NotFoundError::new(
-            BaseErrorResponseId::error_pokemon_pics,
-            Some(e.to_string()),
-        ));
-    }
+        BaseErrorResponseId::error_pokemon_logo_imgs,
+    )?;
 
     Ok(status::Accepted(Some(json!({}))))
 }
@@ -172,20 +145,9 @@ pub fn post_pokemon_logo_jpeg<'a>(
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, connection) = utils::get_db(&sql, &access_token)?;
-
-    let raw_data = {
-        let mut raw_data = Vec::new();
-
-        data.stream_to(&mut raw_data).unwrap();
-
-        raw_data
-    };
+    let raw_data = utils::get_data_raw(data);
 
     let img = match Img::from_jpeg(raw_data) {
         Ok(img) => img,
@@ -207,22 +169,14 @@ pub fn post_pokemon_logo_jpeg<'a>(
         }
     };
 
-    let patch_description = match patch_description {
-        Ok(patch_description) => patch_description.into_inner(),
-        Err(_) => None,
-    };
-
-    if let Err(e) = sql.insert_rom_patch(
-        &connection,
-        &access_token,
-        &patch.to_raw(),
+    utils::insert_rom_patch(
+        sql,
+        connection,
+        access_token,
+        patch,
         patch_description,
-    ) {
-        return Err(NotFoundError::new(
-            BaseErrorResponseId::error_pokemon_pics,
-            Some(e.to_string()),
-        ));
-    }
+        BaseErrorResponseId::error_pokemon_logo_imgs,
+    )?;
 
     Ok(status::Accepted(Some(json!({}))))
 }
@@ -233,11 +187,7 @@ pub fn get_town_map_png<'a>(
     _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Response<'a>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let pokemong_logo = match db.get_town_map_img() {
@@ -278,11 +228,7 @@ pub fn get_town_map_jpeg<'a>(
     _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Response<'a>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let pokemong_logo = match db.get_town_map_img() {

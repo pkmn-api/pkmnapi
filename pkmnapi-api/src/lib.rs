@@ -128,10 +128,7 @@ impl Pkmnapi {
                 routes::errors::internal_server_error
             ])
             .attach(AdHoc::on_response("Update Server Name", |_, res| {
-                res.set_raw_header(
-                    "Server",
-                    concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION")),
-                );
+                res.set_raw_header("Server", concat!("pkmnapi/", env!("CARGO_PKG_VERSION")));
             }))
             .attach(cors)
     }

@@ -3,7 +3,6 @@ use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
-use std::collections::HashMap;
 
 use crate::guards::*;
 use crate::requests::map_pokemon::*;
@@ -18,11 +17,7 @@ pub fn get_map_pokemon(
     access_token: Result<AccessToken, AccessTokenError>,
     map_id: u8,
 ) -> Result<Json<MapPokemonResponse>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let map_pokemon = match db.get_map_pokemon(&map_id) {
@@ -35,31 +30,14 @@ pub fn get_map_pokemon(
         }
     };
 
-    let mut pokemon_names: HashMap<u8, PokemonName> = HashMap::new();
-
-    if let Err(e) = map_pokemon
+    let pokedex_ids = map_pokemon
         .grass
         .pokemon
         .iter()
-        .map(|pokemon| {
-            let pokemon_name = match db.get_pokemon_name(&pokemon.pokedex_id) {
-                Ok(pokemon_name) => pokemon_name,
-                Err(e) => {
-                    return Err(NotFoundError::new(
-                        BaseErrorResponseId::error_map_pokemon,
-                        Some(e.to_string()),
-                    ))
-                }
-            };
-
-            pokemon_names.insert(pokemon.pokedex_id, pokemon_name);
-
-            Ok(())
-        })
-        .collect::<Result<Vec<_>, ResponseError>>()
-    {
-        return Err(e);
-    }
+        .map(|pokemon| pokemon.pokedex_id)
+        .collect();
+    let pokemon_names =
+        utils::get_pokemon_names(&db, &pokedex_ids, BaseErrorResponseId::error_map_pokemon)?;
 
     let response = MapPokemonResponse::new(&map_id, &map_pokemon, pokemon_names);
 
@@ -75,27 +53,8 @@ pub fn post_map_pokemon(
     data: Result<Json<MapPokemonRequest>, JsonError>,
     map_id: u8,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
-    let data = match data {
-        Ok(data) => data.into_inner(),
-        Err(JsonError::Parse(_, e)) => {
-            return Err(BadRequestError::new(
-                BaseErrorResponseId::error_map_pokemon_invalid,
-                Some(e.to_string()),
-            ));
-        }
-        _ => {
-            return Err(BadRequestError::new(
-                BaseErrorResponseId::error_map_pokemon_invalid,
-                Some("An unknown error occurred".to_owned()),
-            ));
-        }
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
+    let data = utils::get_data(data, BaseErrorResponseId::error_map_pokemon_invalid)?;
     let (db, connection) = utils::get_db(&sql, &access_token)?;
 
     let map_pokemon = MapPokemon {
@@ -113,22 +72,14 @@ pub fn post_map_pokemon(
         }
     };
 
-    let patch_description = match patch_description {
-        Ok(patch_description) => patch_description.into_inner(),
-        Err(_) => None,
-    };
-
-    if let Err(e) = sql.insert_rom_patch(
-        &connection,
-        &access_token,
-        &patch.to_raw(),
+    utils::insert_rom_patch(
+        sql,
+        connection,
+        access_token,
+        patch,
         patch_description,
-    ) {
-        return Err(NotFoundError::new(
-            BaseErrorResponseId::error_map_pokemon,
-            Some(e.to_string()),
-        ));
-    }
+        BaseErrorResponseId::error_map_pokemon,
+    )?;
 
     Ok(status::Accepted(Some(json!({}))))
 }

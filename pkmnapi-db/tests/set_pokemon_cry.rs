@@ -4,7 +4,15 @@ use pkmnapi_db::patch::*;
 mod common;
 
 macro_rules! set_pokemon_cry_test {
-    ($test_name: ident, $pokedex_id: expr, $base: expr, $pitch: expr, $length: expr, $patch_offset: expr, $patch_data: expr) => {
+    (
+        $test_name:ident,
+        $pokedex_id:expr,
+        $base:expr,
+        $pitch:expr,
+        $length:expr,
+        $patch_offset:expr,
+        $patch_data:expr
+    ) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

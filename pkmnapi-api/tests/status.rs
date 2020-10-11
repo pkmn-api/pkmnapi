@@ -1,18 +1,19 @@
-use rocket::http::{ContentType, Status};
+use rocket::http::Status;
 
 mod common;
 
-#[test]
-fn status_ok() {
-    let client = common::setup();
-
+test!(status_ok, (client) {
     let request = client.get("/status");
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    assert_eq!(response_body, "OK");
     assert_eq!(response.status(), Status::Ok);
-    assert_eq!(response.content_type(), Some(ContentType::Plain));
-    assert_eq!(response.body_string(), Some("OK".to_owned()));
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Type", "text/plain; charset=utf-8"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});

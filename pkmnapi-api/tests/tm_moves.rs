@@ -1,144 +1,220 @@
 use rocket::http::{ContentType, Status};
+use serde_json::json;
 
 mod common;
 
-#[test]
-fn get_tm_move_200() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
-
+test!(get_tm_move_200, (client, access_token) {
     let request = client
         .get("/v1/tms/moves/1")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({
+        "data": {
+            "id": "1",
+            "type": "tm_moves",
+            "attributes": {
+                "move": {
+                    "id": "5",
+                    "type": "move_names",
+                    "attributes": {
+                        "name": "MEGA PUNCH"
+                    },
+                    "links": {
+                        "self": "http://localhost:8080/v1/moves/names/5"
+                    }
+                }
+            },
+            "links": {
+                "self": "http://localhost:8080/v1/tms/moves/1"
+            }
+        },
+        "links": {
+            "self": "http://localhost:8080/v1/tms/moves/1"
+        }
+    });
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::Ok);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(
-        response.body_string(),
-        Some(
-            r#"{"data":{"id":"1","type":"tm_moves","attributes":{"move":{"id":"5","type":"move_names","attributes":{"name":"MEGA PUNCH"},"links":{"self":"http://localhost:8080/v1/moves/names/5"}}},"links":{"self":"http://localhost:8080/v1/tms/moves/1"}},"links":{"self":"http://localhost:8080/v1/tms/moves/1"}}"#
-                .to_owned()
-        )
-    );
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
-#[test]
-fn get_tm_move_401() {
-    let client = common::setup();
-
+test!(get_tm_move_401, (client) {
     let request = client.get("/v1/tms/moves/1");
 
     let mut response = request.dispatch();
 
-    common::assert_unauthorized(&mut response);
-    common::teardown(&client);
-}
+    common::assert_unauthorized(&mut response)
+});
 
-#[test]
-fn get_tm_move_404() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
-
+test!(get_tm_move_404, (client, access_token) {
     let request = client
         .get("/v1/tms/moves/200")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({
+        "data": {
+            "id": "error_tm_moves",
+            "type": "errors",
+            "attributes": {
+                "message": "Invalid TM ID 200: valid range is 1-50"
+            }
+        }
+    });
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::NotFound);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(
-        response.body_string(),
-        Some(
-            r#"{"data":{"id":"error_tm_moves","type":"errors","attributes":{"message":"Invalid TM ID 200: valid range is 1-50"}}}"#
-                .to_owned()
-        )
-    );
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
-#[test]
-fn post_tm_move_202() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
+test!(post_tm_move_202, (client, access_token) {
+    let request_body = json!({
+        "data": {
+            "type": "tm_moves",
+            "attributes": {
+                "move": {
+                    "id": "1"
+                }
+            }
+        }
+    });
 
     let request = client
         .post("/v1/tms/moves/1")
-        .body(r#"{"data":{"type":"tm_moves","attributes":{"move":{"id":"1"}}}}"#)
+        .body(request_body.to_string())
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({});
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::Accepted);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(response.body_string(), Some("{}".to_owned()));
+
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ]).unwrap();
 
     let request = client
         .get("/v1/tms/moves/1")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({
+        "data": {
+            "id": "1",
+            "type": "tm_moves",
+            "attributes": {
+                "move": {
+                    "id": "1",
+                    "type": "move_names",
+                    "attributes": {
+                        "name": "POUND"
+                    },
+                    "links": {
+                        "self": "http://localhost:8080/v1/moves/names/1"
+                    }
+                }
+            },
+            "links": {
+                "self": "http://localhost:8080/v1/tms/moves/1"
+            }
+        },
+        "links": {
+            "self": "http://localhost:8080/v1/tms/moves/1"
+        }
+    });
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::Ok);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(
-        response.body_string(),
-        Some(
-            r#"{"data":{"id":"1","type":"tm_moves","attributes":{"move":{"id":"1","type":"move_names","attributes":{"name":"POUND"},"links":{"self":"http://localhost:8080/v1/moves/names/1"}}},"links":{"self":"http://localhost:8080/v1/tms/moves/1"}},"links":{"self":"http://localhost:8080/v1/tms/moves/1"}}"#
-                .to_owned()
-        )
-    );
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
-#[test]
-fn post_tm_move_401() {
-    let client = common::setup();
+test!(post_tm_move_401, (client) {
+    let request_body = json!({
+        "data": {
+            "type": "tm_moves",
+            "attributes": {
+                "move": {
+                    "id": "1"
+                }
+            }
+        }
+    });
 
     let request = client
         .post("/v1/tms/moves/1")
-        .body(r#"{"data":{"type":"tm_moves","attributes":{"name":"TESTS"}}}"#)
+        .body(request_body.to_string())
         .header(ContentType::JSON);
 
     let mut response = request.dispatch();
 
-    common::assert_unauthorized(&mut response);
-    common::teardown(&client);
-}
+    common::assert_unauthorized(&mut response)
+});
 
-#[test]
-fn post_tm_move_404() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
+test!(post_tm_move_404, (client, access_token) {
+    let request_body = json!({
+        "data": {
+            "type": "tm_moves",
+            "attributes": {
+                "move": {
+                    "id": "1"
+                }
+            }
+        }
+    });
 
     let request = client
         .post("/v1/tms/moves/200")
-        .body(r#"{"data":{"type":"tm_moves","attributes":{"move":{"id":"1"}}}}"#)
+        .body(request_body.to_string())
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({
+        "data": {
+            "id": "error_tm_moves",
+            "type": "errors",
+            "attributes": {
+                "message": "Invalid TM ID 200: valid range is 1-50"
+            }
+        }
+    });
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::NotFound);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(
-        response.body_string(),
-        Some(
-            r#"{"data":{"id":"error_tm_moves","type":"errors","attributes":{"message":"Invalid TM ID 200: valid range is 1-50"}}}"#
-                .to_owned()
-        )
-    );
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});

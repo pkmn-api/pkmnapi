@@ -25,11 +25,7 @@ pub fn get_pokemon_pic_png<'a>(
     face: Option<String>,
     mirror: Option<bool>,
 ) -> Result<Response<'a>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let pic = match db.get_pokemon_pic(&pokedex_id, &PokemonPicFace::from(face)) {
@@ -87,11 +83,7 @@ pub fn get_pokemon_pic_jpeg<'a>(
     face: Option<String>,
     mirror: Option<bool>,
 ) -> Result<Response<'a>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let pic = match db.get_pokemon_pic(&pokedex_id, &PokemonPicFace::from(face)) {
@@ -153,20 +145,9 @@ pub fn post_pokemon_pic_png<'a>(
     method: Option<u8>,
     primary: Option<u8>,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, connection) = utils::get_db(&sql, &access_token)?;
-
-    let raw_data = {
-        let mut raw_data = Vec::new();
-
-        data.stream_to(&mut raw_data).unwrap();
-
-        raw_data
-    };
+    let raw_data = utils::get_data_raw(data);
 
     let pic = match Pic::from_png(raw_data) {
         Ok(pic) => pic,
@@ -195,22 +176,14 @@ pub fn post_pokemon_pic_png<'a>(
         }
     };
 
-    let patch_description = match patch_description {
-        Ok(patch_description) => patch_description.into_inner(),
-        Err(_) => None,
-    };
-
-    if let Err(e) = sql.insert_rom_patch(
-        &connection,
-        &access_token,
-        &patch.to_raw(),
+    utils::insert_rom_patch(
+        sql,
+        connection,
+        access_token,
+        patch,
         patch_description,
-    ) {
-        return Err(NotFoundError::new(
-            BaseErrorResponseId::error_pokemon_pics,
-            Some(e.to_string()),
-        ));
-    }
+        BaseErrorResponseId::error_pokemon_pics,
+    )?;
 
     Ok(status::Accepted(Some(json!({}))))
 }
@@ -232,20 +205,9 @@ pub fn post_pokemon_pic_jpeg<'a>(
     method: Option<u8>,
     primary: Option<u8>,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, connection) = utils::get_db(&sql, &access_token)?;
-
-    let raw_data = {
-        let mut raw_data = Vec::new();
-
-        data.stream_to(&mut raw_data).unwrap();
-
-        raw_data
-    };
+    let raw_data = utils::get_data_raw(data);
 
     let pic = match Pic::from_jpeg(raw_data) {
         Ok(pic) => pic,
@@ -274,22 +236,14 @@ pub fn post_pokemon_pic_jpeg<'a>(
         }
     };
 
-    let patch_description = match patch_description {
-        Ok(patch_description) => patch_description.into_inner(),
-        Err(_) => None,
-    };
-
-    if let Err(e) = sql.insert_rom_patch(
-        &connection,
-        &access_token,
-        &patch.to_raw(),
+    utils::insert_rom_patch(
+        sql,
+        connection,
+        access_token,
+        patch,
         patch_description,
-    ) {
-        return Err(NotFoundError::new(
-            BaseErrorResponseId::error_pokemon_pics,
-            Some(e.to_string()),
-        ));
-    }
+        BaseErrorResponseId::error_pokemon_pics,
+    )?;
 
     Ok(status::Accepted(Some(json!({}))))
 }

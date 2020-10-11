@@ -3,7 +3,15 @@ use pkmnapi_db::types::*;
 mod common;
 
 macro_rules! get_move_stats_test {
-    ($test_name: ident, $move_id: expr, $effect: expr, $power: expr, $type_id: expr, $accuracy: expr, $pp: expr) => {
+    (
+        $test_name:ident,
+        $move_id:expr,
+        $effect:expr,
+        $power:expr,
+        $type_id:expr,
+        $accuracy:expr,
+        $pp:expr
+    ) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

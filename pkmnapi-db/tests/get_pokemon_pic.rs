@@ -3,7 +3,7 @@ use pkmnapi_db::types::*;
 mod common;
 
 macro_rules! get_pokemon_pic_test {
-    ($test_name: ident, $pokedex_id: expr, $pic_face: expr, $pic_data: expr) => {
+    ($test_name:ident, $pokedex_id:expr, $pic_face:expr, $pic_data:expr) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

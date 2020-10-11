@@ -4,7 +4,17 @@ use pkmnapi_db::types::*;
 mod common;
 
 macro_rules! set_move_stats_test {
-    ($test_name: ident, $move_id: expr, $effect: expr, $power: expr, $type_id: expr, $accuracy: expr, $pp: expr, $patch_offset: expr, $patch_data: expr) => {
+    (
+        $test_name:ident,
+        $move_id:expr,
+        $effect:expr,
+        $power:expr,
+        $type_id:expr,
+        $accuracy:expr,
+        $pp:expr,
+        $patch_offset:expr,
+        $patch_data:expr
+    ) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

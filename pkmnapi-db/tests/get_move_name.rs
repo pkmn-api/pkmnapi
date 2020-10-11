@@ -4,7 +4,7 @@ use pkmnapi_db::types::*;
 mod common;
 
 macro_rules! get_move_name_test {
-    ($test_name: ident, $move_id: expr, $move_name: expr) => {
+    ($test_name:ident, $move_id:expr, $move_name:expr) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

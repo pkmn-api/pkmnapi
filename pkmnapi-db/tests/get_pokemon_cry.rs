@@ -3,7 +3,7 @@ use pkmnapi_db::cry::*;
 mod common;
 
 macro_rules! get_pokemon_cry_test {
-    ($test_name: ident, $pokedex_id: expr, $base: expr, $pitch: expr, $length: expr) => {
+    ($test_name:ident, $pokedex_id:expr, $base:expr, $pitch:expr, $length:expr) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

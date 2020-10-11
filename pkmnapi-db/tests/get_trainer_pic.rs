@@ -1,7 +1,7 @@
 mod common;
 
 macro_rules! get_trainer_pic_test {
-    ($test_name: ident, $trainer_id: expr, $pic_data: expr) => {
+    ($test_name:ident, $trainer_id:expr, $pic_data:expr) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

@@ -4,7 +4,20 @@ use pkmnapi_db::types::*;
 mod common;
 
 macro_rules! set_pokemon_stats_test {
-    ($test_name: ident, $pokedex_id: expr, $base_hp: expr, $base_attack: expr, $base_defence: expr, $base_speed: expr, $base_special: expr, $type_ids: expr, $catch_rate: expr, $base_exp_yield: expr, $patch_offset: expr, $patch_data: expr) => {
+    (
+        $test_name:ident,
+        $pokedex_id:expr,
+        $base_hp:expr,
+        $base_attack:expr,
+        $base_defence:expr,
+        $base_speed:expr,
+        $base_special:expr,
+        $type_ids:expr,
+        $catch_rate:expr,
+        $base_exp_yield:expr,
+        $patch_offset:expr,
+        $patch_data:expr
+    ) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

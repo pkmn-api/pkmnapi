@@ -3,7 +3,7 @@ use pkmnapi_db::types::*;
 mod common;
 
 macro_rules! get_tm_price_test {
-    ($test_name: ident, $tm_id: expr, $tm_price: expr) => {
+    ($test_name:ident, $tm_id:expr, $tm_price:expr) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

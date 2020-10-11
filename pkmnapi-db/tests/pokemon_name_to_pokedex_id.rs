@@ -4,7 +4,7 @@ use pkmnapi_db::types::*;
 mod common;
 
 macro_rules! pokemon_name_to_pokedex_id_test {
-    ($test_name: ident, $pokemon_name: expr, $pokedex_id: expr) => {
+    ($test_name:ident, $pokemon_name:expr, $pokedex_id:expr) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

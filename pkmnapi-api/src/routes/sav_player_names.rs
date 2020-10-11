@@ -17,11 +17,7 @@ pub fn get_sav_player_name(
     _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Json<SavPlayerNameResponse>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let sav = match db.sav {
@@ -54,27 +50,8 @@ pub fn post_sav_player_name(
     patch_description: Result<PatchDescription, PatchDescriptionError>,
     data: Result<Json<SavPlayerNameRequest>, JsonError>,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
-    let data = match data {
-        Ok(data) => data.into_inner(),
-        Err(JsonError::Parse(_, e)) => {
-            return Err(BadRequestError::new(
-                BaseErrorResponseId::error_sav_player_names_invalid,
-                Some(e.to_string()),
-            ));
-        }
-        _ => {
-            return Err(BadRequestError::new(
-                BaseErrorResponseId::error_sav_player_names_invalid,
-                Some("An unknown error occurred".to_owned()),
-            ));
-        }
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
+    let data = utils::get_data(data, BaseErrorResponseId::error_sav_player_names_invalid)?;
     let (db, connection) = utils::get_db(&sql, &access_token)?;
 
     let sav = match db.sav {
@@ -96,10 +73,7 @@ pub fn post_sav_player_name(
         }
     };
 
-    let patch_description = match patch_description {
-        Ok(patch_description) => patch_description.into_inner(),
-        Err(_) => None,
-    };
+    let patch_description = utils::get_patch_description(patch_description);
 
     if let Err(e) = sql.insert_sav_patch(
         &connection,

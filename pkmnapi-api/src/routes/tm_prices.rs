@@ -17,11 +17,7 @@ pub fn get_tm_price(
     access_token: Result<AccessToken, AccessTokenError>,
     tm_id: u8,
 ) -> Result<Json<TMPriceResponse>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let tm_price = match db.get_tm_price(&tm_id) {
@@ -48,27 +44,8 @@ pub fn post_tm_price(
     data: Result<Json<TMPriceRequest>, JsonError>,
     tm_id: u8,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
-    let data = match data {
-        Ok(data) => data.into_inner(),
-        Err(JsonError::Parse(_, e)) => {
-            return Err(BadRequestError::new(
-                BaseErrorResponseId::error_tm_prices_invalid,
-                Some(e.to_string()),
-            ));
-        }
-        _ => {
-            return Err(BadRequestError::new(
-                BaseErrorResponseId::error_tm_prices_invalid,
-                Some("An unknown error occurred".to_owned()),
-            ));
-        }
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
+    let data = utils::get_data(data, BaseErrorResponseId::error_tm_prices_invalid)?;
     let (db, connection) = utils::get_db(&sql, &access_token)?;
 
     let tm_price = TMPrice {
@@ -85,22 +62,14 @@ pub fn post_tm_price(
         }
     };
 
-    let patch_description = match patch_description {
-        Ok(patch_description) => patch_description.into_inner(),
-        Err(_) => None,
-    };
-
-    if let Err(e) = sql.insert_rom_patch(
-        &connection,
-        &access_token,
-        &patch.to_raw(),
+    utils::insert_rom_patch(
+        sql,
+        connection,
+        access_token,
+        patch,
         patch_description,
-    ) {
-        return Err(NotFoundError::new(
-            BaseErrorResponseId::error_tm_prices,
-            Some(e.to_string()),
-        ));
-    }
+        BaseErrorResponseId::error_tm_prices,
+    )?;
 
     Ok(status::Accepted(Some(json!({}))))
 }

@@ -5,7 +5,15 @@ use pkmnapi_db::types::*;
 mod common;
 
 macro_rules! set_pokemon_pic_test {
-    ($test_name: ident, $pokedex_id: expr, $pic_face: expr, $png_data: expr, $encoding_method: expr, $patch_offset: expr, $patch_data: expr) => {
+    (
+        $test_name:ident,
+        $pokedex_id:expr,
+        $pic_face:expr,
+        $png_data:expr,
+        $encoding_method:expr,
+        $patch_offset:expr,
+        $patch_data:expr
+    ) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

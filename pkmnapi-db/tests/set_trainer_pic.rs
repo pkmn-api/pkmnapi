@@ -4,7 +4,14 @@ use pkmnapi_db::pic::*;
 mod common;
 
 macro_rules! set_trainer_pic_test {
-    ($test_name: ident, $trainer_id: expr, $png_data: expr, $encoding_method: expr, $patch_offset: expr, $patch_data: expr) => {
+    (
+        $test_name:ident,
+        $trainer_id:expr,
+        $png_data:expr,
+        $encoding_method:expr,
+        $patch_offset:expr,
+        $patch_data:expr
+    ) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

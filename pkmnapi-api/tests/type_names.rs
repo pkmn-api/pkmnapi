@@ -1,144 +1,196 @@
 use rocket::http::{ContentType, Status};
+use serde_json::json;
 
 mod common;
 
-#[test]
-fn get_type_name_200() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
-
+test!(get_type_name_200, (client, access_token) {
     let request = client
         .get("/v1/types/names/0")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({
+        "data": {
+            "id": "0",
+            "type": "type_names",
+            "attributes": {
+                "name": "NORMAL"
+            },
+            "links": {
+                "self": "http://localhost:8080/v1/types/names/0"
+            }
+        },
+        "links": {
+            "self": "http://localhost:8080/v1/types/names/0"
+        }
+    });
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::Ok);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(
-        response.body_string(),
-        Some(
-            r#"{"data":{"id":"0","type":"type_names","attributes":{"name":"NORMAL"},"links":{"self":"http://localhost:8080/v1/types/names/0"}},"links":{"self":"http://localhost:8080/v1/types/names/0"}}"#
-                .to_owned()
-        )
-    );
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
-#[test]
-fn get_type_name_401() {
-    let client = common::setup();
-
+test!(get_type_name_401, (client) {
     let request = client.get("/v1/types/names/0");
 
     let mut response = request.dispatch();
 
-    common::assert_unauthorized(&mut response);
-    common::teardown(&client);
-}
+    common::assert_unauthorized(&mut response)
+});
 
-#[test]
-fn get_type_name_404() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
-
+test!(get_type_name_404, (client, access_token) {
     let request = client
         .get("/v1/types/names/100")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({
+        "data": {
+            "id": "error_type_names",
+            "type": "errors",
+            "attributes": {
+                "message": "Invalid type ID 100: valid range is 0-26"
+            }
+        }
+    });
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::NotFound);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(
-        response.body_string(),
-        Some(
-            r#"{"data":{"id":"error_type_names","type":"errors","attributes":{"message":"Invalid type ID 100: valid range is 0-26"}}}"#
-                .to_owned()
-        )
-    );
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
-#[test]
-fn post_type_name_202() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
+test!(post_type_name_202, (client, access_token) {
+    let request_body = json!({
+        "data": {
+            "type": "type_names",
+            "attributes": {
+                "name": "BORING"
+            }
+        }
+    });
 
     let request = client
         .post("/v1/types/names/0")
-        .body(r#"{"data":{"type":"type_names","attributes":{"name":"BORING"}}}"#)
+        .body(request_body.to_string())
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({});
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::Accepted);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(response.body_string(), Some("{}".to_owned()));
+
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ]).unwrap();
 
     let request = client
         .get("/v1/types/names/0")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({
+        "data": {
+            "id": "0",
+            "type": "type_names",
+            "attributes": {
+                "name": "BORING"
+            },
+            "links": {
+                "self": "http://localhost:8080/v1/types/names/0"
+            }
+        },
+        "links": {
+            "self": "http://localhost:8080/v1/types/names/0"
+        }
+    });
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::Ok);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(
-        response.body_string(),
-        Some(
-            r#"{"data":{"id":"0","type":"type_names","attributes":{"name":"BORING"},"links":{"self":"http://localhost:8080/v1/types/names/0"}},"links":{"self":"http://localhost:8080/v1/types/names/0"}}"#
-                .to_owned()
-        )
-    );
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
-#[test]
-fn post_type_name_401() {
-    let client = common::setup();
+test!(post_type_name_401, (client) {
+    let request_body = json!({
+        "data": {
+            "type": "type_names",
+            "attributes": {
+                "name": "BORING"
+            }
+        }
+    });
 
     let request = client
         .post("/v1/types/names/0")
-        .body(r#"{"data":{"type":"type_names","attributes":{"name":"BORING"}}}"#)
+        .body(request_body.to_string())
         .header(ContentType::JSON);
 
     let mut response = request.dispatch();
 
-    common::assert_unauthorized(&mut response);
-    common::teardown(&client);
-}
+    common::assert_unauthorized(&mut response)
+});
 
-#[test]
-fn post_type_name_404() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
+test!(post_type_name_404, (client, access_token) {
+    let request_body = json!({
+        "data": {
+            "type": "type_names",
+            "attributes": {
+                "name": "BORING"
+            }
+        }
+    });
 
     let request = client
         .post("/v1/types/names/100")
-        .body(r#"{"data":{"type":"type_names","attributes":{"name":"BORING"}}}"#)
+        .body(request_body.to_string())
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({
+        "data": {
+            "id": "error_type_names",
+            "type": "errors",
+            "attributes": {
+                "message": "Invalid type ID 100: valid range is 0-26"
+            }
+        }
+    });
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::NotFound);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(
-        response.body_string(),
-        Some(
-            r#"{"data":{"id":"error_type_names","type":"errors","attributes":{"message":"Invalid type ID 100: valid range is 0-26"}}}"#
-                .to_owned()
-        )
-    );
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});

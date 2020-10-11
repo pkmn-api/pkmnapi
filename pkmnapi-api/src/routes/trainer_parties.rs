@@ -1,9 +1,7 @@
-use pkmnapi_db::types::PokemonName;
 use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
-use std::collections::HashMap;
 
 use crate::guards::*;
 use crate::requests::trainer_parties::*;
@@ -18,11 +16,7 @@ pub fn get_trainer_parties(
     access_token: Result<AccessToken, AccessTokenError>,
     trainer_id: u8,
 ) -> Result<Json<TrainerPartiesResponse>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let trainer_parties = match db.get_trainer_parties(&trainer_id) {
@@ -35,9 +29,7 @@ pub fn get_trainer_parties(
         }
     };
 
-    let mut pokemon_names: HashMap<u8, PokemonName> = HashMap::new();
-
-    if let Err(e) = trainer_parties
+    let pokedex_ids = trainer_parties
         .iter()
         .map(|trainer_party| {
             trainer_party
@@ -46,25 +38,12 @@ pub fn get_trainer_parties(
                 .map(|party_pokemon| party_pokemon.pokedex_id)
         })
         .flatten()
-        .map(|pokedex_id| {
-            let pokemon_name = match db.get_pokemon_name(&pokedex_id) {
-                Ok(pokemon_name) => pokemon_name,
-                Err(e) => {
-                    return Err(NotFoundError::new(
-                        BaseErrorResponseId::error_trainer_parties,
-                        Some(e.to_string()),
-                    ))
-                }
-            };
-
-            pokemon_names.insert(pokedex_id, pokemon_name);
-
-            Ok(())
-        })
-        .collect::<Result<Vec<_>, ResponseError>>()
-    {
-        return Err(e);
-    }
+        .collect();
+    let pokemon_names = utils::get_pokemon_names(
+        &db,
+        &pokedex_ids,
+        BaseErrorResponseId::error_trainer_parties,
+    )?;
 
     let response = TrainerPartiesResponse::new(&trainer_id, &trainer_parties, pokemon_names);
 
@@ -84,27 +63,8 @@ pub fn post_trainer_parties(
     data: Result<Json<TrainerPartiesRequest>, JsonError>,
     trainer_id: u8,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
-    let data = match data {
-        Ok(data) => data.into_inner(),
-        Err(JsonError::Parse(_, e)) => {
-            return Err(BadRequestError::new(
-                BaseErrorResponseId::error_trainer_parties_invalid,
-                Some(e.to_string()),
-            ));
-        }
-        _ => {
-            return Err(BadRequestError::new(
-                BaseErrorResponseId::error_trainer_parties_invalid,
-                Some("An unknown error occurred".to_owned()),
-            ));
-        }
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
+    let data = utils::get_data(data, BaseErrorResponseId::error_trainer_parties_invalid)?;
     let (db, connection) = utils::get_db(&sql, &access_token)?;
 
     let trainer_parties = data.get_parties();
@@ -119,22 +79,14 @@ pub fn post_trainer_parties(
         }
     };
 
-    let patch_description = match patch_description {
-        Ok(patch_description) => patch_description.into_inner(),
-        Err(_) => None,
-    };
-
-    if let Err(e) = sql.insert_rom_patch(
-        &connection,
-        &access_token,
-        &patch.to_raw(),
+    utils::insert_rom_patch(
+        sql,
+        connection,
+        access_token,
+        patch,
         patch_description,
-    ) {
-        return Err(NotFoundError::new(
-            BaseErrorResponseId::error_trainer_parties,
-            Some(e.to_string()),
-        ));
-    }
+        BaseErrorResponseId::error_trainer_parties,
+    )?;
 
     Ok(status::Accepted(Some(json!({}))))
 }

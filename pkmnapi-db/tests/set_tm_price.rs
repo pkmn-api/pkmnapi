@@ -4,7 +4,7 @@ use pkmnapi_db::types::*;
 mod common;
 
 macro_rules! set_tm_price_test {
-    ($test_name: ident, $tm_id: expr, $price: expr, $patch_offset: expr, $patch_data: expr) => {
+    ($test_name:ident, $tm_id:expr, $price:expr, $patch_offset:expr, $patch_data:expr) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

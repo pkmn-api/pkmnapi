@@ -17,10 +17,7 @@ pub fn get_rom_patches(
     _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
 ) -> Result<Json<RomPatchesResponse>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
+    let access_token = utils::get_access_token(access_token)?;
 
     let connection = sql.get_connection().unwrap();
     let patches = match sql.select_rom_patches_by_access_token(&connection, &access_token) {
@@ -40,11 +37,7 @@ pub fn get_rom_patches_raw<'a>(
     access_token: Result<AccessToken, AccessTokenError>,
     checksum: Option<bool>,
 ) -> Result<Response<'a>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, connection) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let patches = match sql.select_rom_patches_by_access_token(&connection, &access_token) {
@@ -88,10 +81,7 @@ pub fn get_rom_patch<'a>(
     access_token: Result<AccessToken, AccessTokenError>,
     patch_id: String,
 ) -> Result<Response<'a>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
+    let access_token = utils::get_access_token(access_token)?;
 
     let connection = sql.get_connection().unwrap();
     let patch = match sql.select_rom_patch_by_id(&connection, &access_token, &patch_id) {
@@ -125,16 +115,8 @@ pub fn delete_rom_patch(
     if_match: Result<IfMatch, IfMatchError>,
     patch_id: String,
 ) -> Result<status::NoContent, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
-    let etag = match if_match {
-        Ok(if_match) => if_match.into_inner(),
-        Err(_) => return Err(ETagErrorMissing::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
+    let etag = utils::get_etag(if_match)?;
     let connection = sql.get_connection().unwrap();
 
     match sql.delete_rom_patch_by_id(&connection, &access_token, &patch_id, &etag) {

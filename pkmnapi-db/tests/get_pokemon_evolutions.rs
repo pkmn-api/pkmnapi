@@ -3,7 +3,7 @@ use pkmnapi_db::types::*;
 mod common;
 
 macro_rules! get_pokemon_evolutions_test {
-    ($test_name: ident, $pokedex_id: expr, $pokemon_evolutions: expr) => {
+    ($test_name:ident, $pokedex_id:expr, $pokemon_evolutions:expr) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

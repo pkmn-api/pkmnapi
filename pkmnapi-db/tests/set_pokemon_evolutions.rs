@@ -4,7 +4,13 @@ use pkmnapi_db::types::*;
 mod common;
 
 macro_rules! set_pokemon_evolutions_test {
-    ($test_name: ident, $pokedex_id: expr, $pokemon_evolutions: expr, $patch_offset: expr, $patch_data: expr) => {
+    (
+        $test_name:ident,
+        $pokedex_id:expr,
+        $pokemon_evolutions:expr,
+        $patch_offset:expr,
+        $patch_data:expr
+    ) => {
         #[test]
         #[ignore]
         #[allow(non_snake_case)]

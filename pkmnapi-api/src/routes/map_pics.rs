@@ -15,11 +15,7 @@ pub fn get_map_pic_png<'a>(
     access_token: Result<AccessToken, AccessTokenError>,
     map_id: u8,
 ) -> Result<Response<'a>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let map = match db.get_map_pic(&map_id) {
@@ -61,11 +57,7 @@ pub fn get_map_pic_jpeg<'a>(
     access_token: Result<AccessToken, AccessTokenError>,
     map_id: u8,
 ) -> Result<Response<'a>, ResponseError> {
-    let access_token = match access_token {
-        Ok(access_token) => access_token.into_inner(),
-        Err(_) => return Err(AccessTokenErrorUnauthorized::new()),
-    };
-
+    let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
     let map = match db.get_map_pic(&map_id) {

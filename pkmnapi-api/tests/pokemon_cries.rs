@@ -1,170 +1,230 @@
 use rocket::http::{Accept, ContentType, Status};
+use serde_json::json;
+use std::fs;
 
 mod common;
 
-#[test]
-fn get_pokemon_cry_200() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
-
+test!(get_pokemon_cry_200, (client, access_token) {
     let request = client
         .get("/v1/pokemon/cries/1")
         .header(common::auth_header(&access_token))
         .header(Accept::JSON);
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({
+        "data": {
+            "id": "1",
+            "type": "pokemon_cries",
+            "attributes": {
+                "base": 15,
+                "pitch": 128,
+                "length": 1
+            },
+            "links": {
+                "self": "http://localhost:8080/v1/pokemon/cries/1"
+            }
+        },
+        "links": {
+            "self": "http://localhost:8080/v1/pokemon/cries/1"
+        }
+    });
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::Ok);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(
-        response.body_string(),
-        Some(
-            r#"{"data":{"id":"1","type":"pokemon_cries","attributes":{"base":15,"pitch":128,"length":1},"links":{"self":"http://localhost:8080/v1/pokemon/cries/1"}},"links":{"self":"http://localhost:8080/v1/pokemon/cries/1"}}"#
-                .to_owned()
-        )
-    );
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
-#[test]
-fn get_pokemon_cry_200_wav() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
-
+test!(get_pokemon_cry_200_wav, (client, access_token) {
     let request = client
         .get("/v1/pokemon/cries/1")
         .header(common::auth_header(&access_token))
         .header(Accept::WAV);
 
-    let response = request.dispatch();
+    let mut response = request.dispatch();
+    let response_body = response.body_bytes().unwrap();
+    let headers = response.headers();
 
+    let body = fs::read("tests/data/BULBASAUR.wav").unwrap();
+
+    assert_eq!(response_body, body);
     assert_eq!(response.status(), Status::Ok);
-    assert_eq!(response.content_type(), Some(ContentType::WAV));
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Disposition", "attachment; filename=\"BULBASAUR.wav\""),
+        ("Content-Type", "audio/wav"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
-#[test]
-fn get_pokemon_cry_401() {
-    let client = common::setup();
-
+test!(get_pokemon_cry_401, (client) {
     let request = client.get("/v1/pokemon/cries/1");
 
     let mut response = request.dispatch();
 
-    common::assert_unauthorized(&mut response);
-    common::teardown(&client);
-}
+    common::assert_unauthorized(&mut response)
+});
 
-#[test]
-fn get_pokemon_cry_404() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
-
+test!(get_pokemon_cry_404, (client, access_token) {
     let request = client
         .get("/v1/pokemon/cries/200")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({
+        "data": {
+            "id": "error_pokemon_cries",
+            "type": "errors",
+            "attributes": {
+                "message": "Invalid Pokédex ID: 200"
+            }
+        }
+    });
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::NotFound);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(
-        response.body_string(),
-        Some(
-            r#"{"data":{"id":"error_pokemon_cries","type":"errors","attributes":{"message":"Invalid Pokédex ID: 200"}}}"#
-                .to_owned()
-        )
-    );
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
-#[test]
-fn post_pokemon_cry_202() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
+test!(post_pokemon_cry_202, (client, access_token) {
+    let request_body = json!({
+        "data": {
+            "type": "pokemon_cries",
+            "attributes": {
+                "base": 13,
+                "pitch": 128,
+                "length": 10
+            }
+        }
+    });
 
     let request = client
         .post("/v1/pokemon/cries/1")
-        .body(
-            r#"{"data":{"type":"pokemon_cries","attributes":{"base":13,"pitch":128,"length":10}}}"#,
-        )
+        .body(request_body.to_string())
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({});
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::Accepted);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(response.body_string(), Some("{}".to_owned()));
+
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ]).unwrap();
 
     let request = client
         .get("/v1/pokemon/cries/1")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({
+        "data": {
+            "id": "1",
+            "type": "pokemon_cries",
+            "attributes": {
+                "base": 13,
+                "pitch": 128,
+                "length": 10
+            },
+            "links": {
+                "self": "http://localhost:8080/v1/pokemon/cries/1"
+            }
+        },
+        "links": {
+            "self": "http://localhost:8080/v1/pokemon/cries/1"
+        }
+    });
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::Ok);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(
-        response.body_string(),
-        Some(
-            r#"{"data":{"id":"1","type":"pokemon_cries","attributes":{"base":13,"pitch":128,"length":10},"links":{"self":"http://localhost:8080/v1/pokemon/cries/1"}},"links":{"self":"http://localhost:8080/v1/pokemon/cries/1"}}"#
-                .to_owned()
-        )
-    );
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
-#[test]
-fn post_pokemon_cry_401() {
-    let client = common::setup();
+test!(post_pokemon_cry_401, (client) {
+    let request_body = json!({
+        "data": {
+            "type": "pokemon_cries",
+            "attributes": {
+                "base": 13,
+                "pitch": 128,
+                "length": 10
+            }
+        }
+    });
 
     let request = client
         .post("/v1/pokemon/cries/1")
-        .body(
-            r#"{"data":{"type":"pokemon_cries","attributes":{"base":13,"pitch":128,"length":10}}}"#,
-        )
+        .body(request_body.to_string())
         .header(ContentType::JSON);
 
     let mut response = request.dispatch();
 
-    common::assert_unauthorized(&mut response);
-    common::teardown(&client);
-}
+    common::assert_unauthorized(&mut response)
+});
 
-#[test]
-fn post_pokemon_cry_404() {
-    let (client, access_token) = common::setup_with_access_token();
-
-    common::post_rom(&client, &access_token);
+test!(post_pokemon_cry_404, (client, access_token) {
+    let request_body = json!({
+        "data": {
+            "type": "pokemon_cries",
+            "attributes": {
+                "base": 13,
+                "pitch": 128,
+                "length": 10
+            }
+        }
+    });
 
     let request = client
         .post("/v1/pokemon/cries/200")
-        .body(
-            r#"{"data":{"type":"pokemon_cries","attributes":{"base":13,"pitch":128,"length":10}}}"#,
-        )
+        .body(request_body.to_string())
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
 
+    let body = json!({
+        "data": {
+            "id": "error_pokemon_cries",
+            "type": "errors",
+            "attributes": {
+                "message": "Invalid Pokédex ID: 200"
+            }
+        }
+    });
+
+    assert_eq!(response_body, body.to_string());
     assert_eq!(response.status(), Status::NotFound);
-    assert_eq!(response.content_type(), Some(ContentType::JSON));
-    assert_eq!(
-        response.body_string(),
-        Some(
-            r#"{"data":{"id":"error_pokemon_cries","type":"errors","attributes":{"message":"Invalid Pokédex ID: 200"}}}"#
-                .to_owned()
-        )
-    );
 
-    common::teardown(&client);
-}
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
