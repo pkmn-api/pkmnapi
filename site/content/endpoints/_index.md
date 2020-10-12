@@ -52,6 +52,13 @@ sort_by = "weight"
 | [GET /v1/moves/names/:move_id](@/endpoints/move_names.md#get-move-name)   | Gets a move name    |
 | [POST /v1/moves/names/:move_id](@/endpoints/move_names.md#post-move-name) | Updates a move name |
 
+### [Player Names](@/endpoints/player_names.md)
+
+| Endpoint                                                               | Description                  |
+|------------------------------------------------------------------------|------------------------------|
+| [GET /v1/player_names](@/endpoints/player_names.md#get-player-names)   | Gets default player names    |
+| [POST /v1/player_names](@/endpoints/player_names.md#post-player-names) | Updates default player names |
+
 ### [Pokédex Entries](@/endpoints/pokedex_entries.md)
 
 | Endpoint                                                                                  | Description             |

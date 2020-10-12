@@ -5,6 +5,7 @@ pub mod item_names;
 pub mod links;
 pub mod map_pokemon;
 pub mod move_names;
+pub mod player_names;
 pub mod pokedex_entries;
 pub mod pokedex_texts;
 pub mod pokemon_cries;

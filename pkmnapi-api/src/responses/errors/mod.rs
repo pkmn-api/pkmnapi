@@ -91,6 +91,8 @@ pub enum BaseErrorResponseId {
     error_move_names_invalid,
     error_move_names,
     error_not_found,
+    error_player_names_invalid,
+    error_player_names,
     error_pokedex_entries_invalid,
     error_pokedex_entries,
     error_pokedex_texts_invalid,

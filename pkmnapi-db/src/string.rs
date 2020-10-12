@@ -23,7 +23,7 @@ use std::fmt;
 ///
 /// assert_eq!(string.value, vec![0x80, 0x81, 0x82, 0x50]);
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct ROMString {
     pub value: Vec<u8>,
 }

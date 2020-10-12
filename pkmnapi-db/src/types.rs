@@ -2114,3 +2114,80 @@ impl MapPokemonInfo {
         }
     }
 }
+
+#[derive(Debug, PartialEq)]
+pub struct PlayerNames {
+    pub player: Vec<ROMString>,
+    pub rival: Vec<ROMString>,
+}
+
+impl From<&[u8]> for PlayerNames {
+    fn from(rom: &[u8]) -> Self {
+        let strings: Vec<ROMString> = rom
+            .iter()
+            .enumerate()
+            .filter_map(|(i, x)| {
+                if i == 0x00 {
+                    return Some(i);
+                }
+
+                if *x == 0x50 || *x == 0x4E {
+                    return Some(i + 1);
+                }
+
+                None
+            })
+            .take(8)
+            .enumerate()
+            .filter_map(|(i, index)| {
+                if i % 4 != 0 {
+                    return Some(index);
+                }
+
+                None
+            })
+            .map(|i| {
+                let string: Vec<u8> = rom[i..]
+                    .iter()
+                    .take_while(|&x| *x != 0x50 && *x != 0x4E)
+                    .map(|x| *x)
+                    .collect();
+
+                ROMString::new(&string[..])
+            })
+            .collect();
+
+        PlayerNames {
+            player: strings[0..3].to_vec(),
+            rival: strings[3..].to_vec(),
+        }
+    }
+}
+
+impl PlayerNames {
+    pub fn to_raw(&self) -> Vec<u8> {
+        let new_name = ROMString::from("NEW NAME");
+        let player_data = self
+            .player
+            .iter()
+            .map(|name| [vec![0x4E], name.value.to_vec()].concat())
+            .flatten()
+            .collect();
+        let rival_data = self
+            .rival
+            .iter()
+            .map(|name| [vec![0x4E], name.value.to_vec()].concat())
+            .flatten()
+            .collect();
+
+        [
+            new_name.value.to_vec(),
+            player_data,
+            vec![0x50],
+            new_name.value.to_vec(),
+            rival_data,
+            vec![0x50],
+        ]
+        .concat()
+    }
+}

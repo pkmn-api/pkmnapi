@@ -75,6 +75,8 @@ impl Pkmnapi {
                     routes::map_pokemon::post_map_pokemon,
                     routes::move_names::get_move_name,
                     routes::move_names::post_move_name,
+                    routes::player_names::get_player_names,
+                    routes::player_names::post_player_names,
                     routes::pokedex_entries::get_pokedex_entry,
                     routes::pokedex_entries::post_pokedex_entry,
                     routes::pokedex_texts::get_pokedex_text,

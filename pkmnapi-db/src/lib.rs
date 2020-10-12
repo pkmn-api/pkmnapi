@@ -3130,4 +3130,54 @@ impl PkmnapiDB {
 
         Ok(town_map)
     }
+
+    pub fn get_player_names(&self) -> Result<PlayerNames> {
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x03;
+        let offset = offset_base + 0x0AA8;
+
+        let player_names = PlayerNames::from(&self.rom[offset..]);
+
+        Ok(player_names)
+    }
+
+    pub fn set_player_names(&self, player_names: &PlayerNames) -> Result<Patch> {
+        let old_player_names = self.get_player_names()?;
+        let old_player_names_data = old_player_names.to_raw();
+        let old_player_names_data_len = old_player_names_data.len();
+        let player_names_data_a = player_names.to_raw();
+        let player_names_data_len = player_names_data_a.len();
+
+        if old_player_names_data_len != player_names_data_len {
+            return Err(error::Error::PlayerNamesWrongSize(
+                old_player_names_data_len,
+                player_names_data_len,
+            ));
+        }
+
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x03;
+        let offset_a = offset_base + 0x0AA8;
+        let offset_b = offset_base + 0x0AF2;
+        let offset_raw_start = offset_a + player_names_data_len;
+        let offset_raw_len = offset_b - offset_a - player_names_data_len;
+
+        let player_names_data_b: Vec<u8> = player_names_data_a
+            .iter()
+            .map(|&x| {
+                if x == 0x4E {
+                    return 0x50;
+                }
+
+                return x;
+            })
+            .collect();
+
+        let player_names_data = [
+            player_names_data_a,
+            self.rom[offset_raw_start..(offset_raw_start + offset_raw_len)].to_vec(),
+            player_names_data_b,
+        ]
+        .concat();
+
+        Ok(Patch::new(&offset_a, &player_names_data))
+    }
 }

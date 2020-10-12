@@ -35,6 +35,7 @@ pub enum Error {
     PicCouldNotWrite,
     PicTooLarge,
     PicWrongSize,
+    PlayerNamesWrongSize(usize, usize),
     PokedexEntrySpeciesWrongSize(usize, usize),
     PokedexTextWrongSize(usize, usize),
     PokemonEvolutionWrongSize(usize, usize),
@@ -129,6 +130,10 @@ impl fmt::Display for Error {
             Error::PicCouldNotWrite => "Could not write image".to_owned(),
             Error::PicTooLarge => "Compressed image is too large".to_owned(),
             Error::PicWrongSize => "Image dimensions must be multiples of 8".to_owned(),
+            Error::PlayerNamesWrongSize(expected, actual) => format!(
+                "Player names length mismatch: should be exactly {} bytes, found {}",
+                expected, actual
+            ),
             Error::PokedexEntrySpeciesWrongSize(expected, actual) => format!(
                 "Pokédex entry species length mismatch: should be exactly {} characters, found {}",
                 expected, actual
