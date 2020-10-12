@@ -9,7 +9,13 @@
 //! let rom = fs::read(rom_path).unwrap();
 //! let header = Header::from(&rom).unwrap();
 //!
+//! // RED
+//! # #[cfg(feature = "PKMN_RED")]
 //! assert_eq!(header.title, "POKEMON RED");
+//!
+//! // BLUE
+//! # #[cfg(not(feature = "PKMN_RED"))]
+//! assert_eq!(header.title, "POKEMON BLUE");
 //! ```
 
 use crate::error;
@@ -53,7 +59,13 @@ impl Header {
     /// let rom = fs::read(rom_path).unwrap();
     /// let header = Header::from(&rom).unwrap();
     ///
+    /// // RED
+    /// # #[cfg(feature = "PKMN_RED")]
     /// assert_eq!(header.title, "POKEMON RED");
+    ///
+    /// // BLUE
+    /// # #[cfg(not(feature = "PKMN_RED"))]
+    /// assert_eq!(header.title, "POKEMON BLUE");
     /// ```
     pub fn from(rom: &[u8]) -> Result<Header, error::Error> {
         if rom.len() < 0x150 {

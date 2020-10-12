@@ -72,6 +72,8 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_13,
     13,
@@ -91,6 +93,28 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_13,
+    13,
+    25,
+    vec![
+        MapPokemonInfo::new(3, 19),
+        MapPokemonInfo::new(3, 16),
+        MapPokemonInfo::new(4, 16),
+        MapPokemonInfo::new(4, 19),
+        MapPokemonInfo::new(5, 16),
+        MapPokemonInfo::new(3, 10),
+        MapPokemonInfo::new(2, 19),
+        MapPokemonInfo::new(5, 19),
+        MapPokemonInfo::new(4, 10),
+        MapPokemonInfo::new(5, 10),
+    ],
+    0,
+    vec![]
+);
+
 get_map_pokemon_test!(
     get_map_pokemon_14,
     14,
@@ -110,6 +134,8 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_15,
     15,
@@ -129,6 +155,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_15,
+    15,
+    20,
+    vec![
+        MapPokemonInfo::new(10, 19),
+        MapPokemonInfo::new(10, 21),
+        MapPokemonInfo::new(8, 19),
+        MapPokemonInfo::new(6, 27),
+        MapPokemonInfo::new(8, 21),
+        MapPokemonInfo::new(10, 27),
+        MapPokemonInfo::new(12, 19),
+        MapPokemonInfo::new(12, 21),
+        MapPokemonInfo::new(8, 27),
+        MapPokemonInfo::new(12, 27),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_16,
     16,
@@ -148,6 +197,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_16,
+    16,
+    15,
+    vec![
+        MapPokemonInfo::new(13, 69),
+        MapPokemonInfo::new(13, 16),
+        MapPokemonInfo::new(15, 16),
+        MapPokemonInfo::new(10, 52),
+        MapPokemonInfo::new(12, 52),
+        MapPokemonInfo::new(15, 69),
+        MapPokemonInfo::new(16, 69),
+        MapPokemonInfo::new(16, 16),
+        MapPokemonInfo::new(14, 52),
+        MapPokemonInfo::new(16, 52),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_17,
     17,
@@ -167,6 +239,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_17,
+    17,
+    15,
+    vec![
+        MapPokemonInfo::new(13, 69),
+        MapPokemonInfo::new(13, 16),
+        MapPokemonInfo::new(15, 16),
+        MapPokemonInfo::new(10, 52),
+        MapPokemonInfo::new(12, 52),
+        MapPokemonInfo::new(15, 69),
+        MapPokemonInfo::new(16, 69),
+        MapPokemonInfo::new(16, 16),
+        MapPokemonInfo::new(14, 52),
+        MapPokemonInfo::new(16, 52),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_18,
     18,
@@ -186,6 +281,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_18,
+    18,
+    15,
+    vec![
+        MapPokemonInfo::new(19, 16),
+        MapPokemonInfo::new(19, 69),
+        MapPokemonInfo::new(17, 52),
+        MapPokemonInfo::new(22, 69),
+        MapPokemonInfo::new(22, 16),
+        MapPokemonInfo::new(18, 52),
+        MapPokemonInfo::new(18, 37),
+        MapPokemonInfo::new(20, 37),
+        MapPokemonInfo::new(19, 52),
+        MapPokemonInfo::new(20, 52),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_19,
     19,
@@ -205,6 +323,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_19,
+    19,
+    15,
+    vec![
+        MapPokemonInfo::new(18, 16),
+        MapPokemonInfo::new(18, 52),
+        MapPokemonInfo::new(17, 27),
+        MapPokemonInfo::new(16, 37),
+        MapPokemonInfo::new(20, 16),
+        MapPokemonInfo::new(20, 52),
+        MapPokemonInfo::new(19, 27),
+        MapPokemonInfo::new(17, 37),
+        MapPokemonInfo::new(15, 37),
+        MapPokemonInfo::new(18, 37),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_20,
     20,
@@ -224,6 +365,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_20,
+    20,
+    15,
+    vec![
+        MapPokemonInfo::new(16, 19),
+        MapPokemonInfo::new(16, 21),
+        MapPokemonInfo::new(14, 19),
+        MapPokemonInfo::new(11, 27),
+        MapPokemonInfo::new(13, 21),
+        MapPokemonInfo::new(15, 27),
+        MapPokemonInfo::new(17, 19),
+        MapPokemonInfo::new(17, 21),
+        MapPokemonInfo::new(13, 27),
+        MapPokemonInfo::new(17, 27),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_21,
     21,
@@ -243,6 +407,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_21,
+    21,
+    15,
+    vec![
+        MapPokemonInfo::new(16, 100),
+        MapPokemonInfo::new(16, 21),
+        MapPokemonInfo::new(14, 100),
+        MapPokemonInfo::new(11, 27),
+        MapPokemonInfo::new(13, 21),
+        MapPokemonInfo::new(15, 27),
+        MapPokemonInfo::new(17, 100),
+        MapPokemonInfo::new(17, 21),
+        MapPokemonInfo::new(13, 27),
+        MapPokemonInfo::new(17, 27),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_22,
     22,
@@ -262,6 +449,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_22,
+    22,
+    15,
+    vec![
+        MapPokemonInfo::new(14, 27),
+        MapPokemonInfo::new(15, 21),
+        MapPokemonInfo::new(12, 27),
+        MapPokemonInfo::new(9, 96),
+        MapPokemonInfo::new(13, 21),
+        MapPokemonInfo::new(13, 96),
+        MapPokemonInfo::new(15, 27),
+        MapPokemonInfo::new(17, 21),
+        MapPokemonInfo::new(11, 96),
+        MapPokemonInfo::new(15, 96),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_23,
     23,
@@ -281,6 +491,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_23,
+    23,
+    15,
+    vec![
+        MapPokemonInfo::new(24, 69),
+        MapPokemonInfo::new(25, 16),
+        MapPokemonInfo::new(23, 16),
+        MapPokemonInfo::new(24, 48),
+        MapPokemonInfo::new(22, 69),
+        MapPokemonInfo::new(26, 48),
+        MapPokemonInfo::new(26, 69),
+        MapPokemonInfo::new(27, 16),
+        MapPokemonInfo::new(28, 70),
+        MapPokemonInfo::new(30, 70),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_24,
     24,
@@ -300,6 +533,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_24,
+    24,
+    20,
+    vec![
+        MapPokemonInfo::new(24, 69),
+        MapPokemonInfo::new(25, 16),
+        MapPokemonInfo::new(27, 16),
+        MapPokemonInfo::new(24, 48),
+        MapPokemonInfo::new(22, 69),
+        MapPokemonInfo::new(26, 48),
+        MapPokemonInfo::new(26, 69),
+        MapPokemonInfo::new(25, 132),
+        MapPokemonInfo::new(28, 70),
+        MapPokemonInfo::new(30, 70),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_25,
     25,
@@ -319,6 +575,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_25,
+    25,
+    15,
+    vec![
+        MapPokemonInfo::new(24, 69),
+        MapPokemonInfo::new(26, 16),
+        MapPokemonInfo::new(23, 132),
+        MapPokemonInfo::new(24, 48),
+        MapPokemonInfo::new(22, 69),
+        MapPokemonInfo::new(26, 48),
+        MapPokemonInfo::new(26, 69),
+        MapPokemonInfo::new(30, 70),
+        MapPokemonInfo::new(28, 17),
+        MapPokemonInfo::new(30, 17),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_26,
     26,
@@ -338,6 +617,28 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_26,
+    26,
+    15,
+    vec![
+        MapPokemonInfo::new(24, 69),
+        MapPokemonInfo::new(26, 132),
+        MapPokemonInfo::new(23, 16),
+        MapPokemonInfo::new(26, 48),
+        MapPokemonInfo::new(22, 69),
+        MapPokemonInfo::new(28, 48),
+        MapPokemonInfo::new(26, 69),
+        MapPokemonInfo::new(30, 70),
+        MapPokemonInfo::new(28, 17),
+        MapPokemonInfo::new(30, 17),
+    ],
+    0,
+    vec![]
+);
+
 get_map_pokemon_test!(
     get_map_pokemon_27,
     27,
@@ -463,6 +764,8 @@ get_map_pokemon_test!(
         MapPokemonInfo::new(40, 72),
     ]
 );
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_33,
     33,
@@ -482,6 +785,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_33,
+    33,
+    25,
+    vec![
+        MapPokemonInfo::new(3, 19),
+        MapPokemonInfo::new(3, 29),
+        MapPokemonInfo::new(4, 19),
+        MapPokemonInfo::new(4, 29),
+        MapPokemonInfo::new(2, 19),
+        MapPokemonInfo::new(2, 29),
+        MapPokemonInfo::new(3, 21),
+        MapPokemonInfo::new(5, 21),
+        MapPokemonInfo::new(3, 32),
+        MapPokemonInfo::new(4, 32),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_34,
     34,
@@ -501,6 +827,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_34,
+    34,
+    10,
+    vec![
+        MapPokemonInfo::new(26, 27),
+        MapPokemonInfo::new(33, 132),
+        MapPokemonInfo::new(26, 21),
+        MapPokemonInfo::new(38, 22),
+        MapPokemonInfo::new(38, 132),
+        MapPokemonInfo::new(38, 22),
+        MapPokemonInfo::new(41, 28),
+        MapPokemonInfo::new(43, 132),
+        MapPokemonInfo::new(41, 22),
+        MapPokemonInfo::new(43, 22),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_35,
     35,
@@ -520,6 +869,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_35,
+    35,
+    25,
+    vec![
+        MapPokemonInfo::new(7, 10),
+        MapPokemonInfo::new(8, 11),
+        MapPokemonInfo::new(12, 16),
+        MapPokemonInfo::new(12, 69),
+        MapPokemonInfo::new(13, 69),
+        MapPokemonInfo::new(10, 63),
+        MapPokemonInfo::new(14, 69),
+        MapPokemonInfo::new(13, 16),
+        MapPokemonInfo::new(8, 63),
+        MapPokemonInfo::new(12, 63),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_36,
     36,
@@ -539,6 +911,28 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_36,
+    36,
+    15,
+    vec![
+        MapPokemonInfo::new(8, 10),
+        MapPokemonInfo::new(9, 11),
+        MapPokemonInfo::new(13, 16),
+        MapPokemonInfo::new(12, 69),
+        MapPokemonInfo::new(13, 69),
+        MapPokemonInfo::new(12, 63),
+        MapPokemonInfo::new(14, 69),
+        MapPokemonInfo::new(10, 63),
+        MapPokemonInfo::new(7, 14),
+        MapPokemonInfo::new(8, 13),
+    ],
+    0,
+    vec![]
+);
+
 get_map_pokemon_test!(get_map_pokemon_37, 37, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_38, 38, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_39, 39, 0, vec![], 0, vec![]);
@@ -553,6 +947,8 @@ get_map_pokemon_test!(get_map_pokemon_47, 47, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_48, 48, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_49, 49, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_50, 50, 0, vec![], 0, vec![]);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_51,
     51,
@@ -572,6 +968,28 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_51,
+    51,
+    8,
+    vec![
+        MapPokemonInfo::new(4, 10),
+        MapPokemonInfo::new(5, 11),
+        MapPokemonInfo::new(3, 10),
+        MapPokemonInfo::new(5, 10),
+        MapPokemonInfo::new(4, 11),
+        MapPokemonInfo::new(6, 11),
+        MapPokemonInfo::new(4, 14),
+        MapPokemonInfo::new(3, 13),
+        MapPokemonInfo::new(3, 25),
+        MapPokemonInfo::new(5, 25),
+    ],
+    0,
+    vec![]
+);
+
 get_map_pokemon_test!(get_map_pokemon_52, 52, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_53, 53, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_54, 54, 0, vec![], 0, vec![]);
@@ -675,6 +1093,8 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_83,
     83,
@@ -694,6 +1114,28 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_83,
+    83,
+    10,
+    vec![
+        MapPokemonInfo::new(21, 100),
+        MapPokemonInfo::new(21, 81),
+        MapPokemonInfo::new(20, 25),
+        MapPokemonInfo::new(24, 25),
+        MapPokemonInfo::new(23, 81),
+        MapPokemonInfo::new(23, 100),
+        MapPokemonInfo::new(32, 82),
+        MapPokemonInfo::new(35, 82),
+        MapPokemonInfo::new(33, 26),
+        MapPokemonInfo::new(36, 26),
+    ],
+    0,
+    vec![]
+);
+
 get_map_pokemon_test!(get_map_pokemon_84, 84, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_85, 85, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_86, 86, 0, vec![], 0, vec![]);
@@ -877,6 +1319,8 @@ get_map_pokemon_test!(get_map_pokemon_155, 155, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_156, 156, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_157, 157, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_158, 158, 0, vec![], 0, vec![]);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_159,
     159,
@@ -896,6 +1340,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_159,
+    159,
+    10,
+    vec![
+        MapPokemonInfo::new(30, 90),
+        MapPokemonInfo::new(30, 98),
+        MapPokemonInfo::new(32, 120),
+        MapPokemonInfo::new(32, 98),
+        MapPokemonInfo::new(28, 54),
+        MapPokemonInfo::new(30, 86),
+        MapPokemonInfo::new(30, 54),
+        MapPokemonInfo::new(28, 86),
+        MapPokemonInfo::new(38, 87),
+        MapPokemonInfo::new(37, 99),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_160,
     160,
@@ -915,6 +1382,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_160,
+    160,
+    10,
+    vec![
+        MapPokemonInfo::new(30, 86),
+        MapPokemonInfo::new(30, 54),
+        MapPokemonInfo::new(32, 86),
+        MapPokemonInfo::new(32, 54),
+        MapPokemonInfo::new(28, 98),
+        MapPokemonInfo::new(30, 90),
+        MapPokemonInfo::new(30, 98),
+        MapPokemonInfo::new(28, 120),
+        MapPokemonInfo::new(30, 42),
+        MapPokemonInfo::new(37, 55),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_161,
     161,
@@ -934,6 +1424,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_161,
+    161,
+    10,
+    vec![
+        MapPokemonInfo::new(31, 54),
+        MapPokemonInfo::new(31, 86),
+        MapPokemonInfo::new(33, 54),
+        MapPokemonInfo::new(33, 86),
+        MapPokemonInfo::new(29, 98),
+        MapPokemonInfo::new(31, 120),
+        MapPokemonInfo::new(31, 98),
+        MapPokemonInfo::new(29, 120),
+        MapPokemonInfo::new(39, 99),
+        MapPokemonInfo::new(37, 87),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_162,
     162,
@@ -953,8 +1466,32 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_162,
+    162,
+    10,
+    vec![
+        MapPokemonInfo::new(31, 98),
+        MapPokemonInfo::new(31, 120),
+        MapPokemonInfo::new(33, 98),
+        MapPokemonInfo::new(33, 120),
+        MapPokemonInfo::new(29, 54),
+        MapPokemonInfo::new(31, 86),
+        MapPokemonInfo::new(31, 54),
+        MapPokemonInfo::new(29, 86),
+        MapPokemonInfo::new(39, 55),
+        MapPokemonInfo::new(32, 42),
+    ],
+    0,
+    vec![]
+);
+
 get_map_pokemon_test!(get_map_pokemon_163, 163, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_164, 164, 0, vec![], 0, vec![]);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_165,
     165,
@@ -974,6 +1511,28 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_165,
+    165,
+    10,
+    vec![
+        MapPokemonInfo::new(32, 88),
+        MapPokemonInfo::new(30, 88),
+        MapPokemonInfo::new(34, 77),
+        MapPokemonInfo::new(30, 77),
+        MapPokemonInfo::new(34, 37),
+        MapPokemonInfo::new(32, 77),
+        MapPokemonInfo::new(30, 109),
+        MapPokemonInfo::new(28, 77),
+        MapPokemonInfo::new(37, 89),
+        MapPokemonInfo::new(39, 110),
+    ],
+    0,
+    vec![]
+);
+
 get_map_pokemon_test!(get_map_pokemon_166, 166, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_167, 167, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_168, 168, 0, vec![], 0, vec![]);
@@ -1000,6 +1559,8 @@ get_map_pokemon_test!(get_map_pokemon_188, 188, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_189, 189, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_190, 190, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_191, 191, 0, vec![], 0, vec![]);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_192,
     192,
@@ -1019,6 +1580,28 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_192,
+    192,
+    15,
+    vec![
+        MapPokemonInfo::new(30, 86),
+        MapPokemonInfo::new(30, 54),
+        MapPokemonInfo::new(30, 120),
+        MapPokemonInfo::new(30, 98),
+        MapPokemonInfo::new(28, 98),
+        MapPokemonInfo::new(21, 41),
+        MapPokemonInfo::new(29, 42),
+        MapPokemonInfo::new(28, 79),
+        MapPokemonInfo::new(28, 120),
+        MapPokemonInfo::new(38, 80),
+    ],
+    0,
+    vec![]
+);
+
 get_map_pokemon_test!(get_map_pokemon_193, 193, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(
     get_map_pokemon_194,
@@ -1094,6 +1677,8 @@ get_map_pokemon_test!(get_map_pokemon_210, 210, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_211, 211, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_212, 212, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_213, 213, 0, vec![], 0, vec![]);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_214,
     214,
@@ -1113,6 +1698,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_214,
+    214,
+    10,
+    vec![
+        MapPokemonInfo::new(32, 37),
+        MapPokemonInfo::new(34, 88),
+        MapPokemonInfo::new(34, 88),
+        MapPokemonInfo::new(30, 77),
+        MapPokemonInfo::new(30, 88),
+        MapPokemonInfo::new(32, 77),
+        MapPokemonInfo::new(30, 109),
+        MapPokemonInfo::new(28, 77),
+        MapPokemonInfo::new(39, 89),
+        MapPokemonInfo::new(37, 110),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_215,
     215,
@@ -1132,6 +1740,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_215,
+    215,
+    10,
+    vec![
+        MapPokemonInfo::new(31, 88),
+        MapPokemonInfo::new(33, 37),
+        MapPokemonInfo::new(35, 88),
+        MapPokemonInfo::new(32, 77),
+        MapPokemonInfo::new(34, 126),
+        MapPokemonInfo::new(40, 89),
+        MapPokemonInfo::new(34, 109),
+        MapPokemonInfo::new(38, 89),
+        MapPokemonInfo::new(36, 77),
+        MapPokemonInfo::new(42, 110),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_216,
     216,
@@ -1151,6 +1782,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_216,
+    216,
+    10,
+    vec![
+        MapPokemonInfo::new(33, 88),
+        MapPokemonInfo::new(31, 88),
+        MapPokemonInfo::new(35, 37),
+        MapPokemonInfo::new(32, 77),
+        MapPokemonInfo::new(31, 88),
+        MapPokemonInfo::new(40, 89),
+        MapPokemonInfo::new(34, 77),
+        MapPokemonInfo::new(35, 109),
+        MapPokemonInfo::new(38, 126),
+        MapPokemonInfo::new(42, 110),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_217,
     217,
@@ -1170,6 +1824,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_217,
+    217,
+    30,
+    vec![
+        MapPokemonInfo::new(24, 29),
+        MapPokemonInfo::new(26, 84),
+        MapPokemonInfo::new(22, 46),
+        MapPokemonInfo::new(25, 102),
+        MapPokemonInfo::new(33, 30),
+        MapPokemonInfo::new(23, 102),
+        MapPokemonInfo::new(24, 32),
+        MapPokemonInfo::new(25, 47),
+        MapPokemonInfo::new(25, 115),
+        MapPokemonInfo::new(28, 127),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_218,
     218,
@@ -1189,6 +1866,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_218,
+    218,
+    30,
+    vec![
+        MapPokemonInfo::new(22, 29),
+        MapPokemonInfo::new(26, 111),
+        MapPokemonInfo::new(23, 46),
+        MapPokemonInfo::new(25, 102),
+        MapPokemonInfo::new(30, 30),
+        MapPokemonInfo::new(27, 102),
+        MapPokemonInfo::new(30, 33),
+        MapPokemonInfo::new(32, 49),
+        MapPokemonInfo::new(26, 113),
+        MapPokemonInfo::new(28, 128),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_219,
     219,
@@ -1208,6 +1908,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_219,
+    219,
+    30,
+    vec![
+        MapPokemonInfo::new(25, 29),
+        MapPokemonInfo::new(26, 84),
+        MapPokemonInfo::new(23, 48),
+        MapPokemonInfo::new(24, 102),
+        MapPokemonInfo::new(33, 30),
+        MapPokemonInfo::new(26, 102),
+        MapPokemonInfo::new(25, 32),
+        MapPokemonInfo::new(31, 49),
+        MapPokemonInfo::new(26, 128),
+        MapPokemonInfo::new(28, 115),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_220,
     220,
@@ -1227,6 +1950,28 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_220,
+    220,
+    30,
+    vec![
+        MapPokemonInfo::new(22, 29),
+        MapPokemonInfo::new(25, 111),
+        MapPokemonInfo::new(22, 48),
+        MapPokemonInfo::new(24, 102),
+        MapPokemonInfo::new(31, 30),
+        MapPokemonInfo::new(25, 102),
+        MapPokemonInfo::new(31, 33),
+        MapPokemonInfo::new(30, 47),
+        MapPokemonInfo::new(23, 127),
+        MapPokemonInfo::new(23, 113),
+    ],
+    0,
+    vec![]
+);
+
 get_map_pokemon_test!(get_map_pokemon_221, 221, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_222, 222, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_223, 223, 0, vec![], 0, vec![]);
@@ -1251,6 +1996,8 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_227,
     227,
@@ -1270,6 +2017,29 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_227,
+    227,
+    25,
+    vec![
+        MapPokemonInfo::new(55, 112),
+        MapPokemonInfo::new(55, 105),
+        MapPokemonInfo::new(55, 101),
+        MapPokemonInfo::new(64, 113),
+        MapPokemonInfo::new(64, 47),
+        MapPokemonInfo::new(64, 26),
+        MapPokemonInfo::new(57, 28),
+        MapPokemonInfo::new(65, 132),
+        MapPokemonInfo::new(63, 132),
+        MapPokemonInfo::new(67, 132),
+    ],
+    0,
+    vec![]
+);
+
+#[cfg(feature = "PKMN_RED")]
 get_map_pokemon_test!(
     get_map_pokemon_228,
     228,
@@ -1289,6 +2059,28 @@ get_map_pokemon_test!(
     0,
     vec![]
 );
+
+#[cfg(not(feature = "PKMN_RED"))]
+get_map_pokemon_test!(
+    get_map_pokemon_228,
+    228,
+    10,
+    vec![
+        MapPokemonInfo::new(46, 42),
+        MapPokemonInfo::new(46, 97),
+        MapPokemonInfo::new(46, 82),
+        MapPokemonInfo::new(49, 85),
+        MapPokemonInfo::new(49, 49),
+        MapPokemonInfo::new(52, 28),
+        MapPokemonInfo::new(49, 64),
+        MapPokemonInfo::new(52, 47),
+        MapPokemonInfo::new(53, 26),
+        MapPokemonInfo::new(53, 132),
+    ],
+    0,
+    vec![]
+);
+
 get_map_pokemon_test!(get_map_pokemon_229, 229, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_230, 230, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_231, 231, 0, vec![], 0, vec![]);

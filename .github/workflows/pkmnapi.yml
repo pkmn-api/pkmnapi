@@ -48,7 +48,7 @@ jobs:
       working-directory: pkmnapi-api
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/pkmnapi-test
-        PKMN_ROM: ../secrets/pkmn.gb
+        PKMN_ROM: ../secrets/pkmn-ff0000.gb
         PKMN_SAV: ../pkmnapi-db/tests/data/pkmn.sav
   pkmnapi-db:
     runs-on: ubuntu-latest
@@ -66,17 +66,29 @@ jobs:
     - name: Build
       run: cargo build --verbose
       working-directory: pkmnapi-db
-    - name: Test
-      run: cargo test --verbose
+    - name: Test Red
+      run: cargo test --features PKMN_RED --verbose
       working-directory: pkmnapi-db
       env:
-        PKMN_ROM: ../secrets/pkmn.gb
+        PKMN_ROM: ../secrets/pkmn-ff0000.gb
         PKMN_SAV: ./tests/data/pkmn.sav
-    - name: Test Ignored
-      run: cargo test --verbose -- --ignored
+    - name: Test Red Ignored
+      run: cargo test --features PKMN_RED --verbose -- --ignored
       working-directory: pkmnapi-db
       env:
-        PKMN_ROM: ../secrets/pkmn.gb
+        PKMN_ROM: ../secrets/pkmn-ff0000.gb
+        PKMN_SAV: ./tests/data/pkmn.sav
+    - name: Test Blue
+      run: cargo test --features PKMN_BLUE --verbose
+      working-directory: pkmnapi-db
+      env:
+        PKMN_ROM: ../secrets/pkmn-0000ff.gb
+        PKMN_SAV: ./tests/data/pkmn.sav
+    - name: Test Blue Ignored
+      run: cargo test --features PKMN_BLUE --verbose -- --ignored
+      working-directory: pkmnapi-db
+      env:
+        PKMN_ROM: ../secrets/pkmn-0000ff.gb
         PKMN_SAV: ./tests/data/pkmn.sav
   pkmnapi-email:
     runs-on: ubuntu-latest

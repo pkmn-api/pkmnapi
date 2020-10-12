@@ -130,12 +130,25 @@ impl PkmnapiDB {
     ///
     /// let patch = db.generate_checksum();
     ///
+    /// // RED
+    /// # #[cfg(feature = "PKMN_RED")]
     /// assert_eq!(
     ///     patch,
     ///     Patch {
     ///         offset: 0x014E,
     ///         length: 0x02,
     ///         data: vec![0x91, 0xE6]
+    ///     }
+    /// );
+    ///
+    /// // BLUE
+    /// # #[cfg(not(feature = "PKMN_RED"))]
+    /// assert_eq!(
+    ///     patch,
+    ///     Patch {
+    ///         offset: 0x014E,
+    ///         length: 0x02,
+    ///         data: vec![0x9D, 0x0A]
     ///     }
     /// );
     /// ```
@@ -163,7 +176,13 @@ impl PkmnapiDB {
     /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
+    /// // RED
+    /// # #[cfg(feature = "PKMN_RED")]
     /// assert_eq!(db.verify_hash("3d45c1ee9abd5738df46d2bdda8b57dc"), true);
+    ///
+    /// // BLUE
+    /// # #[cfg(not(feature = "PKMN_RED"))]
+    /// assert_eq!(db.verify_hash("50927e843568814f7ed45ec4f944bd8b"), true);
     /// ```
     pub fn verify_hash<S: Into<String>>(&self, hash: S) -> bool {
         self.hash == hash.into()
@@ -2267,6 +2286,10 @@ impl PkmnapiDB {
 
         let tileset = self.rom[header_pointer];
 
+        if tileset == 0x40 || tileset == 0xC7 {
+            return Err(error::Error::MapInvalid(*map_id));
+        }
+
         let tileset_bank_pointer = 0xC7BE + ((tileset as usize) * 0x0C);
         let tileset_bank =
             ((self.rom[tileset_bank_pointer] as usize) - 0x01) * (PkmnapiDB::ROM_PAGE * 0x02);
@@ -2528,6 +2551,8 @@ impl PkmnapiDB {
     ///
     /// let pokemon_title = db.get_pokemon_title().unwrap();
     ///
+    /// // RED
+    /// # #[cfg(feature = "PKMN_RED")]
     /// assert_eq!(
     ///     pokemon_title,
     ///     vec![
@@ -2547,6 +2572,30 @@ impl PkmnapiDB {
     ///         0x22,
     ///         0xA3,
     ///         0x85,
+    ///     ]
+    /// );
+    ///
+    /// // BLUE
+    /// # #[cfg(not(feature = "PKMN_RED"))]
+    /// assert_eq!(
+    ///     pokemon_title,
+    ///     vec![
+    ///         0xB1,
+    ///         0xB0,
+    ///         0x99,
+    ///         0x39,
+    ///         0x2B,
+    ///         0x52,
+    ///         0x28,
+    ///         0xAB,
+    ///         0x68,
+    ///         0x84,
+    ///         0xBA,
+    ///         0x47,
+    ///         0x46,
+    ///         0xAA,
+    ///         0x0E,
+    ///         0x55
     ///     ]
     /// );
     /// ```

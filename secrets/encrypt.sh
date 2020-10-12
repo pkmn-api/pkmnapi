@@ -6,4 +6,10 @@ gpg \
     --yes \
     --symmetric \
     --cipher-algo AES256 \
-    $DIR/pkmn.gb
+    $DIR/pkmn-ff0000.gb
+
+gpg \
+    --yes \
+    --symmetric \
+    --cipher-algo AES256 \
+    $DIR/pkmn-0000ff.gb
