@@ -1,6 +1,6 @@
 use pkmnapi_db::error;
 use pkmnapi_db::patch::*;
-use pkmnapi_db::types::{ItemName, PokemonName};
+use pkmnapi_db::types::{ItemName, MoveName, PokemonName, HM, TM};
 use pkmnapi_db::*;
 use pkmnapi_sql::*;
 use rocket::{Data, State};
@@ -150,6 +150,75 @@ pub fn get_item_names(
 
     match result {
         Ok(_) => Ok(item_names),
+        Err(e) => Err(NotFoundError::new(error_id, Some(e.to_string()))),
+    }
+}
+
+pub fn get_move_names(
+    db: &PkmnapiDB,
+    move_ids: &Vec<u8>,
+    error_id: BaseErrorResponseId,
+) -> Result<HashMap<u8, MoveName>, ResponseError> {
+    let mut move_names: HashMap<u8, MoveName> = HashMap::new();
+    let result = move_ids
+        .iter()
+        .map(|move_id| {
+            let move_name = db.get_move_name(move_id)?;
+
+            move_names.insert(*move_id, move_name);
+
+            Ok(())
+        })
+        .collect::<Result<Vec<_>, error::Error>>();
+
+    match result {
+        Ok(_) => Ok(move_names),
+        Err(e) => Err(NotFoundError::new(error_id, Some(e.to_string()))),
+    }
+}
+
+pub fn get_tm_moves(
+    db: &PkmnapiDB,
+    tm_ids: &Vec<u8>,
+    error_id: BaseErrorResponseId,
+) -> Result<HashMap<u8, TM>, ResponseError> {
+    let mut tm_moves: HashMap<u8, TM> = HashMap::new();
+    let result = tm_ids
+        .iter()
+        .map(|tm_id| {
+            let tm_move = db.get_tm(tm_id)?;
+
+            tm_moves.insert(*tm_id, tm_move);
+
+            Ok(())
+        })
+        .collect::<Result<Vec<_>, error::Error>>();
+
+    match result {
+        Ok(_) => Ok(tm_moves),
+        Err(e) => Err(NotFoundError::new(error_id, Some(e.to_string()))),
+    }
+}
+
+pub fn get_hm_moves(
+    db: &PkmnapiDB,
+    hm_ids: &Vec<u8>,
+    error_id: BaseErrorResponseId,
+) -> Result<HashMap<u8, HM>, ResponseError> {
+    let mut hm_moves: HashMap<u8, HM> = HashMap::new();
+    let result = hm_ids
+        .iter()
+        .map(|hm_id| {
+            let hm_move = db.get_hm(hm_id)?;
+
+            hm_moves.insert(*hm_id, hm_move);
+
+            Ok(())
+        })
+        .collect::<Result<Vec<_>, error::Error>>();
+
+    match result {
+        Ok(_) => Ok(hm_moves),
         Err(e) => Err(NotFoundError::new(error_id, Some(e.to_string()))),
     }
 }

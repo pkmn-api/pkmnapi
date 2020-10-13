@@ -1,6 +1,6 @@
 +++
 title = "Type Effects"
-weight = 26
+weight = 27
 +++
 
 | Endpoint                                                    | Description           |

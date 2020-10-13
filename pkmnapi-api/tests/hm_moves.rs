@@ -3,9 +3,9 @@ use serde_json::json;
 
 mod common;
 
-test!(get_hm_200, (client, access_token) {
+test!(get_hm_move_200, (client, access_token) {
     let request = client
-        .get("/v1/hms/1")
+        .get("/v1/hms/moves/1")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -15,7 +15,7 @@ test!(get_hm_200, (client, access_token) {
     let body = json!({
         "data": {
             "id": "1",
-            "type": "hms",
+            "type": "hm_moves",
             "attributes": {
                 "move": {
                     "id": "15",
@@ -29,11 +29,11 @@ test!(get_hm_200, (client, access_token) {
                 }
             },
             "links": {
-                "self": "http://localhost:8080/v1/hms/1"
+                "self": "http://localhost:8080/v1/hms/moves/1"
             }
         },
         "links": {
-            "self": "http://localhost:8080/v1/hms/1"
+            "self": "http://localhost:8080/v1/hms/moves/1"
         }
     });
 
@@ -46,17 +46,17 @@ test!(get_hm_200, (client, access_token) {
     ])
 });
 
-test!(get_hm_401, (client) {
-    let request = client.get("/v1/hms/1");
+test!(get_hm_move_401, (client) {
+    let request = client.get("/v1/hms/moves/1");
 
     let mut response = request.dispatch();
 
     common::assert_unauthorized(&mut response)
 });
 
-test!(get_hm_404, (client, access_token) {
+test!(get_hm_move_404, (client, access_token) {
     let request = client
-        .get("/v1/hms/200")
+        .get("/v1/hms/moves/200")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -82,10 +82,10 @@ test!(get_hm_404, (client, access_token) {
     ])
 });
 
-test!(post_hms_202, (client, access_token) {
+test!(post_hm_moves_202, (client, access_token) {
     let request_body = json!({
         "data": {
-            "type": "hms",
+            "type": "hm_moves",
             "attributes": {
                 "move": {
                     "id": "1"
@@ -95,7 +95,7 @@ test!(post_hms_202, (client, access_token) {
     });
 
     let request = client
-        .post("/v1/hms/1")
+        .post("/v1/hms/moves/1")
         .body(request_body.to_string())
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token));
@@ -115,7 +115,7 @@ test!(post_hms_202, (client, access_token) {
     ]).unwrap();
 
     let request = client
-        .get("/v1/hms/1")
+        .get("/v1/hms/moves/1")
         .header(common::auth_header(&access_token));
 
     let mut response = request.dispatch();
@@ -125,7 +125,7 @@ test!(post_hms_202, (client, access_token) {
     let body = json!({
         "data": {
             "id": "1",
-            "type": "hms",
+            "type": "hm_moves",
             "attributes": {
                 "move": {
                     "id": "1",
@@ -139,11 +139,11 @@ test!(post_hms_202, (client, access_token) {
                 }
             },
             "links": {
-                "self": "http://localhost:8080/v1/hms/1"
+                "self": "http://localhost:8080/v1/hms/moves/1"
             }
         },
         "links": {
-            "self": "http://localhost:8080/v1/hms/1"
+            "self": "http://localhost:8080/v1/hms/moves/1"
         }
     });
 
@@ -156,10 +156,10 @@ test!(post_hms_202, (client, access_token) {
     ])
 });
 
-test!(post_hms_401, (client) {
+test!(post_hm_moves_401, (client) {
     let request_body = json!({
         "data": {
-            "type": "hms",
+            "type": "hm_moves",
             "attributes": {
                 "move": {
                     "id": "1"
@@ -169,7 +169,7 @@ test!(post_hms_401, (client) {
     });
 
     let request = client
-        .post("/v1/hms/1")
+        .post("/v1/hms/moves/1")
         .body(request_body.to_string())
         .header(ContentType::JSON);
 
@@ -178,10 +178,10 @@ test!(post_hms_401, (client) {
     common::assert_unauthorized(&mut response)
 });
 
-test!(post_hms_404, (client, access_token) {
+test!(post_hm_moves_404, (client, access_token) {
     let request_body = json!({
         "data": {
-            "type": "hms",
+            "type": "hm_moves",
             "attributes": {
                 "move": {
                     "id": "1"
@@ -191,7 +191,7 @@ test!(post_hms_404, (client, access_token) {
     });
 
     let request = client
-        .post("/v1/hms/200")
+        .post("/v1/hms/moves/200")
         .body(request_body.to_string())
         .header(ContentType::JSON)
         .header(common::auth_header(&access_token));

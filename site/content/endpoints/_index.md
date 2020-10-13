@@ -10,12 +10,12 @@ sort_by = "weight"
 |--------------------------------------------------------------------------|----------------------------|
 | [POST /v1/access_tokens](@/endpoints/access_tokens.md#post-access-token) | Creates a new access token |
 
-### [HMs](@/endpoints/hms.md)
+### [HM Moves](@/endpoints/hm_moves.md)
 
-| Endpoint                                          | Description  |
-|---------------------------------------------------|--------------|
-| [GET /v1/hms/:hm_id](@/endpoints/hms.md#get-hm)   | Gets a HM    |
-| [POST /v1/hms/:hm_id](@/endpoints/hms.md#post-hm) | Updates a HM |
+| Endpoint                                                          | Description       |
+|-------------------------------------------------------------------|-------------------|
+| [GET /v1/hms/moves/:hm_id](@/endpoints/hm_moves.md#get-hm-move)   | Gets a HM move    |
+| [POST /v1/hms/moves/:hm_id](@/endpoints/hm_moves.md#post-hm-move) | Updates a HM move |
 
 ### [Imgs](@/endpoints/imgs.md)
 
@@ -86,6 +86,13 @@ sort_by = "weight"
 |------------------------------------------------------------------------------------------------------|--------------------------------|
 | [GET /v1/pokemon/evolutions/:pokedex_id](@/endpoints/pokemon_evolutions.md#get-pokemon-evolutions)   | Gets a Pokémon's evolutions    |
 | [POST /v1/pokemon/evolutions/:pokedex_id](@/endpoints/pokemon_evolutions.md#post-pokemon-evolutions) | Updates a Pokémon's evolutions |
+
+### [Pokémon Machines](@/endpoints/pokemon_machines.md)
+
+| Endpoint                                                                                       | Description                  |
+|------------------------------------------------------------------------------------------------|------------------------------|
+| [GET /v1/pokemon/machines/:pokedex_id](@/endpoints/pokemon_machines.md#get-pokemon-machines)   | Gets a Pokémon's machines    |
+| [POST /v1/pokemon/machines/:pokedex_id](@/endpoints/pokemon_machines.md#post-pokemon-machines) | Updates a Pokémon's machines |
 
 ### [Pokémon Names](@/endpoints/pokemon_names.md)
 

@@ -1,18 +1,18 @@
 +++
-title = "HMs"
+title = "HM Moves"
 weight = 2
 +++
 
-| Endpoint                        | Description  |
-|---------------------------------|--------------|
-| [GET /v1/hms/:hm_id](#get-hm)   | Gets a HM    |
-| [POST /v1/hms/:hm_id](#post-hm) | Updates a HM |
+| Endpoint                                   | Description       |
+|--------------------------------------------|-------------------|
+| [GET /v1/hms/moves/:hm_id](#get-hm-move)   | Gets a HM move    |
+| [POST /v1/hms/moves/:hm_id](#post-hm-move) | Updates a HM move |
 
 ---
 
-### GET /v1/hms/:hm_id {#get-hm}
+### GET /v1/hms/moves/:hm_id {#get-hm-move}
 
-Gets a HM
+Gets a HM move
 
 #### Request Parameters
 
@@ -25,7 +25,7 @@ Gets a HM
 **Header:**
 
 {% api_headers() %}
-GET /v1/hms/1
+GET /v1/hms/moves/1
 Host: {{API_HOST}}
 Authorization: Bearer <access_token>
 {% end %}
@@ -39,7 +39,7 @@ Authorization: Bearer <access_token>
 {% api_response_params() %}
 | `data`                                 | object |                                         |
 | `data.id`                              | string | HM ID. (identical to `:hm_id`)          |
-| `data.type`                            | string | Type of resource. Must be "hms".        |
+| `data.type`                            | string | Type of resource. Must be "hm_moves".   |
 | `data.attributes`                      | object |                                         |
 | `data.attributes.move`                 | object |                                         |
 | `data.attributes.move.id`              | string | Move ID.                                |
@@ -70,7 +70,7 @@ Server: pkmnapi/0.1.0
 {
     "data": {
         "id": "1",
-        "type": "hms",
+        "type": "hm_moves",
         "attributes": {
             "move": {
                 "id": "15",
@@ -84,31 +84,31 @@ Server: pkmnapi/0.1.0
             }
         },
         "links": {
-            "self": "{{API_DOMAIN}}/v1/hms/1"
+            "self": "{{API_DOMAIN}}/v1/hms/moves/1"
         }
     },
     "links": {
-        "self": "{{API_DOMAIN}}/v1/hms/1"
+        "self": "{{API_DOMAIN}}/v1/hms/moves/1"
     }
 }
 {% end %}
 
 ---
 
-### POST /v1/hms/:hm_id {#post-hm}
+### POST /v1/hms/moves/:hm_id {#post-hm-move}
 
-Updates a HM
+Updates a HM move
 
 #### Request Parameters
 
 {% api_request_params() %}
-| url    | `:hm_id`                  | string | ✔️ | HM ID.                       |
-| header | `X-Patch-Description`     | string |   | Description of change.       |
-| body   | `data`                    | object | ✔️ |                              |
-| body   | `data.type`               | string | ✔️ | Type of data. Must be "hms". |
-| body   | `data.attributes`         | object | ✔️ |                              |
-| body   | `data.attributes.move`    | object | ✔️ |                              |
-| body   | `data.attributes.move.id` | string | ✔️ | Move ID.                     |
+| url    | `:hm_id`                  | string | ✔️ | HM ID.                            |
+| header | `X-Patch-Description`     | string |   | Description of change.            |
+| body   | `data`                    | object | ✔️ |                                   |
+| body   | `data.type`               | string | ✔️ | Type of data. Must be "hm_moves". |
+| body   | `data.attributes`         | object | ✔️ |                                   |
+| body   | `data.attributes.move`    | object | ✔️ |                                   |
+| body   | `data.attributes.move.id` | string | ✔️ | Move ID.                          |
 {% end %}
 
 #### Example Request
@@ -116,7 +116,7 @@ Updates a HM
 **Header:**
 
 {% api_headers() %}
-POST /v1/hms/1
+POST /v1/hms/moves/1
 Host: {{API_HOST}}
 Authorization: Bearer <access_token>
 Content-Type: application/json
@@ -128,7 +128,7 @@ X-Patch-Description: Update CUT to TELEPORT
 {% api_request() %}
 {
     "data": {
-        "type": "hms",
+        "type": "hm_moves",
         "attributes": {
             "move": {
                 "id": "100"

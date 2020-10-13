@@ -2191,3 +2191,41 @@ impl PlayerNames {
         .concat()
     }
 }
+
+#[derive(Clone, Debug, Eq)]
+pub enum PokemonMachine {
+    TM(u8),
+    HM(u8),
+}
+
+impl Ord for PokemonMachine {
+    fn cmp(&self, other: &Self) -> cmp::Ordering {
+        match (self, other) {
+            (PokemonMachine::TM(a), PokemonMachine::TM(b)) if a == b => cmp::Ordering::Equal,
+            (PokemonMachine::TM(a), PokemonMachine::TM(b)) if a < b => cmp::Ordering::Less,
+            (PokemonMachine::TM(a), PokemonMachine::TM(b)) if a > b => cmp::Ordering::Greater,
+            (PokemonMachine::HM(a), PokemonMachine::HM(b)) if a == b => cmp::Ordering::Equal,
+            (PokemonMachine::HM(a), PokemonMachine::HM(b)) if a < b => cmp::Ordering::Less,
+            (PokemonMachine::HM(a), PokemonMachine::HM(b)) if a > b => cmp::Ordering::Greater,
+            (PokemonMachine::TM(_), PokemonMachine::HM(_)) => cmp::Ordering::Less,
+            (PokemonMachine::HM(_), PokemonMachine::TM(_)) => cmp::Ordering::Greater,
+            _ => cmp::Ordering::Equal,
+        }
+    }
+}
+
+impl PartialOrd for PokemonMachine {
+    fn partial_cmp(&self, other: &Self) -> Option<cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl PartialEq for PokemonMachine {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (PokemonMachine::TM(a), PokemonMachine::TM(b)) => a == b,
+            (PokemonMachine::HM(a), PokemonMachine::HM(b)) => a == b,
+            _ => false,
+        }
+    }
+}

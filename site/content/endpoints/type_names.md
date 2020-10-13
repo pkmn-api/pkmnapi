@@ -1,6 +1,6 @@
 +++
 title = "Type Names"
-weight = 27
+weight = 28
 +++
 
 | Endpoint                                         | Description         |

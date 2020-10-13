@@ -26,7 +26,7 @@ pub struct BaseResponseAll<T> {
 #[derive(Debug, Serialize)]
 #[allow(non_camel_case_types)]
 pub enum BaseResponseType {
-    hms,
+    hm_moves,
     item_names,
     map_pokemon,
     move_names,
@@ -35,6 +35,7 @@ pub enum BaseResponseType {
     pokedex_texts,
     pokemon_cries,
     pokemon_evolutions,
+    pokemon_machines,
     pokemon_names,
     pokemon_stats,
     rom_patches,

@@ -5,18 +5,18 @@ use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
 
 use crate::guards::*;
-use crate::requests::hms::*;
+use crate::requests::hm_moves::*;
 use crate::responses::errors::*;
-use crate::responses::hms::*;
+use crate::responses::hm_moves::*;
 use crate::utils;
 
-#[get("/hms/<hm_id>")]
-pub fn get_hm(
+#[get("/hms/moves/<hm_id>")]
+pub fn get_hm_move(
     sql: State<PkmnapiSQL>,
     _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     hm_id: u8,
-) -> Result<Json<HMResponse>, ResponseError> {
+) -> Result<Json<HMMoveResponse>, ResponseError> {
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
@@ -40,18 +40,18 @@ pub fn get_hm(
         }
     };
 
-    let response = HMResponse::new(&hm_id, &hm, &move_name);
+    let response = HMMoveResponse::new(&hm_id, &hm, &move_name);
 
     Ok(Json(response))
 }
 
-#[post("/hms/<hm_id>", format = "application/json", data = "<data>")]
-pub fn post_hm(
+#[post("/hms/moves/<hm_id>", format = "application/json", data = "<data>")]
+pub fn post_hm_move(
     sql: State<PkmnapiSQL>,
     _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
     patch_description: Result<PatchDescription, PatchDescriptionError>,
-    data: Result<Json<HMRequest>, JsonError>,
+    data: Result<Json<HMMoveRequest>, JsonError>,
     hm_id: u8,
 ) -> Result<status::Accepted<JsonValue>, ResponseError> {
     let access_token = utils::get_access_token(access_token)?;
