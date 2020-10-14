@@ -137,3 +137,35 @@ jobs:
       working-directory: pkmnapi-sql
       env:
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/pkmnapi-test
+  deploy:
+    needs:
+    - pkmnapi-api
+    - pkmnapi-db
+    - pkmnapi-email
+    - pkmnapi-sql
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Deploy
+      uses: akhileshns/heroku-deploy@master
+      with:
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+        heroku_app_name: "pkmn-api"
+        heroku_email: ${{ secrets.HEROKU_EMAIL }}
+        buildpack: "https://github.com/emk/heroku-buildpack-rust"
+  site:
+    needs:
+    - pkmnapi-api
+    - pkmnapi-db
+    - pkmnapi-email
+    - pkmnapi-sql
+    - deploy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      uses: shalzz/zola-deploy-action@master
+      env:
+        PAGES_BRANCH: gh-pages
+        BUILD_DIR: site
+        TOKEN: ${{ secrets.TOKEN }}
