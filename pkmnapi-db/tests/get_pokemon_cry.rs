@@ -33,8 +33,6 @@ macro_rules! get_pokemon_cry_test {
     };
 }
 
-#[rustfmt::skip::macros(get_pokemon_cry_test)]
-
 get_pokemon_cry_test!(get_pokemon_cry_1, 1, 0x0F, 0x80, 0x01);
 get_pokemon_cry_test!(get_pokemon_cry_2, 2, 0x0F, 0x20, 0x80);
 get_pokemon_cry_test!(get_pokemon_cry_3, 3, 0x0F, 0x00, 0xC0);

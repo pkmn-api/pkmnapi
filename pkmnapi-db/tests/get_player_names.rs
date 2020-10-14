@@ -1,5 +1,5 @@
 use pkmnapi_db::string::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 

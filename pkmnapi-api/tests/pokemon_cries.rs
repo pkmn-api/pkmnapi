@@ -51,7 +51,7 @@ test!(get_pokemon_cry_200_wav, (client, access_token) {
     let response_body = response.body_bytes().unwrap();
     let headers = response.headers();
 
-    let body = fs::read("tests/data/BULBASAUR.wav").unwrap();
+    let body = fs::read("../secrets/data/pokemon_cry/1.wav").unwrap();
 
     assert_eq!(response_body, body);
     assert_eq!(response.status(), Status::Ok);

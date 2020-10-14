@@ -1,6 +1,6 @@
 use pkmnapi_db::patch::*;
 use pkmnapi_db::string::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -40,9 +40,13 @@ macro_rules! set_trainer_name_test {
     };
 }
 
-#[rustfmt::skip::macros(set_trainer_name_test)]
-
-set_trainer_name_test!(set_trainer_name_1, 1, "ABCDEFGHI", 0x399FF, vec![0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88]);
+set_trainer_name_test!(
+    set_trainer_name_1,
+    1,
+    "ABCDEFGHI",
+    0x399FF,
+    vec![0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88]
+);
 set_trainer_name_test!(
     set_trainer_name_2,
     2,

@@ -1,4 +1,4 @@
-use pkmnapi_db::types::{Party, PartyPokemon};
+use pkmnapi_db::{Party, PartyPokemon};
 use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;

@@ -1,4 +1,4 @@
-use pkmnapi_db::types::{MoveName, PokemonMachine, HM, TM};
+use pkmnapi_db::{MoveName, PokemonMachine, HM, TM};
 use serde::Serialize;
 use std::collections::HashMap;
 

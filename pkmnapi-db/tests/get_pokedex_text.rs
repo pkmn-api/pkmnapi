@@ -1,5 +1,5 @@
 use pkmnapi_db::string::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -25,8 +25,6 @@ macro_rules! get_pokedex_text_test {
         }
     };
 }
-
-#[rustfmt::skip::macros(get_pokedex_text_test)]
 
 get_pokedex_text_test!(get_pokedex_text_1, 1, "A strange seed was\nplanted on its\nback at birth.¶The plant sprouts\nand grows with\nthis #MON");
 get_pokedex_text_test!(get_pokedex_text_2, 2, "When the bulb on\nits back grows\nlarge, it appears¶to lose the\nability to stand\non its hind legs");

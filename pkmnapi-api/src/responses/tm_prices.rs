@@ -1,4 +1,4 @@
-use pkmnapi_db::types::TMPrice;
+use pkmnapi_db::TMPrice;
 use serde::Serialize;
 
 use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};

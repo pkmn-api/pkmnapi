@@ -1,4 +1,4 @@
-use pkmnapi_db::types::{
+use pkmnapi_db::{
     PokemonEvolution, PokemonEvolutionItem, PokemonEvolutionLevel, PokemonEvolutionTrade,
 };
 use serde::Deserialize;

@@ -19,3 +19,17 @@ gpg \
     --passphrase="$SECRET_PASSPHRASE" \
     --output $DIR/pkmn-0000ff.gb \
     $DIR/pkmn-0000ff.gb.gpg
+
+gpg \
+    --quiet \
+    --batch \
+    --yes \
+    --decrypt \
+    --passphrase="$SECRET_PASSPHRASE" \
+    --output $DIR/data.zip \
+    $DIR/data.zip.gpg
+
+unzip \
+    -o \
+    $DIR/data.zip \
+    -d $DIR

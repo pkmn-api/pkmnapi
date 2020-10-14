@@ -1,4 +1,4 @@
-use pkmnapi_db::types::PokedexEntry;
+use pkmnapi_db::PokedexEntry;
 use serde::Serialize;
 
 use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};

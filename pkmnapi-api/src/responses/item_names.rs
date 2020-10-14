@@ -1,4 +1,4 @@
-use pkmnapi_db::types::ItemName;
+use pkmnapi_db::ItemName;
 use serde::Serialize;
 
 use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};

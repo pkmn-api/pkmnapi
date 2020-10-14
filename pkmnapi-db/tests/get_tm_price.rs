@@ -1,4 +1,4 @@
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -22,8 +22,6 @@ macro_rules! get_tm_price_test {
         }
     };
 }
-
-#[rustfmt::skip::macros(get_tm_price_test)]
 
 get_tm_price_test!(get_tm_price_1, 1, 3000);
 get_tm_price_test!(get_tm_price_2, 2, 2000);

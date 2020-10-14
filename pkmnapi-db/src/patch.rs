@@ -112,30 +112,3 @@ impl From<Vec<u8>> for Patch {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::patch::*;
-
-    #[test]
-    fn patch_interop() {
-        let patch_obj = Patch::new(&0x123456, &vec![0x13, 0x37]);
-
-        assert_eq!(
-            patch_obj,
-            Patch {
-                offset: 0x123456usize,
-                length: 0x02usize,
-                data: vec![0x13, 0x37]
-            }
-        );
-
-        let patch_raw = patch_obj.to_raw();
-
-        assert_eq!(patch_raw, vec![0x12, 0x34, 0x56, 0x00, 0x02, 0x13, 0x37]);
-
-        let patch_reobj = Patch::from(patch_raw);
-
-        assert_eq!(patch_obj, patch_reobj);
-    }
-}

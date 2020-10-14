@@ -1,4 +1,4 @@
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -33,23 +33,25 @@ macro_rules! get_trainer_parties_test {
     };
 }
 
-#[rustfmt::skip::macros(get_trainer_parties_test)]
-
-get_trainer_parties_test!(get_trainer_parties_1, 1, vec![
-    vec![(11, 19), (11, 23)],
-    vec![(14, 21)],
-    vec![(10, 19), (10, 19), (10, 41)],
-    vec![(14, 19), (14, 23), (14, 41)],
-    vec![(15, 19), (15, 21)],
-    vec![(17, 79)],
-    vec![(14, 23), (14, 27)],
-    vec![(21, 32)],
-    vec![(21, 23)],
-    vec![(19, 27), (19, 41)],
-    vec![(17, 19), (17, 19), (17, 20)],
-    vec![(18, 32), (18, 33)],
-    vec![(17, 21), (17, 19), (17, 19), (17, 21)],
-]);
+get_trainer_parties_test!(
+    get_trainer_parties_1,
+    1,
+    vec![
+        vec![(11, 19), (11, 23)],
+        vec![(14, 21)],
+        vec![(10, 19), (10, 19), (10, 41)],
+        vec![(14, 19), (14, 23), (14, 41)],
+        vec![(15, 19), (15, 21)],
+        vec![(17, 79)],
+        vec![(14, 23), (14, 27)],
+        vec![(21, 32)],
+        vec![(21, 23)],
+        vec![(19, 27), (19, 41)],
+        vec![(17, 19), (17, 19), (17, 20)],
+        vec![(18, 32), (18, 33)],
+        vec![(17, 21), (17, 19), (17, 19), (17, 21)],
+    ]
+);
 
 get_trainer_parties_test!(
     get_trainer_parties_2,

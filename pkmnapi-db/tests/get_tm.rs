@@ -1,4 +1,4 @@
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -22,8 +22,6 @@ macro_rules! get_tm_test {
         }
     };
 }
-
-#[rustfmt::skip::macros(get_tm_test)]
 
 get_tm_test!(get_tm_1, 1, 5);
 get_tm_test!(get_tm_2, 2, 13);

@@ -1,5 +1,5 @@
 use pkmnapi_db::patch::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -33,8 +33,6 @@ macro_rules! set_pokemon_icon_test {
         }
     };
 }
-
-#[rustfmt::skip::macros(set_pokemon_icon_test)]
 
 set_pokemon_icon_test!(set_pokemon_icon_1, 1, 0x02, 0x7190D, vec![0x27]);
 set_pokemon_icon_test!(set_pokemon_icon_2, 2, 0x02, 0x7190D, vec![0x72]);

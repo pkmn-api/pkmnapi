@@ -1,4 +1,4 @@
-use pkmnapi_db::types::MoveName;
+use pkmnapi_db::MoveName;
 use serde::Serialize;
 
 use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};

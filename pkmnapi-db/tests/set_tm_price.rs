@@ -1,5 +1,5 @@
 use pkmnapi_db::patch::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -27,8 +27,6 @@ macro_rules! set_tm_price_test {
         }
     };
 }
-
-#[rustfmt::skip::macros(set_tm_price_test)]
 
 set_tm_price_test!(set_tm_1, 1, 4000, 0x7BFA7, vec![0x42]);
 set_tm_price_test!(set_tm_2, 2, 4000, 0x7BFA7, vec![0x34]);

@@ -1,4 +1,4 @@
-use pkmnapi_db::types::{MapPokemon, PokemonName};
+use pkmnapi_db::{MapPokemon, PokemonName};
 use serde::Serialize;
 use std::collections::HashMap;
 

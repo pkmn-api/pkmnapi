@@ -1,5 +1,5 @@
 use pkmnapi_db::patch::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -27,8 +27,6 @@ macro_rules! set_hm_test {
         }
     };
 }
-
-#[rustfmt::skip::macros(set_hm_test)]
 
 set_hm_test!(set_hm_1, 1, 42, 0x3052, vec![42]);
 set_hm_test!(set_hm_2, 2, 42, 0x3053, vec![42]);

@@ -1,4 +1,4 @@
-use pkmnapi_db::types::SavePlayerName;
+use pkmnapi_db::sav::SavePlayerName;
 use serde::Serialize;
 
 use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};

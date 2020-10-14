@@ -1,6 +1,5 @@
 use pkmnapi_db::error;
 use pkmnapi_db::patch::*;
-use pkmnapi_db::types::{ItemName, MoveName, PokemonName, HM, TM};
 use pkmnapi_db::*;
 use pkmnapi_sql::*;
 use rocket::{Data, State};

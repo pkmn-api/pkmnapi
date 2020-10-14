@@ -1,5 +1,5 @@
 use pkmnapi_db::patch::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -48,9 +48,17 @@ macro_rules! set_move_stats_test {
     };
 }
 
-#[rustfmt::skip::macros(set_move_stats_test)]
-
-set_move_stats_test!(set_move_stats_1, 1, 0, 1, 2, 42.0 / 255.0, 20, 0x38000, vec![1, 0, 1, 2, 42, 20]);
+set_move_stats_test!(
+    set_move_stats_1,
+    1,
+    0,
+    1,
+    2,
+    42.0 / 255.0,
+    20,
+    0x38000,
+    vec![1, 0, 1, 2, 42, 20]
+);
 set_move_stats_test!(
     set_move_stats_2,
     2,

@@ -1,5 +1,5 @@
 use pkmnapi_db::patch::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -34,9 +34,13 @@ macro_rules! set_pokemon_evolutions_test {
     };
 }
 
-#[rustfmt::skip::macros(set_pokemon_evolutions_test)]
-
-set_pokemon_evolutions_test!(set_pokemon_evolutions_1, 1, vec![PokemonEvolutionLevel::new(112, 42)], 0x3B844, vec![0x01, 0x2A, 0x01]);
+set_pokemon_evolutions_test!(
+    set_pokemon_evolutions_1,
+    1,
+    vec![PokemonEvolutionLevel::new(112, 42)],
+    0x3B844,
+    vec![0x01, 0x2A, 0x01]
+);
 set_pokemon_evolutions_test!(
     set_pokemon_evolutions_2,
     2,

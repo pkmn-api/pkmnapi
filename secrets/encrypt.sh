@@ -13,3 +13,14 @@ gpg \
     --symmetric \
     --cipher-algo AES256 \
     $DIR/pkmn-0000ff.gb
+
+zip \
+    -r \
+    $DIR/data.zip \
+    $DIR/data
+
+gpg \
+    --yes \
+    --symmetric \
+    --cipher-algo AES256 \
+    $DIR/data.zip

@@ -44,9 +44,15 @@ macro_rules! set_pokemon_cry_test {
     };
 }
 
-#[rustfmt::skip::macros(set_pokemon_cry_test)]
-
-set_pokemon_cry_test!(set_pokemon_cry_1, 1, 0x01, 0x02, 0x03, 0x3960E, vec![0x01, 0x02, 0x03]);
+set_pokemon_cry_test!(
+    set_pokemon_cry_1,
+    1,
+    0x01,
+    0x02,
+    0x03,
+    0x3960E,
+    vec![0x01, 0x02, 0x03]
+);
 set_pokemon_cry_test!(
     set_pokemon_cry_2,
     2,

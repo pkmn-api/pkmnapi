@@ -1,4 +1,4 @@
-use pkmnapi_db::types::PokemonMachine;
+use pkmnapi_db::PokemonMachine;
 use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;

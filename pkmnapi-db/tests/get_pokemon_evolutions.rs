@@ -1,4 +1,4 @@
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -22,11 +22,11 @@ macro_rules! get_pokemon_evolutions_test {
     };
 }
 
-#[rustfmt::skip::macros(get_pokemon_evolutions_test)]
-
-get_pokemon_evolutions_test!(get_pokemon_evolutions_1, 1, vec![
-    PokemonEvolutionLevel::new(2, 16)
-]);
+get_pokemon_evolutions_test!(
+    get_pokemon_evolutions_1,
+    1,
+    vec![PokemonEvolutionLevel::new(2, 16)]
+);
 get_pokemon_evolutions_test!(
     get_pokemon_evolutions_2,
     2,

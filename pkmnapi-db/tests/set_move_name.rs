@@ -1,6 +1,6 @@
 use pkmnapi_db::patch::*;
 use pkmnapi_db::string::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -34,9 +34,13 @@ macro_rules! set_move_name_test {
     };
 }
 
-#[rustfmt::skip::macros(set_move_name_test)]
-
-set_move_name_test!(set_move_name_1, 1, "ABCDE", 0xB0000, vec![0x80, 0x81, 0x82, 0x83, 0x84]);
+set_move_name_test!(
+    set_move_name_1,
+    1,
+    "ABCDE",
+    0xB0000,
+    vec![0x80, 0x81, 0x82, 0x83, 0x84]
+);
 set_move_name_test!(
     set_move_name_2,
     2,

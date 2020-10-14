@@ -1,5 +1,5 @@
 use pkmnapi_db::patch::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -46,9 +46,15 @@ macro_rules! set_type_effect_test {
     };
 }
 
-#[rustfmt::skip::macros(set_type_effect_test)]
-
-set_type_effect_test!(set_type_effect_0, 0, 0x01, 0x03, 0.5, 0x3E474, vec![0x01, 0x03, 0x05]);
+set_type_effect_test!(
+    set_type_effect_0,
+    0,
+    0x01,
+    0x03,
+    0.5,
+    0x3E474,
+    vec![0x01, 0x03, 0x05]
+);
 set_type_effect_test!(
     set_type_effect_1,
     1,

@@ -13,7 +13,7 @@ test!(get_pokemon_pic_png_200, (client, access_token) {
     let response_body = response.body_bytes().unwrap();
     let headers = response.headers();
 
-    let body = fs::read("tests/data/BULBASAUR.png").unwrap();
+    let body = fs::read("../secrets/data/pokemon_pic/front-1.png").unwrap();
 
     assert_eq!(response_body, body);
     assert_eq!(response.status(), Status::Ok);
@@ -71,7 +71,7 @@ test!(get_pokemon_pic_jpeg_200, (client, access_token) {
     let response_body = response.body_bytes().unwrap();
     let headers = response.headers();
 
-    let body = fs::read("tests/data/BULBASAUR.jpg").unwrap();
+    let body = fs::read("../secrets/data/pokemon_pic/front-1.jpg").unwrap();
 
     assert_eq!(response_body, body);
     assert_eq!(response.status(), Status::Ok);

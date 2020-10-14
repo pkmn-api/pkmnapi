@@ -1,5 +1,5 @@
 use pkmnapi_db::pic::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 use pkmnapi_sql::*;
 use rocket::http::{ContentType, Header};
 use rocket::response::status;

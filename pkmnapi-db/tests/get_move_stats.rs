@@ -1,4 +1,4 @@
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -37,8 +37,6 @@ macro_rules! get_move_stats_test {
         }
     };
 }
-
-#[rustfmt::skip::macros(get_move_stats_test)]
 
 get_move_stats_test!(get_move_stats_1, 1, 0, 40, 0, 255.0 / 255.0, 35);
 get_move_stats_test!(get_move_stats_2, 2, 0, 50, 0, 255.0 / 255.0, 25);

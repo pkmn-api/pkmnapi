@@ -1,4 +1,4 @@
-use pkmnapi_db::types::{MapPokemonArea, MapPokemonInfo};
+use pkmnapi_db::{MapPokemonArea, MapPokemonInfo};
 use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;

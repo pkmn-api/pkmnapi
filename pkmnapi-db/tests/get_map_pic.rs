@@ -36,8 +36,6 @@ macro_rules! get_map_pic_test {
     };
 }
 
-#[rustfmt::skip::macros(get_map_pic_test)]
-
 get_map_pic_test!(get_map_pic_0, 0, 40, 36);
 get_map_pic_test!(get_map_pic_1, 1, 80, 72);
 get_map_pic_test!(get_map_pic_2, 2, 80, 72);

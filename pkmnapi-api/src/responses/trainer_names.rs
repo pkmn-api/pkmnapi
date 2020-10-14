@@ -1,4 +1,4 @@
-use pkmnapi_db::types::TrainerName;
+use pkmnapi_db::TrainerName;
 use serde::Serialize;
 
 use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};

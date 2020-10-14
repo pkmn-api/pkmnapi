@@ -1,4 +1,4 @@
-use pkmnapi_db::types::{TypeEffect, TypeName};
+use pkmnapi_db::{TypeEffect, TypeName};
 use serde::Serialize;
 
 use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};

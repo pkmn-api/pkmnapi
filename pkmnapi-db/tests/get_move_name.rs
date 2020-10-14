@@ -1,5 +1,5 @@
 use pkmnapi_db::string::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -25,8 +25,6 @@ macro_rules! get_move_name_test {
         }
     };
 }
-
-#[rustfmt::skip::macros(get_move_name_test)]
 
 get_move_name_test!(get_move_name_1, 1, "POUND");
 get_move_name_test!(get_move_name_2, 2, "KARATE CHOP");

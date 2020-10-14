@@ -1,4 +1,4 @@
-use pkmnapi_db::types::{Party, PokemonName};
+use pkmnapi_db::{Party, PokemonName};
 use serde::Serialize;
 use std::collections::HashMap;
 

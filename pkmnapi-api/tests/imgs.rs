@@ -13,7 +13,7 @@ test!(get_pokemon_logo_png_200, (client, access_token) {
     let response_body = response.body_bytes().unwrap();
     let headers = response.headers();
 
-    let body = fs::read("tests/data/pokemon_logo.png").unwrap();
+    let body = fs::read("../secrets/data/pokemon_logo.png").unwrap();
 
     assert_eq!(response_body, body);
     assert_eq!(response.status(), Status::Ok);
@@ -35,7 +35,7 @@ test!(get_pokemon_logo_jpeg_200, (client, access_token) {
     let response_body = response.body_bytes().unwrap();
     let headers = response.headers();
 
-    let body = fs::read("tests/data/pokemon_logo.jpg").unwrap();
+    let body = fs::read("../secrets/data/pokemon_logo.jpg").unwrap();
 
     assert_eq!(response_body, body);
     assert_eq!(response.status(), Status::Ok);
@@ -48,7 +48,7 @@ test!(get_pokemon_logo_jpeg_200, (client, access_token) {
 });
 
 test!(post_pokemon_logo_png_202, (client, access_token) {
-    let request_body = fs::read("tests/data/pokemon_logo.png").unwrap();
+    let request_body = fs::read("../secrets/data/pokemon_logo.png").unwrap();
 
     let request = client
         .post("/v1/imgs/pokemon_logo")
@@ -104,7 +104,7 @@ test!(post_pokemon_logo_png_405, (client, access_token) {
 });
 
 test!(post_pokemon_logo_jpeg_202, (client, access_token) {
-    let request_body = fs::read("tests/data/pokemon_logo.jpg").unwrap();
+    let request_body = fs::read("../secrets/data/pokemon_logo.jpg").unwrap();
 
     let request = client
         .post("/v1/imgs/pokemon_logo")
@@ -168,7 +168,7 @@ test!(get_town_map_png_200, (client, access_token) {
     let response_body = response.body_bytes().unwrap();
     let headers = response.headers();
 
-    let body = fs::read("tests/data/town_map.png").unwrap();
+    let body = fs::read("../secrets/data/town_map.png").unwrap();
 
     assert_eq!(response_body, body);
     assert_eq!(response.status(), Status::Ok);
@@ -190,7 +190,7 @@ test!(get_town_map_jpeg_200, (client, access_token) {
     let response_body = response.body_bytes().unwrap();
     let headers = response.headers();
 
-    let body = fs::read("tests/data/town_map.jpg").unwrap();
+    let body = fs::read("../secrets/data/town_map.jpg").unwrap();
 
     assert_eq!(response_body, body);
     assert_eq!(response.status(), Status::Ok);

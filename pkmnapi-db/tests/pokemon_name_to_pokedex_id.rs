@@ -1,5 +1,5 @@
 use pkmnapi_db::string::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -24,8 +24,6 @@ macro_rules! pokemon_name_to_pokedex_id_test {
         }
     };
 }
-
-#[rustfmt::skip::macros(pokemon_name_to_pokedex_id_test)]
 
 pokemon_name_to_pokedex_id_test!(pokemon_name_to_pokedex_id_bulbasaur, "BULBASAUR", 1);
 pokemon_name_to_pokedex_id_test!(pokemon_name_to_pokedex_id_ivysaur, "IVYSAUR", 2);

@@ -1,6 +1,6 @@
 use pkmnapi_db::patch::*;
 use pkmnapi_db::string::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -44,9 +44,15 @@ macro_rules! set_pokedex_entry_test {
     };
 }
 
-#[rustfmt::skip::macros(set_pokedex_entry_test)]
-
-set_pokedex_entry_test!(set_pokedex_entry_1, 1, "ABCD", 13, 37, 0x40E33, vec![0x80, 0x81, 0x82, 0x83, 0x50, 1, 1, 37, 0]);
+set_pokedex_entry_test!(
+    set_pokedex_entry_1,
+    1,
+    "ABCD",
+    13,
+    37,
+    0x40E33,
+    vec![0x80, 0x81, 0x82, 0x83, 0x50, 1, 1, 37, 0]
+);
 set_pokedex_entry_test!(
     set_pokedex_entry_2,
     2,

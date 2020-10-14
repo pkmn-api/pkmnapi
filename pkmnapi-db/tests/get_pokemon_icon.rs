@@ -1,4 +1,4 @@
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -24,8 +24,6 @@ macro_rules! get_pokemon_icon_test {
         }
     };
 }
-
-#[rustfmt::skip::macros(get_pokemon_icon_test)]
 
 get_pokemon_icon_test!(get_pokemon_icon_1, 1, 0x07);
 get_pokemon_icon_test!(get_pokemon_icon_2, 2, 0x07);

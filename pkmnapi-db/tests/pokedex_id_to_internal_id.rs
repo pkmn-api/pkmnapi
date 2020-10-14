@@ -20,8 +20,6 @@ macro_rules! pokedex_id_to_internal_id_test {
     };
 }
 
-#[rustfmt::skip::macros(pokedex_id_to_internal_id_test)]
-
 pokedex_id_to_internal_id_test!(pokedex_id_to_internal_id_1, 1, 152);
 pokedex_id_to_internal_id_test!(pokedex_id_to_internal_id_2, 2, 8);
 pokedex_id_to_internal_id_test!(pokedex_id_to_internal_id_3, 3, 153);

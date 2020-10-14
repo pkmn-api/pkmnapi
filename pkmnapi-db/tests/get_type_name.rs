@@ -1,5 +1,5 @@
 use pkmnapi_db::string::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -25,8 +25,6 @@ macro_rules! get_type_name_test {
         }
     };
 }
-
-#[rustfmt::skip::macros(get_type_name_test)]
 
 get_type_name_test!(get_type_name_0, 0, "NORMAL");
 get_type_name_test!(get_type_name_1, 1, "FIGHTING");

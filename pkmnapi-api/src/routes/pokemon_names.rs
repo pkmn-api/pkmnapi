@@ -1,5 +1,5 @@
 use pkmnapi_db::string::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;

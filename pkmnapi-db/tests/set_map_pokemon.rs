@@ -1,5 +1,5 @@
 use pkmnapi_db::patch::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -49,9 +49,16 @@ macro_rules! set_map_pokemon_test {
     };
 }
 
-#[rustfmt::skip::macros(set_map_pokemon_test)]
-
-set_map_pokemon_test!(set_map_pokemon_0, 0, 0, vec![], 0, vec![], 0xD0DD, vec![0x00, 0x00]);
+set_map_pokemon_test!(
+    set_map_pokemon_0,
+    0,
+    0,
+    vec![],
+    0,
+    vec![],
+    0xD0DD,
+    vec![0x00, 0x00]
+);
 set_map_pokemon_test!(
     set_map_pokemon_1,
     1,

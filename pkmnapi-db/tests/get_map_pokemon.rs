@@ -1,4 +1,4 @@
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -38,8 +38,6 @@ macro_rules! get_map_pokemon_test {
         }
     };
 }
-
-#[rustfmt::skip::macros(get_map_pokemon_test)]
 
 get_map_pokemon_test!(get_map_pokemon_0, 0, 0, vec![], 0, vec![]);
 get_map_pokemon_test!(get_map_pokemon_1, 1, 0, vec![], 0, vec![]);

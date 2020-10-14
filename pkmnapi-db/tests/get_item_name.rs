@@ -1,5 +1,5 @@
 use pkmnapi_db::string::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -25,8 +25,6 @@ macro_rules! get_item_name_test {
         }
     };
 }
-
-#[rustfmt::skip::macros(get_item_name_test)]
 
 get_item_name_test!(get_item_name_1, 1, "MASTER BALL");
 get_item_name_test!(get_item_name_2, 2, "ULTRA BALL");

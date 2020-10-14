@@ -1,4 +1,4 @@
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -44,9 +44,18 @@ macro_rules! get_pokemon_stats_test {
     };
 }
 
-#[rustfmt::skip::macros(get_pokemon_stats_test)]
-
-get_pokemon_stats_test!(get_pokemon_stats_1, 1, 45, 49, 49, 45, 65, vec![22, 3], 45, 64);
+get_pokemon_stats_test!(
+    get_pokemon_stats_1,
+    1,
+    45,
+    49,
+    49,
+    45,
+    65,
+    vec![22, 3],
+    45,
+    64
+);
 get_pokemon_stats_test!(
     get_pokemon_stats_2,
     2,

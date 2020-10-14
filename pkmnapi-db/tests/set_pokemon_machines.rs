@@ -1,5 +1,5 @@
 use pkmnapi_db::patch::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -34,31 +34,35 @@ macro_rules! set_pokemon_machines_test {
     };
 }
 
-#[rustfmt::skip::macros(set_pokemon_machines_test)]
-
-set_pokemon_machines_test!(set_pokemon_machines_1, 1, vec![
-    PokemonMachine::TM(0x02),
-    PokemonMachine::TM(0x07),
-    PokemonMachine::TM(0x09),
-    PokemonMachine::TM(0x0A),
-    PokemonMachine::TM(0x0D),
-    PokemonMachine::TM(0x11),
-    PokemonMachine::TM(0x12),
-    PokemonMachine::TM(0x13),
-    PokemonMachine::TM(0x15),
-    PokemonMachine::TM(0x16),
-    PokemonMachine::TM(0x19),
-    PokemonMachine::TM(0x21),
-    PokemonMachine::TM(0x24),
-    PokemonMachine::TM(0x26),
-    PokemonMachine::TM(0x27),
-    PokemonMachine::TM(0x2A),
-    PokemonMachine::TM(0x2F),
-    PokemonMachine::TM(0x31),
-    PokemonMachine::TM(0x32),
-    PokemonMachine::HM(0x01),
-    PokemonMachine::HM(0x02)
-], 0x383F2, vec![0x42, 0x13, 0x37, 0x01, 0x69, 0x42, 0x0F]);
+set_pokemon_machines_test!(
+    set_pokemon_machines_1,
+    1,
+    vec![
+        PokemonMachine::TM(0x02),
+        PokemonMachine::TM(0x07),
+        PokemonMachine::TM(0x09),
+        PokemonMachine::TM(0x0A),
+        PokemonMachine::TM(0x0D),
+        PokemonMachine::TM(0x11),
+        PokemonMachine::TM(0x12),
+        PokemonMachine::TM(0x13),
+        PokemonMachine::TM(0x15),
+        PokemonMachine::TM(0x16),
+        PokemonMachine::TM(0x19),
+        PokemonMachine::TM(0x21),
+        PokemonMachine::TM(0x24),
+        PokemonMachine::TM(0x26),
+        PokemonMachine::TM(0x27),
+        PokemonMachine::TM(0x2A),
+        PokemonMachine::TM(0x2F),
+        PokemonMachine::TM(0x31),
+        PokemonMachine::TM(0x32),
+        PokemonMachine::HM(0x01),
+        PokemonMachine::HM(0x02)
+    ],
+    0x383F2,
+    vec![0x42, 0x13, 0x37, 0x01, 0x69, 0x42, 0x0F]
+);
 set_pokemon_machines_test!(
     set_pokemon_machines_2,
     2,

@@ -1,4 +1,4 @@
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -35,8 +35,6 @@ macro_rules! get_type_effect_test {
         }
     };
 }
-
-#[rustfmt::skip::macros(get_type_effect_test)]
 
 get_type_effect_test!(get_type_effect_0, 0, 21, 20, 2.0);
 get_type_effect_test!(get_type_effect_1, 1, 20, 22, 2.0);

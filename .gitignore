@@ -1,3 +1,5 @@
+secrets/data
+secrets/data.zip
 site/public
 target
 Cargo.lock

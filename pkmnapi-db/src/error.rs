@@ -38,11 +38,11 @@ pub enum Error {
     PicWrongSize,
     PlayerNamesWrongSize(usize, usize),
     PokedexEntrySpeciesWrongSize(usize, usize),
+    PokedexIDInvalid(u8),
     PokedexTextWrongSize(usize, usize),
     PokemonEvolutionWrongSize(usize, usize),
     PokemonLogoWrongSize(usize, usize),
     PokemonTitleWrongSize(usize, usize),
-    PokedexIDInvalid(u8),
     SavBagItemsWrongSize(usize, usize),
     SavBoxItemsWrongSize(usize, usize),
     SavPlayerNameWrongSize(usize, usize),
@@ -85,6 +85,8 @@ impl fmt::Display for Error {
                 "Invalid icon ID {}: valid range is {}-{}",
                 icon_id, min, max
             ),
+            Error::ImgCouldNotRead => "Could not read image".to_owned(),
+            Error::ImgCouldNotWrite => "Could not write image".to_owned(),
             Error::InternalIDInvalid(internal_id) => {
                 format!("Invalid internal ID: {}", internal_id)
             }
@@ -92,28 +94,6 @@ impl fmt::Display for Error {
                 "Invalid item ID {}: valid range is {}-{}",
                 item_id, min, max
             ),
-            Error::MoveIDInvalid(move_id, min, max) => format!(
-                "Invalid move ID {}: valid range is {}-{}",
-                move_id, min, max
-            ),
-            Error::PokedexIDInvalid(pokedex_id) => format!("Invalid Pokédex ID: {}", pokedex_id),
-            Error::TMIDInvalid(tm_id, min, max) => {
-                format!("Invalid TM ID {}: valid range is {}-{}", tm_id, min, max)
-            }
-            Error::TrainerIDInvalid(item_id, min, max) => format!(
-                "Invalid trainer ID {}: valid range is {}-{}",
-                item_id, min, max
-            ),
-            Error::TypeEffectIDInvalid(type_effect_id, min, max) => format!(
-                "Invalid type effect ID {}: valid range is {}-{}",
-                type_effect_id, min, max
-            ),
-            Error::TypeIDInvalid(type_id, min, max) => format!(
-                "Invalid type ID {}: valid range is {}-{}",
-                type_id, min, max
-            ),
-            Error::ImgCouldNotRead => "Could not read image".to_owned(),
-            Error::ImgCouldNotWrite => "Could not write image".to_owned(),
             Error::ItemNameWrongSize(expected, actual) => format!(
                 "Item name length mismatch: should be exactly {} characters, found {}",
                 expected, actual
@@ -126,6 +106,10 @@ impl fmt::Display for Error {
             Error::MapPokemonWrongSize(expected, actual) => format!(
                 "Map Pokémon size mismatch: should be exactly {} bytes, found {}",
                 expected, actual
+            ),
+            Error::MoveIDInvalid(move_id, min, max) => format!(
+                "Invalid move ID {}: valid range is {}-{}",
+                move_id, min, max
             ),
             Error::MoveNameWrongSize(expected, actual) => format!(
                 "Move name length mismatch: should be exactly {} characters, found {}",
@@ -143,6 +127,7 @@ impl fmt::Display for Error {
                 "Pokédex entry species length mismatch: should be exactly {} characters, found {}",
                 expected, actual
             ),
+            Error::PokedexIDInvalid(pokedex_id) => format!("Invalid Pokédex ID: {}", pokedex_id),
             Error::PokedexTextWrongSize(expected, actual) => format!(
                 "Pokédex text length mismatch: should be {} characters or fewer, found {}",
                 expected, actual
@@ -179,6 +164,13 @@ impl fmt::Display for Error {
                 "Sav length mismatch: should be {} bytes, found {}",
                 expected, actual
             ),
+            Error::TMIDInvalid(tm_id, min, max) => {
+                format!("Invalid TM ID {}: valid range is {}-{}", tm_id, min, max)
+            }
+            Error::TrainerIDInvalid(item_id, min, max) => format!(
+                "Invalid trainer ID {}: valid range is {}-{}",
+                item_id, min, max
+            ),
             Error::TrainerNameWrongSize(expected, actual) => format!(
                 "Trainer name length mismatch: should be exactly {} characters, found {}",
                 expected, actual
@@ -192,6 +184,14 @@ impl fmt::Display for Error {
                 expected,
                 if expected == &1 { "party" } else { "parties" },
                 actual
+            ),
+            Error::TypeEffectIDInvalid(type_effect_id, min, max) => format!(
+                "Invalid type effect ID {}: valid range is {}-{}",
+                type_effect_id, min, max
+            ),
+            Error::TypeIDInvalid(type_id, min, max) => format!(
+                "Invalid type ID {}: valid range is {}-{}",
+                type_id, min, max
             ),
             Error::TypeNameWrongSize(expected, actual) => format!(
                 "Type name length mismatch: should be {} characters or fewer, found {}",

@@ -1,4 +1,4 @@
-use pkmnapi_db::types::PokemonIcon;
+use pkmnapi_db::PokemonIcon;
 use serde::Serialize;
 
 use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};

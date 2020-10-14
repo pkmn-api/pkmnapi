@@ -13,7 +13,7 @@ test!(get_trainer_pic_png_200, (client, access_token) {
     let response_body = response.body_bytes().unwrap();
     let headers = response.headers();
 
-    let body = fs::read("tests/data/YOUNGSTER.png").unwrap();
+    let body = fs::read("../secrets/data/trainer_pic/1.png").unwrap();
 
     assert_eq!(response_body, body);
     assert_eq!(response.status(), Status::Ok);
@@ -71,7 +71,7 @@ test!(get_trainer_pic_jpeg_200, (client, access_token) {
     let response_body = response.body_bytes().unwrap();
     let headers = response.headers();
 
-    let body = fs::read("tests/data/YOUNGSTER.jpg").unwrap();
+    let body = fs::read("../secrets/data/trainer_pic/1.jpg").unwrap();
 
     assert_eq!(response_body, body);
     assert_eq!(response.status(), Status::Ok);

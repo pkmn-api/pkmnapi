@@ -13,7 +13,7 @@ test!(get_icon_200, (client, access_token) {
     let response_body = response.body_bytes().unwrap();
     let headers = response.headers();
 
-    let body = fs::read("tests/data/icon-0.gif").unwrap();
+    let body = fs::read("../secrets/data/icon/0.gif").unwrap();
 
     assert_eq!(response_body, body);
     assert_eq!(response.status(), Status::Ok);

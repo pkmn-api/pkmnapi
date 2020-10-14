@@ -1,5 +1,5 @@
 use pkmnapi_db::string::*;
-use pkmnapi_db::types::*;
+use pkmnapi_db::*;
 
 mod common;
 
@@ -27,8 +27,6 @@ macro_rules! get_pokedex_entry_test {
         }
     };
 }
-
-#[rustfmt::skip::macros(get_pokedex_entry_test)]
 
 get_pokedex_entry_test!(get_pokedex_entry_1, 1, "SEED", 28, 150);
 get_pokedex_entry_test!(get_pokedex_entry_2, 2, "SEED", 39, 290);
