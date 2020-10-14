@@ -17,7 +17,8 @@
 //! );
 //! ```
 
-use crate::error;
+use crate::error::{self, Result};
+use gif::{Encoder, Frame, Repeat};
 use image::{self, DynamicImage, ImageBuffer, ImageFormat, Luma};
 
 /// Representation of an img
@@ -64,7 +65,7 @@ impl Img {
     ///     }
     /// );
     /// ```
-    pub fn new(width: &u32, height: &u32, map_tiles: &Vec<Vec<u8>>) -> Result<Self, error::Error> {
+    pub fn new(width: &u32, height: &u32, map_tiles: &Vec<Vec<u8>>) -> Result<Self> {
         let pixels: Vec<u8> = (0..(height * 8))
             .map(|y| {
                 (0..(width * 8))
@@ -88,7 +89,7 @@ impl Img {
         })
     }
 
-    fn from(data: Vec<u8>, format: ImageFormat) -> Result<Self, error::Error> {
+    fn from(data: Vec<u8>, format: ImageFormat) -> Result<Self> {
         let raw = match image::load_from_memory_with_format(&data, format) {
             Ok(img) => img,
             Err(_) => return Err(error::Error::ImgCouldNotRead),
@@ -117,15 +118,15 @@ impl Img {
         })
     }
 
-    pub fn from_png(data: Vec<u8>) -> Result<Self, error::Error> {
+    pub fn from_png(data: Vec<u8>) -> Result<Self> {
         Img::from(data, ImageFormat::Png)
     }
 
-    pub fn from_jpeg(data: Vec<u8>) -> Result<Self, error::Error> {
+    pub fn from_jpeg(data: Vec<u8>) -> Result<Self> {
         Img::from(data, ImageFormat::Jpeg)
     }
 
-    pub fn to_2bpp(&self) -> Result<Vec<u8>, error::Error> {
+    pub fn to_2bpp(&self) -> Result<Vec<u8>> {
         let tile_indices: Vec<u32> = (0..self.height)
             .map(|tile_y| {
                 (0..self.width)
@@ -187,7 +188,7 @@ impl Img {
         Ok(bpp2)
     }
 
-    fn to_img(&self, format: ImageFormat) -> Result<Vec<u8>, error::Error> {
+    fn to_img(&self, format: ImageFormat) -> Result<Vec<u8>> {
         let width = self.width * 8;
         let height = self.height * 8;
 
@@ -203,17 +204,69 @@ impl Img {
 
         match img.write_to(&mut buf, format) {
             Ok(_) => {}
-            Err(_) => return Err(error::Error::MapCouldNotWrite),
+            Err(_) => return Err(error::Error::ImgCouldNotWrite),
         }
 
         Ok(buf)
     }
 
-    pub fn to_png(&self) -> Result<Vec<u8>, error::Error> {
+    pub fn to_png(&self) -> Result<Vec<u8>> {
         self.to_img(ImageFormat::Png)
     }
 
-    pub fn to_jpeg(&self) -> Result<Vec<u8>, error::Error> {
+    pub fn to_jpeg(&self) -> Result<Vec<u8>> {
         self.to_img(ImageFormat::Jpeg)
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct Gif {
+    width: u32,
+    height: u32,
+    frames: Vec<Img>,
+}
+
+impl Gif {
+    pub fn new(frames: &Vec<Img>) -> Self {
+        let width = frames[0].width;
+        let height = frames[0].height;
+
+        Gif {
+            width,
+            height,
+            frames: frames.to_vec(),
+        }
+    }
+
+    pub fn to_gif(&self, delay: u16) -> Result<Vec<u8>> {
+        let width = (self.width * 8) as u16;
+        let height = (self.height * 8) as u16;
+
+        let mut buf = Vec::new();
+        let color_map = &[
+            0xFF, 0xFF, 0xFF, 0xAA, 0xAA, 0xAA, 0x55, 0x55, 0x55, 0x00, 0x00, 0x00,
+        ];
+        let mut encoder = match Encoder::new(&mut buf, width, height, color_map) {
+            Ok(encoder) => encoder,
+            Err(_) => return Err(error::Error::ImgCouldNotWrite),
+        };
+
+        if encoder.set_repeat(Repeat::Infinite).is_err() {
+            return Err(error::Error::ImgCouldNotWrite);
+        }
+
+        for frame in &self.frames {
+            let mut frame = Frame::from_indexed_pixels(width, height, &frame.pixels, None);
+
+            frame.delay = delay;
+
+            if encoder.write_frame(&frame).is_err() {
+                return Err(error::Error::ImgCouldNotWrite);
+            }
+        }
+
+        drop(encoder);
+
+        Ok(buf)
     }
 }

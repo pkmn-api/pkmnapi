@@ -2229,3 +2229,20 @@ impl PartialEq for PokemonMachine {
         }
     }
 }
+
+#[derive(Debug, PartialEq)]
+pub struct PokemonIcon {
+    pub icon_id: u8,
+}
+
+impl From<&u8> for PokemonIcon {
+    fn from(icon_id: &u8) -> Self {
+        PokemonIcon { icon_id: *icon_id }
+    }
+}
+
+impl PokemonIcon {
+    pub fn value(&self) -> u8 {
+        self.icon_id
+    }
+}

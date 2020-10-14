@@ -20,6 +20,7 @@ pub enum Error {
     HeaderParseError(String),
     HeaderTooSmall,
     HMIDInvalid(u8, usize, usize),
+    IconIDInvalid(u8, usize, usize),
     ImgCouldNotRead,
     ImgCouldNotWrite,
     InternalIDInvalid(u8),
@@ -80,6 +81,10 @@ impl fmt::Display for Error {
             Error::HMIDInvalid(hm_id, min, max) => {
                 format!("Invalid HM ID {}: valid range is {}-{}", hm_id, min, max)
             }
+            Error::IconIDInvalid(icon_id, min, max) => format!(
+                "Invalid icon ID {}: valid range is {}-{}",
+                icon_id, min, max
+            ),
             Error::InternalIDInvalid(internal_id) => {
                 format!("Invalid internal ID: {}", internal_id)
             }

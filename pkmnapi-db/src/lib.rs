@@ -32,6 +32,7 @@ use map::*;
 use patch::*;
 use pic::*;
 use sav::*;
+use std::cmp;
 use std::io::Cursor;
 use std::num::Wrapping;
 use types::*;
@@ -731,6 +732,45 @@ impl PkmnapiDB {
 
         if *map_id > (max_id as u8) {
             return Err(error::Error::MapIDInvalid(*map_id, min_id, max_id));
+        }
+
+        Ok((min_id, max_id))
+    }
+
+    /// Validate icon ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let icon_id = 0;
+    ///
+    /// match db.icon_id_validate(&icon_id) {
+    ///     Ok(min_max) => assert_eq!(min_max, (0, 9)),
+    ///     Err(_) => unreachable!()
+    /// };
+    ///
+    /// let icon_id = 100;
+    ///
+    /// match db.icon_id_validate(&icon_id) {
+    ///     Ok(_) => unreachable!(),
+    ///     Err(e) => assert_eq!(e, error::Error::IconIDInvalid(icon_id, 0, 9))
+    /// };
+    /// ```
+    pub fn icon_id_validate(&self, icon_id: &u8) -> Result<(usize, usize)> {
+        let min_id = 0usize;
+        let max_id = 9usize;
+
+        if icon_id > &(max_id as u8) {
+            return Err(error::Error::IconIDInvalid(*icon_id, min_id, max_id));
         }
 
         Ok((min_id, max_id))
@@ -3379,5 +3419,235 @@ impl PkmnapiDB {
         .concat();
 
         Ok(Patch::new(&offset_a, &player_names_data))
+    }
+
+    /// Get Pokémon icon by Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
+    /// use std::fs;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let pokemon_icon = db.get_pokemon_icon(&1).unwrap();
+    ///
+    /// assert_eq!(
+    ///     pokemon_icon,
+    ///     PokemonIcon {
+    ///         icon_id: 0x07
+    ///     }
+    /// );
+    /// ```
+    pub fn get_pokemon_icon(&self, pokedex_id: &u8) -> Result<PokemonIcon> {
+        let _internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
+
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x38;
+        let offset = (offset_base + 0x190D) + ((((*pokedex_id - 1) as f32) / 2.0).floor() as usize);
+
+        let icon_id = if pokedex_id % 2 == 0 {
+            self.rom[offset] & 0x0F
+        } else {
+            (self.rom[offset] & 0xF0) >> 0x04
+        };
+
+        let pokemon_icon = PokemonIcon::from(&icon_id);
+
+        Ok(pokemon_icon)
+    }
+
+    /// Set Pokémon icon by Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use pkmnapi_db::patch::*;
+    /// use pkmnapi_db::types::*;
+    /// use pkmnapi_db::*;
+    /// use std::fs;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let patch = db
+    ///     .set_pokemon_icon(
+    ///         &1,
+    ///         &PokemonIcon::from(&0x02)
+    ///     )
+    ///     .unwrap();
+    ///
+    /// assert_eq!(
+    ///     patch,
+    ///     Patch {
+    ///         offset: 0x7190D,
+    ///         length: 0x01,
+    ///         data: vec![0x27]
+    ///     }
+    /// );
+    /// ```
+    pub fn set_pokemon_icon(&self, pokedex_id: &u8, pokemon_icon: &PokemonIcon) -> Result<Patch> {
+        let _internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
+
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x38;
+        let offset = (offset_base + 0x190D) + ((((*pokedex_id - 1) as f32) / 2.0).floor() as usize);
+
+        let data = if pokedex_id % 2 == 0 {
+            vec![(self.rom[offset] & 0xF0) | pokemon_icon.value()]
+        } else {
+            vec![(self.rom[offset] & 0x0F) | (pokemon_icon.value() << 0x04)]
+        };
+
+        Ok(Patch::new(&offset, &data))
+    }
+
+    fn get_icon_frame(&self, icon_id: &u8, frame_index: &u8) -> Result<Img> {
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x38;
+        let offset = offset_base + 0x17C0;
+
+        let frame_index = cmp::min(*frame_index as usize, 1);
+
+        let icon_data: Vec<(usize, usize)> = (0..28)
+            .map(|i| {
+                let data_offset = offset + (i * 0x06);
+
+                let tile_count = self.rom[data_offset + 2] as usize;
+                let bank = self.rom[data_offset + 3] as usize;
+                let pointer = (bank * (PkmnapiDB::ROM_PAGE * 2)) - (PkmnapiDB::ROM_PAGE * 2) + {
+                    let mut cursor = Cursor::new(&self.rom[data_offset..(data_offset + 2)]);
+
+                    cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
+                };
+
+                (pointer, tile_count)
+            })
+            .collect();
+
+        let icon_datum = if *icon_id == 2 {
+            vec![((PkmnapiDB::ROM_PAGE * 0x08) + 0x1180, 4)]
+        } else if *icon_id < 6 {
+            let icon_data_index = if *icon_id >= 3 {
+                (*icon_id as usize) - 1
+            } else {
+                *icon_id as usize
+            } + (frame_index * 14);
+
+            vec![icon_data[icon_data_index]]
+        } else {
+            let icon_data_index = (5 + (((*icon_id as usize) - 6) * 2)) + (frame_index * 14);
+
+            vec![icon_data[icon_data_index], icon_data[icon_data_index + 1]]
+        };
+
+        let mut tiles: Vec<Vec<u8>> = icon_datum
+            .iter()
+            .map(|datum| {
+                let (pointer, tile_count) = datum;
+
+                (0..*tile_count)
+                    .map(|tile_id| {
+                        let tile_offset = pointer + (tile_id * 0x10);
+
+                        self.rom[tile_offset..(tile_offset + 0x10)]
+                            .to_vec()
+                            .chunks(2)
+                            .map(|chunk| {
+                                let hi_byte =
+                                    (0..8).map(|bit| (chunk[1] & (0x01 << (7 - bit))) >> (7 - bit));
+                                let lo_byte =
+                                    (0..8).map(|bit| (chunk[0] & (0x01 << (7 - bit))) >> (7 - bit));
+
+                                hi_byte
+                                    .zip(lo_byte)
+                                    .map(|(hi_bit, lo_bit)| (hi_bit << 0x01) | lo_bit)
+                                    .collect::<Vec<u8>>()
+                            })
+                            .flatten()
+                            .collect()
+                    })
+                    .collect::<Vec<Vec<u8>>>()
+            })
+            .flatten()
+            .collect();
+
+        if *icon_id <= 5 {
+            if *icon_id != 2 {
+                tiles[1] = tiles[0]
+                    .chunks(8)
+                    .map(|chunk| {
+                        let mut chunk = chunk.to_vec();
+
+                        chunk.reverse();
+
+                        chunk
+                    })
+                    .flatten()
+                    .collect();
+
+                tiles[3] = tiles[2]
+                    .chunks(8)
+                    .map(|chunk| {
+                        let mut chunk = chunk.to_vec();
+
+                        chunk.reverse();
+
+                        chunk
+                    })
+                    .flatten()
+                    .collect();
+            }
+        } else {
+            tiles = vec![
+                tiles[0].to_vec(),
+                tiles[0]
+                    .chunks(8)
+                    .map(|chunk| {
+                        let mut chunk = chunk.to_vec();
+
+                        chunk.reverse();
+
+                        chunk
+                    })
+                    .flatten()
+                    .collect(),
+                tiles[1].to_vec(),
+                tiles[1]
+                    .chunks(8)
+                    .map(|chunk| {
+                        let mut chunk = chunk.to_vec();
+
+                        chunk.reverse();
+
+                        chunk
+                    })
+                    .flatten()
+                    .collect(),
+            ];
+        }
+
+        let mut icon = Img::new(&2, &2, &tiles)?;
+
+        if [1, 2].contains(icon_id) && frame_index == 1 {
+            icon.pixels = [icon.pixels[16..].to_vec(), icon.pixels[..16].to_vec()].concat();
+        }
+
+        Ok(icon)
+    }
+
+    pub fn get_icon(&self, icon_id: &u8) -> Result<Gif> {
+        let (_min_id, _max_id) = self.icon_id_validate(icon_id)?;
+
+        let frame_a = self.get_icon_frame(icon_id, &0)?;
+        let frame_b = self.get_icon_frame(icon_id, &1)?;
+
+        let gif = Gif::new(&vec![frame_a, frame_b]);
+
+        Ok(gif)
     }
 }

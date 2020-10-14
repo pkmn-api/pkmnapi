@@ -1,6 +1,6 @@
 +++
 title = "Map Pokémon"
-weight = 6
+weight = 7
 +++
 
 | Endpoint                                           | Description             |

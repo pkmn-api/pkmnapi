@@ -1,6 +1,6 @@
 +++
 title = "TM Moves"
-weight = 22
+weight = 24
 +++
 
 | Endpoint                                   | Description         |

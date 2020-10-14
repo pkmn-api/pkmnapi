@@ -17,6 +17,12 @@ sort_by = "weight"
 | [GET /v1/hms/moves/:hm_id](@/endpoints/hm_moves.md#get-hm-move)   | Gets a HM move    |
 | [POST /v1/hms/moves/:hm_id](@/endpoints/hm_moves.md#post-hm-move) | Updates a HM move |
 
+### [Icons](@/endpoints/icons.md)
+
+| Endpoint                                                | Description  |
+|---------------------------------------------------------|--------------|
+| [GET /v1/icons/:icon_id](@/endpoints/icons.md#get-icon) | Gets an icon |
+
 ### [Imgs](@/endpoints/imgs.md)
 
 | Endpoint                                                            | Description              |
@@ -86,6 +92,13 @@ sort_by = "weight"
 |------------------------------------------------------------------------------------------------------|--------------------------------|
 | [GET /v1/pokemon/evolutions/:pokedex_id](@/endpoints/pokemon_evolutions.md#get-pokemon-evolutions)   | Gets a Pokémon's evolutions    |
 | [POST /v1/pokemon/evolutions/:pokedex_id](@/endpoints/pokemon_evolutions.md#post-pokemon-evolutions) | Updates a Pokémon's evolutions |
+
+### [Pokémon Icons](@/endpoints/pokemon_icons.md)
+
+| Endpoint                                                                             | Description              |
+|--------------------------------------------------------------------------------------|--------------------------|
+| [GET /v1/pokemon/icons/:pokedex_id](@/endpoints/pokemon_icons.md#get-pokemon-icon)   | Gets a Pokémon's icon    |
+| [POST /v1/pokemon/icons/:pokedex_id](@/endpoints/pokemon_icons.md#post-pokemon-icon) | Updates a Pokémon's icon |
 
 ### [Pokémon Machines](@/endpoints/pokemon_machines.md)
 

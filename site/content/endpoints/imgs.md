@@ -1,6 +1,6 @@
 +++
 title = "Imgs"
-weight = 3
+weight = 4
 +++
 
 | Endpoint                                         | Description              |

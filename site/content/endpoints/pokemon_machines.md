@@ -1,6 +1,6 @@
 +++
 title = "Pokémon Machines"
-weight = 13
+weight = 15
 +++
 
 | Endpoint                                                        | Description                  |
