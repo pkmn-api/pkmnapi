@@ -48,7 +48,7 @@ impl PkmnapiEmail {
     ///
     /// # Panics
     ///
-    /// Panics if the `SMTP_USER` or `SMTP_PASS` environment variables are not set
+    /// Panics if the `FROM_EMAIL`, `SMTP_USER`, or `SMTP_PASS` environment variables are not set
     ///
     /// # Example
     ///
@@ -63,6 +63,7 @@ impl PkmnapiEmail {
     pub fn new(to_email: &String, template: PkmnapiEmailTemplate) -> PkmnapiEmail {
         dotenv().ok();
 
+        env::var("FROM_EMAIL").expect("FROM_EMAIL must be set");
         env::var("SMTP_USER").expect("SMTP_USER must be set");
         env::var("SMTP_PASS").expect("SMTP_PASS must be set");
 
@@ -73,6 +74,7 @@ impl PkmnapiEmail {
     }
 
     pub fn send(&self) -> Result<(), String> {
+        let from_email = env::var("FROM_EMAIL").unwrap();
         let smtp_user = env::var("SMTP_USER").unwrap();
         let smtp_pass = env::var("SMTP_PASS").unwrap();
 
@@ -82,10 +84,7 @@ impl PkmnapiEmail {
 
         let email = match EmailBuilder::new()
             .to(self.to_email.clone())
-            .from(Mailbox::new_with_name(
-                "Pkmnapi".to_owned(),
-                smtp_user.clone(),
-            ))
+            .from(Mailbox::new_with_name("Pkmnapi".to_owned(), from_email))
             .subject(subject)
             .alternative(body_html, body_text)
             .build()
