@@ -132,6 +132,8 @@ pub enum BaseErrorResponseId {
     error_trainer_parties_invalid,
     error_trainer_parties,
     error_trainer_pics,
+    error_trainer_rewards_invalid,
+    error_trainer_rewards,
     error_type_effects_invalid,
     error_type_effects,
     error_type_names_invalid,

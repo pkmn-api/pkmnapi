@@ -23,6 +23,7 @@ mod town_map_img;
 mod trainer_name;
 mod trainer_parties;
 mod trainer_pic;
+mod trainer_reward;
 mod type_effect;
 mod type_name;
 
@@ -51,5 +52,6 @@ pub use town_map_img::*;
 pub use trainer_name::*;
 pub use trainer_parties::*;
 pub use trainer_pic::*;
+pub use trainer_reward::*;
 pub use type_effect::*;
 pub use type_name::*;

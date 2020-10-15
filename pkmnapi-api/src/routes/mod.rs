@@ -27,5 +27,6 @@ pub mod tm_prices;
 pub mod trainer_names;
 pub mod trainer_parties;
 pub mod trainer_pics;
+pub mod trainer_rewards;
 pub mod type_effects;
 pub mod type_names;

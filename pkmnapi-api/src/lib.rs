@@ -123,6 +123,8 @@ impl Pkmnapi {
                     routes::trainer_pics::get_trainer_pic_png,
                     routes::trainer_pics::post_trainer_pic_jpeg,
                     routes::trainer_pics::post_trainer_pic_png,
+                    routes::trainer_rewards::get_trainer_reward,
+                    routes::trainer_rewards::post_trainer_reward,
                     routes::type_effects::get_type_effect,
                     routes::type_effects::post_type_effect,
                     routes::type_names::get_type_name,

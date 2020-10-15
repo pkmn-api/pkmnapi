@@ -48,6 +48,7 @@ pub enum BaseResponseType {
     tm_prices,
     trainer_names,
     trainer_parties,
+    trainer_rewards,
     type_effects,
     type_names,
 }

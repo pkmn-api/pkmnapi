@@ -200,6 +200,13 @@ sort_by = "weight"
 | [GET /v1/trainers/pics/:trainer_id](@/endpoints/trainer_pics.md#get-trainer-pic)   | Gets a trainer's pic    |
 | [POST /v1/trainers/pics/:trainer_id](@/endpoints/trainer_pics.md#post-trainer-pic) | Updates a trainer's pic |
 
+### [Trainer Rewards](@/endpoints/trainer_rewards.md)
+
+| Endpoint                                                                                    | Description                |
+|---------------------------------------------------------------------------------------------|----------------------------|
+| [GET /v1/trainers/rewards/:trainer_id](@/endpoints/trainer_rewards.md#get-trainer-reward)   | Gets a trainer's reward    |
+| [POST /v1/trainers/rewards/:trainer_id](@/endpoints/trainer_rewards.md#post-trainer-reward) | Updates a trainer's reward |
+
 ### [Type Effects](@/endpoints/type_effects.md)
 
 | Endpoint                                                                               | Description           |
