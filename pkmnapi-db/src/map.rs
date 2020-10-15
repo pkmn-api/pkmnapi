@@ -17,7 +17,7 @@
 //! );
 //! ```
 
-use crate::error;
+use crate::error::{self, Result};
 use image::{self, DynamicImage, ImageBuffer, ImageFormat, Luma};
 
 /// Representation of a map
@@ -64,7 +64,7 @@ impl Map {
     ///     }
     /// );
     /// ```
-    pub fn new(width: &u32, height: &u32, map_tiles: &Vec<Vec<u8>>) -> Result<Self, error::Error> {
+    pub fn new(width: &u32, height: &u32, map_tiles: &Vec<Vec<u8>>) -> Result<Self> {
         let pixels: Vec<u8> = (0..(height * 4 * 8))
             .map(|y| {
                 (0..(width * 4 * 8))
@@ -88,7 +88,7 @@ impl Map {
         })
     }
 
-    fn to_img(&self, format: ImageFormat) -> Result<Vec<u8>, error::Error> {
+    fn to_img(&self, format: ImageFormat) -> Result<Vec<u8>> {
         let width = self.width * 8;
         let height = self.height * 8;
 
@@ -110,11 +110,11 @@ impl Map {
         Ok(buf)
     }
 
-    pub fn to_png(&self) -> Result<Vec<u8>, error::Error> {
+    pub fn to_png(&self) -> Result<Vec<u8>> {
         self.to_img(ImageFormat::Png)
     }
 
-    pub fn to_jpeg(&self) -> Result<Vec<u8>, error::Error> {
+    pub fn to_jpeg(&self) -> Result<Vec<u8>> {
         self.to_img(ImageFormat::Jpeg)
     }
 }

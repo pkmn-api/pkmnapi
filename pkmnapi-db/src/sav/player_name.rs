@@ -1,4 +1,4 @@
-use crate::error;
+use crate::error::{self, Result};
 use crate::patch::*;
 use crate::sav::Sav;
 use crate::string::*;
@@ -28,7 +28,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn get_player_name(&self) -> Result<SavePlayerName, error::Error> {
+    pub fn get_player_name(&self) -> Result<SavePlayerName> {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x598;
 
@@ -69,10 +69,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_player_name(
-        &self,
-        save_player_name: &SavePlayerName,
-    ) -> Result<Patch, error::Error> {
+    pub fn set_player_name(&self, save_player_name: &SavePlayerName) -> Result<Patch> {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x598;
 

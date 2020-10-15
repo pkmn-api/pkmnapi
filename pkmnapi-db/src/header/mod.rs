@@ -36,7 +36,7 @@ pub use ram_size::*;
 pub use rom_size::*;
 pub use sgb_flag::*;
 
-use crate::error;
+use crate::error::{self, Result};
 use byteorder::{BigEndian, ReadBytesExt};
 use std::io::Cursor;
 use std::num::Wrapping;
@@ -85,7 +85,7 @@ impl Header {
     /// # #[cfg(not(feature = "PKMN_RED"))]
     /// assert_eq!(header.title, "POKEMON BLUE");
     /// ```
-    pub fn from(rom: &[u8]) -> Result<Header, error::Error> {
+    pub fn from(rom: &[u8]) -> Result<Header> {
         if rom.len() < 0x150 {
             return Err(error::Error::HeaderTooSmall);
         }

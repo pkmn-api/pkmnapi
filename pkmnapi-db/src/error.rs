@@ -58,6 +58,12 @@ pub enum Error {
     TypeNameWrongSize(usize, usize),
 }
 
+impl std::error::Error for Error {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(self)
+    }
+}
+
 impl fmt::Display for Error {
     /// Converts the error to a String
     ///

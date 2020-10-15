@@ -42,7 +42,7 @@ pub use pokemon_owned::*;
 pub use pokemon_seen::*;
 pub use rival_name::*;
 
-use crate::error;
+use crate::error::{self, Result};
 use crate::patch::*;
 use crate::PkmnapiDB;
 use std::num::Wrapping;
@@ -67,7 +67,7 @@ impl Sav {
     /// let sav = Sav::new(&sav_data).unwrap();
     ///
     /// assert_eq!(sav.sav.len(), 0x8000);
-    pub fn new(sav: &Vec<u8>) -> Result<Self, error::Error> {
+    pub fn new(sav: &Vec<u8>) -> Result<Self> {
         let sav_len = sav.len();
         let expected_sav_len = 0x8000;
 
@@ -132,7 +132,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn generate_checksum(&self) -> Result<Patch, error::Error> {
+    pub fn generate_checksum(&self) -> Result<Patch> {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset_start = offset_base + 0x0598;
         let offset_end = offset_base + 0x1522;

@@ -1,4 +1,4 @@
-use crate::error;
+use crate::error::Result;
 use crate::patch::*;
 use crate::sav::Sav;
 use crate::PkmnapiDB;
@@ -26,7 +26,7 @@ impl Sav {
     ///     0x1234
     /// );
     /// ```
-    pub fn get_coins(&self) -> Result<u16, error::Error> {
+    pub fn get_coins(&self) -> Result<u16> {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x850;
 
@@ -68,7 +68,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_coins(&self, save_coins: &u16) -> Result<Patch, error::Error> {
+    pub fn set_coins(&self, save_coins: &u16) -> Result<Patch> {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x850;
 

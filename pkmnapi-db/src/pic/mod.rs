@@ -25,7 +25,7 @@ mod encoding_method;
 
 pub use encoding_method::EncodingMethod as PicEncodingMethod;
 
-use crate::error;
+use crate::error::{self, Result};
 use bitplane::*;
 use bitstream::*;
 use image::{self, DynamicImage, ImageBuffer, ImageFormat, Luma};
@@ -80,7 +80,7 @@ impl Pic {
     ///     }
     /// );
     /// ```
-    pub fn new(data: &[u8]) -> Result<Self, error::Error> {
+    pub fn new(data: &[u8]) -> Result<Self> {
         let mut bitstream = Bitstream::from(data);
 
         let width = bitstream.get(4) as u8;
@@ -217,7 +217,7 @@ impl Pic {
         data
     }
 
-    fn from(data: Vec<u8>, format: ImageFormat) -> Result<Self, error::Error> {
+    fn from(data: Vec<u8>, format: ImageFormat) -> Result<Self> {
         let raw = match image::load_from_memory_with_format(&data, format) {
             Ok(img) => img,
             Err(_) => return Err(error::Error::PicCouldNotRead),
@@ -254,11 +254,11 @@ impl Pic {
         })
     }
 
-    pub fn from_png(data: Vec<u8>) -> Result<Self, error::Error> {
+    pub fn from_png(data: Vec<u8>) -> Result<Self> {
         Pic::from(data, ImageFormat::Png)
     }
 
-    pub fn from_jpeg(data: Vec<u8>) -> Result<Self, error::Error> {
+    pub fn from_jpeg(data: Vec<u8>) -> Result<Self> {
         Pic::from(data, ImageFormat::Jpeg)
     }
 
@@ -408,7 +408,7 @@ impl Pic {
         output
     }
 
-    fn to_img(&self, format: ImageFormat, mirror: bool) -> Result<Vec<u8>, error::Error> {
+    fn to_img(&self, format: ImageFormat, mirror: bool) -> Result<Vec<u8>> {
         let width = self.width as u32 * 8;
         let height = self.height as u32 * 8;
 
@@ -436,11 +436,11 @@ impl Pic {
         Ok(buf)
     }
 
-    pub fn to_png(&self, mirror: bool) -> Result<Vec<u8>, error::Error> {
+    pub fn to_png(&self, mirror: bool) -> Result<Vec<u8>> {
         self.to_img(ImageFormat::Png, mirror)
     }
 
-    pub fn to_jpeg(&self, mirror: bool) -> Result<Vec<u8>, error::Error> {
+    pub fn to_jpeg(&self, mirror: bool) -> Result<Vec<u8>> {
         self.to_img(ImageFormat::Jpeg, mirror)
     }
 }

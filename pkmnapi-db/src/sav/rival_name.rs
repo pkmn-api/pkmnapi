@@ -1,4 +1,4 @@
-use crate::error;
+use crate::error::{self, Result};
 use crate::patch::*;
 use crate::sav::Sav;
 use crate::string::*;
@@ -28,7 +28,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn get_rival_name(&self) -> Result<SaveRivalName, error::Error> {
+    pub fn get_rival_name(&self) -> Result<SaveRivalName> {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x5F6;
 
@@ -69,7 +69,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_rival_name(&self, save_rival_name: &SaveRivalName) -> Result<Patch, error::Error> {
+    pub fn set_rival_name(&self, save_rival_name: &SaveRivalName) -> Result<Patch> {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x5F6;
 

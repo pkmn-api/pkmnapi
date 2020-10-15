@@ -1,4 +1,4 @@
-use crate::error;
+use crate::error::Result;
 use crate::patch::*;
 use crate::sav::Sav;
 use crate::PkmnapiDB;
@@ -24,7 +24,7 @@ impl Sav {
     ///     0x00
     /// );
     /// ```
-    pub fn get_current_box(&self) -> Result<u8, error::Error> {
+    pub fn get_current_box(&self) -> Result<u8> {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x84C;
 
@@ -62,7 +62,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_current_box(&self, current_box: &u8) -> Result<Patch, error::Error> {
+    pub fn set_current_box(&self, current_box: &u8) -> Result<Patch> {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x84C;
 

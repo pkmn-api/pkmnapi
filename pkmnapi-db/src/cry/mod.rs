@@ -27,7 +27,7 @@ use hound::{SampleFormat, WavSpec, WavWriter};
 use std::cmp;
 use std::io::Cursor;
 
-use crate::error;
+use crate::error::{self, Result};
 
 #[derive(Debug, PartialEq)]
 pub struct Cry {
@@ -323,7 +323,7 @@ impl Cry {
         new_samples
     }
 
-    pub fn to_wav(&self, sample_rate: u32) -> Result<Vec<u8>, error::Error> {
+    pub fn to_wav(&self, sample_rate: u32) -> Result<Vec<u8>> {
         let spec = WavSpec {
             channels: 1,
             sample_rate,
@@ -346,7 +346,7 @@ impl Cry {
                     Err(_) => return Err(error::Error::CryCouldNotWriteSample),
                 },
             )
-            .collect::<Result<(), error::Error>>()
+            .collect::<Result<()>>()
         {
             Ok(_) => {}
             Err(e) => return Err(e),

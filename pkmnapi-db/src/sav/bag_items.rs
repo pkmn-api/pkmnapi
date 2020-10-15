@@ -1,4 +1,4 @@
-use crate::error;
+use crate::error::{self, Result};
 use crate::patch::*;
 use crate::sav::Sav;
 use crate::PkmnapiDB;
@@ -33,7 +33,7 @@ impl Sav {
     ///     ]
     /// );
     /// ```
-    pub fn get_bag_items(&self) -> Result<Vec<SaveItem>, error::Error> {
+    pub fn get_bag_items(&self) -> Result<Vec<SaveItem>> {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x5C9;
         let max_len = 20;
@@ -85,7 +85,7 @@ impl Sav {
     ///     }
     /// );
     /// ```
-    pub fn set_bag_items(&self, save_bag_items: &Vec<SaveItem>) -> Result<Patch, error::Error> {
+    pub fn set_bag_items(&self, save_bag_items: &Vec<SaveItem>) -> Result<Patch> {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset = offset_base + 0x5C9;
         let max_len = 20;
