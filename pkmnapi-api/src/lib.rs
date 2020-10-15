@@ -89,6 +89,8 @@ impl Pkmnapi {
                     routes::pokemon_evolutions::post_pokemon_evolutions,
                     routes::pokemon_icons::get_pokemon_icon,
                     routes::pokemon_icons::post_pokemon_icon,
+                    routes::pokemon_learnsets::get_pokemon_learnset,
+                    routes::pokemon_learnsets::post_pokemon_learnset,
                     routes::pokemon_machines::get_pokemon_machines,
                     routes::pokemon_machines::post_pokemon_machines,
                     routes::pokemon_names::get_pokemon_name,

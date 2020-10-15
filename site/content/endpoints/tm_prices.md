@@ -1,6 +1,6 @@
 +++
 title = "TM Prices"
-weight = 25
+weight = 26
 +++
 
 | Endpoint                                     | Description          |

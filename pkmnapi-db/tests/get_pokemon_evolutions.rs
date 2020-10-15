@@ -11,8 +11,8 @@ macro_rules! get_pokemon_evolutions_test {
             let db = common::load_rom();
 
             match db.get_pokemon_evolutions(&$pokedex_id) {
-                Ok(pokemon_name) => assert_eq!(
-                    pokemon_name, $pokemon_evolutions,
+                Ok(pokemon_evolutions) => assert_eq!(
+                    pokemon_evolutions, $pokemon_evolutions,
                     "Searched for Pokédex ID: {}",
                     $pokedex_id
                 ),

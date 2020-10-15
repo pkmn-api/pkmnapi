@@ -1,6 +1,6 @@
 +++
 title = "Trainer Parties"
-weight = 27
+weight = 28
 +++
 
 | Endpoint                                                       | Description                 |

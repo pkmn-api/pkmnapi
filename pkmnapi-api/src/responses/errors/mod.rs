@@ -104,6 +104,8 @@ pub enum BaseErrorResponseId {
     error_pokemon_evolutions,
     error_pokemon_icons_invalid,
     error_pokemon_icons,
+    error_pokemon_learnsets_invalid,
+    error_pokemon_learnsets,
     error_pokemon_logo_imgs,
     error_pokemon_machines_invalid,
     error_pokemon_machines,

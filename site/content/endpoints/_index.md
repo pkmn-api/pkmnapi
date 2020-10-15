@@ -100,6 +100,13 @@ sort_by = "weight"
 | [GET /v1/pokemon/icons/:pokedex_id](@/endpoints/pokemon_icons.md#get-pokemon-icon)   | Gets a Pokémon's icon    |
 | [POST /v1/pokemon/icons/:pokedex_id](@/endpoints/pokemon_icons.md#post-pokemon-icon) | Updates a Pokémon's icon |
 
+### [Pokémon Learnset](@/endpoints/pokemon_learnset.md)
+
+| Endpoint                                                                                        | Description                  |
+|-------------------------------------------------------------------------------------------------|------------------------------|
+| [GET /v1/pokemon/learnsets/:pokedex_id](@/endpoints/pokemon_learnset.md#get-pokemon-learnset)   | Gets a Pokémon's learnset    |
+| [POST /v1/pokemon/learnsets/:pokedex_id](@/endpoints/pokemon_learnset.md#post-pokemon-learnset) | Updates a Pokémon's learnset |
+
 ### [Pokémon Machines](@/endpoints/pokemon_machines.md)
 
 | Endpoint                                                                                       | Description                  |

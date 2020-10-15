@@ -37,6 +37,7 @@ pub enum BaseResponseType {
     pokemon_cries,
     pokemon_evolutions,
     pokemon_icons,
+    pokemon_learnsets,
     pokemon_machines,
     pokemon_names,
     pokemon_stats,

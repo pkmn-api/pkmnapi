@@ -41,6 +41,7 @@ pub enum Error {
     PokedexIDInvalid(u8),
     PokedexTextWrongSize(usize, usize),
     PokemonEvolutionWrongSize(usize, usize),
+    PokemonLearnsetWrongSize(usize, usize),
     PokemonLogoWrongSize(usize, usize),
     PokemonTitleWrongSize(usize, usize),
     SavBagItemsWrongSize(usize, usize),
@@ -140,6 +141,10 @@ impl fmt::Display for Error {
             ),
             Error::PokemonEvolutionWrongSize(expected, actual) => format!(
                 "Pokémon evolutions length mismatch, should be exactly {} bytes, found {}",
+                expected, actual
+            ),
+            Error::PokemonLearnsetWrongSize(expected, actual) => format!(
+                "Pokémon learnset length mismatch, should be exactly {} bytes, found {}",
                 expected, actual
             ),
             Error::PokemonLogoWrongSize(expected, actual) => format!(
