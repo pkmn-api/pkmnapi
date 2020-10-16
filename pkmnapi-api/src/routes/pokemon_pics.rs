@@ -28,35 +28,9 @@ pub fn get_pokemon_pic_png<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pic = match db.get_pokemon_pic(&pokedex_id, &PokemonPicFace::from(face)) {
-        Ok(pic) => pic,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let pokemon_name = match db.get_pokemon_name(&pokedex_id) {
-        Ok(pokemon_name) => pokemon_name,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let img = match pic.to_png(mirror.is_some()) {
-        Ok(img) => img,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let pic = db.get_pokemon_pic(&pokedex_id, &PokemonPicFace::from(face))?;
+    let pokemon_name = db.get_pokemon_name(&pokedex_id)?;
+    let img = pic.to_png(mirror.is_some())?;
 
     let response = Response::build()
         .header(ContentType::PNG)
@@ -86,35 +60,9 @@ pub fn get_pokemon_pic_jpeg<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pic = match db.get_pokemon_pic(&pokedex_id, &PokemonPicFace::from(face)) {
-        Ok(pic) => pic,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let pokemon_name = match db.get_pokemon_name(&pokedex_id) {
-        Ok(pokemon_name) => pokemon_name,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let img = match pic.to_jpeg(mirror.is_some()) {
-        Ok(img) => img,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let pic = db.get_pokemon_pic(&pokedex_id, &PokemonPicFace::from(face))?;
+    let pokemon_name = db.get_pokemon_name(&pokedex_id)?;
+    let img = pic.to_jpeg(mirror.is_some())?;
 
     let response = Response::build()
         .header(ContentType::JPEG)
@@ -149,32 +97,14 @@ pub fn post_pokemon_pic_png<'a>(
     let (db, connection) = utils::get_db(&sql, &access_token)?;
     let raw_data = utils::get_data_raw(data);
 
-    let pic = match Pic::from_png(raw_data) {
-        Ok(pic) => pic,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
+    let pic = Pic::from_png(raw_data)?;
     let encoding_method = PicEncodingMethod::from(method.unwrap_or(0x01), primary.unwrap_or(0x00));
-
-    let patch = match db.set_pokemon_pic(
+    let patch = db.set_pokemon_pic(
         &pokedex_id,
         &PokemonPicFace::from(face),
         &pic,
         encoding_method,
-    ) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    )?;
 
     utils::insert_rom_patch(
         sql,
@@ -209,32 +139,14 @@ pub fn post_pokemon_pic_jpeg<'a>(
     let (db, connection) = utils::get_db(&sql, &access_token)?;
     let raw_data = utils::get_data_raw(data);
 
-    let pic = match Pic::from_jpeg(raw_data) {
-        Ok(pic) => pic,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
+    let pic = Pic::from_jpeg(raw_data)?;
     let encoding_method = PicEncodingMethod::from(method.unwrap_or(0x01), primary.unwrap_or(0x00));
-
-    let patch = match db.set_pokemon_pic(
+    let patch = db.set_pokemon_pic(
         &pokedex_id,
         &PokemonPicFace::from(face),
         &pic,
         encoding_method,
-    ) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    )?;
 
     utils::insert_rom_patch(
         sql,

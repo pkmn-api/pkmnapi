@@ -16,7 +16,7 @@ pub fn get_rom_patches(
     sql: State<PkmnapiSQL>,
     _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
-) -> Result<Json<RomPatchesResponse>, ResponseError> {
+) -> Result<Json<RomPatchResponseAll>, ResponseError> {
     let access_token = utils::get_access_token(access_token)?;
 
     let connection = sql.get_connection().unwrap();
@@ -25,7 +25,7 @@ pub fn get_rom_patches(
         Err(_) => return Err(RomErrorNoRom::new()),
     };
 
-    let response = RomPatchesResponse::new(&patches);
+    let response = RomPatchResponseAll::new(&patches);
 
     Ok(Json(response))
 }

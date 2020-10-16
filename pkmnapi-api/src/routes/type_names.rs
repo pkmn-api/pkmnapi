@@ -11,6 +11,26 @@ use crate::responses::errors::*;
 use crate::responses::type_names::*;
 use crate::utils;
 
+#[get("/types/names")]
+pub fn get_type_name_all(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Json<TypeNameResponseAll>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let (min_type_id, max_type_id) = db.type_id_bounds();
+    let type_ids: Vec<u8> = (min_type_id..=max_type_id)
+        .map(|type_id| type_id as u8)
+        .collect();
+    let type_names = db.get_type_name_all(&type_ids)?;
+
+    let response = TypeNameResponseAll::new(&type_ids, &type_names);
+
+    Ok(Json(response))
+}
+
 #[get("/types/names/<type_id>")]
 pub fn get_type_name(
     sql: State<PkmnapiSQL>,
@@ -21,15 +41,8 @@ pub fn get_type_name(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let type_name = match db.get_type_name(&type_id) {
-        Ok(type_name) => type_name,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_type_names,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let type_name = db.get_type_name(&type_id)?;
+
     let response = TypeNameResponse::new(&type_id, &type_name);
 
     Ok(Json(response))
@@ -52,15 +65,7 @@ pub fn post_type_name(
         name: ROMString::from(data.get_name()),
     };
 
-    let patch = match db.set_type_name(&type_id, &type_name) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_type_names,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_type_name(&type_id, &type_name)?;
 
     utils::insert_rom_patch(
         sql,

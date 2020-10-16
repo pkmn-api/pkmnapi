@@ -3,9 +3,23 @@ use crate::error::Result;
 use crate::patch::*;
 use crate::PkmnapiDB;
 use byteorder::{LittleEndian, ReadBytesExt};
+use std::collections::HashMap;
 use std::io::Cursor;
 
 impl PkmnapiDB {
+    pub fn get_pokemon_cry_all(&self, pokedex_ids: &Vec<u8>) -> Result<HashMap<u8, Cry>> {
+        let pokemon_cry_all: HashMap<u8, Cry> = pokedex_ids
+            .iter()
+            .map(|pokedex_id| {
+                let pokemon_cry = self.get_pokemon_cry(pokedex_id)?;
+
+                Ok((*pokedex_id, pokemon_cry))
+            })
+            .collect::<Result<HashMap<u8, Cry>>>()?;
+
+        Ok(pokemon_cry_all)
+    }
+
     pub fn get_pokemon_cry(&self, pokedex_id: &u8) -> Result<Cry> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 

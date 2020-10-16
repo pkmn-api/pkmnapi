@@ -1,16 +1,43 @@
 use pkmnapi_db::{MoveName, HM};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
-use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};
+use crate::responses::base::{BaseResponse, BaseResponseAll, BaseResponseData, BaseResponseType};
 use crate::responses::links::Links;
 use crate::responses::move_names::MoveNameResponseData;
 use crate::utils;
 
 pub type HMMoveResponse = BaseResponse<HMMoveResponseAttributes>;
 pub type HMMoveResponseData = BaseResponseData<HMMoveResponseAttributes>;
+pub type HMMoveResponseAll = BaseResponseAll<HMMoveResponseData>;
+
+impl HMMoveResponseAll {
+    pub fn new(
+        hm_ids: &Vec<u8>,
+        hms: &HashMap<u8, HM>,
+        move_names: &HashMap<u8, MoveName>,
+    ) -> HMMoveResponseAll {
+        HMMoveResponseAll {
+            data: hm_ids
+                .iter()
+                .map(|hm_id| {
+                    let hm = hms.get(hm_id).unwrap();
+
+                    HMMoveResponseData::new(
+                        hm_id,
+                        hms.get(hm_id).unwrap(),
+                        move_names.get(&hm.move_id).unwrap(),
+                    )
+                })
+                .collect(),
+            links: Links {
+                _self: utils::generate_url("hms/moves", None),
+            },
+        }
+    }
+}
 
 impl HMMoveResponse {
-    /// Create a new `HMMoveResponse`
     pub fn new(hm_id: &u8, hm: &HM, move_name: &MoveName) -> HMMoveResponse {
         HMMoveResponse {
             data: HMMoveResponseData::new(hm_id, hm, move_name),
@@ -36,7 +63,7 @@ impl HMMoveResponseData {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct HMMoveResponseAttributes {
     #[serde(rename = "move")]
     pub _move: MoveNameResponseData,

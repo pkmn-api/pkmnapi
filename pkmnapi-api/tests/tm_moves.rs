@@ -1,7 +1,28 @@
+use pkmnapi_api::responses::tm_moves::TMMoveResponseAll;
 use rocket::http::{ContentType, Status};
 use serde_json::json;
 
 mod common;
+
+test!(get_tm_move_all_200, (client, access_token) {
+    let request = client
+        .get("/v1/tms/moves")
+        .header(common::auth_header(&access_token));
+
+    let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
+
+    let body = common::load_json::<TMMoveResponseAll>("../secrets/data/json/get_tm_move_all_200.json");
+
+    assert_eq!(response_body, body);
+    assert_eq!(response.status(), Status::Ok);
+
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
 test!(get_tm_move_200, (client, access_token) {
     let request = client
@@ -65,7 +86,7 @@ test!(get_tm_move_404, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_tm_moves",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Invalid TM ID 200: valid range is 1-50"
@@ -202,7 +223,7 @@ test!(post_tm_move_404, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_tm_moves",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Invalid TM ID 200: valid range is 1-50"

@@ -11,6 +11,26 @@ use crate::responses::errors::*;
 use crate::responses::item_names::*;
 use crate::utils;
 
+#[get("/items/names")]
+pub fn get_item_name_all(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Json<ItemNameResponseAll>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let (min_item_id, max_item_id) = db.item_id_bounds();
+    let item_ids: Vec<u8> = (min_item_id..=max_item_id)
+        .map(|item_id| item_id as u8)
+        .collect();
+    let item_names = db.get_item_name_all(&item_ids)?;
+
+    let response = ItemNameResponseAll::new(&item_ids, &item_names);
+
+    Ok(Json(response))
+}
+
 #[get("/items/names/<item_id>")]
 pub fn get_item_name(
     sql: State<PkmnapiSQL>,
@@ -21,15 +41,8 @@ pub fn get_item_name(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let item_name = match db.get_item_name(&item_id) {
-        Ok(item_name) => item_name,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_item_names,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let item_name = db.get_item_name(&item_id)?;
+
     let response = ItemNameResponse::new(&item_id, &item_name);
 
     Ok(Json(response))
@@ -52,15 +65,7 @@ pub fn post_item_name(
         name: ROMString::from(data.get_name()),
     };
 
-    let patch = match db.set_item_name(&item_id, &item_name) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_item_names,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_item_name(&item_id, &item_name)?;
 
     utils::insert_rom_patch(
         sql,

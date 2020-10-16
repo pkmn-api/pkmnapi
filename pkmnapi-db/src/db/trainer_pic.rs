@@ -7,10 +7,10 @@ use std::io::Cursor;
 
 impl PkmnapiDB {
     pub fn get_trainer_pic(&self, trainer_id: &u8) -> Result<Pic> {
+        self.trainer_id_validate(trainer_id)?;
+
         let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset_base = offset_base + 0x1914;
-
-        let (_min_id, _max_id) = self.trainer_id_validate(trainer_id)?;
 
         let offset = offset_base + (((*trainer_id - 1) as usize) * 0x05);
 

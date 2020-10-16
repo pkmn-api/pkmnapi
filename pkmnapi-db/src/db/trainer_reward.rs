@@ -1,8 +1,22 @@
 use crate::error::Result;
 use crate::patch::*;
 use crate::PkmnapiDB;
+use std::collections::HashMap;
 
 impl PkmnapiDB {
+    pub fn get_trainer_reward_all(&self, trainer_ids: &Vec<u8>) -> Result<HashMap<u8, u32>> {
+        let trainer_reward_all: HashMap<u8, u32> = trainer_ids
+            .iter()
+            .map(|trainer_id| {
+                let trainer_reward = self.get_trainer_reward(trainer_id)?;
+
+                Ok((*trainer_id, trainer_reward))
+            })
+            .collect::<Result<HashMap<u8, u32>>>()?;
+
+        Ok(trainer_reward_all)
+    }
+
     /// Get trainer reward by trainer ID
     ///
     /// # Example
@@ -25,7 +39,7 @@ impl PkmnapiDB {
     /// );
     /// ```
     pub fn get_trainer_reward(&self, trainer_id: &u8) -> Result<u32> {
-        let (_min_id, _max_id) = self.trainer_id_validate(trainer_id)?;
+        self.trainer_id_validate(trainer_id)?;
 
         let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = (offset_base + 0x1914) + (((*trainer_id - 1) as usize) * 0x05);
@@ -79,7 +93,7 @@ impl PkmnapiDB {
     /// );
     /// ```
     pub fn set_trainer_reward(&self, trainer_id: &u8, trainer_reward: &u32) -> Result<Patch> {
-        let (_min_id, _max_id) = self.trainer_id_validate(trainer_id)?;
+        self.trainer_id_validate(trainer_id)?;
 
         let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = ((offset_base + 0x1914) + (((*trainer_id - 1) as usize) * 0x05)) + 0x02;

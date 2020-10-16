@@ -11,6 +11,26 @@ use crate::responses::errors::*;
 use crate::responses::pokemon_names::*;
 use crate::utils;
 
+#[get("/pokemon/names")]
+pub fn get_pokemon_name_all(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Json<PokemonNameResponseAll>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let (min_pokedex_id, max_pokedex_id) = db.pokedex_id_bounds();
+    let pokedex_ids: Vec<u8> = (min_pokedex_id..=max_pokedex_id)
+        .map(|pokedex_id| pokedex_id as u8)
+        .collect();
+    let pokemon_names = db.get_pokemon_name_all(&pokedex_ids)?;
+
+    let response = PokemonNameResponseAll::new(&pokedex_ids, &pokemon_names);
+
+    Ok(Json(response))
+}
+
 #[get("/pokemon/names/<pokedex_id>")]
 pub fn get_pokemon_name(
     sql: State<PkmnapiSQL>,
@@ -21,15 +41,8 @@ pub fn get_pokemon_name(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokemon_name = match db.get_pokemon_name(&pokedex_id) {
-        Ok(pokemon_name) => pokemon_name,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_names,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let pokemon_name = db.get_pokemon_name(&pokedex_id)?;
+
     let response = PokemonNameResponse::new(&pokedex_id, &pokemon_name);
 
     Ok(Json(response))
@@ -56,15 +69,7 @@ pub fn post_pokemon_name(
         name: ROMString::from(data.get_name()),
     };
 
-    let patch = match db.set_pokemon_name(&pokedex_id, &pokemon_name) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_names,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_pokemon_name(&pokedex_id, &pokemon_name)?;
 
     utils::insert_rom_patch(
         sql,

@@ -18,25 +18,8 @@ pub fn get_icon<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let icon = match db.get_icon(&icon_id) {
-        Ok(icon) => icon,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_icons,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let gif = match icon.to_gif(26) {
-        Ok(gif) => gif,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_icons,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let icon = db.get_icon(&icon_id)?;
+    let gif = icon.to_gif(26)?;
 
     let response = Response::build()
         .header(ContentType::GIF)

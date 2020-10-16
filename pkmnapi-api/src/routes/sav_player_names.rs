@@ -25,17 +25,8 @@ pub fn get_sav_player_name(
         None => return Err(SavErrorNoSav::new()),
     };
 
-    let player_id = sav.get_player_id().unwrap_or(0x00);
-
-    let player_name = match sav.get_player_name() {
-        Ok(player_name) => player_name,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_sav_player_names,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let player_id = sav.get_player_id()?;
+    let player_name = sav.get_player_name()?;
 
     let response = SavPlayerNameResponse::new(&player_id, &player_name);
 
@@ -63,16 +54,7 @@ pub fn post_sav_player_name(
         name: ROMString::from(data.get_name()),
     };
 
-    let patch = match sav.set_player_name(&player_name) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_sav_player_names,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
+    let patch = sav.set_player_name(&player_name)?;
     let patch_description = utils::get_patch_description(patch_description);
 
     if let Err(e) = sql.insert_sav_patch(

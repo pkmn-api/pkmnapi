@@ -3,6 +3,8 @@ use pkmnapi_sql::*;
 use rocket::http::{ContentType, Header, HeaderMap, Status};
 use rocket::local::Client;
 use rocket::response::Response;
+use serde::de::DeserializeOwned;
+use serde::Serialize;
 use serde_json::json;
 use std::env;
 use std::fs;
@@ -154,6 +156,16 @@ pub fn load_sav() -> Vec<u8> {
         .expect("Set the PKMN_SAV environment variable to point to the SAV location");
 
     fs::read(PKMN_SAV).unwrap()
+}
+
+#[allow(dead_code)]
+pub fn load_json<'a, T: Serialize + DeserializeOwned>(filename: &str) -> String {
+    let json = fs::read_to_string(filename).unwrap();
+    let json_str = json.as_str();
+    let body: T = serde_json::from_str(json_str).unwrap();
+    let body_string = serde_json::to_string(&body).unwrap();
+
+    body_string
 }
 
 #[allow(dead_code)]

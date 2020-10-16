@@ -11,6 +11,26 @@ use crate::responses::errors::*;
 use crate::responses::move_names::*;
 use crate::utils;
 
+#[get("/moves/names")]
+pub fn get_move_name_all(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Json<MoveNameResponseAll>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let (min_move_id, max_move_id) = db.move_id_bounds();
+    let move_ids: Vec<u8> = (min_move_id..=max_move_id)
+        .map(|move_id| move_id as u8)
+        .collect();
+    let move_names = db.get_move_name_all(&move_ids)?;
+
+    let response = MoveNameResponseAll::new(&move_ids, &move_names);
+
+    Ok(Json(response))
+}
+
 #[get("/moves/names/<move_id>")]
 pub fn get_move_name(
     sql: State<PkmnapiSQL>,
@@ -21,15 +41,8 @@ pub fn get_move_name(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let move_name = match db.get_move_name(&move_id) {
-        Ok(move_name) => move_name,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_move_names,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let move_name = db.get_move_name(&move_id)?;
+
     let response = MoveNameResponse::new(&move_id, &move_name);
 
     Ok(Json(response))
@@ -52,15 +65,7 @@ pub fn post_move_name(
         name: ROMString::from(data.get_name()),
     };
 
-    let patch = match db.set_move_name(&move_id, &move_name) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_move_names,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_move_name(&move_id, &move_name)?;
 
     utils::insert_rom_patch(
         sql,

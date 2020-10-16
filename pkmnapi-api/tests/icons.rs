@@ -44,7 +44,7 @@ test!(get_icon_404, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_icons",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Invalid icon ID 200: valid range is 0-9"

@@ -3,9 +3,26 @@ use crate::patch::*;
 use crate::string::*;
 use crate::PkmnapiDB;
 use byteorder::{LittleEndian, ReadBytesExt};
+use std::collections::HashMap;
 use std::io::Cursor;
 
 impl PkmnapiDB {
+    pub fn get_pokedex_entry_all(
+        &self,
+        pokedex_ids: &Vec<u8>,
+    ) -> Result<HashMap<u8, PokedexEntry>> {
+        let pokedex_entry_all: HashMap<u8, PokedexEntry> = pokedex_ids
+            .iter()
+            .map(|pokedex_id| {
+                let pokedex_entry = self.get_pokedex_entry(pokedex_id)?;
+
+                Ok((*pokedex_id, pokedex_entry))
+            })
+            .collect::<Result<HashMap<u8, PokedexEntry>>>()?;
+
+        Ok(pokedex_entry_all)
+    }
+
     /// Get Pokédex entry by Pokédex ID
     ///
     /// # Example

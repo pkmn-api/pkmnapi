@@ -8,7 +8,6 @@ use crate::utils;
 pub type PlayerNamesResponse = BaseResponse<PlayerNamesResponseAttributes>;
 
 impl PlayerNamesResponse {
-    /// Create a new `PlayerNamesResponse`
     pub fn new(player_names: &PlayerNames) -> PlayerNamesResponse {
         PlayerNamesResponse {
             data: BaseResponseData {

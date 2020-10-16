@@ -11,6 +11,26 @@ use crate::responses::errors::*;
 use crate::responses::pokedex_entries::*;
 use crate::utils;
 
+#[get("/pokedex/entries")]
+pub fn get_pokedex_entry_all(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Json<PokedexEntryResponseAll>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let (min_pokedex_id, max_pokedex_id) = db.pokedex_id_bounds();
+    let pokedex_ids: Vec<u8> = (min_pokedex_id..=max_pokedex_id)
+        .map(|pokedex_id| pokedex_id as u8)
+        .collect();
+    let pokedex_entries = db.get_pokedex_entry_all(&pokedex_ids)?;
+
+    let response = PokedexEntryResponseAll::new(&pokedex_ids, &pokedex_entries);
+
+    Ok(Json(response))
+}
+
 #[get("/pokedex/entries/<pokedex_id>")]
 pub fn get_pokedex_entry(
     sql: State<PkmnapiSQL>,
@@ -21,15 +41,8 @@ pub fn get_pokedex_entry(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokedex_entry = match db.get_pokedex_entry(&pokedex_id) {
-        Ok(pokedex_entry) => pokedex_entry,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokedex_entries,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let pokedex_entry = db.get_pokedex_entry(&pokedex_id)?;
+
     let response = PokedexEntryResponse::new(&pokedex_id, &pokedex_entry);
 
     Ok(Json(response))
@@ -58,15 +71,7 @@ pub fn post_pokedex_entry(
         weight: data.get_weight(),
     };
 
-    let patch = match db.set_pokedex_entry(&pokedex_id, &pokedex_entry) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokedex_entries,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_pokedex_entry(&pokedex_id, &pokedex_entry)?;
 
     utils::insert_rom_patch(
         sql,

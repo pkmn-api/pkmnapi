@@ -2,8 +2,22 @@ use crate::error::{self, Result};
 use crate::patch::*;
 use crate::string::*;
 use crate::PkmnapiDB;
+use std::collections::HashMap;
 
 impl PkmnapiDB {
+    pub fn get_item_name_all(&self, item_ids: &Vec<u8>) -> Result<HashMap<u8, ItemName>> {
+        let item_name_all: HashMap<u8, ItemName> = item_ids
+            .iter()
+            .map(|item_id| {
+                let item_name = self.get_item_name(item_id)?;
+
+                Ok((*item_id, item_name))
+            })
+            .collect::<Result<HashMap<u8, ItemName>>>()?;
+
+        Ok(item_name_all)
+    }
+
     /// Get item name by item ID
     ///
     /// # Example

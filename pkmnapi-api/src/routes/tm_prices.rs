@@ -10,6 +10,24 @@ use crate::responses::errors::*;
 use crate::responses::tm_prices::*;
 use crate::utils;
 
+#[get("/tms/prices")]
+pub fn get_tm_price_all(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Json<TMPriceResponseAll>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let (min_tm_id, max_tm_id) = db.tm_id_bounds();
+    let tm_ids: Vec<u8> = (min_tm_id..=max_tm_id).map(|tm_id| tm_id as u8).collect();
+    let tm_prices = db.get_tm_price_all(&tm_ids)?;
+
+    let response = TMPriceResponseAll::new(&tm_ids, &tm_prices);
+
+    Ok(Json(response))
+}
+
 #[get("/tms/prices/<tm_id>")]
 pub fn get_tm_price(
     sql: State<PkmnapiSQL>,
@@ -20,15 +38,7 @@ pub fn get_tm_price(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let tm_price = match db.get_tm_price(&tm_id) {
-        Ok(tm_price) => tm_price,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_tm_prices,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let tm_price = db.get_tm_price(&tm_id)?;
 
     let response = TMPriceResponse::new(&tm_id, &tm_price);
 
@@ -52,15 +62,7 @@ pub fn post_tm_price(
         value: data.get_price(),
     };
 
-    let patch = match db.set_tm_price(&tm_id, &tm_price) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_tm_prices,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_tm_price(&tm_id, &tm_price)?;
 
     utils::insert_rom_patch(
         sql,

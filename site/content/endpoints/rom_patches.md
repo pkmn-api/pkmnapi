@@ -48,7 +48,7 @@ Accept: application/json
 | `data[].links`                  | object |                                          |
 | `data[].links.self`             | string | Link to individual patch resource.       |
 | `links`                         | object |                                          |
-| `links.self`                    | string | Link to current resource.                |
+| `links.self`                    | string | Link to list resource.                   |
 {% end %}
 
 #### Example Response

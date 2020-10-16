@@ -1,7 +1,28 @@
+use pkmnapi_api::responses::trainer_rewards::TrainerRewardResponseAll;
 use rocket::http::{ContentType, Status};
 use serde_json::json;
 
 mod common;
+
+test!(get_trainer_reward_all_200, (client, access_token) {
+    let request = client
+        .get("/v1/trainers/rewards")
+        .header(common::auth_header(&access_token));
+
+    let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
+
+    let body = common::load_json::<TrainerRewardResponseAll>("../secrets/data/json/get_trainer_reward_all_200.json");
+
+    assert_eq!(response_body, body);
+    assert_eq!(response.status(), Status::Ok);
+
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
 test!(get_trainer_reward_200, (client, access_token) {
     let request = client
@@ -56,7 +77,7 @@ test!(get_trainer_reward_404, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_trainer_rewards",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Invalid trainer ID 100: valid range is 1-47"
@@ -178,7 +199,7 @@ test!(post_trainer_reward_404, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_trainer_rewards",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Invalid trainer ID 100: valid range is 1-47"

@@ -1,8 +1,22 @@
 use crate::error::Result;
 use crate::patch::*;
 use crate::PkmnapiDB;
+use std::collections::HashMap;
 
 impl PkmnapiDB {
+    pub fn get_hm_all(&self, hm_ids: &Vec<u8>) -> Result<HashMap<u8, HM>> {
+        let hm_all: HashMap<u8, HM> = hm_ids
+            .iter()
+            .map(|hm_id| {
+                let hm = self.get_hm(hm_id)?;
+
+                Ok((*hm_id, hm))
+            })
+            .collect::<Result<HashMap<u8, HM>>>()?;
+
+        Ok(hm_all)
+    }
+
     /// Get HM by HM ID
     ///
     /// # Example

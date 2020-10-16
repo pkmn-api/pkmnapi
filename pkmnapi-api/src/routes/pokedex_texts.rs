@@ -11,6 +11,26 @@ use crate::responses::errors::*;
 use crate::responses::pokedex_texts::*;
 use crate::utils;
 
+#[get("/pokedex/texts")]
+pub fn get_pokedex_text_all(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Json<PokedexTextResponseAll>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let (min_pokedex_id, max_pokedex_id) = db.pokedex_id_bounds();
+    let pokedex_ids: Vec<u8> = (min_pokedex_id..=max_pokedex_id)
+        .map(|pokedex_id| pokedex_id as u8)
+        .collect();
+    let pokedex_texts = db.get_pokedex_text_all(&pokedex_ids)?;
+
+    let response = PokedexTextResponseAll::new(&pokedex_ids, &pokedex_texts);
+
+    Ok(Json(response))
+}
+
 #[get("/pokedex/texts/<pokedex_id>")]
 pub fn get_pokedex_text(
     sql: State<PkmnapiSQL>,
@@ -21,15 +41,8 @@ pub fn get_pokedex_text(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokedex_text = match db.get_pokedex_text(&pokedex_id) {
-        Ok(pokedex_text) => pokedex_text,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokedex_texts,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let pokedex_text = db.get_pokedex_text(&pokedex_id)?;
+
     let response = PokedexTextResponse::new(&pokedex_id, &pokedex_text);
 
     Ok(Json(response))
@@ -56,15 +69,7 @@ pub fn post_pokedex_text(
         text: ROMString::from(data.get_text()),
     };
 
-    let patch = match db.set_pokedex_text(&pokedex_id, &pokedex_text) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokedex_texts,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_pokedex_text(&pokedex_id, &pokedex_text)?;
 
     utils::insert_rom_patch(
         sql,

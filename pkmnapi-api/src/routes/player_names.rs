@@ -20,15 +20,7 @@ pub fn get_player_names(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let player_names = match db.get_player_names() {
-        Ok(player_names) => player_names,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_player_names,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let player_names = db.get_player_names()?;
 
     let response = PlayerNamesResponse::new(&player_names);
 
@@ -60,15 +52,7 @@ pub fn post_player_names(
             .collect(),
     };
 
-    let patch = match db.set_player_names(&player_names) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_player_names,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_player_names(&player_names)?;
 
     utils::insert_rom_patch(
         sql,

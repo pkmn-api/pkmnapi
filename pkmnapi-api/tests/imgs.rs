@@ -86,7 +86,7 @@ test!(post_pokemon_logo_png_405, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_pokemon_logo_imgs",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Could not read image"
@@ -142,7 +142,7 @@ test!(post_pokemon_logo_jpeg_405, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_pokemon_logo_imgs",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Could not read image"

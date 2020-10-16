@@ -44,7 +44,7 @@ test!(get_trainer_pic_png_404, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_trainer_pics",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Invalid trainer ID 100: valid range is 1-47"
@@ -103,7 +103,7 @@ test!(get_trainer_pic_jpeg_404, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_trainer_pics",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Invalid trainer ID 100: valid range is 1-47"

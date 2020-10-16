@@ -13,8 +13,28 @@ use crate::responses::errors::*;
 use crate::responses::pokemon_cries::*;
 use crate::utils;
 
+#[get("/pokemon/cries", format = "application/json")]
+pub fn get_pokemon_cry_all(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Json<PokemonCryResponseAll>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let (min_pokedex_id, max_pokedex_id) = db.pokedex_id_bounds();
+    let pokedex_ids: Vec<u8> = (min_pokedex_id..=max_pokedex_id)
+        .map(|pokedex_id| pokedex_id as u8)
+        .collect();
+    let pokemon_cries = db.get_pokemon_cry_all(&pokedex_ids)?;
+
+    let response = PokemonCryResponseAll::new(&pokedex_ids, &pokemon_cries);
+
+    Ok(Json(response))
+}
+
 #[get("/pokemon/cries/<pokedex_id>", format = "application/json", rank = 1)]
-pub fn get_pokemon_cry(
+pub fn get_pokemon_cry_json(
     sql: State<PkmnapiSQL>,
     _rate_limit: RateLimit,
     access_token: Result<AccessToken, AccessTokenError>,
@@ -23,15 +43,8 @@ pub fn get_pokemon_cry(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokemon_cry = match db.get_pokemon_cry(&pokedex_id) {
-        Ok(pokemon_cry) => pokemon_cry,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_cries,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let pokemon_cry = db.get_pokemon_cry(&pokedex_id)?;
+
     let response = PokemonCryResponse::new(&pokedex_id, &pokemon_cry);
 
     Ok(Json(response))
@@ -47,35 +60,9 @@ pub fn get_pokemon_cry_wav<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokemon_cry = match db.get_pokemon_cry(&pokedex_id) {
-        Ok(pokemon_cry) => pokemon_cry,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_cries,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let pokemon_name = match db.get_pokemon_name(&pokedex_id) {
-        Ok(pokemon_name) => pokemon_name,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_cries,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let wav = match pokemon_cry.to_wav(48000) {
-        Ok(wav) => wav,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_cries,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let pokemon_cry = db.get_pokemon_cry(&pokedex_id)?;
+    let pokemon_name = db.get_pokemon_name(&pokedex_id)?;
+    let wav = pokemon_cry.to_wav(48000)?;
 
     let response = Response::build()
         .header(ContentType::WAV)
@@ -113,15 +100,7 @@ pub fn post_pokemon_cry(
         ..Default::default()
     };
 
-    let patch = match db.set_pokemon_cry(&pokedex_id, &pokemon_cry) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_cries,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_pokemon_cry(&pokedex_id, &pokemon_cry)?;
 
     utils::insert_rom_patch(
         sql,

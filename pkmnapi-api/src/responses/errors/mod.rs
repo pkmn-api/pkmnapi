@@ -57,6 +57,12 @@ pub enum ResponseError {
     SavErrorSavExists(status::Forbidden<Json<SavErrorSavExists>>),
 }
 
+impl From<pkmnapi_db::error::Error> for ResponseError {
+    fn from(err: pkmnapi_db::error::Error) -> Self {
+        NotFoundError::new(BaseErrorResponseId::error_not_found, Some(err.to_string()))
+    }
+}
+
 #[derive(Debug, Serialize)]
 pub struct BaseErrorResponse<T> {
     pub data: BaseErrorResponseData<T>,

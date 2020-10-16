@@ -1,14 +1,14 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::responses::links::Links;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct BaseResponse<T> {
     pub data: BaseResponseData<T>,
     pub links: Links,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct BaseResponseData<T> {
     pub id: String,
     #[serde(rename = "type")]
@@ -17,13 +17,13 @@ pub struct BaseResponseData<T> {
     pub links: Links,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct BaseResponseAll<T> {
     pub data: Vec<T>,
     pub links: Links,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[allow(non_camel_case_types)]
 pub enum BaseResponseType {
     hm_moves,

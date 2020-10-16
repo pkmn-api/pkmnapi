@@ -1,8 +1,22 @@
 use crate::error::Result;
 use crate::patch::*;
 use crate::PkmnapiDB;
+use std::collections::HashMap;
 
 impl PkmnapiDB {
+    pub fn get_pokemon_icon_all(&self, pokedex_ids: &Vec<u8>) -> Result<HashMap<u8, PokemonIcon>> {
+        let pokemon_icon_all: HashMap<u8, PokemonIcon> = pokedex_ids
+            .iter()
+            .map(|pokedex_id| {
+                let pokemon_icon = self.get_pokemon_icon(pokedex_id)?;
+
+                Ok((*pokedex_id, pokemon_icon))
+            })
+            .collect::<Result<HashMap<u8, PokemonIcon>>>()?;
+
+        Ok(pokemon_icon_all)
+    }
+
     /// Get Pokémon icon by Pokédex ID
     ///
     /// # Example

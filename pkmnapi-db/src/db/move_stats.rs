@@ -2,9 +2,23 @@ use crate::error::Result;
 use crate::patch::*;
 use crate::PkmnapiDB;
 use byteorder::ReadBytesExt;
+use std::collections::HashMap;
 use std::io::Cursor;
 
 impl PkmnapiDB {
+    pub fn get_move_stats_all(&self, move_ids: &Vec<u8>) -> Result<HashMap<u8, MoveStats>> {
+        let move_stats_all: HashMap<u8, MoveStats> = move_ids
+            .iter()
+            .map(|move_id| {
+                let move_stats = self.get_move_stats(move_id)?;
+
+                Ok((*move_id, move_stats))
+            })
+            .collect::<Result<HashMap<u8, MoveStats>>>()?;
+
+        Ok(move_stats_all)
+    }
+
     /// Get move stats by move ID
     ///
     /// # Example
@@ -33,7 +47,7 @@ impl PkmnapiDB {
     /// );
     /// ```
     pub fn get_move_stats(&self, move_id: &u8) -> Result<MoveStats> {
-        let (_min_id, _max_id) = self.move_id_validate(move_id)?;
+        self.move_id_validate(move_id)?;
 
         let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = offset_base + (((*move_id as usize) - 1) * 0x06);
@@ -81,7 +95,7 @@ impl PkmnapiDB {
     /// );
     /// ```
     pub fn set_move_stats(&self, move_id: &u8, move_stats: &MoveStats) -> Result<Patch> {
-        let (_min_id, _max_id) = self.move_id_validate(move_id)?;
+        self.move_id_validate(move_id)?;
 
         let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = offset_base + (((*move_id as usize) - 1) * 0x06);

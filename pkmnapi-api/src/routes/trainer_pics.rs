@@ -22,35 +22,9 @@ pub fn get_trainer_pic_png<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pic = match db.get_trainer_pic(&trainer_id) {
-        Ok(pic) => pic,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_trainer_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let trainer_name = match db.get_trainer_name(&trainer_id) {
-        Ok(trainer_name) => trainer_name,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_trainer_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let img = match pic.to_png(mirror.is_some()) {
-        Ok(img) => img,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_trainer_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let pic = db.get_trainer_pic(&trainer_id)?;
+    let trainer_name = db.get_trainer_name(&trainer_id)?;
+    let img = pic.to_png(mirror.is_some())?;
 
     let response = Response::build()
         .header(ContentType::PNG)
@@ -79,35 +53,9 @@ pub fn get_trainer_pic_jpeg<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pic = match db.get_trainer_pic(&trainer_id) {
-        Ok(pic) => pic,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_trainer_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let trainer_name = match db.get_trainer_name(&trainer_id) {
-        Ok(trainer_name) => trainer_name,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_trainer_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let img = match pic.to_jpeg(mirror.is_some()) {
-        Ok(img) => img,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_trainer_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let pic = db.get_trainer_pic(&trainer_id)?;
+    let trainer_name = db.get_trainer_name(&trainer_id)?;
+    let img = pic.to_jpeg(mirror.is_some())?;
 
     let response = Response::build()
         .header(ContentType::JPEG)
@@ -141,27 +89,9 @@ pub fn post_trainer_pic_png<'a>(
     let (db, connection) = utils::get_db(&sql, &access_token)?;
     let raw_data = utils::get_data_raw(data);
 
-    let pic = match Pic::from_png(raw_data) {
-        Ok(pic) => pic,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_trainer_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
+    let pic = Pic::from_png(raw_data)?;
     let encoding_method = PicEncodingMethod::from(method.unwrap_or(0x01), primary.unwrap_or(0x00));
-
-    let patch = match db.set_trainer_pic(&trainer_id, &pic, encoding_method) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_trainer_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_trainer_pic(&trainer_id, &pic, encoding_method)?;
 
     utils::insert_rom_patch(
         sql,
@@ -195,27 +125,9 @@ pub fn post_trainer_pic_jpeg<'a>(
     let (db, connection) = utils::get_db(&sql, &access_token)?;
     let raw_data = utils::get_data_raw(data);
 
-    let pic = match Pic::from_jpeg(raw_data) {
-        Ok(pic) => pic,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_trainer_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
+    let pic = Pic::from_jpeg(raw_data)?;
     let encoding_method = PicEncodingMethod::from(method.unwrap_or(0x01), primary.unwrap_or(0x00));
-
-    let patch = match db.set_trainer_pic(&trainer_id, &pic, encoding_method) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_trainer_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_trainer_pic(&trainer_id, &pic, encoding_method)?;
 
     utils::insert_rom_patch(
         sql,

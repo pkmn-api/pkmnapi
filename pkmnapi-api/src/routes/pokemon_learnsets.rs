@@ -9,6 +9,33 @@ use crate::responses::errors::*;
 use crate::responses::pokemon_learnsets::*;
 use crate::utils;
 
+#[get("/pokemon/learnsets")]
+pub fn get_pokemon_learnset_all(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Json<PokemonLearnsetResponseAll>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let (min_pokedex_id, max_pokedex_id) = db.pokedex_id_bounds();
+    let pokedex_ids: Vec<u8> = (min_pokedex_id..=max_pokedex_id)
+        .map(|pokedex_id| pokedex_id as u8)
+        .collect();
+    let pokemon_learnsets = db.get_pokemon_learnset_all(&pokedex_ids)?;
+    let move_ids = pokemon_learnsets
+        .iter()
+        .map(|(_, pokemon_learnset)| pokemon_learnset)
+        .flatten()
+        .map(|learnset| learnset.move_id)
+        .collect();
+    let move_names = db.get_move_name_all(&move_ids)?;
+
+    let response = PokemonLearnsetResponseAll::new(&pokedex_ids, &pokemon_learnsets, &move_names);
+
+    Ok(Json(response))
+}
+
 #[get("/pokemon/learnsets/<pokedex_id>")]
 pub fn get_pokemon_learnset(
     sql: State<PkmnapiSQL>,
@@ -19,24 +46,14 @@ pub fn get_pokemon_learnset(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokemon_learnset = match db.get_pokemon_learnset(&pokedex_id) {
-        Ok(pokemon_learnset) => pokemon_learnset,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_learnsets,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
+    let pokemon_learnset = db.get_pokemon_learnset(&pokedex_id)?;
     let move_ids = pokemon_learnset
         .iter()
         .map(|learnset| learnset.move_id)
         .collect();
-    let move_names =
-        utils::get_move_names(&db, &move_ids, BaseErrorResponseId::error_pokemon_learnsets)?;
+    let move_names = db.get_move_name_all(&move_ids)?;
 
-    let response = PokemonLearnsetResponse::new(&pokedex_id, &pokemon_learnset, move_names);
+    let response = PokemonLearnsetResponse::new(&pokedex_id, &pokemon_learnset, &move_names);
 
     Ok(Json(response))
 }
@@ -60,15 +77,7 @@ pub fn post_pokemon_learnset(
 
     let pokemon_learnset = data.get_learnset();
 
-    let patch = match db.set_pokemon_learnset(&pokedex_id, &pokemon_learnset) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_learnsets,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_pokemon_learnset(&pokedex_id, &pokemon_learnset)?;
 
     utils::insert_rom_patch(
         sql,

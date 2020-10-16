@@ -263,6 +263,8 @@ get_trainer_parties_test!(
     ]
 );
 
+get_trainer_parties_test!(get_trainer_parties_13, 13, vec![] as Vec<Vec<(u8, u8)>>);
+
 get_trainer_parties_test!(
     get_trainer_parties_14,
     14,
@@ -475,6 +477,8 @@ get_trainer_parties_test!(
         vec![(66, 128), (67, 103), (68, 59), (69, 6), (70, 130)],
     ]
 );
+
+get_trainer_parties_test!(get_trainer_parties_27, 27, vec![] as Vec<Vec<(u8, u8)>>);
 
 get_trainer_parties_test!(
     get_trainer_parties_28,

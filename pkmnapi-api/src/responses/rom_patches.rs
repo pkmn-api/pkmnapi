@@ -7,12 +7,11 @@ use crate::utils;
 
 pub type RomPatchResponse = BaseResponse<RomPatchResponseAttributes>;
 pub type RomPatchResponseData = BaseResponseData<RomPatchResponseAttributes>;
-pub type RomPatchesResponse = BaseResponseAll<RomPatchResponseData>;
+pub type RomPatchResponseAll = BaseResponseAll<RomPatchResponseData>;
 
-impl RomPatchesResponse {
-    /// Create a new `RomPatchesResponse`
-    pub fn new(rom_patches: &Vec<RomPatch>) -> RomPatchesResponse {
-        RomPatchesResponse {
+impl RomPatchResponseAll {
+    pub fn new(rom_patches: &Vec<RomPatch>) -> RomPatchResponseAll {
+        RomPatchResponseAll {
             data: rom_patches
                 .iter()
                 .map(|rom_patch| RomPatchResponseData::new(rom_patch))
@@ -25,7 +24,6 @@ impl RomPatchesResponse {
 }
 
 impl RomPatchResponse {
-    /// Create a new `RomPatchResponse`
     pub fn new(rom_patch: &RomPatch) -> RomPatchResponse {
         RomPatchResponse {
             data: RomPatchResponseData::new(rom_patch),

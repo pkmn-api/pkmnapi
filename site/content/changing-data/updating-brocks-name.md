@@ -78,7 +78,7 @@ You should receive the following error:
 {% api_response() %}
 {
     "data": {
-        "id": "error_trainer_names",
+        "id": "error_not_found",
         "type": "errors",
         "attributes": {
             "message": "Trainer name length mismatch: should be exactly 5 characters, found 4"

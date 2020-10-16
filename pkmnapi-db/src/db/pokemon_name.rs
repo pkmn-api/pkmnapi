@@ -2,8 +2,22 @@ use crate::error::Result;
 use crate::patch::*;
 use crate::string::*;
 use crate::PkmnapiDB;
+use std::collections::HashMap;
 
 impl PkmnapiDB {
+    pub fn get_pokemon_name_all(&self, pokedex_ids: &Vec<u8>) -> Result<HashMap<u8, PokemonName>> {
+        let pokemon_name_all: HashMap<u8, PokemonName> = pokedex_ids
+            .iter()
+            .map(|pokedex_id| {
+                let pokemon_name = self.get_pokemon_name(pokedex_id)?;
+
+                Ok((*pokedex_id, pokemon_name))
+            })
+            .collect::<Result<HashMap<u8, PokemonName>>>()?;
+
+        Ok(pokemon_name_all)
+    }
+
     /// Get Pokémon name by Pokédex ID
     ///
     /// # Example

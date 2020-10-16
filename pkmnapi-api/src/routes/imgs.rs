@@ -20,25 +20,8 @@ pub fn get_pokemon_logo_png<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokemong_logo = match db.get_pokemon_logo_img() {
-        Ok(pokemong_logo) => pokemong_logo,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_logo_imgs,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let img = match pokemong_logo.to_png() {
-        Ok(img) => img,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_logo_imgs,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let pokemong_logo = db.get_pokemon_logo_img()?;
+    let img = pokemong_logo.to_png()?;
 
     let response = Response::build()
         .header(ContentType::PNG)
@@ -61,25 +44,8 @@ pub fn get_pokemon_logo_jpeg<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokemong_logo = match db.get_pokemon_logo_img() {
-        Ok(pokemong_logo) => pokemong_logo,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_logo_imgs,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let img = match pokemong_logo.to_jpeg() {
-        Ok(img) => img,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_logo_imgs,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let pokemong_logo = db.get_pokemon_logo_img()?;
+    let img = pokemong_logo.to_jpeg()?;
 
     let response = Response::build()
         .header(ContentType::JPEG)
@@ -105,25 +71,8 @@ pub fn post_pokemon_logo_png<'a>(
     let (db, connection) = utils::get_db(&sql, &access_token)?;
     let raw_data = utils::get_data_raw(data);
 
-    let img = match Img::from_png(raw_data) {
-        Ok(img) => img,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_logo_imgs,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let patch = match db.set_pokemon_logo_img(&img) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_logo_imgs,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let img = Img::from_png(raw_data)?;
+    let patch = db.set_pokemon_logo_img(&img)?;
 
     utils::insert_rom_patch(
         sql,
@@ -149,25 +98,8 @@ pub fn post_pokemon_logo_jpeg<'a>(
     let (db, connection) = utils::get_db(&sql, &access_token)?;
     let raw_data = utils::get_data_raw(data);
 
-    let img = match Img::from_jpeg(raw_data) {
-        Ok(img) => img,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_logo_imgs,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let patch = match db.set_pokemon_logo_img(&img) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_logo_imgs,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let img = Img::from_jpeg(raw_data)?;
+    let patch = db.set_pokemon_logo_img(&img)?;
 
     utils::insert_rom_patch(
         sql,
@@ -190,25 +122,8 @@ pub fn get_town_map_png<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokemong_logo = match db.get_town_map_img() {
-        Ok(pokemong_logo) => pokemong_logo,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_town_map_imgs,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let img = match pokemong_logo.to_png() {
-        Ok(img) => img,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_town_map_imgs,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let pokemong_logo = db.get_town_map_img()?;
+    let img = pokemong_logo.to_png()?;
 
     let response = Response::build()
         .header(ContentType::PNG)
@@ -231,25 +146,8 @@ pub fn get_town_map_jpeg<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokemong_logo = match db.get_town_map_img() {
-        Ok(pokemong_logo) => pokemong_logo,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_town_map_imgs,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let img = match pokemong_logo.to_jpeg() {
-        Ok(img) => img,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_town_map_imgs,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let pokemong_logo = db.get_town_map_img()?;
+    let img = pokemong_logo.to_jpeg()?;
 
     let response = Response::build()
         .header(ContentType::JPEG)

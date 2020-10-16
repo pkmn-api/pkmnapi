@@ -44,7 +44,7 @@ test!(get_pokemon_pic_png_404, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_pokemon_pics",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Invalid Pokédex ID: 200"
@@ -103,7 +103,7 @@ test!(get_pokemon_pic_jpeg_404, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_pokemon_pics",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Invalid Pokédex ID: 200"

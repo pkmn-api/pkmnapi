@@ -3,10 +3,83 @@ title = "TM Prices"
 weight = 26
 +++
 
-| Endpoint                                     | Description          |
-|----------------------------------------------|----------------------|
-| [GET /v1/tms/prices/:tm_id](#get-tm-price)   | Gets a TM's price    |
-| [POST /v1/tms/prices/:tm_id](#post-tm-price) | Updates a TM's price |
+| Endpoint                                     | Description              |
+|----------------------------------------------|--------------------------|
+| [GET /v1/tms/prices](#get-tm-price-all)      | Gets a list of TM prices |
+| [GET /v1/tms/prices/:tm_id](#get-tm-price)   | Gets a TM's price        |
+| [POST /v1/tms/prices/:tm_id](#post-tm-price) | Updates a TM's price     |
+
+---
+
+### GET /v1/tms/prices {#get-tm-price-all}
+
+Gets a list of TM prices
+
+#### Request Parameters
+
+{{ api_request_params() }}
+
+#### Example Request
+
+**Header:**
+
+{% api_headers() %}
+GET /v1/tms/prices
+Host: {{API_HOST}}
+Authorization: Bearer <access_token>
+{% end %}
+
+**Body:**
+
+{{ api_request() }}
+
+#### Response Parameters
+
+{% api_response_params() %}
+| `data`                    | array  |                                        |
+| `data[]`                  | object |                                        |
+| `data[].id`               | string | TM ID. (identical to `:tm_id`)         |
+| `data[].type`             | string | Type of resource. Must be "tm_prices". |
+| `data[].attributes`       | object |                                        |
+| `data[].attributes.price` | number | TM price.                              |
+| `data[].links`            | object |                                        |
+| `data[].links.self`       | string | Link to current resource.              |
+| `links`                   | object |                                        |
+| `links.self`              | string | Link to list resource.                 |
+{% end %}
+
+#### Example Response
+
+**Headers:**
+
+{% api_headers() %}
+HTTP/1.1 200 OK
+Content-Type: application/json
+Server: pkmnapi/0.1.0
+{% end %}
+
+**Body:**
+
+{% api_response() %}
+{
+    "data": [
+        {
+            "id": "1",
+            "type": "tm_prices",
+            "attributes": {
+                "price": 3000
+            },
+            "links": {
+                "self": "{{API_DOMAIN}}/v1/tms/prices/1"
+            }
+        },
+        ...
+    ],
+    "links": {
+        "self": "{{API_DOMAIN}}/v1/tms/prices"
+    }
+}
+{% end %}
 
 ---
 

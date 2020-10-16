@@ -9,6 +9,39 @@ use crate::responses::errors::*;
 use crate::responses::trainer_parties::*;
 use crate::utils;
 
+#[get("/trainers/parties")]
+pub fn get_trainer_parties_all(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Json<TrainerPartiesResponseAll>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let (min_trainer_id, max_trainer_id) = db.trainer_id_bounds();
+    let trainer_ids: Vec<u8> = (min_trainer_id..=max_trainer_id)
+        .map(|trainer_ids| trainer_ids as u8)
+        .collect();
+    let trainer_parties = db.get_trainer_parties_all(&trainer_ids)?;
+    let pokedex_ids = trainer_parties
+        .iter()
+        .map(|(_, trainer_parties)| trainer_parties)
+        .flatten()
+        .map(|trainer_party| {
+            trainer_party
+                .pokemon
+                .iter()
+                .map(|party_pokemon| party_pokemon.pokedex_id)
+        })
+        .flatten()
+        .collect();
+    let pokemon_names = db.get_pokemon_name_all(&pokedex_ids)?;
+
+    let response = TrainerPartiesResponseAll::new(&trainer_ids, &trainer_parties, &pokemon_names);
+
+    Ok(Json(response))
+}
+
 #[get("/trainers/parties/<trainer_id>")]
 pub fn get_trainer_parties(
     sql: State<PkmnapiSQL>,
@@ -19,16 +52,7 @@ pub fn get_trainer_parties(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let trainer_parties = match db.get_trainer_parties(&trainer_id) {
-        Ok(trainer_parties) => trainer_parties,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_trainer_parties,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
+    let trainer_parties = db.get_trainer_parties(&trainer_id)?;
     let pokedex_ids = trainer_parties
         .iter()
         .map(|trainer_party| {
@@ -39,13 +63,9 @@ pub fn get_trainer_parties(
         })
         .flatten()
         .collect();
-    let pokemon_names = utils::get_pokemon_names(
-        &db,
-        &pokedex_ids,
-        BaseErrorResponseId::error_trainer_parties,
-    )?;
+    let pokemon_names = db.get_pokemon_name_all(&pokedex_ids)?;
 
-    let response = TrainerPartiesResponse::new(&trainer_id, &trainer_parties, pokemon_names);
+    let response = TrainerPartiesResponse::new(&trainer_id, &trainer_parties, &pokemon_names);
 
     Ok(Json(response))
 }
@@ -69,15 +89,7 @@ pub fn post_trainer_parties(
 
     let trainer_parties = data.get_parties();
 
-    let patch = match db.set_trainer_parties(&trainer_id, &trainer_parties) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_trainer_parties,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_trainer_parties(&trainer_id, &trainer_parties)?;
 
     utils::insert_rom_patch(
         sql,

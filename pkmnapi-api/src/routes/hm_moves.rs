@@ -10,6 +10,26 @@ use crate::responses::errors::*;
 use crate::responses::hm_moves::*;
 use crate::utils;
 
+#[get("/hms/moves")]
+pub fn get_hm_move_all(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Json<HMMoveResponseAll>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let (min_hm_id, max_hm_id) = db.hm_id_bounds();
+    let hm_ids: Vec<u8> = (min_hm_id..=max_hm_id).map(|hm_id| hm_id as u8).collect();
+    let hms = db.get_hm_all(&hm_ids)?;
+    let move_ids: Vec<u8> = hms.iter().map(|(_, hm)| hm.move_id).collect();
+    let move_names = db.get_move_name_all(&move_ids)?;
+
+    let response = HMMoveResponseAll::new(&hm_ids, &hms, &move_names);
+
+    Ok(Json(response))
+}
+
 #[get("/hms/moves/<hm_id>")]
 pub fn get_hm_move(
     sql: State<PkmnapiSQL>,
@@ -20,25 +40,8 @@ pub fn get_hm_move(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let hm = match db.get_hm(&hm_id) {
-        Ok(hm) => hm,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_hms,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let move_name = match db.get_move_name(&hm.move_id) {
-        Ok(move_name) => move_name,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_hms,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let hm = db.get_hm(&hm_id)?;
+    let move_name = db.get_move_name(&hm.move_id)?;
 
     let response = HMMoveResponse::new(&hm_id, &hm, &move_name);
 
@@ -62,15 +65,7 @@ pub fn post_hm_move(
         move_id: data.get_move_id(),
     };
 
-    let patch = match db.set_hm(&hm_id, &hm) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_hms,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_hm(&hm_id, &hm)?;
 
     utils::insert_rom_patch(
         sql,

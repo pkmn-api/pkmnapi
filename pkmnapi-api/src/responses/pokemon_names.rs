@@ -1,15 +1,38 @@
 use pkmnapi_db::PokemonName;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
-use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};
+use crate::responses::base::{BaseResponse, BaseResponseAll, BaseResponseData, BaseResponseType};
 use crate::responses::links::Links;
 use crate::utils;
 
 pub type PokemonNameResponse = BaseResponse<PokemonNameResponseAttributes>;
 pub type PokemonNameResponseData = BaseResponseData<PokemonNameResponseAttributes>;
+pub type PokemonNameResponseAll = BaseResponseAll<PokemonNameResponseData>;
+
+impl PokemonNameResponseAll {
+    pub fn new(
+        pokedex_ids: &Vec<u8>,
+        pokemon_names: &HashMap<u8, PokemonName>,
+    ) -> PokemonNameResponseAll {
+        PokemonNameResponseAll {
+            data: pokedex_ids
+                .iter()
+                .map(|pokedex_id| {
+                    PokemonNameResponseData::new(
+                        &pokedex_id,
+                        &pokemon_names.get(pokedex_id).unwrap(),
+                    )
+                })
+                .collect(),
+            links: Links {
+                _self: utils::generate_url("pokemon/names", None),
+            },
+        }
+    }
+}
 
 impl PokemonNameResponse {
-    /// Create a new `PokemonNameResponse`
     pub fn new(pokedex_id: &u8, pokemon_name: &PokemonName) -> PokemonNameResponse {
         PokemonNameResponse {
             data: PokemonNameResponseData::new(pokedex_id, pokemon_name),
@@ -35,7 +58,7 @@ impl PokemonNameResponseData {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct PokemonNameResponseAttributes {
     pub name: String,
 }

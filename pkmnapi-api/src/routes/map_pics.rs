@@ -18,25 +18,8 @@ pub fn get_map_pic_png<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let map = match db.get_map_pic(&map_id) {
-        Ok(map) => map,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_map_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let img = match map.to_png() {
-        Ok(img) => img,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_map_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let map = db.get_map_pic(&map_id)?;
+    let img = map.to_png()?;
 
     let response = Response::build()
         .header(ContentType::PNG)
@@ -60,25 +43,8 @@ pub fn get_map_pic_jpeg<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let map = match db.get_map_pic(&map_id) {
-        Ok(map) => map,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_map_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let img = match map.to_jpeg() {
-        Ok(img) => img,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_map_pics,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let map = db.get_map_pic(&map_id)?;
+    let img = map.to_jpeg()?;
 
     let response = Response::build()
         .header(ContentType::JPEG)

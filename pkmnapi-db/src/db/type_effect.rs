@@ -3,9 +3,26 @@ use crate::patch::*;
 use crate::PkmnapiDB;
 use byteorder::ReadBytesExt;
 use std::cmp;
+use std::collections::HashMap;
 use std::io::Cursor;
 
 impl PkmnapiDB {
+    pub fn get_type_effect_all(
+        &self,
+        type_effect_ids: &Vec<u8>,
+    ) -> Result<HashMap<u8, TypeEffect>> {
+        let type_effect_all: HashMap<u8, TypeEffect> = type_effect_ids
+            .iter()
+            .map(|type_effect_id| {
+                let type_name = self.get_type_effect(type_effect_id)?;
+
+                Ok((*type_effect_id, type_name))
+            })
+            .collect::<Result<HashMap<u8, TypeEffect>>>()?;
+
+        Ok(type_effect_all)
+    }
+
     /// Get type effect by type effect ID
     ///
     /// # Example

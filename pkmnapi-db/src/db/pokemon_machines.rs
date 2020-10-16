@@ -2,8 +2,25 @@ use crate::error::Result;
 use crate::patch::*;
 use crate::PkmnapiDB;
 use std::cmp::Ordering;
+use std::collections::HashMap;
 
 impl PkmnapiDB {
+    pub fn get_pokemon_machines_all(
+        &self,
+        pokedex_ids: &Vec<u8>,
+    ) -> Result<HashMap<u8, Vec<PokemonMachine>>> {
+        let pokemon_machines_all: HashMap<u8, Vec<PokemonMachine>> = pokedex_ids
+            .iter()
+            .map(|pokedex_id| {
+                let pokemon_machines = self.get_pokemon_machines(pokedex_id)?;
+
+                Ok((*pokedex_id, pokemon_machines))
+            })
+            .collect::<Result<HashMap<u8, Vec<PokemonMachine>>>>()?;
+
+        Ok(pokemon_machines_all)
+    }
+
     /// Get Pokémon machines by Pokédex ID
     ///
     /// # Example
@@ -166,10 +183,10 @@ impl PkmnapiDB {
             .map(|pokemon_machine| {
                 match pokemon_machine {
                     PokemonMachine::TM(tm_id) => {
-                        let (_, _) = self.tm_id_validate(&tm_id)?;
+                        self.tm_id_validate(&tm_id)?;
                     }
                     PokemonMachine::HM(hm_id) => {
-                        let (_, _) = self.hm_id_validate(&hm_id)?;
+                        self.hm_id_validate(&hm_id)?;
                     }
                 };
 

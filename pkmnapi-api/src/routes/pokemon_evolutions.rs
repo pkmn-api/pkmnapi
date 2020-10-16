@@ -10,6 +10,53 @@ use crate::responses::errors::*;
 use crate::responses::pokemon_evolutions::*;
 use crate::utils;
 
+#[get("/pokemon/evolutions")]
+pub fn get_pokemon_evolutions_all(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Json<PokemonEvolutionsResponseAll>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let (min_pokedex_id, max_pokedex_id) = db.pokedex_id_bounds();
+    let pokedex_ids: Vec<u8> = (min_pokedex_id..=max_pokedex_id)
+        .map(|pokedex_id| pokedex_id as u8)
+        .collect();
+    let pokemon_evolutions = db.get_pokemon_evolutions_all(&pokedex_ids)?;
+    let pokemon_evolutions_pokedex_ids = pokemon_evolutions
+        .iter()
+        .map(|(_, pokemon_evolution)| pokemon_evolution)
+        .flatten()
+        .map(|pokemon_evolution| match pokemon_evolution {
+            PokemonEvolution::LEVEL(evolution) => evolution.pokedex_id,
+            PokemonEvolution::ITEM(evolution) => evolution.pokedex_id,
+            PokemonEvolution::TRADE(evolution) => evolution.pokedex_id,
+        })
+        .collect();
+    let pokemon_names = db.get_pokemon_name_all(&pokemon_evolutions_pokedex_ids)?;
+    let item_ids = pokemon_evolutions
+        .iter()
+        .map(|(_, pokemon_evolution)| pokemon_evolution)
+        .flatten()
+        .filter_map(|pokemon_evolution| match pokemon_evolution {
+            PokemonEvolution::LEVEL(_) => None,
+            PokemonEvolution::ITEM(evolution) => Some(evolution.item_id),
+            PokemonEvolution::TRADE(_) => None,
+        })
+        .collect();
+    let item_names = db.get_item_name_all(&item_ids)?;
+
+    let response = PokemonEvolutionsResponseAll::new(
+        &pokedex_ids,
+        &pokemon_evolutions,
+        &pokemon_names,
+        &item_names,
+    );
+
+    Ok(Json(response))
+}
+
 #[get("/pokemon/evolutions/<pokedex_id>")]
 pub fn get_pokemon_evolutions(
     sql: State<PkmnapiSQL>,
@@ -20,16 +67,7 @@ pub fn get_pokemon_evolutions(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokemon_evolutions = match db.get_pokemon_evolutions(&pokedex_id) {
-        Ok(pokemon_evolutions) => pokemon_evolutions,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_evolutions,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
+    let pokemon_evolutions = db.get_pokemon_evolutions(&pokedex_id)?;
     let pokedex_ids = pokemon_evolutions
         .iter()
         .map(|pokemon_evolution| match pokemon_evolution {
@@ -38,12 +76,7 @@ pub fn get_pokemon_evolutions(
             PokemonEvolution::TRADE(evolution) => evolution.pokedex_id,
         })
         .collect();
-    let pokemon_names = utils::get_pokemon_names(
-        &db,
-        &pokedex_ids,
-        BaseErrorResponseId::error_pokemon_evolutions,
-    )?;
-
+    let pokemon_names = db.get_pokemon_name_all(&pokedex_ids)?;
     let item_ids = pokemon_evolutions
         .iter()
         .filter_map(|pokemon_evolution| match pokemon_evolution {
@@ -52,14 +85,14 @@ pub fn get_pokemon_evolutions(
             PokemonEvolution::TRADE(_) => None,
         })
         .collect();
-    let item_names = utils::get_item_names(
-        &db,
-        &item_ids,
-        BaseErrorResponseId::error_pokemon_evolutions,
-    )?;
+    let item_names = db.get_item_name_all(&item_ids)?;
 
-    let response =
-        PokemonEvolutionsResponse::new(&pokedex_id, &pokemon_evolutions, pokemon_names, item_names);
+    let response = PokemonEvolutionsResponse::new(
+        &pokedex_id,
+        &pokemon_evolutions,
+        &pokemon_names,
+        &item_names,
+    );
 
     Ok(Json(response))
 }
@@ -83,15 +116,7 @@ pub fn post_pokemon_evolutions(
 
     let pokemon_evolutions = data.get_evolutions();
 
-    let patch = match db.set_pokemon_evolutions(&pokedex_id, &pokemon_evolutions) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_evolutions,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_pokemon_evolutions(&pokedex_id, &pokemon_evolutions)?;
 
     utils::insert_rom_patch(
         sql,

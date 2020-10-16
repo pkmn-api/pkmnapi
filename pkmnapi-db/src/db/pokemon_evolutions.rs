@@ -2,9 +2,26 @@ use crate::error::{self, Result};
 use crate::patch::*;
 use crate::PkmnapiDB;
 use byteorder::{LittleEndian, ReadBytesExt};
+use std::collections::HashMap;
 use std::io::Cursor;
 
 impl PkmnapiDB {
+    pub fn get_pokemon_evolutions_all(
+        &self,
+        pokedex_ids: &Vec<u8>,
+    ) -> Result<HashMap<u8, Vec<PokemonEvolution>>> {
+        let pokemon_evolutions_all: HashMap<u8, Vec<PokemonEvolution>> = pokedex_ids
+            .iter()
+            .map(|pokedex_id| {
+                let pokemon_evolutions = self.get_pokemon_evolutions(pokedex_id)?;
+
+                Ok((*pokedex_id, pokemon_evolutions))
+            })
+            .collect::<Result<HashMap<u8, Vec<PokemonEvolution>>>>()?;
+
+        Ok(pokemon_evolutions_all)
+    }
+
     /// Get Pokémon evolutions by Pokédex ID
     ///
     /// # Example

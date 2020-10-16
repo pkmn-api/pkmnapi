@@ -31,6 +31,7 @@ use error::Result;
 use header::*;
 use patch::*;
 use sav::*;
+use std::cmp;
 use std::num::Wrapping;
 
 /// Pkmnapi database
@@ -358,6 +359,108 @@ impl PkmnapiDB {
         Ok(self.rom[offset])
     }
 
+    /// Pokédex ID bounds
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let (min_pokedex_id, max_pokedex_id) = db.pokedex_id_bounds();
+    ///
+    /// assert_eq!((min_pokedex_id, max_pokedex_id), (1, 151));
+    /// ```
+    pub fn pokedex_id_bounds(&self) -> (usize, usize) {
+        let mut min_id = 255;
+        let mut max_id = 0;
+
+        for internal_id in 0..self.pokemon_internal_max() {
+            let pokedex_id = self
+                .internal_id_to_pokedex_id(&(internal_id as u8))
+                .unwrap();
+
+            min_id = cmp::max(cmp::min(min_id, pokedex_id as usize), 1);
+            max_id = cmp::max(max_id, pokedex_id as usize);
+        }
+
+        (min_id, max_id)
+    }
+
+    /// Validate Pokédex ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let pokedex_id = 1;
+    ///
+    /// db.pokedex_id_validate(&pokedex_id).unwrap();
+    ///
+    /// let pokedex_id = 200;
+    ///
+    /// match db.pokedex_id_validate(&pokedex_id) {
+    ///     Ok(_) => unreachable!(),
+    ///     Err(e) => assert_eq!(e, error::Error::PokedexIDInvalid(pokedex_id))
+    /// };
+    /// ```
+    pub fn pokedex_id_validate(&self, pokedex_id: &u8) -> Result<(usize, usize)> {
+        let (min_id, max_id) = self.pokedex_id_bounds();
+
+        if *pokedex_id > (max_id as u8) {
+            return Err(error::Error::PokedexIDInvalid(*pokedex_id));
+        }
+
+        Ok((min_id, max_id))
+    }
+
+    /// Type ID bounds
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let (min_type_id, max_type_id) = db.type_id_bounds();
+    ///
+    /// assert_eq!((min_type_id, max_type_id), (0, 26));
+    /// ```
+    pub fn type_id_bounds(&self) -> (usize, usize) {
+        let min_id = 0usize;
+
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x10;
+        let pointer_base = offset_base + 0x7DAE;
+
+        let max_index = (&self.rom[pointer_base..])
+            .iter()
+            .position(|&r| r == 0x8D)
+            .unwrap();
+        let max_id = (((max_index as f32) / 2.0) as usize) - 1;
+
+        (min_id, max_id)
+    }
+
     /// Validate type ID
     ///
     /// # Example
@@ -374,10 +477,7 @@ impl PkmnapiDB {
     ///
     /// let type_id = 0;
     ///
-    /// match db.type_id_validate(&type_id) {
-    ///     Ok(min_max) => assert_eq!(min_max, (0, 26)),
-    ///     Err(_) => unreachable!()
-    /// };
+    /// db.type_id_validate(&type_id).unwrap();
     ///
     /// let type_id = 100;
     ///
@@ -387,22 +487,46 @@ impl PkmnapiDB {
     /// };
     /// ```
     pub fn type_id_validate(&self, type_id: &u8) -> Result<(usize, usize)> {
-        let min_id = 0usize;
-
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x10;
-        let pointer_base = offset_base + 0x7DAE;
-
-        let max_index = (&self.rom[pointer_base..])
-            .iter()
-            .position(|&r| r == 0x8D)
-            .unwrap();
-        let max_id = (((max_index as f32) / 2.0) as usize) - 1;
+        let (min_id, max_id) = self.type_id_bounds();
 
         if *type_id > (max_id as u8) {
             return Err(error::Error::TypeIDInvalid(*type_id, min_id, max_id));
         }
 
         Ok((min_id, max_id))
+    }
+
+    /// Type effect ID bounds
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let (min_type_effect_id, max_type_effect_id) = db.type_effect_id_bounds();
+    ///
+    /// assert_eq!((min_type_effect_id, max_type_effect_id), (0, 81));
+    /// ```
+    pub fn type_effect_id_bounds(&self) -> (usize, usize) {
+        let min_id = 0usize;
+
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1F;
+        let pointer = offset_base + 0x0474;
+
+        let max_index = (&self.rom[pointer..])
+            .iter()
+            .position(|&r| r == 0xFF)
+            .unwrap();
+        let max_id = (((max_index as f32) / 3.0) as usize) - 1;
+
+        (min_id, max_id)
     }
 
     /// Validate type effect ID
@@ -421,10 +545,7 @@ impl PkmnapiDB {
     ///
     /// let type_effect_id = 0;
     ///
-    /// match db.type_effect_id_validate(&type_effect_id) {
-    ///     Ok(min_max) => assert_eq!(min_max, (0, 81)),
-    ///     Err(_) => unreachable!()
-    /// };
+    /// db.type_effect_id_validate(&type_effect_id).unwrap();
     ///
     /// let type_effect_id = 100;
     ///
@@ -434,16 +555,7 @@ impl PkmnapiDB {
     /// };
     /// ```
     pub fn type_effect_id_validate(&self, type_effect_id: &u8) -> Result<(usize, usize)> {
-        let min_id = 0usize;
-
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1F;
-        let pointer = offset_base + 0x0474;
-
-        let max_index = (&self.rom[pointer..])
-            .iter()
-            .position(|&r| r == 0xFF)
-            .unwrap();
-        let max_id = (((max_index as f32) / 3.0) as usize) - 1;
+        let (min_id, max_id) = self.type_effect_id_bounds();
 
         if *type_effect_id > (max_id as u8) {
             return Err(error::Error::TypeEffectIDInvalid(
@@ -454,6 +566,41 @@ impl PkmnapiDB {
         }
 
         Ok((min_id, max_id))
+    }
+
+    /// Trainer ID bounds
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let (min_trainer_id, max_trainer_id) = db.trainer_id_bounds();
+    ///
+    /// assert_eq!((min_trainer_id, max_trainer_id), (1, 47));
+    /// ```
+    pub fn trainer_id_bounds(&self) -> (usize, usize) {
+        let min_id = 1usize;
+
+        let offset_base = (PkmnapiDB::ROM_PAGE * 0x1C) + 0x19FF;
+
+        let max_offset = (&self.rom[offset_base..])
+            .iter()
+            .position(|&r| r == 0x21)
+            .unwrap();
+        let max_id = (&self.rom[offset_base..(offset_base + max_offset)])
+            .iter()
+            .filter(|&x| *x == 0x50)
+            .count();
+
+        (min_id, max_id)
     }
 
     /// Validate trainer ID
@@ -472,10 +619,7 @@ impl PkmnapiDB {
     ///
     /// let trainer_id = 1;
     ///
-    /// match db.trainer_id_validate(&trainer_id) {
-    ///     Ok(min_max) => assert_eq!(min_max, (1, 47)),
-    ///     Err(_) => unreachable!()
-    /// };
+    /// db.trainer_id_validate(&trainer_id).unwrap();
     ///
     /// let trainer_id = 100;
     ///
@@ -485,24 +629,45 @@ impl PkmnapiDB {
     /// };
     /// ```
     pub fn trainer_id_validate(&self, trainer_id: &u8) -> Result<(usize, usize)> {
-        let min_id = 1usize;
-
-        let offset_base = (PkmnapiDB::ROM_PAGE * 0x1C) + 0x19FF;
-
-        let max_offset = (&self.rom[offset_base..])
-            .iter()
-            .position(|&r| r == 0x21)
-            .unwrap();
-        let max_id = (&self.rom[offset_base..(offset_base + max_offset)])
-            .iter()
-            .filter(|&x| *x == 0x50)
-            .count();
+        let (min_id, max_id) = self.trainer_id_bounds();
 
         if *trainer_id < (min_id as u8) || *trainer_id > (max_id as u8) {
             return Err(error::Error::TrainerIDInvalid(*trainer_id, min_id, max_id));
         }
 
         Ok((min_id, max_id))
+    }
+
+    /// HM ID bounds
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let (min_hm_id, max_hm_id) = db.hm_id_bounds();
+    ///
+    /// assert_eq!((min_hm_id, max_hm_id), (1, 5));
+    /// ```
+    pub fn hm_id_bounds(&self) -> (usize, usize) {
+        let min_id = 1usize;
+
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
+        let offset_base = offset_base + 0x1052;
+
+        let max_id = (&self.rom[offset_base..])
+            .iter()
+            .position(|&r| r == 0xFF)
+            .unwrap();
+
+        (min_id, max_id)
     }
 
     /// Validate HM ID
@@ -521,10 +686,7 @@ impl PkmnapiDB {
     ///
     /// let hm_id = 1;
     ///
-    /// match db.hm_id_validate(&hm_id) {
-    ///     Ok(min_max) => assert_eq!(min_max, (1, 5)),
-    ///     Err(_) => unreachable!()
-    /// };
+    /// db.hm_id_validate(&hm_id).unwrap();
     ///
     /// let hm_id = 100;
     ///
@@ -534,21 +696,38 @@ impl PkmnapiDB {
     /// };
     /// ```
     pub fn hm_id_validate(&self, hm_id: &u8) -> Result<(usize, usize)> {
-        let min_id = 1usize;
-
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset_base = offset_base + 0x1052;
-
-        let max_id = (&self.rom[offset_base..])
-            .iter()
-            .position(|&r| r == 0xFF)
-            .unwrap();
+        let (min_id, max_id) = self.hm_id_bounds();
 
         if *hm_id < (min_id as u8) || *hm_id > (max_id as u8) {
             return Err(error::Error::HMIDInvalid(*hm_id, min_id, max_id));
         }
 
         Ok((min_id, max_id))
+    }
+
+    /// TM ID bounds
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let (min_tm_id, max_tm_id) = db.tm_id_bounds();
+    ///
+    /// assert_eq!((min_tm_id, max_tm_id), (1, 50));
+    /// ```
+    pub fn tm_id_bounds(&self) -> (usize, usize) {
+        let min_id = 1usize;
+        let max_id = 50usize;
+
+        (min_id, max_id)
     }
 
     /// Validate TM ID
@@ -567,10 +746,7 @@ impl PkmnapiDB {
     ///
     /// let tm_id = 1;
     ///
-    /// match db.tm_id_validate(&tm_id) {
-    ///     Ok(min_max) => assert_eq!(min_max, (1, 50)),
-    ///     Err(_) => unreachable!()
-    /// };
+    /// db.tm_id_validate(&tm_id).unwrap();
     ///
     /// let tm_id = 100;
     ///
@@ -580,14 +756,49 @@ impl PkmnapiDB {
     /// };
     /// ```
     pub fn tm_id_validate(&self, tm_id: &u8) -> Result<(usize, usize)> {
-        let min_id = 1usize;
-        let max_id = 50usize;
+        let (min_id, max_id) = self.tm_id_bounds();
 
         if *tm_id < (min_id as u8) || *tm_id > (max_id as u8) {
             return Err(error::Error::TMIDInvalid(*tm_id, min_id, max_id));
         }
 
         Ok((min_id, max_id))
+    }
+
+    /// Item ID bounds
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let (min_item_id, max_item_id) = db.item_id_bounds();
+    ///
+    /// assert_eq!((min_item_id, max_item_id), (1, 97));
+    /// ```
+    pub fn item_id_bounds(&self) -> (usize, usize) {
+        let min_id = 1usize;
+
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
+        let offset_base = offset_base + 0x072B;
+
+        let max_offset = (&self.rom[offset_base..])
+            .iter()
+            .position(|&r| r == 0xD0)
+            .unwrap();
+        let max_id = (&self.rom[offset_base..(offset_base + max_offset)])
+            .iter()
+            .filter(|&x| *x == 0x50)
+            .count();
+
+        (min_id, max_id)
     }
 
     /// Validate item ID
@@ -606,10 +817,7 @@ impl PkmnapiDB {
     ///
     /// let item_id = 1;
     ///
-    /// match db.item_id_validate(&item_id) {
-    ///     Ok(min_max) => assert_eq!(min_max, (1, 97)),
-    ///     Err(_) => unreachable!()
-    /// };
+    /// db.item_id_validate(&item_id).unwrap();
     ///
     /// let item_id = 100;
     ///
@@ -619,25 +827,45 @@ impl PkmnapiDB {
     /// };
     /// ```
     pub fn item_id_validate(&self, item_id: &u8) -> Result<(usize, usize)> {
-        let min_id = 1usize;
-
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
-        let offset_base = offset_base + 0x072B;
-
-        let max_offset = (&self.rom[offset_base..])
-            .iter()
-            .position(|&r| r == 0xD0)
-            .unwrap();
-        let max_id = (&self.rom[offset_base..(offset_base + max_offset)])
-            .iter()
-            .filter(|&x| *x == 0x50)
-            .count();
+        let (min_id, max_id) = self.item_id_bounds();
 
         if *item_id < (min_id as u8) || (item_id - 1) >= (max_id as u8) {
             return Err(error::Error::ItemIDInvalid(*item_id, min_id, max_id));
         }
 
         Ok((min_id, max_id))
+    }
+
+    /// Move ID bounds
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let (min_move_id, max_move_id) = db.move_id_bounds();
+    ///
+    /// assert_eq!((min_move_id, max_move_id), (1, 165));
+    /// ```
+    pub fn move_id_bounds(&self) -> (usize, usize) {
+        let min_id = 1usize;
+
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
+
+        let max_index = self.rom[offset_base..]
+            .chunks(2)
+            .position(|r| r == [0x01, 0x2D])
+            .unwrap();
+        let max_id = ((max_index as f32) / 3.0) as usize;
+
+        (min_id, max_id)
     }
 
     /// Validate move ID
@@ -656,10 +884,7 @@ impl PkmnapiDB {
     ///
     /// let move_id = 1;
     ///
-    /// match db.move_id_validate(&move_id) {
-    ///     Ok(min_max) => assert_eq!(min_max, (1, 165)),
-    ///     Err(_) => unreachable!()
-    /// };
+    /// db.move_id_validate(&move_id).unwrap();
     ///
     /// let move_id = 200;
     ///
@@ -669,21 +894,46 @@ impl PkmnapiDB {
     /// };
     /// ```
     pub fn move_id_validate(&self, move_id: &u8) -> Result<(usize, usize)> {
-        let min_id = 1usize;
-
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
-
-        let max_index = self.rom[offset_base..]
-            .chunks(2)
-            .position(|r| r == [0x01, 0x2D])
-            .unwrap();
-        let max_id = ((max_index as f32) / 3.0) as usize;
+        let (min_id, max_id) = self.move_id_bounds();
 
         if *move_id < (min_id as u8) || *move_id > (max_id as u8) {
             return Err(error::Error::MoveIDInvalid(*move_id, min_id, max_id));
         }
 
         Ok((min_id, max_id))
+    }
+
+    /// Map ID bounds
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let (min_map_id, max_map_id) = db.map_id_bounds();
+    ///
+    /// assert_eq!((min_map_id, max_map_id), (0, 247));
+    /// ```
+    pub fn map_id_bounds(&self) -> (usize, usize) {
+        let min_id = 0usize;
+
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x06;
+        let offset = offset_base + 0x0EEB;
+
+        let max_id = self.rom[offset..]
+            .chunks(2)
+            .position(|r| r == [0xFF, 0xFF])
+            .unwrap()
+            - 1 as usize;
+
+        (min_id, max_id)
     }
 
     /// Validate map ID
@@ -702,10 +952,7 @@ impl PkmnapiDB {
     ///
     /// let map_id = 0;
     ///
-    /// match db.map_id_validate(&map_id) {
-    ///     Ok(min_max) => assert_eq!(min_max, (0, 247)),
-    ///     Err(_) => unreachable!()
-    /// };
+    /// db.map_id_validate(&map_id).unwrap();
     ///
     /// let map_id = 255;
     ///
@@ -715,22 +962,38 @@ impl PkmnapiDB {
     /// };
     /// ```
     pub fn map_id_validate(&self, map_id: &u8) -> Result<(usize, usize)> {
-        let min_id = 0usize;
-
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x06;
-        let offset = offset_base + 0x0EEB;
-
-        let max_id = self.rom[offset..]
-            .chunks(2)
-            .position(|r| r == [0xFF, 0xFF])
-            .unwrap()
-            - 1 as usize;
+        let (min_id, max_id) = self.map_id_bounds();
 
         if *map_id > (max_id as u8) {
             return Err(error::Error::MapIDInvalid(*map_id, min_id, max_id));
         }
 
         Ok((min_id, max_id))
+    }
+
+    /// Icon ID bounds
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let (min_icon_id, max_icon_id) = db.icon_id_bounds();
+    ///
+    /// assert_eq!((min_icon_id, max_icon_id), (0, 9));
+    /// ```
+    pub fn icon_id_bounds(&self) -> (usize, usize) {
+        let min_id = 0usize;
+        let max_id = 9usize;
+
+        (min_id, max_id)
     }
 
     /// Validate icon ID
@@ -749,10 +1012,7 @@ impl PkmnapiDB {
     ///
     /// let icon_id = 0;
     ///
-    /// match db.icon_id_validate(&icon_id) {
-    ///     Ok(min_max) => assert_eq!(min_max, (0, 9)),
-    ///     Err(_) => unreachable!()
-    /// };
+    /// db.icon_id_validate(&icon_id).unwrap();
     ///
     /// let icon_id = 100;
     ///
@@ -762,8 +1022,7 @@ impl PkmnapiDB {
     /// };
     /// ```
     pub fn icon_id_validate(&self, icon_id: &u8) -> Result<(usize, usize)> {
-        let min_id = 0usize;
-        let max_id = 9usize;
+        let (min_id, max_id) = self.icon_id_bounds();
 
         if icon_id > &(max_id as u8) {
             return Err(error::Error::IconIDInvalid(*icon_id, min_id, max_id));

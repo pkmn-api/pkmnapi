@@ -6,7 +6,7 @@ use std::io::Cursor;
 
 impl PkmnapiDB {
     pub fn get_map_pic(&self, map_id: &u8) -> Result<Map> {
-        let (_min_id, _max_id) = self.map_id_validate(map_id)?;
+        self.map_id_validate(map_id)?;
 
         let bank_offset_base = PkmnapiDB::ROM_PAGE * 0x06;
         let bank_offset = (bank_offset_base + 0x23D) + (*map_id as usize);

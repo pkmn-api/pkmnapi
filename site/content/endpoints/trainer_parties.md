@@ -3,10 +3,123 @@ title = "Trainer Parties"
 weight = 28
 +++
 
-| Endpoint                                                       | Description                 |
-|----------------------------------------------------------------|-----------------------------|
-| [GET /v1/trainers/parties/:trainer_id](#get-trainer-parties)   | Gets a trainer's parties    |
-| [POST /v1/trainers/parties/:trainer_id](#post-trainer-parties) | Updates a trainer's parties |
+| Endpoint                                                       | Description                    |
+|----------------------------------------------------------------|--------------------------------|
+| [GET /v1/trainers/parties](#get-trainer-parties-all)           | Gets a list of trainer parties |
+| [GET /v1/trainers/parties/:trainer_id](#get-trainer-parties)   | Gets a trainer's parties       |
+| [POST /v1/trainers/parties/:trainer_id](#post-trainer-parties) | Updates a trainer's parties    |
+
+---
+
+### GET /v1/trainers/parties {#get-trainer-parties-all}
+
+Gets a list of trainer parties
+
+#### Request Parameters
+
+{{ api_request_params() }}
+
+#### Example Request
+
+**Header:**
+
+{% api_headers() %}
+GET /v1/trainers/parties
+Host: {{API_HOST}}
+Authorization: Bearer <access_token>
+{% end %}
+
+**Body:**
+
+{{ api_request() }}
+
+#### Response Parameters
+
+{% api_response_params() %}
+| `data`                                                        | array  |                                              |
+| `data[]`                                                      | object |                                              |
+| `data[].id`                                                   | string | Trainer ID. (identical to `:trainer_id`)     |
+| `data[].type`                                                 | string | Type of resource. Must be "trainer_parties". |
+| `data[].attributes`                                           | object |                                              |
+| `data[].attributes.parties`                                   | array  | List of trainer parties.                     |
+| `data[].attributes.parties[].party`                           | array  | List of Pokémon in party.                    |
+| `data[].attributes.parties[].party[].level`                   | number | Level of Pokémon.                            |
+| `data[].attributes.parties[].party[].pokemon`                 | object | Pokémon.                                     |
+| `data[].attributes.parties[].party[].pokemon.id`              | string | Pokédex ID.                                  |
+| `data[].attributes.parties[].party[].pokemon.type`            | string | Type of resource. Must be "pokemon_names".   |
+| `data[].attributes.parties[].party[].pokemon.attributes`      | object |                                              |
+| `data[].attributes.parties[].party[].pokemon.attributes.name` | string | Pokémon name.                                |
+| `data[].attributes.parties[].party[].pokemon.links`           | object |                                              |
+| `data[].attributes.parties[].party[].pokemon.links.self`      | string | Link to Pokémon resource.                    |
+| `data[].links`                                                | object |                                              |
+| `data[].links.self`                                           | string | Link to current resource.                    |
+| `links`                                                       | object |                                              |
+| `links.self`                                                  | string | Link to list resource.                       |
+{% end %}
+
+#### Example Response
+
+**Headers:**
+
+{% api_headers() %}
+HTTP/1.1 200 OK
+Content-Type: application/json
+Server: pkmnapi/0.1.0
+{% end %}
+
+**Body:**
+
+{% api_response() %}
+{
+    "data": [
+        {
+            "id": "34",
+            "type": "trainer_parties",
+            "attributes": {
+                "parties": [
+                    {
+                        "party": [
+                            {
+                                "level": 12,
+                                "pokemon": {
+                                    "id": "74",
+                                    "type": "pokemon_names",
+                                    "attributes": {
+                                        "name": "GEODUDE"
+                                    },
+                                    "links": {
+                                        "self": "{{API_DOMAIN}}/v1/pokemon/names/74"
+                                    }
+                                }
+                            },
+                            {
+                                "level": 14,
+                                "pokemon": {
+                                    "id": "95",
+                                    "type": "pokemon_names",
+                                    "attributes": {
+                                        "name": "ONIX"
+                                    },
+                                    "links": {
+                                        "self": "{{API_DOMAIN}}/v1/pokemon/names/95"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "links": {
+                "self": "{{API_DOMAIN}}/v1/trainers/parties/34"
+            }
+        },
+        ...
+    ],
+    "links": {
+        "self": "{{API_DOMAIN}}/v1/trainers/parties"
+    }
+}
+{% end %}
 
 ---
 
@@ -75,38 +188,38 @@ Server: pkmnapi/0.1.0
         "id": "34",
         "type": "trainer_parties",
         "attributes": {
-        "parties": [
-            {
-                "party": [
-                    {
-                        "level": 12,
-                        "pokemon": {
-                            "id": "74",
-                            "type": "pokemon_names",
-                            "attributes": {
-                                "name": "GEODUDE"
-                            },
-                            "links": {
-                                "self": "{{API_DOMAIN}}/v1/pokemon/names/74"
+            "parties": [
+                {
+                    "party": [
+                        {
+                            "level": 12,
+                            "pokemon": {
+                                "id": "74",
+                                "type": "pokemon_names",
+                                "attributes": {
+                                    "name": "GEODUDE"
+                                },
+                                "links": {
+                                    "self": "{{API_DOMAIN}}/v1/pokemon/names/74"
+                                }
+                            }
+                        },
+                        {
+                            "level": 14,
+                            "pokemon": {
+                                "id": "95",
+                                "type": "pokemon_names",
+                                "attributes": {
+                                    "name": "ONIX"
+                                },
+                                "links": {
+                                    "self": "{{API_DOMAIN}}/v1/pokemon/names/95"
+                                }
                             }
                         }
-                    },
-                    {
-                        "level": 14,
-                        "pokemon": {
-                            "id": "95",
-                            "type": "pokemon_names",
-                            "attributes": {
-                                "name": "ONIX"
-                            },
-                            "links": {
-                                "self": "{{API_DOMAIN}}/v1/pokemon/names/95"
-                            }
-                        }
-                    }
-                ]
-            }
-        ]
+                    ]
+                }
+            ]
         },
         "links": {
             "self": "{{API_DOMAIN}}/v1/trainers/parties/34"

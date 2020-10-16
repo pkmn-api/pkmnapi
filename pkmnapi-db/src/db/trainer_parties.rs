@@ -2,11 +2,28 @@ use crate::error::{self, Result};
 use crate::patch::*;
 use crate::PkmnapiDB;
 use byteorder::{LittleEndian, ReadBytesExt};
+use std::collections::HashMap;
 use std::io::Cursor;
 
 impl PkmnapiDB {
+    pub fn get_trainer_parties_all(
+        &self,
+        trainer_ids: &Vec<u8>,
+    ) -> Result<HashMap<u8, Vec<Party>>> {
+        let trainer_parties_all: HashMap<u8, Vec<Party>> = trainer_ids
+            .iter()
+            .map(|trainer_id| {
+                let trainer_parties = self.get_trainer_parties(trainer_id)?;
+
+                Ok((*trainer_id, trainer_parties))
+            })
+            .collect::<Result<HashMap<u8, Vec<Party>>>>()?;
+
+        Ok(trainer_parties_all)
+    }
+
     pub fn get_trainer_parties(&self, trainer_id: &u8) -> Result<Vec<Party>> {
-        let (min_id, max_id) = self.trainer_id_validate(trainer_id)?;
+        let (_min_id, max_id) = self.trainer_id_validate(trainer_id)?;
 
         let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = offset_base + 0x1D3B;
@@ -58,7 +75,7 @@ impl PkmnapiDB {
         .concat();
 
         if data_size == 0x00 {
-            return Err(error::Error::TrainerIDInvalid(*trainer_id, min_id, max_id));
+            return Ok(vec![]);
         }
 
         let trainer_parties: Vec<Party> = trainer_party_offsets

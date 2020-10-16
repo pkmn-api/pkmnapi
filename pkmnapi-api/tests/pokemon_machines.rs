@@ -1,7 +1,28 @@
+use pkmnapi_api::responses::pokemon_machines::PokemonMachinesResponseAll;
 use rocket::http::{ContentType, Status};
 use serde_json::json;
 
 mod common;
+
+test!(get_pokemon_machines_all_200, (client, access_token) {
+    let request = client
+        .get("/v1/pokemon/machines")
+        .header(common::auth_header(&access_token));
+
+    let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
+
+    let body = common::load_json::<PokemonMachinesResponseAll>("../secrets/data/json/get_pokemon_machines_all_200.json");
+
+    assert_eq!(response_body, body);
+    assert_eq!(response.status(), Status::Ok);
+
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
 test!(get_pokemon_machines_200, (client, access_token) {
     let request = client
@@ -342,7 +363,7 @@ test!(get_pokemon_machines_404, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_pokemon_machines",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Invalid Pokédex ID: 200"
@@ -1119,7 +1140,7 @@ test!(post_pokemon_machines_404, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_pokemon_machines",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Invalid Pokédex ID: 200"

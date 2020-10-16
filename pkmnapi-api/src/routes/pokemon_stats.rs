@@ -10,6 +10,32 @@ use crate::responses::errors::*;
 use crate::responses::pokemon_stats::*;
 use crate::utils;
 
+#[get("/pokemon/stats")]
+pub fn get_pokemon_stats_all(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Json<PokemonStatsResponseAll>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let (min_pokedex_id, max_pokedex_id) = db.pokedex_id_bounds();
+    let pokedex_ids: Vec<u8> = (min_pokedex_id..=max_pokedex_id)
+        .map(|pokedex_id| pokedex_id as u8)
+        .collect();
+    let pokemon_stats = db.get_pokemon_stats_all(&pokedex_ids)?;
+    let type_ids = pokemon_stats
+        .iter()
+        .map(|(_, pokemon_stats)| pokemon_stats.type_ids.to_vec())
+        .flatten()
+        .collect();
+    let type_names = db.get_type_name_all(&type_ids)?;
+
+    let response = PokemonStatsResponseAll::new(&pokedex_ids, &pokemon_stats, &type_names);
+
+    Ok(Json(response))
+}
+
 #[get("/pokemon/stats/<pokedex_id>")]
 pub fn get_pokemon_stats(
     sql: State<PkmnapiSQL>,
@@ -20,36 +46,10 @@ pub fn get_pokemon_stats(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokemon_stats = match db.get_pokemon_stats(&pokedex_id) {
-        Ok(pokemon_stats) => pokemon_stats,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_stats,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let pokemon_stats = db.get_pokemon_stats(&pokedex_id)?;
+    let type_names = db.get_type_name_all(&pokemon_stats.type_ids)?;
 
-    let type_names: Result<Vec<TypeName>, _> = pokemon_stats
-        .type_ids
-        .iter()
-        .map(|type_id| match db.get_type_name(type_id) {
-            Ok(type_name) => Ok(type_name),
-            Err(e) => {
-                return Err(NotFoundError::new(
-                    BaseErrorResponseId::error_pokemon_stats,
-                    Some(e.to_string()),
-                ))
-            }
-        })
-        .collect();
-
-    let type_names = match type_names {
-        Ok(type_names) => type_names,
-        Err(e) => return Err(e),
-    };
-
-    let response = PokemonStatsResponse::new(&pokedex_id, &pokemon_stats, type_names);
+    let response = PokemonStatsResponse::new(&pokedex_id, &pokemon_stats, &type_names);
 
     Ok(Json(response))
 }
@@ -83,15 +83,7 @@ pub fn post_pokemon_stats(
         base_exp_yield: data.get_base_exp_yield(),
     };
 
-    let patch = match db.set_pokemon_stats(&pokedex_id, &pokemon_stats) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_pokemon_stats,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_pokemon_stats(&pokedex_id, &pokemon_stats)?;
 
     utils::insert_rom_patch(
         sql,

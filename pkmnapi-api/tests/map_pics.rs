@@ -44,7 +44,7 @@ test!(get_map_pic_png_404, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_map_pics",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Invalid map ID 255: valid range is 0-247"
@@ -103,7 +103,7 @@ test!(get_map_pic_jpeg_404, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_map_pics",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Invalid map ID 255: valid range is 0-247"

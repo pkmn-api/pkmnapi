@@ -1,8 +1,30 @@
+use pkmnapi_api::responses::pokemon_cries::PokemonCryResponseAll;
 use rocket::http::{Accept, ContentType, Status};
 use serde_json::json;
 use std::fs;
 
 mod common;
+
+test!(get_pokemon_cry_all_200, (client, access_token) {
+    let request = client
+        .get("/v1/pokemon/cries")
+        .header(common::auth_header(&access_token))
+        .header(Accept::JSON);
+
+    let mut response = request.dispatch();
+    let response_body = response.body_string().unwrap();
+    let headers = response.headers();
+
+    let body = common::load_json::<PokemonCryResponseAll>("../secrets/data/json/get_pokemon_cry_all_200.json");
+
+    assert_eq!(response_body, body);
+    assert_eq!(response.status(), Status::Ok);
+
+    common::assert_headers(headers, vec![
+        ("Content-Type", "application/json"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
 
 test!(get_pokemon_cry_200, (client, access_token) {
     let request = client
@@ -82,7 +104,7 @@ test!(get_pokemon_cry_404, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_pokemon_cries",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Invalid Pokédex ID: 200"
@@ -212,7 +234,7 @@ test!(post_pokemon_cry_404, (client, access_token) {
 
     let body = json!({
         "data": {
-            "id": "error_pokemon_cries",
+            "id": "error_not_found",
             "type": "errors",
             "attributes": {
                 "message": "Invalid Pokédex ID: 200"

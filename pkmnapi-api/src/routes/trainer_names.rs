@@ -11,6 +11,26 @@ use crate::responses::errors::*;
 use crate::responses::trainer_names::*;
 use crate::utils;
 
+#[get("/trainers/names")]
+pub fn get_trainer_name_all(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Json<TrainerNameResponseAll>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let (min_trainer_id, max_trainer_id) = db.trainer_id_bounds();
+    let trainer_ids: Vec<u8> = (min_trainer_id..=max_trainer_id)
+        .map(|trainer_id| trainer_id as u8)
+        .collect();
+    let trainer_names = db.get_trainer_name_all(&trainer_ids)?;
+
+    let response = TrainerNameResponseAll::new(&trainer_ids, &trainer_names);
+
+    Ok(Json(response))
+}
+
 #[get("/trainers/names/<trainer_id>")]
 pub fn get_trainer_name(
     sql: State<PkmnapiSQL>,
@@ -21,15 +41,8 @@ pub fn get_trainer_name(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let trainer_name = match db.get_trainer_name(&trainer_id) {
-        Ok(trainer_name) => trainer_name,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_trainer_names,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let trainer_name = db.get_trainer_name(&trainer_id)?;
+
     let response = TrainerNameResponse::new(&trainer_id, &trainer_name);
 
     Ok(Json(response))
@@ -56,15 +69,7 @@ pub fn post_trainer_name(
         name: ROMString::from(data.get_name()),
     };
 
-    let patch = match db.set_trainer_name(&trainer_id, &trainer_name) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_trainer_names,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_trainer_name(&trainer_id, &trainer_name)?;
 
     utils::insert_rom_patch(
         sql,

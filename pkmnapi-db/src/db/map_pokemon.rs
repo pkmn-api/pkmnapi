@@ -2,11 +2,25 @@ use crate::error::{self, Result};
 use crate::patch::*;
 use crate::PkmnapiDB;
 use byteorder::{LittleEndian, ReadBytesExt};
+use std::collections::HashMap;
 use std::io::Cursor;
 
 impl PkmnapiDB {
+    pub fn get_map_pokemon_all(&self, map_ids: &Vec<u8>) -> Result<HashMap<u8, MapPokemon>> {
+        let map_pokemon_all: HashMap<u8, MapPokemon> = map_ids
+            .iter()
+            .map(|map_id| {
+                let map_pokemon = self.get_map_pokemon(map_id)?;
+
+                Ok((*map_id, map_pokemon))
+            })
+            .collect::<Result<HashMap<u8, MapPokemon>>>()?;
+
+        Ok(map_pokemon_all)
+    }
+
     pub fn get_map_pokemon(&self, map_id: &u8) -> Result<MapPokemon> {
-        let (_min_id, _max_id) = self.map_id_validate(map_id)?;
+        self.map_id_validate(map_id)?;
 
         let offset_base = PkmnapiDB::ROM_PAGE * 0x06;
         let offset = offset_base + 0x0EEB;

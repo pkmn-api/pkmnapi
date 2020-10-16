@@ -10,6 +10,32 @@ use crate::responses::errors::*;
 use crate::responses::type_effects::*;
 use crate::utils;
 
+#[get("/types/effects")]
+pub fn get_type_effect_all(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Json<TypeEffectResponseAll>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let (min_type_effect_id, max_type_effect_id) = db.type_effect_id_bounds();
+    let type_effect_ids: Vec<u8> = (min_type_effect_id..=max_type_effect_id)
+        .map(|type_effect_id| type_effect_id as u8)
+        .collect();
+    let type_effects = db.get_type_effect_all(&type_effect_ids)?;
+    let type_ids = type_effects
+        .iter()
+        .map(|(_, type_effect)| vec![type_effect.attacking_type_id, type_effect.defending_type_id])
+        .flatten()
+        .collect();
+    let type_names = db.get_type_name_all(&type_ids)?;
+
+    let response = TypeEffectResponseAll::new(&type_effect_ids, &type_effects, &type_names);
+
+    Ok(Json(response))
+}
+
 #[get("/types/effects/<type_effect_id>")]
 pub fn get_type_effect(
     sql: State<PkmnapiSQL>,
@@ -20,41 +46,11 @@ pub fn get_type_effect(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let type_effect = match db.get_type_effect(&type_effect_id) {
-        Ok(type_effect) => type_effect,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_type_effects,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let type_effect = db.get_type_effect(&type_effect_id)?;
+    let type_ids = vec![type_effect.attacking_type_id, type_effect.defending_type_id];
+    let type_names = db.get_type_name_all(&type_ids)?;
 
-    let attacking_type_name = match db.get_type_name(&type_effect.attacking_type_id) {
-        Ok(attacking_type_name) => attacking_type_name,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_type_effects,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let defending_type_name = match db.get_type_name(&type_effect.defending_type_id) {
-        Ok(defending_type_name) => defending_type_name,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_type_effects,
-                Some(e.to_string()),
-            ))
-        }
-    };
-
-    let response = TypeEffectResponse::new(
-        &type_effect_id,
-        &type_effect,
-        vec![&attacking_type_name, &defending_type_name],
-    );
+    let response = TypeEffectResponse::new(&type_effect_id, &type_effect, &type_names);
 
     Ok(Json(response))
 }
@@ -82,15 +78,7 @@ pub fn post_type_effect(
         multiplier: data.get_multiplier(),
     };
 
-    let patch = match db.set_type_effect(&type_effect_id, &type_effect) {
-        Ok(patch) => patch,
-        Err(e) => {
-            return Err(NotFoundError::new(
-                BaseErrorResponseId::error_type_effects,
-                Some(e.to_string()),
-            ))
-        }
-    };
+    let patch = db.set_type_effect(&type_effect_id, &type_effect)?;
 
     utils::insert_rom_patch(
         sql,
