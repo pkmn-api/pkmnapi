@@ -3,7 +3,7 @@ use crate::patch::*;
 use crate::PkmnapiDB;
 use byteorder::ReadBytesExt;
 use std::collections::HashMap;
-use std::io::{Cursor, Read};
+use std::io::{Cursor, Read, Seek, SeekFrom};
 
 impl PkmnapiDB {
     pub fn get_pokemon_stats_all(
@@ -48,7 +48,8 @@ impl PkmnapiDB {
     ///         base_special: 65,
     ///         type_ids: vec![22, 3],
     ///         catch_rate: 45,
-    ///         base_exp_yield: 64
+    ///         base_exp_yield: 64,
+    ///         growth_rate: 3
     ///     }
     /// );
     /// ```
@@ -97,6 +98,7 @@ impl PkmnapiDB {
     ///             type_ids: vec![0x13, 0x37],
     ///             catch_rate: 0x13,
     ///             base_exp_yield: 0x37,
+    ///             growth_rate: 0x00
     ///         },
     ///     )
     ///     .unwrap();
@@ -105,8 +107,8 @@ impl PkmnapiDB {
     ///     patch,
     ///     Patch {
     ///         offset: 0x383DE,
-    ///         length: 0x0A,
-    ///         data: vec![0x01, 0x42, 0x13, 0x37, 0x13, 0x37, 0x13, 0x37, 0x13, 0x37]
+    ///         length: 0x14,
+    ///         data: vec![0x01, 0x42, 0x13, 0x37, 0x13, 0x37, 0x13, 0x37, 0x13, 0x37, 0x55, 0x00, 0x40, 0xE5, 0x40, 0x21, 0x2D, 0x00, 0x00, 0x00]
     ///     }
     /// );
     /// ```
@@ -122,7 +124,14 @@ impl PkmnapiDB {
 
         let pokemon_stats_raw = pokemon_stats.to_raw();
 
-        Ok(Patch::new(&offset, &pokemon_stats_raw))
+        let data = vec![
+            pokemon_stats_raw[..10].to_vec(),
+            self.rom[(offset + 10)..(offset + 19)].to_vec(),
+            pokemon_stats_raw[(pokemon_stats_raw.len() - 1)..].to_vec(),
+        ]
+        .concat();
+
+        Ok(Patch::new(&offset, &data))
     }
 }
 
@@ -133,7 +142,10 @@ impl PkmnapiDB {
 /// ```
 /// use pkmnapi_db::*;
 ///
-/// let rom = vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A];
+/// let rom = vec![
+///     0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00,
+///     0x00, 0x00, 0x00, 0x00, 0x0B,
+/// ];
 /// let stats = PokemonStats::from(&rom[..]);
 ///
 /// assert_eq!(
@@ -147,7 +159,8 @@ impl PkmnapiDB {
 ///         base_special: 0x06,
 ///         type_ids: vec![0x07, 0x08],
 ///         catch_rate: 0x09,
-///         base_exp_yield: 0x0A
+///         base_exp_yield: 0x0A,
+///         growth_rate: 0x0B
 ///     }
 /// );
 /// ```
@@ -162,6 +175,7 @@ pub struct PokemonStats {
     pub type_ids: Vec<u8>,
     pub catch_rate: u8,
     pub base_exp_yield: u8,
+    pub growth_rate: u8,
 }
 
 impl From<&[u8]> for PokemonStats {
@@ -172,7 +186,10 @@ impl From<&[u8]> for PokemonStats {
     /// ```
     /// use pkmnapi_db::*;
     ///
-    /// let rom = vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A];
+    /// let rom = vec![
+    ///     0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00,
+    ///     0x00, 0x00, 0x00, 0x00, 0x0B,
+    /// ];
     /// let stats = PokemonStats::from(&rom[..]);
     ///
     /// assert_eq!(
@@ -186,7 +203,8 @@ impl From<&[u8]> for PokemonStats {
     ///         base_special: 0x06,
     ///         type_ids: vec![0x07, 0x08],
     ///         catch_rate: 0x09,
-    ///         base_exp_yield: 0x0A
+    ///         base_exp_yield: 0x0A,
+    ///         growth_rate: 0x0B
     ///     }
     /// );
     /// ```
@@ -209,6 +227,10 @@ impl From<&[u8]> for PokemonStats {
         let catch_rate = cursor.read_u8().unwrap_or(0);
         let base_exp_yield = cursor.read_u8().unwrap_or(0);
 
+        cursor.seek(SeekFrom::Current(9)).unwrap();
+
+        let growth_rate = cursor.read_u8().unwrap_or(0);
+
         PokemonStats {
             pokedex_id,
             base_hp,
@@ -219,6 +241,7 @@ impl From<&[u8]> for PokemonStats {
             type_ids,
             catch_rate,
             base_exp_yield,
+            growth_rate,
         }
     }
 }
@@ -241,13 +264,17 @@ impl PokemonStats {
     ///     type_ids: vec![0x07, 0x08],
     ///     catch_rate: 0x09,
     ///     base_exp_yield: 0x0A,
+    ///     growth_rate: 0x0B,
     /// };
     ///
     /// let raw = stats.to_raw();
     ///
     /// assert_eq!(
     ///     raw,
-    ///     vec![0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A]
+    ///     vec![
+    ///         0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x00, 0x00, 0x00, 0x00,
+    ///         0x00, 0x00, 0x00, 0x00, 0x00, 0x0B
+    ///     ]
     /// );
     /// ```
     pub fn to_raw(&self) -> Vec<u8> {
@@ -262,6 +289,8 @@ impl PokemonStats {
             ],
             self.type_ids.to_vec(),
             vec![self.catch_rate, self.base_exp_yield],
+            vec![0x00; 9],
+            vec![self.growth_rate],
         ]
         .concat()
     }

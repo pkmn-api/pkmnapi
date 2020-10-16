@@ -55,6 +55,7 @@ Authorization: Bearer <access_token>
 | `data[].attributes.types[].links.self`      | string | Link to type resource.                     |
 | `data[].attributes.catch_rate`              | number | Catch rate.                                |
 | `data[].attributes.base_exp_yield`          | number | Base experience yield.                     |
+| `data[].attributes.growth_rate`             | number | Growth rate.                               |
 | `data[].links`                              | object |                                            |
 | `data[].links.self`                         | string | Link to current resource.                  |
 | `links`                                     | object |                                            |
@@ -108,7 +109,8 @@ Server: pkmnapi/0.1.0
                     }
                 ],
                 "catch_rate": 45,
-                "base_exp_yield": 64
+                "base_exp_yield": 64,
+                "growth_rate": 3
             },
             "links": {
                 "self": "{{API_DOMAIN}}/v1/pokemon/stats/1"
@@ -169,6 +171,7 @@ Authorization: Bearer <access_token>
 | `data.attributes.types[].links.self`      | string | Link to type resource.                     |
 | `data.attributes.catch_rate`              | number | Catch rate.                                |
 | `data.attributes.base_exp_yield`          | number | Base experience yield.                     |
+| `data.attributes.growth_rate`             | number | Growth rate.                               |
 | `data.links`                              | object |                                            |
 | `data.links.self`                         | string | Link to current resource.                  |
 | `links`                                   | object |                                            |
@@ -221,7 +224,8 @@ Server: pkmnapi/0.1.0
                 }
             ],
             "catch_rate": 45,
-            "base_exp_yield": 64
+            "base_exp_yield": 64,
+            "growth_rate": 3
         },
         "links": {
             "self": "{{API_DOMAIN}}/v1/pokemon/stats/1"
@@ -256,6 +260,7 @@ Updates a Pokémon's stats
 | body   | `data.attributes.types[].id`              | string | ✔️ | Type ID.                               |
 | body   | `data.attributes.catch_rate`              | number | ✔️ | Catch rate.                            |
 | body   | `data.attributes.base_exp_yield`          | number | ✔️ | Base experience yield.                 |
+| body   | `data.attributes.growth_rate`             | number | ✔️ | Growth rate.                           |
 {% end %}
 
 #### Example Request
@@ -291,7 +296,8 @@ X-Patch-Description: Update BULBASAUR's stats
                 }
             ],
             "catch_rate": 42,
-            "base_exp_yield": 42
+            "base_exp_yield": 42,
+            "growth_rate": 0
         }
     }
 }

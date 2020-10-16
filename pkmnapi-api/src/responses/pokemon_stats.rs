@@ -74,6 +74,7 @@ impl PokemonStatsResponseData {
                     .collect(),
                 catch_rate: pokemon_stats.catch_rate,
                 base_exp_yield: pokemon_stats.base_exp_yield,
+                growth_rate: pokemon_stats.growth_rate,
             },
             links: Links {
                 _self: utils::generate_url("pokemon/stats", Some(&pokedex_id.to_string())),
@@ -92,4 +93,5 @@ pub struct PokemonStatsResponseAttributes {
     pub types: Vec<TypeNameResponseData>,
     pub catch_rate: u8,
     pub base_exp_yield: u8,
+    pub growth_rate: u8,
 }

@@ -41,6 +41,10 @@ impl PokemonStatsRequest {
     pub fn get_base_exp_yield(&self) -> u8 {
         self.data.attributes.base_exp_yield
     }
+
+    pub fn get_growth_rate(&self) -> u8 {
+        self.data.attributes.growth_rate
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -59,6 +63,7 @@ pub struct PokemonStatsRequestAttributes {
     pub types: Vec<PokemonStatsRequestAttributesType>,
     pub catch_rate: u8,
     pub base_exp_yield: u8,
+    pub growth_rate: u8,
 }
 
 #[derive(Debug, Deserialize)]

@@ -66,7 +66,8 @@ test!(get_pokemon_stats_200, (client, access_token) {
                     }
                 ],
                 "catch_rate": 45,
-                "base_exp_yield": 64
+                "base_exp_yield": 64,
+                "growth_rate": 3
             },
             "links": {
                 "self": "http://localhost:8080/v1/pokemon/stats/1"
@@ -141,7 +142,8 @@ test!(post_pokemon_stats_202, (client, access_token) {
                     }
                 ],
                 "catch_rate": 42,
-                "base_exp_yield": 42
+                "base_exp_yield": 42,
+                "growth_rate": 0
             }
         }
     });
@@ -207,7 +209,8 @@ test!(post_pokemon_stats_202, (client, access_token) {
                     }
                 ],
                 "catch_rate": 42,
-                "base_exp_yield": 42
+                "base_exp_yield": 42,
+                "growth_rate": 0
             },
             "links": {
                 "self": "http://localhost:8080/v1/pokemon/stats/1"
@@ -246,7 +249,8 @@ test!(post_pokemon_stats_401, (client) {
                     }
                 ],
                 "catch_rate": 42,
-                "base_exp_yield": 42
+                "base_exp_yield": 42,
+                "growth_rate": 0
             }
         }
     });
@@ -280,7 +284,8 @@ test!(post_pokemon_stats_404, (client, access_token) {
                     }
                 ],
                 "catch_rate": 42,
-                "base_exp_yield": 42
+                "base_exp_yield": 42,
+                "growth_rate": 0
             }
         }
     });

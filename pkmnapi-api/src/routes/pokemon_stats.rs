@@ -81,6 +81,7 @@ pub fn post_pokemon_stats(
         type_ids: data.get_type_ids(),
         catch_rate: data.get_catch_rate(),
         base_exp_yield: data.get_base_exp_yield(),
+        growth_rate: data.get_growth_rate(),
     };
 
     let patch = db.set_pokemon_stats(&pokedex_id, &pokemon_stats)?;

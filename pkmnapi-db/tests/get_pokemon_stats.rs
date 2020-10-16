@@ -13,7 +13,8 @@ macro_rules! get_pokemon_stats_test {
         $base_special:expr,
         $type_ids:expr,
         $catch_rate:expr,
-        $base_exp_yield:expr
+        $base_exp_yield:expr,
+        $growth_rate:expr
     ) => {
         #[test]
         #[ignore]
@@ -33,7 +34,8 @@ macro_rules! get_pokemon_stats_test {
                         base_special: $base_special,
                         type_ids: $type_ids,
                         catch_rate: $catch_rate,
-                        base_exp_yield: $base_exp_yield
+                        base_exp_yield: $base_exp_yield,
+                        growth_rate: $growth_rate
                     },
                     "Searched for Pokédex ID: {}",
                     $pokedex_id
@@ -54,7 +56,8 @@ get_pokemon_stats_test!(
     65,
     vec![22, 3],
     45,
-    64
+    64,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_2,
@@ -66,7 +69,8 @@ get_pokemon_stats_test!(
     80,
     vec![22, 3],
     45,
-    141
+    141,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_3,
@@ -78,7 +82,8 @@ get_pokemon_stats_test!(
     100,
     vec![22, 3],
     45,
-    208
+    208,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_4,
@@ -90,7 +95,8 @@ get_pokemon_stats_test!(
     50,
     vec![20, 20],
     45,
-    65
+    65,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_5,
@@ -102,7 +108,8 @@ get_pokemon_stats_test!(
     65,
     vec![20, 20],
     45,
-    142
+    142,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_6,
@@ -114,7 +121,8 @@ get_pokemon_stats_test!(
     85,
     vec![20, 2],
     45,
-    209
+    209,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_7,
@@ -126,7 +134,8 @@ get_pokemon_stats_test!(
     50,
     vec![21, 21],
     45,
-    66
+    66,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_8,
@@ -138,7 +147,8 @@ get_pokemon_stats_test!(
     65,
     vec![21, 21],
     45,
-    143
+    143,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_9,
@@ -150,7 +160,8 @@ get_pokemon_stats_test!(
     85,
     vec![21, 21],
     45,
-    210
+    210,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_10,
@@ -162,7 +173,8 @@ get_pokemon_stats_test!(
     20,
     vec![7, 7],
     255,
-    53
+    53,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_11,
@@ -174,7 +186,8 @@ get_pokemon_stats_test!(
     25,
     vec![7, 7],
     120,
-    72
+    72,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_12,
@@ -186,7 +199,8 @@ get_pokemon_stats_test!(
     80,
     vec![7, 2],
     45,
-    160
+    160,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_13,
@@ -198,7 +212,8 @@ get_pokemon_stats_test!(
     20,
     vec![7, 3],
     255,
-    52
+    52,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_14,
@@ -210,7 +225,8 @@ get_pokemon_stats_test!(
     25,
     vec![7, 3],
     120,
-    71
+    71,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_15,
@@ -222,7 +238,8 @@ get_pokemon_stats_test!(
     45,
     vec![7, 3],
     45,
-    159
+    159,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_16,
@@ -234,7 +251,8 @@ get_pokemon_stats_test!(
     35,
     vec![0, 2],
     255,
-    55
+    55,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_17,
@@ -246,7 +264,8 @@ get_pokemon_stats_test!(
     50,
     vec![0, 2],
     120,
-    113
+    113,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_18,
@@ -258,7 +277,8 @@ get_pokemon_stats_test!(
     70,
     vec![0, 2],
     45,
-    172
+    172,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_19,
@@ -270,7 +290,8 @@ get_pokemon_stats_test!(
     25,
     vec![0, 0],
     255,
-    57
+    57,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_20,
@@ -282,7 +303,8 @@ get_pokemon_stats_test!(
     50,
     vec![0, 0],
     90,
-    116
+    116,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_21,
@@ -294,7 +316,8 @@ get_pokemon_stats_test!(
     31,
     vec![0, 2],
     255,
-    58
+    58,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_22,
@@ -306,7 +329,8 @@ get_pokemon_stats_test!(
     61,
     vec![0, 2],
     90,
-    162
+    162,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_23,
@@ -318,7 +342,8 @@ get_pokemon_stats_test!(
     40,
     vec![3, 3],
     255,
-    62
+    62,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_24,
@@ -330,7 +355,8 @@ get_pokemon_stats_test!(
     65,
     vec![3, 3],
     90,
-    147
+    147,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_25,
@@ -342,7 +368,8 @@ get_pokemon_stats_test!(
     50,
     vec![23, 23],
     190,
-    82
+    82,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_26,
@@ -354,7 +381,8 @@ get_pokemon_stats_test!(
     90,
     vec![23, 23],
     75,
-    122
+    122,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_27,
@@ -366,7 +394,8 @@ get_pokemon_stats_test!(
     30,
     vec![4, 4],
     255,
-    93
+    93,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_28,
@@ -378,7 +407,8 @@ get_pokemon_stats_test!(
     55,
     vec![4, 4],
     90,
-    163
+    163,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_29,
@@ -390,7 +420,8 @@ get_pokemon_stats_test!(
     40,
     vec![3, 3],
     235,
-    59
+    59,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_30,
@@ -402,7 +433,8 @@ get_pokemon_stats_test!(
     55,
     vec![3, 3],
     120,
-    117
+    117,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_31,
@@ -414,7 +446,8 @@ get_pokemon_stats_test!(
     75,
     vec![3, 4],
     45,
-    194
+    194,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_32,
@@ -426,7 +459,8 @@ get_pokemon_stats_test!(
     40,
     vec![3, 3],
     235,
-    60
+    60,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_33,
@@ -438,7 +472,8 @@ get_pokemon_stats_test!(
     55,
     vec![3, 3],
     120,
-    118
+    118,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_34,
@@ -450,7 +485,8 @@ get_pokemon_stats_test!(
     75,
     vec![3, 4],
     45,
-    195
+    195,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_35,
@@ -462,7 +498,8 @@ get_pokemon_stats_test!(
     60,
     vec![0, 0],
     150,
-    68
+    68,
+    4
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_36,
@@ -474,7 +511,8 @@ get_pokemon_stats_test!(
     85,
     vec![0, 0],
     25,
-    129
+    129,
+    4
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_37,
@@ -486,7 +524,8 @@ get_pokemon_stats_test!(
     65,
     vec![20, 20],
     190,
-    63
+    63,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_38,
@@ -498,7 +537,8 @@ get_pokemon_stats_test!(
     100,
     vec![20, 20],
     75,
-    178
+    178,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_39,
@@ -510,7 +550,8 @@ get_pokemon_stats_test!(
     25,
     vec![0, 0],
     170,
-    76
+    76,
+    4
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_40,
@@ -522,7 +563,8 @@ get_pokemon_stats_test!(
     50,
     vec![0, 0],
     50,
-    109
+    109,
+    4
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_41,
@@ -534,7 +576,8 @@ get_pokemon_stats_test!(
     40,
     vec![3, 2],
     255,
-    54
+    54,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_42,
@@ -546,7 +589,8 @@ get_pokemon_stats_test!(
     75,
     vec![3, 2],
     90,
-    171
+    171,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_43,
@@ -558,7 +602,8 @@ get_pokemon_stats_test!(
     75,
     vec![22, 3],
     255,
-    78
+    78,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_44,
@@ -570,7 +615,8 @@ get_pokemon_stats_test!(
     85,
     vec![22, 3],
     120,
-    132
+    132,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_45,
@@ -582,7 +628,8 @@ get_pokemon_stats_test!(
     100,
     vec![22, 3],
     45,
-    184
+    184,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_46,
@@ -594,7 +641,8 @@ get_pokemon_stats_test!(
     55,
     vec![7, 22],
     190,
-    70
+    70,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_47,
@@ -606,7 +654,8 @@ get_pokemon_stats_test!(
     80,
     vec![7, 22],
     75,
-    128
+    128,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_48,
@@ -618,7 +667,8 @@ get_pokemon_stats_test!(
     40,
     vec![7, 3],
     190,
-    75
+    75,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_49,
@@ -630,7 +680,8 @@ get_pokemon_stats_test!(
     90,
     vec![7, 3],
     75,
-    138
+    138,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_50,
@@ -642,7 +693,8 @@ get_pokemon_stats_test!(
     45,
     vec![4, 4],
     255,
-    81
+    81,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_51,
@@ -654,7 +706,8 @@ get_pokemon_stats_test!(
     70,
     vec![4, 4],
     50,
-    153
+    153,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_52,
@@ -666,7 +719,8 @@ get_pokemon_stats_test!(
     40,
     vec![0, 0],
     255,
-    69
+    69,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_53,
@@ -678,7 +732,8 @@ get_pokemon_stats_test!(
     65,
     vec![0, 0],
     90,
-    148
+    148,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_54,
@@ -690,7 +745,8 @@ get_pokemon_stats_test!(
     50,
     vec![21, 21],
     190,
-    80
+    80,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_55,
@@ -702,7 +758,8 @@ get_pokemon_stats_test!(
     80,
     vec![21, 21],
     75,
-    174
+    174,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_56,
@@ -714,7 +771,8 @@ get_pokemon_stats_test!(
     35,
     vec![1, 1],
     190,
-    74
+    74,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_57,
@@ -726,7 +784,8 @@ get_pokemon_stats_test!(
     60,
     vec![1, 1],
     75,
-    149
+    149,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_58,
@@ -738,7 +797,8 @@ get_pokemon_stats_test!(
     50,
     vec![20, 20],
     190,
-    91
+    91,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_59,
@@ -750,7 +810,8 @@ get_pokemon_stats_test!(
     80,
     vec![20, 20],
     75,
-    213
+    213,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_60,
@@ -762,7 +823,8 @@ get_pokemon_stats_test!(
     40,
     vec![21, 21],
     255,
-    77
+    77,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_61,
@@ -774,7 +836,8 @@ get_pokemon_stats_test!(
     50,
     vec![21, 21],
     120,
-    131
+    131,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_62,
@@ -786,7 +849,8 @@ get_pokemon_stats_test!(
     70,
     vec![21, 1],
     45,
-    185
+    185,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_63,
@@ -798,7 +862,8 @@ get_pokemon_stats_test!(
     105,
     vec![24, 24],
     200,
-    73
+    73,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_64,
@@ -810,7 +875,8 @@ get_pokemon_stats_test!(
     120,
     vec![24, 24],
     100,
-    145
+    145,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_65,
@@ -822,7 +888,8 @@ get_pokemon_stats_test!(
     135,
     vec![24, 24],
     50,
-    186
+    186,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_66,
@@ -834,7 +901,8 @@ get_pokemon_stats_test!(
     35,
     vec![1, 1],
     180,
-    88
+    88,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_67,
@@ -846,7 +914,8 @@ get_pokemon_stats_test!(
     50,
     vec![1, 1],
     90,
-    146
+    146,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_68,
@@ -858,7 +927,8 @@ get_pokemon_stats_test!(
     65,
     vec![1, 1],
     45,
-    193
+    193,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_69,
@@ -870,7 +940,8 @@ get_pokemon_stats_test!(
     70,
     vec![22, 3],
     255,
-    84
+    84,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_70,
@@ -882,7 +953,8 @@ get_pokemon_stats_test!(
     85,
     vec![22, 3],
     120,
-    151
+    151,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_71,
@@ -894,7 +966,8 @@ get_pokemon_stats_test!(
     100,
     vec![22, 3],
     45,
-    191
+    191,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_72,
@@ -906,7 +979,8 @@ get_pokemon_stats_test!(
     100,
     vec![21, 3],
     190,
-    105
+    105,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_73,
@@ -918,7 +992,8 @@ get_pokemon_stats_test!(
     120,
     vec![21, 3],
     60,
-    205
+    205,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_74,
@@ -930,7 +1005,8 @@ get_pokemon_stats_test!(
     30,
     vec![5, 4],
     255,
-    86
+    86,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_75,
@@ -942,7 +1018,8 @@ get_pokemon_stats_test!(
     45,
     vec![5, 4],
     120,
-    134
+    134,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_76,
@@ -954,7 +1031,8 @@ get_pokemon_stats_test!(
     55,
     vec![5, 4],
     45,
-    177
+    177,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_77,
@@ -966,7 +1044,8 @@ get_pokemon_stats_test!(
     65,
     vec![20, 20],
     190,
-    152
+    152,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_78,
@@ -978,7 +1057,8 @@ get_pokemon_stats_test!(
     80,
     vec![20, 20],
     60,
-    192
+    192,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_79,
@@ -990,7 +1070,8 @@ get_pokemon_stats_test!(
     40,
     vec![21, 24],
     190,
-    99
+    99,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_80,
@@ -1002,7 +1083,8 @@ get_pokemon_stats_test!(
     80,
     vec![21, 24],
     75,
-    164
+    164,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_81,
@@ -1014,7 +1096,8 @@ get_pokemon_stats_test!(
     95,
     vec![23, 23],
     190,
-    89
+    89,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_82,
@@ -1026,7 +1109,8 @@ get_pokemon_stats_test!(
     120,
     vec![23, 23],
     60,
-    161
+    161,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_83,
@@ -1038,7 +1122,8 @@ get_pokemon_stats_test!(
     58,
     vec![0, 2],
     45,
-    94
+    94,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_84,
@@ -1050,7 +1135,8 @@ get_pokemon_stats_test!(
     35,
     vec![0, 2],
     190,
-    96
+    96,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_85,
@@ -1062,7 +1148,8 @@ get_pokemon_stats_test!(
     60,
     vec![0, 2],
     45,
-    158
+    158,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_86,
@@ -1074,7 +1161,8 @@ get_pokemon_stats_test!(
     70,
     vec![21, 21],
     190,
-    100
+    100,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_87,
@@ -1086,7 +1174,8 @@ get_pokemon_stats_test!(
     95,
     vec![21, 25],
     75,
-    176
+    176,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_88,
@@ -1098,7 +1187,8 @@ get_pokemon_stats_test!(
     40,
     vec![3, 3],
     190,
-    90
+    90,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_89,
@@ -1110,7 +1200,8 @@ get_pokemon_stats_test!(
     65,
     vec![3, 3],
     75,
-    157
+    157,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_90,
@@ -1122,7 +1213,8 @@ get_pokemon_stats_test!(
     45,
     vec![21, 21],
     190,
-    97
+    97,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_91,
@@ -1134,7 +1226,8 @@ get_pokemon_stats_test!(
     85,
     vec![21, 25],
     60,
-    203
+    203,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_92,
@@ -1146,7 +1239,8 @@ get_pokemon_stats_test!(
     100,
     vec![8, 3],
     190,
-    95
+    95,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_93,
@@ -1158,7 +1252,8 @@ get_pokemon_stats_test!(
     115,
     vec![8, 3],
     90,
-    126
+    126,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_94,
@@ -1170,7 +1265,8 @@ get_pokemon_stats_test!(
     130,
     vec![8, 3],
     45,
-    190
+    190,
+    3
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_95,
@@ -1182,7 +1278,8 @@ get_pokemon_stats_test!(
     30,
     vec![5, 4],
     45,
-    108
+    108,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_96,
@@ -1194,7 +1291,8 @@ get_pokemon_stats_test!(
     90,
     vec![24, 24],
     190,
-    102
+    102,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_97,
@@ -1206,7 +1304,8 @@ get_pokemon_stats_test!(
     115,
     vec![24, 24],
     75,
-    165
+    165,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_98,
@@ -1218,7 +1317,8 @@ get_pokemon_stats_test!(
     25,
     vec![21, 21],
     225,
-    115
+    115,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_99,
@@ -1230,7 +1330,8 @@ get_pokemon_stats_test!(
     50,
     vec![21, 21],
     60,
-    206
+    206,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_100,
@@ -1242,7 +1343,8 @@ get_pokemon_stats_test!(
     55,
     vec![23, 23],
     190,
-    103
+    103,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_101,
@@ -1254,7 +1356,8 @@ get_pokemon_stats_test!(
     80,
     vec![23, 23],
     60,
-    150
+    150,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_102,
@@ -1266,7 +1369,8 @@ get_pokemon_stats_test!(
     60,
     vec![22, 24],
     90,
-    98
+    98,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_103,
@@ -1278,7 +1382,8 @@ get_pokemon_stats_test!(
     125,
     vec![22, 24],
     45,
-    212
+    212,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_104,
@@ -1290,7 +1395,8 @@ get_pokemon_stats_test!(
     40,
     vec![4, 4],
     190,
-    87
+    87,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_105,
@@ -1302,7 +1408,8 @@ get_pokemon_stats_test!(
     50,
     vec![4, 4],
     75,
-    124
+    124,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_106,
@@ -1314,7 +1421,8 @@ get_pokemon_stats_test!(
     35,
     vec![1, 1],
     45,
-    139
+    139,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_107,
@@ -1326,7 +1434,8 @@ get_pokemon_stats_test!(
     35,
     vec![1, 1],
     45,
-    140
+    140,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_108,
@@ -1338,7 +1447,8 @@ get_pokemon_stats_test!(
     60,
     vec![0, 0],
     45,
-    127
+    127,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_109,
@@ -1350,7 +1460,8 @@ get_pokemon_stats_test!(
     60,
     vec![3, 3],
     190,
-    114
+    114,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_110,
@@ -1362,7 +1473,8 @@ get_pokemon_stats_test!(
     85,
     vec![3, 3],
     60,
-    173
+    173,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_111,
@@ -1374,7 +1486,8 @@ get_pokemon_stats_test!(
     30,
     vec![4, 5],
     120,
-    135
+    135,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_112,
@@ -1386,7 +1499,8 @@ get_pokemon_stats_test!(
     45,
     vec![4, 5],
     60,
-    204
+    204,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_113,
@@ -1398,7 +1512,8 @@ get_pokemon_stats_test!(
     105,
     vec![0, 0],
     30,
-    255
+    255,
+    4
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_114,
@@ -1410,7 +1525,8 @@ get_pokemon_stats_test!(
     100,
     vec![22, 22],
     45,
-    166
+    166,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_115,
@@ -1422,7 +1538,8 @@ get_pokemon_stats_test!(
     40,
     vec![0, 0],
     45,
-    175
+    175,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_116,
@@ -1434,7 +1551,8 @@ get_pokemon_stats_test!(
     70,
     vec![21, 21],
     225,
-    83
+    83,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_117,
@@ -1446,7 +1564,8 @@ get_pokemon_stats_test!(
     95,
     vec![21, 21],
     75,
-    155
+    155,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_118,
@@ -1458,7 +1577,8 @@ get_pokemon_stats_test!(
     50,
     vec![21, 21],
     225,
-    111
+    111,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_119,
@@ -1470,7 +1590,8 @@ get_pokemon_stats_test!(
     80,
     vec![21, 21],
     60,
-    170
+    170,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_120,
@@ -1482,7 +1603,8 @@ get_pokemon_stats_test!(
     70,
     vec![21, 21],
     225,
-    106
+    106,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_121,
@@ -1494,7 +1616,8 @@ get_pokemon_stats_test!(
     100,
     vec![21, 24],
     60,
-    207
+    207,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_122,
@@ -1506,7 +1629,8 @@ get_pokemon_stats_test!(
     100,
     vec![24, 24],
     45,
-    136
+    136,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_123,
@@ -1518,7 +1642,8 @@ get_pokemon_stats_test!(
     55,
     vec![7, 2],
     45,
-    187
+    187,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_124,
@@ -1530,7 +1655,8 @@ get_pokemon_stats_test!(
     95,
     vec![25, 24],
     45,
-    137
+    137,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_125,
@@ -1542,7 +1668,8 @@ get_pokemon_stats_test!(
     85,
     vec![23, 23],
     45,
-    156
+    156,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_126,
@@ -1554,7 +1681,8 @@ get_pokemon_stats_test!(
     85,
     vec![20, 20],
     45,
-    167
+    167,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_127,
@@ -1566,7 +1694,8 @@ get_pokemon_stats_test!(
     55,
     vec![7, 7],
     45,
-    200
+    200,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_128,
@@ -1578,7 +1707,8 @@ get_pokemon_stats_test!(
     70,
     vec![0, 0],
     45,
-    211
+    211,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_129,
@@ -1590,7 +1720,8 @@ get_pokemon_stats_test!(
     20,
     vec![21, 21],
     255,
-    20
+    20,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_130,
@@ -1602,7 +1733,8 @@ get_pokemon_stats_test!(
     100,
     vec![21, 2],
     45,
-    214
+    214,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_131,
@@ -1614,7 +1746,8 @@ get_pokemon_stats_test!(
     95,
     vec![21, 25],
     45,
-    219
+    219,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_132,
@@ -1626,7 +1759,8 @@ get_pokemon_stats_test!(
     48,
     vec![0, 0],
     35,
-    61
+    61,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_133,
@@ -1638,7 +1772,8 @@ get_pokemon_stats_test!(
     65,
     vec![0, 0],
     45,
-    92
+    92,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_134,
@@ -1650,7 +1785,8 @@ get_pokemon_stats_test!(
     110,
     vec![21, 21],
     45,
-    196
+    196,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_135,
@@ -1662,7 +1798,8 @@ get_pokemon_stats_test!(
     110,
     vec![23, 23],
     45,
-    197
+    197,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_136,
@@ -1674,7 +1811,8 @@ get_pokemon_stats_test!(
     110,
     vec![20, 20],
     45,
-    198
+    198,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_137,
@@ -1686,7 +1824,8 @@ get_pokemon_stats_test!(
     75,
     vec![0, 0],
     45,
-    130
+    130,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_138,
@@ -1698,7 +1837,8 @@ get_pokemon_stats_test!(
     90,
     vec![5, 21],
     45,
-    120
+    120,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_139,
@@ -1710,7 +1850,8 @@ get_pokemon_stats_test!(
     115,
     vec![5, 21],
     45,
-    199
+    199,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_140,
@@ -1722,7 +1863,8 @@ get_pokemon_stats_test!(
     45,
     vec![5, 21],
     45,
-    119
+    119,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_141,
@@ -1734,7 +1876,8 @@ get_pokemon_stats_test!(
     70,
     vec![5, 21],
     45,
-    201
+    201,
+    0
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_142,
@@ -1746,7 +1889,8 @@ get_pokemon_stats_test!(
     60,
     vec![5, 2],
     45,
-    202
+    202,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_143,
@@ -1758,7 +1902,8 @@ get_pokemon_stats_test!(
     65,
     vec![0, 0],
     25,
-    154
+    154,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_144,
@@ -1770,7 +1915,8 @@ get_pokemon_stats_test!(
     125,
     vec![25, 2],
     3,
-    215
+    215,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_145,
@@ -1782,7 +1928,8 @@ get_pokemon_stats_test!(
     125,
     vec![23, 2],
     3,
-    216
+    216,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_146,
@@ -1794,7 +1941,8 @@ get_pokemon_stats_test!(
     125,
     vec![20, 2],
     3,
-    217
+    217,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_147,
@@ -1806,7 +1954,8 @@ get_pokemon_stats_test!(
     50,
     vec![26, 26],
     45,
-    67
+    67,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_148,
@@ -1818,7 +1967,8 @@ get_pokemon_stats_test!(
     70,
     vec![26, 26],
     45,
-    144
+    144,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_149,
@@ -1830,7 +1980,8 @@ get_pokemon_stats_test!(
     100,
     vec![26, 2],
     45,
-    218
+    218,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_150,
@@ -1842,7 +1993,8 @@ get_pokemon_stats_test!(
     154,
     vec![24, 24],
     3,
-    220
+    220,
+    5
 );
 get_pokemon_stats_test!(
     get_pokemon_stats_151,
@@ -1854,5 +2006,6 @@ get_pokemon_stats_test!(
     100,
     vec![24, 24],
     45,
-    64
+    64,
+    3
 );
