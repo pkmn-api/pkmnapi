@@ -13,6 +13,7 @@ pub mod pokemon_evolutions;
 pub mod pokemon_icons;
 pub mod pokemon_learnsets;
 pub mod pokemon_machines;
+pub mod pokemon_movesets;
 pub mod pokemon_names;
 pub mod pokemon_stats;
 pub mod rom_patches;

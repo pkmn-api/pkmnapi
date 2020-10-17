@@ -43,6 +43,7 @@ pub enum Error {
     PokemonEvolutionWrongSize(usize, usize),
     PokemonLearnsetWrongSize(usize, usize),
     PokemonLogoWrongSize(usize, usize),
+    PokemonMovesetWrongSize(usize, usize),
     PokemonTitleWrongSize(usize, usize),
     SavBagItemsWrongSize(usize, usize),
     SavBoxItemsWrongSize(usize, usize),
@@ -149,6 +150,10 @@ impl fmt::Display for Error {
             ),
             Error::PokemonLogoWrongSize(expected, actual) => format!(
                 "Pokémon logo size mismatch: should be exactly {} bytes, found {}",
+                expected, actual
+            ),
+            Error::PokemonMovesetWrongSize(expected, actual) => format!(
+                "Pokémon moveset length mismatch: should be {} or fewer, found {}",
                 expected, actual
             ),
             Error::PokemonTitleWrongSize(expected, actual) => format!(

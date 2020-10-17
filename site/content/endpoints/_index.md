@@ -125,6 +125,14 @@ sort_by = "weight"
 | [GET /v1/pokemon/machines/:pokedex_id](@/endpoints/pokemon_machines.md#get-pokemon-machines)   | Gets a Pokémon's machines       |
 | [POST /v1/pokemon/machines/:pokedex_id](@/endpoints/pokemon_machines.md#post-pokemon-machines) | Updates a Pokémon's machines    |
 
+### [Pokémon Moveset](@/endpoints/pokemon_moveset.md)
+
+| Endpoint                                                                                     | Description                     |
+|----------------------------------------------------------------------------------------------|---------------------------------|
+| [GET /v1/pokemon/movesets](@/endpoints/pokemon_moveset.md#get-pokemon-moveset-all)           | Gets a list of Pokémon movesets |
+| [GET /v1/pokemon/movesets/:pokedex_id](@/endpoints/pokemon_moveset.md#get-pokemon-moveset)   | Gets a Pokémon's moveset        |
+| [POST /v1/pokemon/movesets/:pokedex_id](@/endpoints/pokemon_moveset.md#post-pokemon-moveset) | Updates a Pokémon's moveset     |
+
 ### [Pokémon Names](@/endpoints/pokemon_names.md)
 
 | Endpoint                                                                             | Description                 |

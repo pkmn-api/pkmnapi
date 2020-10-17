@@ -39,6 +39,7 @@ pub enum BaseResponseType {
     pokemon_icons,
     pokemon_learnsets,
     pokemon_machines,
+    pokemon_movesets,
     pokemon_names,
     pokemon_stats,
     rom_patches,

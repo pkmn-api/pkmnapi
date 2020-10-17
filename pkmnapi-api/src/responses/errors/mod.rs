@@ -115,6 +115,8 @@ pub enum BaseErrorResponseId {
     error_pokemon_logo_imgs,
     error_pokemon_machines_invalid,
     error_pokemon_machines,
+    error_pokemon_movesets_invalid,
+    error_pokemon_movesets,
     error_pokemon_names_invalid,
     error_pokemon_names,
     error_pokemon_pics,
