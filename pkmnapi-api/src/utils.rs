@@ -61,6 +61,11 @@ pub fn get_db(
     let connection = sql.get_connection().unwrap();
     let rom_data = match sql.select_user_rom_data_by_access_token(&connection, &access_token) {
         Ok(Some(rom_data)) => rom_data,
+        Ok(None) => {
+            return Err(AccessTokenErrorInvalid::new(
+                &"Invalid access token".to_owned(),
+            ))
+        }
         _ => return Err(RomErrorNoRom::new()),
     };
     let sav = match sql.select_user_sav_by_access_token(&connection, &access_token) {
