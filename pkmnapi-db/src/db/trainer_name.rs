@@ -45,33 +45,25 @@ impl PkmnapiDB {
         let offset_base = (PkmnapiDB::ROM_PAGE * 0x1C) + 0x19FF;
 
         let (min_id, max_id) = self.trainer_id_validate(trainer_id)?;
+        let offset = self.rom[offset_base..]
+            .iter()
+            .enumerate()
+            .filter_map(|(i, x)| {
+                if i == 0 {
+                    return Some(offset_base);
+                }
 
-        let offset = match {
-            if trainer_id == &1 {
-                Some(offset_base)
-            } else {
-                self.rom[offset_base..]
-                    .iter()
-                    .enumerate()
-                    .filter_map(|(i, x)| {
-                        if *x == 0x50 {
-                            return Some(offset_base + i + 1);
-                        }
+                if *x == 0x50 {
+                    return Some(offset_base + i + 1);
+                }
 
-                        None
-                    })
-                    .take(max_id - 1)
-                    .enumerate()
-                    .filter_map(|(i, x)| {
-                        if (*trainer_id as usize) - 2 == i {
-                            return Some(x);
-                        }
+                None
+            })
+            .take(max_id)
+            .skip((*trainer_id - 1) as usize)
+            .next();
 
-                        None
-                    })
-                    .next()
-            }
-        } {
+        let offset = match offset {
             Some(offset) => offset,
             None => return Err(error::Error::TrainerIDInvalid(*trainer_id, min_id, max_id)),
         };
@@ -130,33 +122,25 @@ impl PkmnapiDB {
         }
 
         let offset_base = (PkmnapiDB::ROM_PAGE * 0x1C) + 0x19FF;
+        let offset = self.rom[offset_base..]
+            .iter()
+            .enumerate()
+            .filter_map(|(i, x)| {
+                if i == 0 {
+                    return Some(offset_base);
+                }
 
-        let offset = match {
-            if trainer_id == &1 {
-                Some(offset_base)
-            } else {
-                self.rom[offset_base..]
-                    .iter()
-                    .enumerate()
-                    .filter_map(|(i, x)| {
-                        if *x == 0x50 {
-                            return Some(offset_base + i + 1);
-                        }
+                if *x == 0x50 {
+                    return Some(offset_base + i + 1);
+                }
 
-                        None
-                    })
-                    .take(max_id - 1)
-                    .enumerate()
-                    .filter_map(|(i, x)| {
-                        if (*trainer_id as usize) - 2 == i {
-                            return Some(x);
-                        }
+                None
+            })
+            .take(max_id)
+            .skip((*trainer_id - 1) as usize)
+            .next();
 
-                        None
-                    })
-                    .next()
-            }
-        } {
+        let offset = match offset {
             Some(offset) => offset,
             None => return Err(error::Error::TrainerIDInvalid(*trainer_id, min_id, max_id)),
         };

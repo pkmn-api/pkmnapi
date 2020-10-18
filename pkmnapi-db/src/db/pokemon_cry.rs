@@ -2,9 +2,7 @@ use crate::cry::*;
 use crate::error::Result;
 use crate::patch::*;
 use crate::PkmnapiDB;
-use byteorder::{LittleEndian, ReadBytesExt};
 use std::collections::HashMap;
-use std::io::Cursor;
 
 impl PkmnapiDB {
     pub fn get_pokemon_cry_all(&self, pokedex_ids: &Vec<u8>) -> Result<HashMap<u8, Cry>> {
@@ -36,9 +34,8 @@ impl PkmnapiDB {
         let cry: Cry = (0..3)
             .map(|i| {
                 let cursor_offset = (offset + (i * 3)) + 1;
-                let mut cursor = Cursor::new(&self.rom[cursor_offset..(cursor_offset + 2)]);
 
-                cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
+                self.get_pointer(cursor_offset)
             })
             .map(|channel_offset| {
                 let offset_base = PkmnapiDB::ROM_PAGE * 0x02;

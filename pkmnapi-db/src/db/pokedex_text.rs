@@ -2,9 +2,7 @@ use crate::error::{self, Result};
 use crate::patch::*;
 use crate::string::*;
 use crate::PkmnapiDB;
-use byteorder::{LittleEndian, ReadBytesExt};
 use std::collections::HashMap;
-use std::io::Cursor;
 
 impl PkmnapiDB {
     pub fn get_pokedex_text_all(&self, pokedex_ids: &Vec<u8>) -> Result<HashMap<u8, PokedexText>> {
@@ -46,19 +44,13 @@ impl PkmnapiDB {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x1E;
         let pointer_offset = (offset_base + 0x447E) + ((internal_id as usize) * 2);
 
-        let pointer = offset_base + {
-            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let pointer = offset_base + self.get_pointer(pointer_offset);
 
         let pointer_offset =
             pointer + { self.rom[pointer..].iter().position(|&r| r == 0x50).unwrap() } + 0x06;
 
-        let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 3)]);
-
-        let pointer = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
-        let pointer_base = (PkmnapiDB::ROM_PAGE * 2) * { cursor.read_u8().unwrap_or(0) as usize };
+        let pointer = self.get_pointer(pointer_offset);
+        let pointer_base = (PkmnapiDB::ROM_PAGE * 2) * (self.rom[pointer_offset + 2] as usize);
         let pointer = pointer + pointer_base - (PkmnapiDB::ROM_PAGE * 2);
 
         let pokedex_text = PokedexText::from(&self.rom[pointer..]);
@@ -114,19 +106,13 @@ impl PkmnapiDB {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x1E;
         let pointer_offset = (offset_base + 0x447E) + ((internal_id as usize) * 2);
 
-        let pointer = offset_base + {
-            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let pointer = offset_base + self.get_pointer(pointer_offset);
 
         let pointer_offset =
             pointer + { self.rom[pointer..].iter().position(|&r| r == 0x50).unwrap() } + 0x06;
 
-        let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 3)]);
-
-        let pointer = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
-        let pointer_base = (PkmnapiDB::ROM_PAGE * 2) * { cursor.read_u8().unwrap_or(0) as usize };
+        let pointer = self.get_pointer(pointer_offset);
+        let pointer_base = (PkmnapiDB::ROM_PAGE * 2) * (self.rom[pointer_offset + 2] as usize);
         let pointer = pointer + pointer_base - (PkmnapiDB::ROM_PAGE * 2);
 
         Ok(Patch::new(&pointer, &pokedex_text.to_raw()))

@@ -51,11 +51,7 @@ impl PkmnapiDB {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x1E;
         let pointer_offset = (offset_base + 0x447E) + ((internal_id as usize) * 2);
 
-        let pointer = offset_base + {
-            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let pointer = offset_base + self.get_pointer(pointer_offset);
 
         let pokedex_entry = PokedexEntry::from(&self.rom[pointer..(pointer + 15)]);
 
@@ -115,11 +111,7 @@ impl PkmnapiDB {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x1E;
         let pointer_offset = (offset_base + 0x447E) + ((internal_id as usize) * 2);
 
-        let pointer = offset_base + {
-            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let pointer = offset_base + self.get_pointer(pointer_offset);
 
         Ok(Patch::new(&pointer, &pokedex_entry.to_raw()))
     }

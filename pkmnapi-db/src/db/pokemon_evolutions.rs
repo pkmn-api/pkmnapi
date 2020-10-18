@@ -1,9 +1,7 @@
 use crate::error::{self, Result};
 use crate::patch::*;
 use crate::PkmnapiDB;
-use byteorder::{LittleEndian, ReadBytesExt};
 use std::collections::HashMap;
-use std::io::Cursor;
 
 impl PkmnapiDB {
     pub fn get_pokemon_evolutions_all(
@@ -51,11 +49,8 @@ impl PkmnapiDB {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let pointer_offset = offset + ((internal_id as usize) * 0x02);
-        let pointer = (offset_base - (PkmnapiDB::ROM_PAGE * 0x03)) + {
-            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let pointer =
+            (offset_base - (PkmnapiDB::ROM_PAGE * 0x03)) + self.get_pointer(pointer_offset);
 
         let evolution_data = self.rom[pointer..(pointer + 0x0D)].to_vec();
         let mut pokemon_evolutions = vec![];
@@ -201,11 +196,8 @@ impl PkmnapiDB {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let pointer_offset = offset + ((internal_id as usize) * 0x02);
-        let pointer = (offset_base - (PkmnapiDB::ROM_PAGE * 0x03)) + {
-            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let pointer =
+            (offset_base - (PkmnapiDB::ROM_PAGE * 0x03)) + self.get_pointer(pointer_offset);
 
         Ok(Patch::new(&pointer, &pokemon_evolutions_data))
     }

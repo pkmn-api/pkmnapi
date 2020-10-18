@@ -2,8 +2,6 @@ use crate::error::{self, Result};
 use crate::patch::*;
 use crate::pic::*;
 use crate::PkmnapiDB;
-use byteorder::{LittleEndian, ReadBytesExt};
-use std::io::Cursor;
 
 impl PkmnapiDB {
     /// Get Pokémon pic by Pokédex ID
@@ -56,10 +54,8 @@ impl PkmnapiDB {
             }
         };
 
-        let mut cursor = Cursor::new(&self.rom[(offset + 11)..(offset + 15)]);
-
-        let pointer_front = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
-        let pointer_back = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
+        let pointer_front = self.get_pointer(offset + 11);
+        let pointer_back = self.get_pointer(offset + 13);
 
         let offset_base = PkmnapiDB::ROM_PAGE * bank_offset;
         let offset_front = offset_base + pointer_front;
@@ -142,10 +138,8 @@ impl PkmnapiDB {
             }
         };
 
-        let mut cursor = Cursor::new(&self.rom[(offset + 11)..(offset + 15)]);
-
-        let pointer_front = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
-        let pointer_back = cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize;
+        let pointer_front = self.get_pointer(offset + 11);
+        let pointer_back = self.get_pointer(offset + 13);
 
         let offset_base = PkmnapiDB::ROM_PAGE * bank_offset;
         let offset_front = offset_base + pointer_front;

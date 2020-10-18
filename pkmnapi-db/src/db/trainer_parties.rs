@@ -1,9 +1,7 @@
 use crate::error::{self, Result};
 use crate::patch::*;
 use crate::PkmnapiDB;
-use byteorder::{LittleEndian, ReadBytesExt};
 use std::collections::HashMap;
-use std::io::Cursor;
 
 impl PkmnapiDB {
     pub fn get_trainer_parties_all(
@@ -29,18 +27,12 @@ impl PkmnapiDB {
         let offset = offset_base + 0x1D3B;
 
         let pointer_min_offset = offset + ((*trainer_id as usize) - 1) * 0x02;
-        let pointer_min = (offset_base - (PkmnapiDB::ROM_PAGE * 2)) + {
-            let mut cursor = Cursor::new(&self.rom[pointer_min_offset..(pointer_min_offset + 2)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let pointer_min =
+            (offset_base - (PkmnapiDB::ROM_PAGE * 2)) + self.get_pointer(pointer_min_offset);
 
         let pointer_max_offset = offset + (*trainer_id as usize) * 0x02;
-        let pointer_max = (offset_base - (PkmnapiDB::ROM_PAGE * 2)) + {
-            let mut cursor = Cursor::new(&self.rom[pointer_max_offset..(pointer_max_offset + 2)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let pointer_max =
+            (offset_base - (PkmnapiDB::ROM_PAGE * 2)) + self.get_pointer(pointer_max_offset);
 
         let data_size = if trainer_id == &(max_id as u8) {
             self.rom[pointer_min..]
@@ -161,11 +153,7 @@ impl PkmnapiDB {
         let offset = offset_base + 0x1D3B;
 
         let pointer_offset = offset + ((*trainer_id as usize) - 1) * 0x02;
-        let pointer = (offset_base - (PkmnapiDB::ROM_PAGE * 2)) + {
-            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let pointer = (offset_base - (PkmnapiDB::ROM_PAGE * 2)) + self.get_pointer(pointer_offset);
 
         Ok(Patch::new(&pointer, &trainer_parties_data))
     }

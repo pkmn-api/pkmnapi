@@ -1,9 +1,7 @@
 use crate::error::Result;
 use crate::img::*;
 use crate::PkmnapiDB;
-use byteorder::{LittleEndian, ReadBytesExt};
 use std::cmp;
-use std::io::Cursor;
 
 impl PkmnapiDB {
     fn get_icon_frame(&self, icon_id: &u8, frame_index: &u8) -> Result<Img> {
@@ -18,11 +16,8 @@ impl PkmnapiDB {
 
                 let tile_count = self.rom[data_offset + 2] as usize;
                 let bank = self.rom[data_offset + 3] as usize;
-                let pointer = (bank * (PkmnapiDB::ROM_PAGE * 2)) - (PkmnapiDB::ROM_PAGE * 2) + {
-                    let mut cursor = Cursor::new(&self.rom[data_offset..(data_offset + 2)]);
-
-                    cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-                };
+                let pointer = (bank * (PkmnapiDB::ROM_PAGE * 2)) - (PkmnapiDB::ROM_PAGE * 2)
+                    + self.get_pointer(data_offset);
 
                 (pointer, tile_count)
             })

@@ -1,8 +1,6 @@
 use crate::error::{self, Result};
 use crate::map::*;
 use crate::PkmnapiDB;
-use byteorder::{LittleEndian, ReadBytesExt};
-use std::io::Cursor;
 
 impl PkmnapiDB {
     pub fn get_map_pic(&self, map_id: &u8) -> Result<Map> {
@@ -19,11 +17,7 @@ impl PkmnapiDB {
         }
 
         let header_offset = 0x01AE + ((*map_id as usize) * 0x02);
-        let header_pointer = bank + {
-            let mut cursor = Cursor::new(&self.rom[header_offset..(header_offset + 2)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let header_pointer = bank + self.get_pointer(header_offset);
 
         let tileset = self.rom[header_pointer];
 
@@ -34,18 +28,8 @@ impl PkmnapiDB {
         let tileset_bank_pointer = 0xC7BE + ((tileset as usize) * 0x0C);
         let tileset_bank =
             ((self.rom[tileset_bank_pointer] as usize) - 0x01) * (PkmnapiDB::ROM_PAGE * 0x02);
-        let tileset_block_pointer = tileset_bank + {
-            let mut cursor =
-                Cursor::new(&self.rom[(tileset_bank_pointer + 1)..(tileset_bank_pointer + 3)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
-        let tileset_graphics_pointer = tileset_bank + {
-            let mut cursor =
-                Cursor::new(&self.rom[(tileset_bank_pointer + 3)..(tileset_bank_pointer + 5)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let tileset_block_pointer = tileset_bank + self.get_pointer(tileset_bank_pointer + 1);
+        let tileset_graphics_pointer = tileset_bank + self.get_pointer(tileset_bank_pointer + 3);
 
         let height = self.rom[header_pointer + 1] as u32;
         let width = self.rom[header_pointer + 2] as u32;
@@ -54,34 +38,18 @@ impl PkmnapiDB {
             return Err(error::Error::MapInvalid(*map_id));
         }
 
-        let blocks_pointer = bank + {
-            let mut cursor = Cursor::new(&self.rom[(header_pointer + 3)..(header_pointer + 5)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let blocks_pointer = bank + self.get_pointer(header_pointer + 3);
 
         let blocks_data =
             self.rom[blocks_pointer..(blocks_pointer + ((width * height) as usize))].to_vec();
 
-        let _text_pointer = bank + {
-            let mut cursor = Cursor::new(&self.rom[(header_pointer + 5)..(header_pointer + 7)]);
+        let _text_pointer = bank + self.get_pointer(header_pointer + 5);
 
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
-
-        let _script_pointer = bank + {
-            let mut cursor = Cursor::new(&self.rom[(header_pointer + 7)..(header_pointer + 9)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let _script_pointer = bank + self.get_pointer(header_pointer + 7);
 
         let _connections = self.rom[header_pointer + 9];
 
-        let object_pointer = bank + {
-            let mut cursor = Cursor::new(&self.rom[(header_pointer + 10)..(header_pointer + 12)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let object_pointer = bank + self.get_pointer(header_pointer + 10);
 
         let _border_block = self.rom[object_pointer];
 

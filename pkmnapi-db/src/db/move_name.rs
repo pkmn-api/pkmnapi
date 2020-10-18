@@ -45,32 +45,25 @@ impl PkmnapiDB {
         let (min_id, max_id) = self.move_id_validate(move_id)?;
 
         let offset_base = PkmnapiDB::ROM_PAGE * 0x58;
-        let offset = match {
-            if move_id == &1 {
-                Some(offset_base)
-            } else {
-                self.rom[offset_base..]
-                    .iter()
-                    .enumerate()
-                    .filter_map(|(i, x)| {
-                        if *x == 0x50 {
-                            return Some(offset_base + i + 1);
-                        }
+        let offset = self.rom[offset_base..]
+            .iter()
+            .enumerate()
+            .filter_map(|(i, x)| {
+                if i == 0 {
+                    return Some(offset_base);
+                }
 
-                        None
-                    })
-                    .take(max_id)
-                    .enumerate()
-                    .filter_map(|(i, x)| {
-                        if (*move_id as usize) - 2 == i {
-                            return Some(x);
-                        }
+                if *x == 0x50 {
+                    return Some(offset_base + i + 1);
+                }
 
-                        None
-                    })
-                    .next()
-            }
-        } {
+                None
+            })
+            .take(max_id)
+            .skip((*move_id - 1) as usize)
+            .next();
+
+        let offset = match offset {
             Some(offset) => offset,
             None => return Err(error::Error::MoveIDInvalid(*move_id, min_id, max_id)),
         };
@@ -129,32 +122,25 @@ impl PkmnapiDB {
         }
 
         let offset_base = PkmnapiDB::ROM_PAGE * 0x58;
-        let offset = match {
-            if move_id == &1 {
-                Some(offset_base)
-            } else {
-                self.rom[offset_base..]
-                    .iter()
-                    .enumerate()
-                    .filter_map(|(i, x)| {
-                        if *x == 0x50 {
-                            return Some(offset_base + i + 1);
-                        }
+        let offset = self.rom[offset_base..]
+            .iter()
+            .enumerate()
+            .filter_map(|(i, x)| {
+                if i == 0 {
+                    return Some(offset_base);
+                }
 
-                        None
-                    })
-                    .take(max_id)
-                    .enumerate()
-                    .filter_map(|(i, x)| {
-                        if (*move_id as usize) - 2 == i {
-                            return Some(x);
-                        }
+                if *x == 0x50 {
+                    return Some(offset_base + i + 1);
+                }
 
-                        None
-                    })
-                    .next()
-            }
-        } {
+                None
+            })
+            .take(max_id)
+            .skip((*move_id - 1) as usize)
+            .next();
+
+        let offset = match offset {
             Some(offset) => offset,
             None => return Err(error::Error::MoveIDInvalid(*move_id, min_id, max_id)),
         };

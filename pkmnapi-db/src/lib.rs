@@ -27,11 +27,13 @@ mod db;
 
 pub use db::*;
 
+use byteorder::{LittleEndian, ReadBytesExt};
 use error::Result;
 use header::*;
 use patch::*;
 use sav::*;
 use std::cmp;
+use std::io::Cursor;
 use std::num::Wrapping;
 
 /// Pkmnapi database
@@ -217,6 +219,12 @@ impl PkmnapiDB {
             &self.rom[(patch.offset + patch.length)..],
         ]
         .concat();
+    }
+
+    pub fn get_pointer(&self, offset: usize) -> usize {
+        let mut cursor = Cursor::new(&self.rom[offset..(offset + 2)]);
+
+        cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
     }
 
     /// Pokémon internal max

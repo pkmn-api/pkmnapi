@@ -2,9 +2,7 @@ use crate::error::{self, Result};
 use crate::patch::*;
 use crate::string::*;
 use crate::PkmnapiDB;
-use byteorder::{LittleEndian, ReadBytesExt};
 use std::collections::HashMap;
-use std::io::Cursor;
 
 impl PkmnapiDB {
     pub fn get_type_name_all(&self, type_ids: &Vec<u8>) -> Result<HashMap<u8, TypeName>> {
@@ -49,11 +47,7 @@ impl PkmnapiDB {
         let offset_base = PkmnapiDB::ROM_PAGE * 0x10;
         let pointer_base = offset_base + 0x7DAE;
         let pointer_offset = pointer_base + ((*type_id as usize) * 2);
-        let pointer = offset_base + {
-            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let pointer = offset_base + self.get_pointer(pointer_offset);
 
         let type_name = TypeName::from(&self.rom[pointer..=(pointer + 9)]);
 
@@ -108,11 +102,7 @@ impl PkmnapiDB {
 
         let offset_base = PkmnapiDB::ROM_PAGE * 0x10;
         let pointer_offset = (offset_base + 0x7DAE) + ((*type_id as usize) * 2);
-        let pointer = offset_base + {
-            let mut cursor = Cursor::new(&self.rom[pointer_offset..(pointer_offset + 2)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let pointer = offset_base + self.get_pointer(pointer_offset);
 
         let data = [type_name_raw, vec![0x50; old_type_name_len - type_name_len]].concat();
 

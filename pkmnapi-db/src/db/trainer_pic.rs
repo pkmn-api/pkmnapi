@@ -2,8 +2,6 @@ use crate::error::{self, Result};
 use crate::patch::*;
 use crate::pic::*;
 use crate::PkmnapiDB;
-use byteorder::{LittleEndian, ReadBytesExt};
-use std::io::Cursor;
 
 impl PkmnapiDB {
     pub fn get_trainer_pic(&self, trainer_id: &u8) -> Result<Pic> {
@@ -15,11 +13,7 @@ impl PkmnapiDB {
         let offset = offset_base + (((*trainer_id - 1) as usize) * 0x05);
 
         let pointer_base = PkmnapiDB::ROM_PAGE * 0x24;
-        let pointer = pointer_base + {
-            let mut cursor = Cursor::new(&self.rom[offset..(offset + 2)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let pointer = pointer_base + self.get_pointer(offset);
 
         let pic = Pic::new(&self.rom[pointer..])?;
 
@@ -44,11 +38,7 @@ impl PkmnapiDB {
         let offset = offset_base + (((*trainer_id - 1) as usize) * 0x05);
 
         let pointer_base = PkmnapiDB::ROM_PAGE * 0x24;
-        let pointer = pointer_base + {
-            let mut cursor = Cursor::new(&self.rom[offset..(offset + 2)]);
-
-            cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
-        };
+        let pointer = pointer_base + self.get_pointer(offset);
 
         Ok(Patch::new(&pointer, &pixels))
     }
