@@ -44,28 +44,7 @@ impl PkmnapiDB {
             .map(|datum| {
                 let (pointer, tile_count) = datum;
 
-                (0..*tile_count)
-                    .map(|tile_id| {
-                        let tile_offset = pointer + (tile_id * 0x10);
-
-                        self.rom[tile_offset..(tile_offset + 0x10)]
-                            .to_vec()
-                            .chunks(2)
-                            .map(|chunk| {
-                                let hi_byte =
-                                    (0..8).map(|bit| (chunk[1] & (0x01 << (7 - bit))) >> (7 - bit));
-                                let lo_byte =
-                                    (0..8).map(|bit| (chunk[0] & (0x01 << (7 - bit))) >> (7 - bit));
-
-                                hi_byte
-                                    .zip(lo_byte)
-                                    .map(|(hi_bit, lo_bit)| (hi_bit << 0x01) | lo_bit)
-                                    .collect::<Vec<u8>>()
-                            })
-                            .flatten()
-                            .collect()
-                    })
-                    .collect::<Vec<Vec<u8>>>()
+                self.get_tiles(*pointer, *tile_count, true)
             })
             .flatten()
             .collect();

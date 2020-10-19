@@ -43,38 +43,7 @@ impl PkmnapiDB {
         let blocks_data =
             self.rom[blocks_pointer..(blocks_pointer + ((width * height) as usize))].to_vec();
 
-        let _text_pointer = bank + self.get_pointer(header_pointer + 5);
-
-        let _script_pointer = bank + self.get_pointer(header_pointer + 7);
-
-        let _connections = self.rom[header_pointer + 9];
-
-        let object_pointer = bank + self.get_pointer(header_pointer + 10);
-
-        let _border_block = self.rom[object_pointer];
-
-        let tiles: Vec<Vec<u8>> = (0..(16 * 6 * 8 * 8))
-            .map(|tile_id| {
-                let tile_offset = tileset_graphics_pointer + (tile_id * 0x10);
-
-                self.rom[tile_offset..(tile_offset + 0x10)]
-                    .to_vec()
-                    .chunks(2)
-                    .map(|chunk| {
-                        let hi_byte =
-                            (0..8).map(|bit| (chunk[0] & (0x01 << (7 - bit))) >> (7 - bit));
-                        let lo_byte =
-                            (0..8).map(|bit| (chunk[1] & (0x01 << (7 - bit))) >> (7 - bit));
-
-                        hi_byte
-                            .zip(lo_byte)
-                            .map(|(hi_bit, lo_bit)| (hi_bit << 0x01) | lo_bit)
-                            .collect::<Vec<u8>>()
-                    })
-                    .flatten()
-                    .collect()
-            })
-            .collect();
+        let tiles = self.get_tiles(tileset_graphics_pointer, 16 * 6 * 8 * 8, false);
 
         let map_tiles: Vec<Vec<u8>> = (0..(width * height * 4 * 4))
             .map(|i| {
