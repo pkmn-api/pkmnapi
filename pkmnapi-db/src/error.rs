@@ -30,6 +30,8 @@ pub enum Error {
     MapIDInvalid(u8, usize, usize),
     MapInvalid(u8),
     MapPokemonWrongSize(usize, usize),
+    MartIDInvalid(u8, usize, usize),
+    MartItemsWrongSize(usize, usize),
     MoveIDInvalid(u8, usize, usize),
     MoveNameWrongSize(usize, usize),
     PicCouldNotRead,
@@ -113,6 +115,14 @@ impl fmt::Display for Error {
             Error::MapInvalid(map_id) => format!("Invalid map ID: {}", map_id),
             Error::MapPokemonWrongSize(expected, actual) => format!(
                 "Map Pokémon size mismatch: should be exactly {} bytes, found {}",
+                expected, actual
+            ),
+            Error::MartIDInvalid(mart_id, min, max) => format!(
+                "Invalid mart ID {}: valid range is {}-{}",
+                mart_id, min, max
+            ),
+            Error::MartItemsWrongSize(expected, actual) => format!(
+                "Mart items length mismatch: should be exactly {}, found {}",
                 expected, actual
             ),
             Error::MoveIDInvalid(move_id, min, max) => format!(

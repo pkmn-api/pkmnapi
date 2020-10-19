@@ -1,6 +1,6 @@
 +++
 title = "Pokémon Icons"
-weight = 14
+weight = 15
 +++
 
 | Endpoint                                                 | Description                  |

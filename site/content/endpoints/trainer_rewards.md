@@ -1,6 +1,6 @@
 +++
 title = "Trainer Rewards"
-weight = 31
+weight = 32
 +++
 
 | Endpoint                                                      | Description                    |

@@ -1038,4 +1038,80 @@ impl PkmnapiDB {
 
         Ok((min_id, max_id))
     }
+
+    /// Mart ID bounds
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let (min_mart_id, max_mart_id) = db.mart_id_bounds();
+    ///
+    /// assert_eq!((min_mart_id, max_mart_id), (0, 15));
+    /// ```
+    pub fn mart_id_bounds(&self) -> (usize, usize) {
+        let offset_base = 0x2442;
+        let min_id = 0usize;
+        let mut max_id = 0usize;
+        let mut max_index = 0;
+
+        loop {
+            if self.rom[offset_base + max_index] == 0xFF
+                && self.rom[offset_base + max_index + 1] == 0x50
+            {
+                break;
+            }
+
+            if self.rom[offset_base + max_index] == 0xFE {
+                max_id += 1;
+            }
+
+            max_index += 1;
+        }
+
+        (min_id, max_id - 1)
+    }
+
+    /// Validate mart ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let mart_id = 0;
+    ///
+    /// db.mart_id_validate(&mart_id).unwrap();
+    ///
+    /// let mart_id = 100;
+    ///
+    /// match db.mart_id_validate(&mart_id) {
+    ///     Ok(_) => unreachable!(),
+    ///     Err(e) => assert_eq!(e, error::Error::MartIDInvalid(mart_id, 0, 15))
+    /// };
+    /// ```
+    pub fn mart_id_validate(&self, mart_id: &u8) -> Result<(usize, usize)> {
+        let (min_id, max_id) = self.mart_id_bounds();
+
+        if mart_id > &(max_id as u8) {
+            return Err(error::Error::MartIDInvalid(*mart_id, min_id, max_id));
+        }
+
+        Ok((min_id, max_id))
+    }
 }

@@ -1,0 +1,214 @@
+use pkmnapi_db::*;
+
+mod common;
+
+macro_rules! get_mart_items_test {
+    ($test_name:ident, $mart_id:expr, $mart_items:expr) => {
+        #[test]
+        #[ignore]
+        #[allow(non_snake_case)]
+        fn $test_name() {
+            let db = common::load_rom();
+
+            match db.get_mart_items(&$mart_id) {
+                Ok(mart_items) => assert_eq!(
+                    mart_items, $mart_items,
+                    "Searched for mart ID: {}",
+                    $mart_id
+                ),
+                Err(_) => panic!(format!("Could not find mart ID: {}", $mart_id)),
+            };
+        }
+    };
+}
+
+get_mart_items_test!(
+    get_mart_items_0,
+    0,
+    vec![
+        MartItem::ITEM(0x04),
+        MartItem::ITEM(0x0B),
+        MartItem::ITEM(0x0F),
+        MartItem::ITEM(0x0C)
+    ]
+);
+get_mart_items_test!(
+    get_mart_items_1,
+    1,
+    vec![
+        MartItem::ITEM(0x04),
+        MartItem::ITEM(0x14),
+        MartItem::ITEM(0x1D),
+        MartItem::ITEM(0x0B),
+        MartItem::ITEM(0x0C),
+        MartItem::ITEM(0x0E),
+        MartItem::ITEM(0x0F)
+    ]
+);
+get_mart_items_test!(
+    get_mart_items_2,
+    2,
+    vec![
+        MartItem::ITEM(0x04),
+        MartItem::ITEM(0x14),
+        MartItem::ITEM(0x1E),
+        MartItem::ITEM(0x0B),
+        MartItem::ITEM(0x0C),
+        MartItem::ITEM(0x0E),
+        MartItem::ITEM(0x0F)
+    ]
+);
+get_mart_items_test!(get_mart_items_3, 3, vec![MartItem::ITEM(0x06)]);
+get_mart_items_test!(
+    get_mart_items_4,
+    4,
+    vec![
+        MartItem::ITEM(0x04),
+        MartItem::ITEM(0x13),
+        MartItem::ITEM(0x0D),
+        MartItem::ITEM(0x0E),
+        MartItem::ITEM(0x0F),
+        MartItem::ITEM(0x1E)
+    ]
+);
+get_mart_items_test!(
+    get_mart_items_5,
+    5,
+    vec![
+        MartItem::ITEM(0x03),
+        MartItem::ITEM(0x13),
+        MartItem::ITEM(0x35),
+        MartItem::ITEM(0x1D),
+        MartItem::ITEM(0x38),
+        MartItem::ITEM(0x0B),
+        MartItem::ITEM(0x0C),
+        MartItem::ITEM(0x0D),
+        MartItem::ITEM(0x0F)
+    ]
+);
+get_mart_items_test!(
+    get_mart_items_6,
+    6,
+    vec![
+        MartItem::ITEM(0x03),
+        MartItem::ITEM(0x13),
+        MartItem::ITEM(0x35),
+        MartItem::ITEM(0x38),
+        MartItem::ITEM(0x0B),
+        MartItem::ITEM(0x0C),
+        MartItem::ITEM(0x0D),
+        MartItem::ITEM(0x0E),
+        MartItem::ITEM(0x0F)
+    ]
+);
+get_mart_items_test!(
+    get_mart_items_7,
+    7,
+    vec![
+        MartItem::TM(0x20),
+        MartItem::TM(0x21),
+        MartItem::TM(0x02),
+        MartItem::TM(0x07),
+        MartItem::TM(0x25),
+        MartItem::TM(0x01),
+        MartItem::TM(0x05),
+        MartItem::TM(0x09),
+        MartItem::TM(0x11)
+    ]
+);
+get_mart_items_test!(
+    get_mart_items_8,
+    8,
+    vec![
+        MartItem::ITEM(0x33),
+        MartItem::ITEM(0x20),
+        MartItem::ITEM(0x21),
+        MartItem::ITEM(0x22),
+        MartItem::ITEM(0x2F)
+    ]
+);
+get_mart_items_test!(
+    get_mart_items_9,
+    9,
+    vec![
+        MartItem::ITEM(0x2E),
+        MartItem::ITEM(0x37),
+        MartItem::ITEM(0x3A),
+        MartItem::ITEM(0x41),
+        MartItem::ITEM(0x42),
+        MartItem::ITEM(0x43),
+        MartItem::ITEM(0x44)
+    ]
+);
+get_mart_items_test!(
+    get_mart_items_10,
+    10,
+    vec![
+        MartItem::ITEM(0x23),
+        MartItem::ITEM(0x24),
+        MartItem::ITEM(0x25),
+        MartItem::ITEM(0x26),
+        MartItem::ITEM(0x27)
+    ]
+);
+get_mart_items_test!(
+    get_mart_items_11,
+    11,
+    vec![
+        MartItem::ITEM(0x02),
+        MartItem::ITEM(0x03),
+        MartItem::ITEM(0x13),
+        MartItem::ITEM(0x35),
+        MartItem::ITEM(0x34),
+        MartItem::ITEM(0x38)
+    ]
+);
+get_mart_items_test!(
+    get_mart_items_12,
+    12,
+    vec![
+        MartItem::ITEM(0x03),
+        MartItem::ITEM(0x12),
+        MartItem::ITEM(0x13),
+        MartItem::ITEM(0x34),
+        MartItem::ITEM(0x35)
+    ]
+);
+get_mart_items_test!(
+    get_mart_items_13,
+    13,
+    vec![
+        MartItem::ITEM(0x02),
+        MartItem::ITEM(0x03),
+        MartItem::ITEM(0x12),
+        MartItem::ITEM(0x39),
+        MartItem::ITEM(0x1D),
+        MartItem::ITEM(0x34),
+        MartItem::ITEM(0x35)
+    ]
+);
+get_mart_items_test!(
+    get_mart_items_14,
+    14,
+    vec![
+        MartItem::ITEM(0x03),
+        MartItem::ITEM(0x12),
+        MartItem::ITEM(0x39),
+        MartItem::ITEM(0x1D),
+        MartItem::ITEM(0x34),
+        MartItem::ITEM(0x35)
+    ]
+);
+get_mart_items_test!(
+    get_mart_items_15,
+    15,
+    vec![
+        MartItem::ITEM(0x02),
+        MartItem::ITEM(0x03),
+        MartItem::ITEM(0x10),
+        MartItem::ITEM(0x11),
+        MartItem::ITEM(0x34),
+        MartItem::ITEM(0x35),
+        MartItem::ITEM(0x39)
+    ]
+);

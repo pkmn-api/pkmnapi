@@ -30,6 +30,7 @@ pub enum BaseResponseType {
     icons,
     item_names,
     map_pokemon,
+    mart_items,
     move_names,
     player_names,
     pokedex_entries,

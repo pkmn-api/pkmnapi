@@ -3,6 +3,7 @@ pub mod base;
 pub mod hm_moves;
 pub mod item_names;
 pub mod map_pokemon;
+pub mod mart_items;
 pub mod move_names;
 pub mod player_names;
 pub mod pokedex_entries;

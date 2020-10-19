@@ -54,6 +54,14 @@ sort_by = "weight"
 | [GET /v1/maps/pokemon/:map_id](@/endpoints/map_pokemon.md#get-map-pokemon)   | Gets a map's Pokémon       |
 | [POST /v1/maps/pokemon/:map_id](@/endpoints/map_pokemon.md#post-map-pokemon) | Updates a map's Pokémon    |
 
+### [Mart Items](@/endpoints/mart_items.md)
+
+| Endpoint                                                                  | Description               |
+|---------------------------------------------------------------------------|---------------------------|
+| [GET /v1/mart/items](@/endpoints/mart_items.md#get-mart-items-all)        | Gets a list of mart items |
+| [GET /v1/mart/items/:mart_id](@/endpoints/mart_items.md#get-mart-items)   | Gets a mart's items       |
+| [POST /v1/mart/items/:mart_id](@/endpoints/mart_items.md#post-mart-items) | Updates a mart's items    |
+
 ### [Move Names](@/endpoints/move_names.md)
 
 | Endpoint                                                                  | Description               |
