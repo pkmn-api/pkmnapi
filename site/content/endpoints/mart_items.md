@@ -1,6 +1,6 @@
 +++
 title = "Mart Items"
-weight = 8
+weight = 1
 +++
 
 | Endpoint                                         | Description               |

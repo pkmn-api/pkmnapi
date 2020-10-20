@@ -1,6 +1,6 @@
 +++
 title = "Pokémon Learnsets"
-weight = 16
+weight = 1
 +++
 
 | Endpoint                                                         | Description                      |

@@ -1,6 +1,6 @@
 +++
 title = "SAV Player Names"
-weight = 24
+weight = 1
 +++
 
 | Endpoint                                            | Description               |

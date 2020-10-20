@@ -1,6 +1,6 @@
 +++
 title = "Pokémon Movesets"
-weight = 18
+weight = 1
 +++
 
 | Endpoint                                                         | Description                      |

@@ -1,6 +1,6 @@
 +++
 title = "Icons"
-weight = 3
+weight = 1
 +++
 
 | Endpoint                            | Description  |

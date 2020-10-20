@@ -99,6 +99,8 @@ pub enum BaseErrorResponseId {
     error_mart_items,
     error_move_names_invalid,
     error_move_names,
+    error_move_stats_invalid,
+    error_move_stats,
     error_not_found,
     error_player_names_invalid,
     error_player_names,

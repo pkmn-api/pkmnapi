@@ -1,6 +1,6 @@
 +++
 title = "Pokémon Cries"
-weight = 13
+weight = 1
 +++
 
 | Endpoint                                                | Description                  |

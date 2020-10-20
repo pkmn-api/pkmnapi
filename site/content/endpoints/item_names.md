@@ -1,6 +1,6 @@
 +++
 title = "Item Names"
-weight = 5
+weight = 1
 +++
 
 | Endpoint                                         | Description               |

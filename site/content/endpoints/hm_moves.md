@@ -1,6 +1,6 @@
 +++
 title = "HM Moves"
-weight = 2
+weight = 1
 +++
 
 | Endpoint                                   | Description             |

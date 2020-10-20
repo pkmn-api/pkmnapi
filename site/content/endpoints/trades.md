@@ -1,6 +1,6 @@
 +++
 title = "Trades"
-weight = 29
+weight = 1
 +++
 
 | Endpoint                                 | Description           |

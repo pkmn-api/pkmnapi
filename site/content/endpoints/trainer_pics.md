@@ -1,6 +1,6 @@
 +++
 title = "Trainer Pics"
-weight = 32
+weight = 1
 +++
 
 | Endpoint                                               | Description             |

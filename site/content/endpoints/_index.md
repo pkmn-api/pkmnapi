@@ -70,6 +70,14 @@ sort_by = "weight"
 | [GET /v1/moves/names/:move_id](@/endpoints/move_names.md#get-move-name)   | Gets a move name          |
 | [POST /v1/moves/names/:move_id](@/endpoints/move_names.md#post-move-name) | Updates a move name       |
 
+### [Move Stats](@/endpoints/move_stats.md)
+
+| Endpoint                                                                   | Description               |
+|----------------------------------------------------------------------------|---------------------------|
+| [GET /v1/moves/stats](@/endpoints/move_stats.md#get-move-stats-all)        | Gets a list of move stats |
+| [GET /v1/moves/stats/:move_id](@/endpoints/move_stats.md#get-move-stats)   | Gets a move's stats       |
+| [POST /v1/moves/stats/:move_id](@/endpoints/move_stats.md#post-move-stats) | Updates a move's stats    |
+
 ### [Player Names](@/endpoints/player_names.md)
 
 | Endpoint                                                               | Description                  |

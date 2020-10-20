@@ -1,6 +1,6 @@
 +++
 title = "Player Names"
-weight = 10
+weight = 1
 +++
 
 | Endpoint                                    | Description                  |

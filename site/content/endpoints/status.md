@@ -1,6 +1,6 @@
 +++
 title = "Status"
-weight = 26
+weight = 1
 +++
 
 | Endpoint                   | Description    |

@@ -1,6 +1,6 @@
 +++
 title = "Pokémon Pics"
-weight = 20
+weight = 1
 +++
 
 | Endpoint                                               | Description             |

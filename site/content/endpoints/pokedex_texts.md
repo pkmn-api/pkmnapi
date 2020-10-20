@@ -1,6 +1,6 @@
 +++
 title = "Pokédex Texts"
-weight = 12
+weight = 1
 +++
 
 | Endpoint                                                 | Description                  |

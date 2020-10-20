@@ -1,6 +1,6 @@
 +++
 title = "ROM Patches"
-weight = 22
+weight = 1
 +++
 
 | Endpoint                                               | Description                |
