@@ -19,6 +19,7 @@ pub mod pokemon_stats;
 pub mod sav_player_names;
 pub mod tm_moves;
 pub mod tm_prices;
+pub mod trades;
 pub mod trainer_names;
 pub mod trainer_parties;
 pub mod trainer_rewards;

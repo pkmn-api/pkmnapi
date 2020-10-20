@@ -1138,4 +1138,64 @@ impl PkmnapiDB {
 
         Ok((min_id, max_id))
     }
+
+    /// Trade ID bounds
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let (min_trade_id, max_trade_id) = db.trade_id_bounds();
+    ///
+    /// assert_eq!((min_trade_id, max_trade_id), (0, 9));
+    /// ```
+    pub fn trade_id_bounds(&self) -> (usize, usize) {
+        let min_id = 0usize;
+        let max_id = 9usize;
+
+        (min_id, max_id)
+    }
+
+    /// Validate trade ID
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use std::fs;
+    /// use pkmnapi_db::*;
+    /// use pkmnapi_db::error;
+    /// # use std::env;
+    /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
+    ///
+    /// let rom = fs::read(rom_path).unwrap();
+    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    ///
+    /// let trade_id = 0;
+    ///
+    /// db.trade_id_validate(&trade_id).unwrap();
+    ///
+    /// let trade_id = 100;
+    ///
+    /// match db.trade_id_validate(&trade_id) {
+    ///     Ok(_) => unreachable!(),
+    ///     Err(e) => assert_eq!(e, error::Error::TradeIDInvalid(trade_id, 0, 9))
+    /// };
+    /// ```
+    pub fn trade_id_validate(&self, trade_id: &u8) -> Result<(usize, usize)> {
+        let (min_id, max_id) = self.trade_id_bounds();
+
+        if trade_id > &(max_id as u8) {
+            return Err(error::Error::TradeIDInvalid(*trade_id, min_id, max_id));
+        }
+
+        Ok((min_id, max_id))
+    }
 }

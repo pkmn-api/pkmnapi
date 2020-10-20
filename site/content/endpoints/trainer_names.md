@@ -1,6 +1,6 @@
 +++
 title = "Trainer Names"
-weight = 29
+weight = 30
 +++
 
 | Endpoint                                                  | Description                  |

@@ -53,6 +53,7 @@ pub enum Error {
     SavRivalNameWrongSize(usize, usize),
     SavWrongSize(usize, usize),
     TMIDInvalid(u8, usize, usize),
+    TradeIDInvalid(u8, usize, usize),
     TrainerIDInvalid(u8, usize, usize),
     TrainerNameWrongSize(usize, usize),
     TrainerPartiesWrongDataSize(usize, usize),
@@ -193,6 +194,10 @@ impl fmt::Display for Error {
             Error::TMIDInvalid(tm_id, min, max) => {
                 format!("Invalid TM ID {}: valid range is {}-{}", tm_id, min, max)
             }
+            Error::TradeIDInvalid(trade_id, min, max) => format!(
+                "Invalid trade ID {}: valid range is {}-{}",
+                trade_id, min, max
+            ),
             Error::TrainerIDInvalid(item_id, min, max) => format!(
                 "Invalid trainer ID {}: valid range is {}-{}",
                 item_id, min, max

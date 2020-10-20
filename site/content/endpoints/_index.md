@@ -217,6 +217,14 @@ sort_by = "weight"
 | [GET /v1/tms/prices/:tm_id](@/endpoints/tm_prices.md#get-tm-price)   | Gets a TM's price        |
 | [POST /v1/tms/prices/:tm_id](@/endpoints/tm_prices.md#post-tm-price) | Updates a TM's price     |
 
+### [Trades](@/endpoints/trades.md)
+
+| Endpoint                                                      | Description           |
+|---------------------------------------------------------------|-----------------------|
+| [GET /v1/trades](@/endpoints/trades.md#get-trade-all)         | Gets a list of trades |
+| [GET /v1/trades/:trade_id](@/endpoints/trades.md#get-trade)   | Gets a trade          |
+| [POST /v1/trades/:trade_id](@/endpoints/trades.md#post-trade) | Updates a trade       |
+
 ### [Trainer Names](@/endpoints/trainer_names.md)
 
 | Endpoint                                                                              | Description                  |

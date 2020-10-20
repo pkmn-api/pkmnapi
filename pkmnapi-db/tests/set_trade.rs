@@ -1,0 +1,131 @@
+use pkmnapi_db::patch::*;
+use pkmnapi_db::*;
+
+mod common;
+
+macro_rules! set_trade_test {
+    (
+        $test_name:ident,
+        $trade_id:expr,
+        $give_pokedex_id:expr,
+        $get_pokedex_id:expr,
+        $nickname:expr,
+        $patch_offset:expr,
+        $patch_data:expr
+    ) => {
+        #[test]
+        #[ignore]
+        #[allow(non_snake_case)]
+        fn $test_name() {
+            let db = common::load_rom();
+
+            match db.set_trade(
+                &$trade_id,
+                &Trade::new($give_pokedex_id, $get_pokedex_id, $nickname),
+            ) {
+                Ok(patch) => assert_eq!(
+                    patch,
+                    Patch {
+                        offset: $patch_offset,
+                        length: $patch_data.len(),
+                        data: $patch_data
+                    },
+                    "Searched for trade ID: {}",
+                    $trade_id
+                ),
+                Err(_) => panic!(format!("Could not find trade ID: {}", $trade_id)),
+            };
+        }
+    };
+}
+
+set_trade_test!(
+    set_trade_0,
+    0,
+    4,
+    6,
+    "CHARCHAR",
+    0x71B7B,
+    vec![0xB0, 0xB4, 0x00, 0x82, 0x87, 0x80, 0x91, 0x82, 0x87, 0x80, 0x91, 0x50, 0x50, 0x50]
+);
+set_trade_test!(
+    set_trade_1,
+    1,
+    4,
+    6,
+    "CHARCHAR",
+    0x71B89,
+    vec![0xB0, 0xB4, 0x00, 0x82, 0x87, 0x80, 0x91, 0x82, 0x87, 0x80, 0x91, 0x50, 0x50, 0x50]
+);
+set_trade_test!(
+    set_trade_2,
+    2,
+    4,
+    6,
+    "CHARCHAR",
+    0x71B97,
+    vec![0xB0, 0xB4, 0x00, 0x82, 0x87, 0x80, 0x91, 0x82, 0x87, 0x80, 0x91, 0x50, 0x50, 0x50]
+);
+set_trade_test!(
+    set_trade_3,
+    3,
+    4,
+    6,
+    "CHARCHAR",
+    0x71BA5,
+    vec![0xB0, 0xB4, 0x00, 0x82, 0x87, 0x80, 0x91, 0x82, 0x87, 0x80, 0x91, 0x50, 0x50, 0x50]
+);
+set_trade_test!(
+    set_trade_4,
+    4,
+    4,
+    6,
+    "CHARCHAR",
+    0x71BB3,
+    vec![0xB0, 0xB4, 0x00, 0x82, 0x87, 0x80, 0x91, 0x82, 0x87, 0x80, 0x91, 0x50, 0x50, 0x50]
+);
+set_trade_test!(
+    set_trade_5,
+    5,
+    4,
+    6,
+    "CHARCHAR",
+    0x71BC1,
+    vec![0xB0, 0xB4, 0x00, 0x82, 0x87, 0x80, 0x91, 0x82, 0x87, 0x80, 0x91, 0x50, 0x50, 0x50]
+);
+set_trade_test!(
+    set_trade_6,
+    6,
+    4,
+    6,
+    "CHARCHAR",
+    0x71BCF,
+    vec![0xB0, 0xB4, 0x00, 0x82, 0x87, 0x80, 0x91, 0x82, 0x87, 0x80, 0x91, 0x50, 0x50, 0x50]
+);
+set_trade_test!(
+    set_trade_7,
+    7,
+    4,
+    6,
+    "CHARCHAR",
+    0x71BDD,
+    vec![0xB0, 0xB4, 0x00, 0x82, 0x87, 0x80, 0x91, 0x82, 0x87, 0x80, 0x91, 0x50, 0x50, 0x50]
+);
+set_trade_test!(
+    set_trade_8,
+    8,
+    4,
+    6,
+    "CHARCHAR",
+    0x71BEB,
+    vec![0xB0, 0xB4, 0x00, 0x82, 0x87, 0x80, 0x91, 0x82, 0x87, 0x80, 0x91, 0x50, 0x50, 0x50]
+);
+set_trade_test!(
+    set_trade_9,
+    9,
+    4,
+    6,
+    "CHARCHAR",
+    0x71BF9,
+    vec![0xB0, 0xB4, 0x00, 0x82, 0x87, 0x80, 0x91, 0x82, 0x87, 0x80, 0x91, 0x50, 0x50, 0x50]
+);

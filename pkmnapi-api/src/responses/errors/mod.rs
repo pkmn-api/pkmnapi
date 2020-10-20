@@ -139,6 +139,8 @@ pub enum BaseErrorResponseId {
     error_tm_prices,
     error_too_many_requests,
     error_town_map_imgs,
+    error_trades_invalid,
+    error_trades,
     error_trainer_names_invalid,
     error_trainer_names,
     error_trainer_parties_invalid,

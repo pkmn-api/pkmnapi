@@ -27,6 +27,7 @@ pub mod savs;
 pub mod status;
 pub mod tm_moves;
 pub mod tm_prices;
+pub mod trades;
 pub mod trainer_names;
 pub mod trainer_parties;
 pub mod trainer_pics;

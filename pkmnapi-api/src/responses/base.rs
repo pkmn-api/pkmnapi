@@ -49,6 +49,7 @@ pub enum BaseResponseType {
     savs,
     tm_moves,
     tm_prices,
+    trades,
     trainer_names,
     trainer_parties,
     trainer_rewards,
