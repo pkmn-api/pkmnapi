@@ -153,13 +153,18 @@ jobs:
         heroku_app_name: "pkmn-api"
         heroku_email: ${{ secrets.HEROKU_EMAIL }}
         buildpack: "https://github.com/emk/heroku-buildpack-rust"
+  verify:
+    needs:
+    - deploy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Verify
+      run: |
+        [[ `curl -s https://api.pkmnapi.com/status` == "OK" ]]
   site:
     needs:
-    - pkmnapi-api
-    - pkmnapi-db
-    - pkmnapi-email
-    - pkmnapi-sql
-    - deploy
+    - verify
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
