@@ -44,7 +44,7 @@ impl PkmnapiDB {
     pub fn get_type_name(&self, type_id: &u8) -> Result<TypeName> {
         let _max_id = self.type_id_validate(type_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x10;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x08;
         let pointer_base = offset_base + 0x7DAE;
         let pointer_offset = pointer_base + ((*type_id as usize) * 2);
         let pointer = offset_base + self.get_pointer(pointer_offset);
@@ -100,7 +100,7 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x10;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x08;
         let pointer_offset = (offset_base + 0x7DAE) + ((*type_id as usize) * 2);
         let pointer = offset_base + self.get_pointer(pointer_offset);
 

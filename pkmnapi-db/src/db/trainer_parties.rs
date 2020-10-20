@@ -23,16 +23,16 @@ impl PkmnapiDB {
     pub fn get_trainer_parties(&self, trainer_id: &u8) -> Result<Vec<Party>> {
         let (_min_id, max_id) = self.trainer_id_validate(trainer_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
         let offset = offset_base + 0x1D3B;
 
         let pointer_min_offset = offset + ((*trainer_id as usize) - 1) * 0x02;
         let pointer_min =
-            (offset_base - (PkmnapiDB::ROM_PAGE * 2)) + self.get_pointer(pointer_min_offset);
+            (offset_base - PkmnapiDB::ROM_PAGE) + self.get_pointer(pointer_min_offset);
 
         let pointer_max_offset = offset + (*trainer_id as usize) * 0x02;
         let pointer_max =
-            (offset_base - (PkmnapiDB::ROM_PAGE * 2)) + self.get_pointer(pointer_max_offset);
+            (offset_base - PkmnapiDB::ROM_PAGE) + self.get_pointer(pointer_max_offset);
 
         let data_size = if trainer_id == &(max_id as u8) {
             self.rom[pointer_min..]
@@ -149,11 +149,11 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
         let offset = offset_base + 0x1D3B;
 
         let pointer_offset = offset + ((*trainer_id as usize) - 1) * 0x02;
-        let pointer = (offset_base - (PkmnapiDB::ROM_PAGE * 2)) + self.get_pointer(pointer_offset);
+        let pointer = (offset_base - PkmnapiDB::ROM_PAGE) + self.get_pointer(pointer_offset);
 
         Ok(Patch::new(&pointer, &trainer_parties_data))
     }

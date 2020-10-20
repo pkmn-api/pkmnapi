@@ -1,7 +1,6 @@
 use crate::error::Result;
 use crate::patch::*;
 use crate::sav::Sav;
-use crate::PkmnapiDB;
 
 impl Sav {
     /// Get save current box
@@ -25,8 +24,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_current_box(&self) -> Result<u8> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x84C;
+        let offset = 0x284C;
 
         let current_box = self.sav[offset] & 0x7F;
 
@@ -63,8 +61,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_current_box(&self, current_box: &u8) -> Result<Patch> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x84C;
+        let offset = 0x284C;
 
         let data = vec![(*current_box & 0x7F) | 0x80];
 

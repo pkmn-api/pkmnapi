@@ -49,7 +49,7 @@ impl PkmnapiDB {
     pub fn get_move_stats(&self, move_id: &u8) -> Result<MoveStats> {
         self.move_id_validate(move_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
         let offset = offset_base + (((*move_id as usize) - 1) * 0x06);
 
         let move_stats = MoveStats::from(&self.rom[offset..(offset + 6)]);
@@ -97,7 +97,7 @@ impl PkmnapiDB {
     pub fn set_move_stats(&self, move_id: &u8, move_stats: &MoveStats) -> Result<Patch> {
         self.move_id_validate(move_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
         let offset = offset_base + (((*move_id as usize) - 1) * 0x06);
 
         let move_stats_raw = move_stats.to_raw();

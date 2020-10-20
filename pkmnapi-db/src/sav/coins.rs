@@ -1,7 +1,6 @@
 use crate::error::Result;
 use crate::patch::*;
 use crate::sav::Sav;
-use crate::PkmnapiDB;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use std::io::Cursor;
 
@@ -27,8 +26,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_coins(&self) -> Result<u16> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x850;
+        let offset = 0x2850;
 
         let save_coins = {
             let mut cursor = Cursor::new(&self.sav[offset..(offset + 2)]);
@@ -69,8 +67,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_coins(&self, save_coins: &u16) -> Result<Patch> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x850;
+        let offset = 0x2850;
 
         let mut data = vec![];
 

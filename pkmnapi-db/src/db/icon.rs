@@ -5,7 +5,7 @@ use std::cmp;
 
 impl PkmnapiDB {
     fn get_icon_frame(&self, icon_id: &u8, frame_index: &u8) -> Result<Img> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x38;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = offset_base + 0x17C0;
 
         let frame_index = cmp::min(*frame_index as usize, 1);
@@ -16,7 +16,7 @@ impl PkmnapiDB {
 
                 let tile_count = self.rom[data_offset + 2] as usize;
                 let bank = self.rom[data_offset + 3] as usize;
-                let pointer = (bank * (PkmnapiDB::ROM_PAGE * 2)) - (PkmnapiDB::ROM_PAGE * 2)
+                let pointer = (bank * PkmnapiDB::ROM_PAGE) - PkmnapiDB::ROM_PAGE
                     + self.get_pointer(data_offset);
 
                 (pointer, tile_count)
@@ -24,7 +24,7 @@ impl PkmnapiDB {
             .collect();
 
         let icon_datum = if *icon_id == 2 {
-            vec![((PkmnapiDB::ROM_PAGE * 0x08) + 0x1180, 4)]
+            vec![((PkmnapiDB::ROM_PAGE * 0x04) + 0x1180, 4)]
         } else if *icon_id < 6 {
             let icon_data_index = if *icon_id >= 3 {
                 (*icon_id as usize) - 1

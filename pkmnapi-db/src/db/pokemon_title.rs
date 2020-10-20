@@ -67,7 +67,7 @@ impl PkmnapiDB {
     /// );
     /// ```
     pub fn get_pokemon_title(&self) -> Result<Vec<u8>> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
+        let offset_base = PkmnapiDB::ROM_PAGE;
         let offset = offset_base + 0x0588;
 
         let pokemon_title = self.rom[offset..(offset + 0x10)].to_vec();
@@ -118,7 +118,7 @@ impl PkmnapiDB {
     /// );
     /// ```
     pub fn set_pokemon_title(&self, pokemon_title: &Vec<u8>) -> Result<Patch> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
+        let offset_base = PkmnapiDB::ROM_PAGE;
         let offset = offset_base + 0x0588;
 
         let data = pokemon_title.to_vec();

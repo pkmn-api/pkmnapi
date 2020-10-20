@@ -43,14 +43,13 @@ impl PkmnapiDB {
     /// );
     /// ```
     pub fn get_pokemon_evolutions(&self, pokedex_id: &u8) -> Result<Vec<PokemonEvolution>> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1D;
-        let offset = offset_base + 0x105C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
+        let offset = offset_base + 0x305C;
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let pointer_offset = offset + ((internal_id as usize) * 0x02);
-        let pointer =
-            (offset_base - (PkmnapiDB::ROM_PAGE * 0x03)) + self.get_pointer(pointer_offset);
+        let pointer = offset_base - PkmnapiDB::ROM_PAGE + self.get_pointer(pointer_offset);
 
         let evolution_data = self.rom[pointer..(pointer + 0x0D)].to_vec();
         let mut pokemon_evolutions = vec![];
@@ -190,14 +189,13 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1D;
-        let offset = offset_base + 0x105C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
+        let offset = offset_base + 0x305C;
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let pointer_offset = offset + ((internal_id as usize) * 0x02);
-        let pointer =
-            (offset_base - (PkmnapiDB::ROM_PAGE * 0x03)) + self.get_pointer(pointer_offset);
+        let pointer = offset_base - PkmnapiDB::ROM_PAGE + self.get_pointer(pointer_offset);
 
         Ok(Patch::new(&pointer, &pokemon_evolutions_data))
     }

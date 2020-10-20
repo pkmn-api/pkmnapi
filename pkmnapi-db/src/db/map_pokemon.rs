@@ -20,10 +20,10 @@ impl PkmnapiDB {
     pub fn get_map_pokemon(&self, map_id: &u8) -> Result<MapPokemon> {
         self.map_id_validate(map_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x06;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x03;
         let offset = offset_base + 0x0EEB;
         let pointer_offset = offset + ((*map_id as usize) * 0x02);
-        let pointer = offset_base - (PkmnapiDB::ROM_PAGE * 0x02) + self.get_pointer(pointer_offset);
+        let pointer = offset_base - PkmnapiDB::ROM_PAGE + self.get_pointer(pointer_offset);
 
         let map_pokemon = MapPokemon::from(&self.rom[pointer..]);
         let map_pokemon = MapPokemon {
@@ -108,10 +108,10 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x06;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x03;
         let offset = offset_base + 0x0EEB;
         let pointer_offset = offset + ((*map_id as usize) * 0x02);
-        let pointer = offset_base - (PkmnapiDB::ROM_PAGE * 0x02) + self.get_pointer(pointer_offset);
+        let pointer = offset_base - PkmnapiDB::ROM_PAGE + self.get_pointer(pointer_offset);
 
         Ok(Patch::new(&pointer, &map_pokemon_data))
     }

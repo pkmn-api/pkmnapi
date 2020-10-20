@@ -2,7 +2,6 @@ use crate::error::{self, Result};
 use crate::patch::*;
 use crate::sav::Sav;
 use crate::string::*;
-use crate::PkmnapiDB;
 
 impl Sav {
     /// Get save player name
@@ -29,8 +28,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_player_name(&self) -> Result<SavePlayerName> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x598;
+        let offset = 0x2598;
 
         let save_player_name = SavePlayerName::from(&self.sav[offset..(offset + 0x0B)]);
 
@@ -70,8 +68,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_player_name(&self, save_player_name: &SavePlayerName) -> Result<Patch> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x598;
+        let offset = 0x2598;
 
         let save_player_name_raw = save_player_name.to_raw();
         let save_player_name_raw_len = save_player_name_raw.len();

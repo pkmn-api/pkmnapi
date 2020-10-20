@@ -41,7 +41,7 @@ impl PkmnapiDB {
     pub fn get_trainer_reward(&self, trainer_id: &u8) -> Result<u32> {
         self.trainer_id_validate(trainer_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
         let offset = (offset_base + 0x1914) + (((*trainer_id - 1) as usize) * 0x05);
 
         let trainer_reward = vec![
@@ -95,7 +95,7 @@ impl PkmnapiDB {
     pub fn set_trainer_reward(&self, trainer_id: &u8, trainer_reward: &u32) -> Result<Patch> {
         self.trainer_id_validate(trainer_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
         let offset = ((offset_base + 0x1914) + (((*trainer_id - 1) as usize) * 0x05)) + 0x02;
 
         let data = (0..=5)

@@ -50,8 +50,8 @@ impl PkmnapiDB {
     pub fn get_type_effect(&self, type_effect_id: &u8) -> Result<TypeEffect> {
         let _max_id = self.type_effect_id_validate(type_effect_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1F;
-        let pointer = (offset_base + 0x0474) + ((*type_effect_id as usize) * 0x03);
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0F;
+        let pointer = (offset_base + 0x2474) + ((*type_effect_id as usize) * 0x03);
 
         let type_effect = TypeEffect::from(&self.rom[pointer..(pointer + 3)]);
 
@@ -95,8 +95,8 @@ impl PkmnapiDB {
     pub fn set_type_effect(&self, type_effect_id: &u8, type_effect: &TypeEffect) -> Result<Patch> {
         let _max_id = self.type_effect_id_validate(type_effect_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1F;
-        let pointer = offset_base + 0x0474 + ((*type_effect_id as usize) * 3);
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0F;
+        let pointer = offset_base + 0x2474 + ((*type_effect_id as usize) * 3);
 
         let type_effect_raw = type_effect.to_raw();
 

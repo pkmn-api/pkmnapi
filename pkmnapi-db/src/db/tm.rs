@@ -37,8 +37,8 @@ impl PkmnapiDB {
     pub fn get_tm(&self, tm_id: &u8) -> Result<TM> {
         let _max_id = self.tm_id_validate(tm_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x09;
-        let offset = (offset_base + 0x1773) + ((*tm_id as usize) - 1);
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x04;
+        let offset = (offset_base + 0x3773) + ((*tm_id as usize) - 1);
 
         let tm = TM::from(self.rom[offset]);
 
@@ -73,8 +73,8 @@ impl PkmnapiDB {
     pub fn set_tm(&self, tm_id: &u8, tm: &TM) -> Result<Patch> {
         let _max_id = self.tm_id_validate(tm_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x09;
-        let offset = (offset_base + 0x1773) + ((*tm_id as usize) - 1);
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x04;
+        let offset = (offset_base + 0x3773) + ((*tm_id as usize) - 1);
 
         Ok(Patch::new(&offset, &tm.to_raw()))
     }

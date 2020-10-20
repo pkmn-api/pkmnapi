@@ -1,7 +1,6 @@
 use crate::error::Result;
 use crate::patch::*;
 use crate::sav::Sav;
-use crate::PkmnapiDB;
 
 impl Sav {
     /// Get save Pokémon seen
@@ -25,8 +24,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_pokemon_seen(&self) -> Result<Vec<u8>> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x5B6;
+        let offset = 0x25B6;
 
         let save_pokemon_seen: Vec<u8> = self.sav[offset..(offset + 19)]
             .iter()
@@ -77,8 +75,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_pokemon_seen(&self, save_pokemon_seen: &Vec<u8>) -> Result<Patch> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x5B6;
+        let offset = 0x25B6;
 
         let bits: Vec<u8> = (1..=152)
             .map(|id| {

@@ -42,7 +42,7 @@ impl PkmnapiDB {
     pub fn get_pokemon_icon(&self, pokedex_id: &u8) -> Result<PokemonIcon> {
         let _internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x38;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = (offset_base + 0x190D) + ((((*pokedex_id - 1) as f32) / 2.0).floor() as usize);
 
         let icon_id = if pokedex_id % 2 == 0 {
@@ -89,7 +89,7 @@ impl PkmnapiDB {
     pub fn set_pokemon_icon(&self, pokedex_id: &u8, pokemon_icon: &PokemonIcon) -> Result<Patch> {
         let _internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x38;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = (offset_base + 0x190D) + ((((*pokedex_id - 1) as f32) / 2.0).floor() as usize);
 
         let data = if pokedex_id % 2 == 0 {

@@ -44,7 +44,7 @@ pub use rival_name::*;
 
 use crate::error::{self, Result};
 use crate::patch::*;
-use crate::PkmnapiDB;
+use crate::*;
 use std::num::Wrapping;
 
 #[derive(Debug, PartialEq)]
@@ -69,7 +69,7 @@ impl Sav {
     /// assert_eq!(sav.sav.len(), 0x8000);
     pub fn new(sav: &Vec<u8>) -> Result<Self> {
         let sav_len = sav.len();
-        let expected_sav_len = 0x8000;
+        let expected_sav_len = PkmnapiDB::ROM_PAGE * 0x02;
 
         if sav_len != expected_sav_len {
             return Err(error::Error::SavWrongSize(expected_sav_len, sav_len));
@@ -94,10 +94,9 @@ impl Sav {
     /// assert_eq!(sav.verify_checksum(), true);
     /// ```
     pub fn verify_checksum(&self) -> bool {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset_start = offset_base + 0x0598;
-        let offset_end = offset_base + 0x1522;
-        let offset_checksum = offset_base + 0x1523;
+        let offset_start = 0x2598;
+        let offset_end = 0x3522;
+        let offset_checksum = 0x3523;
 
         let checksum = self.sav[offset_start..=offset_end]
             .iter()
@@ -133,10 +132,9 @@ impl Sav {
     /// );
     /// ```
     pub fn generate_checksum(&self) -> Result<Patch> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset_start = offset_base + 0x0598;
-        let offset_end = offset_base + 0x1522;
-        let offset_checksum = offset_base + 0x1523;
+        let offset_start = 0x2598;
+        let offset_end = 0x3522;
+        let offset_checksum = 0x3523;
 
         let checksum = self.sav[offset_start..=offset_end]
             .iter()

@@ -1,7 +1,6 @@
 use crate::error::Result;
 use crate::patch::*;
 use crate::sav::Sav;
-use crate::PkmnapiDB;
 
 impl Sav {
     /// Get save badges
@@ -22,8 +21,7 @@ impl Sav {
     /// assert_eq!(badges, vec![0x00]);
     /// ```
     pub fn get_badges(&self) -> Result<Vec<u8>> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x602;
+        let offset = 0x2602;
 
         let save_badges = (0..8)
             .filter_map(|i| {
@@ -70,8 +68,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_badges(&self, save_badges: &Vec<u8>) -> Result<Patch> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x602;
+        let offset = 0x2602;
 
         let data = (0..8)
             .filter_map(|i| {

@@ -44,7 +44,7 @@ impl PkmnapiDB {
     pub fn get_move_name(&self, move_id: &u8) -> Result<MoveName> {
         let (min_id, max_id) = self.move_id_validate(move_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x58;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x2C;
         let offset = self.rom[offset_base..]
             .iter()
             .enumerate()
@@ -121,7 +121,7 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x58;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x2C;
         let offset = self.rom[offset_base..]
             .iter()
             .enumerate()

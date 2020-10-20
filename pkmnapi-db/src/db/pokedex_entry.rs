@@ -48,7 +48,7 @@ impl PkmnapiDB {
     pub fn get_pokedex_entry(&self, pokedex_id: &u8) -> Result<PokedexEntry> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1E;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0F;
         let pointer_offset = (offset_base + 0x447E) + ((internal_id as usize) * 2);
 
         let pointer = offset_base + self.get_pointer(pointer_offset);
@@ -108,7 +108,7 @@ impl PkmnapiDB {
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1E;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0F;
         let pointer_offset = (offset_base + 0x447E) + ((internal_id as usize) * 2);
 
         let pointer = offset_base + self.get_pointer(pointer_offset);

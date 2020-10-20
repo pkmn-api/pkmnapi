@@ -1,7 +1,6 @@
 use crate::error::Result;
 use crate::patch::*;
 use crate::sav::Sav;
-use crate::PkmnapiDB;
 
 impl Sav {
     /// Get save options
@@ -29,8 +28,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_options(&self) -> Result<SaveOptions> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x601;
+        let offset = 0x2601;
 
         let save_options = SaveOptions::from(&self.sav[offset]);
 
@@ -71,8 +69,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_options(&self, save_options: &SaveOptions) -> Result<Patch> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x601;
+        let offset = 0x2601;
 
         Ok(Patch::new(&offset, &save_options.to_raw()))
     }

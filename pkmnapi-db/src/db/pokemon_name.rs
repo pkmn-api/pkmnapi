@@ -44,7 +44,7 @@ impl PkmnapiDB {
     pub fn get_pokemon_name(&self, pokedex_id: &u8) -> Result<PokemonName> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x07;
         let offset = (offset_base + 0x021E) + ((internal_id as usize) * 0x0A);
 
         let pokemon_name = PokemonName::from(&self.rom[offset..(offset + 0x0A)]);
@@ -88,7 +88,7 @@ impl PkmnapiDB {
     pub fn set_pokemon_name(&self, pokedex_id: &u8, pokemon_name: &PokemonName) -> Result<Patch> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x07;
         let offset = (offset_base + 0x021E) + ((internal_id as usize) * 0x0A);
 
         let pokemon_name_len = pokemon_name.name.value.len();

@@ -55,12 +55,13 @@ impl PkmnapiDB {
     /// ```
     pub fn get_pokemon_stats(&self, pokedex_id: &u8) -> Result<PokemonStats> {
         let _internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
+        let (_, max_pokedex_id) = self.pokedex_id_bounds();
 
         let offset = {
-            if pokedex_id == &151 {
+            if pokedex_id == &(max_pokedex_id as u8) {
                 0x425B
             } else {
-                let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
+                let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
 
                 (offset_base + 0x03DE) + (((*pokedex_id as usize) - 1) * 0x1C)
             }
@@ -118,9 +119,17 @@ impl PkmnapiDB {
         pokemon_stats: &PokemonStats,
     ) -> Result<Patch> {
         let _internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
+        let (_, max_pokedex_id) = self.pokedex_id_bounds();
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
-        let offset = (offset_base + 0x03DE) + (((*pokedex_id as usize) - 1) * 0x1C);
+        let offset = {
+            if pokedex_id == &(max_pokedex_id as u8) {
+                0x425B
+            } else {
+                let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
+
+                (offset_base + 0x03DE) + (((*pokedex_id as usize) - 1) * 0x1C)
+            }
+        };
 
         let pokemon_stats_raw = pokemon_stats.to_raw();
 

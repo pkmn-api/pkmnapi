@@ -37,8 +37,8 @@ impl PkmnapiDB {
     pub fn get_hm(&self, hm_id: &u8) -> Result<HM> {
         let _max_id = self.hm_id_validate(hm_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = (offset_base + 0x1052) + ((*hm_id as usize) - 1);
+        let offset_base = 0x3052;
+        let offset = offset_base + ((*hm_id as usize) - 1);
 
         let hm = HM::from(self.rom[offset]);
 
@@ -73,8 +73,8 @@ impl PkmnapiDB {
     pub fn set_hm(&self, hm_id: &u8, hm: &HM) -> Result<Patch> {
         let _max_id = self.hm_id_validate(hm_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = (offset_base + 0x1052) + ((*hm_id as usize) - 1);
+        let offset_base = 0x3052;
+        let offset = offset_base + ((*hm_id as usize) - 1);
 
         Ok(Patch::new(&offset, &hm.to_raw()))
     }

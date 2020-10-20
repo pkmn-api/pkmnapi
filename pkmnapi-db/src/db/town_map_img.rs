@@ -4,12 +4,12 @@ use crate::PkmnapiDB;
 
 impl PkmnapiDB {
     pub fn get_town_map_img(&self) -> Result<Img> {
-        let graphics_offset_base = PkmnapiDB::ROM_PAGE * 0x09;
-        let graphics_offset = graphics_offset_base + 0x05A8;
+        let graphics_offset_base = PkmnapiDB::ROM_PAGE * 0x04;
+        let graphics_offset = graphics_offset_base + 0x25A8;
 
         let graphics_tiles = self.get_tiles(graphics_offset, 4 * 4, false);
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x38;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = offset_base + 0x1100;
 
         let tiles: Vec<Vec<u8>> = self.rom[offset..]

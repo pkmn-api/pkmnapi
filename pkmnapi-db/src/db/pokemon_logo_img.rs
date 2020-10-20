@@ -5,7 +5,7 @@ use crate::PkmnapiDB;
 
 impl PkmnapiDB {
     pub fn get_pokemon_logo_img(&self) -> Result<Img> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x08;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x04;
         let offset = offset_base + 0x1380;
 
         let tiles = self.get_tiles(offset, 16 * 7, true);
@@ -29,7 +29,7 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x08;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x04;
         let offset = offset_base + 0x1380;
 
         Ok(Patch::new(&offset, &pokemon_logo_data))

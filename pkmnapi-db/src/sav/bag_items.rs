@@ -1,7 +1,6 @@
 use crate::error::{self, Result};
 use crate::patch::*;
 use crate::sav::Sav;
-use crate::PkmnapiDB;
 
 impl Sav {
     /// Get save bag items
@@ -34,8 +33,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_bag_items(&self) -> Result<Vec<SaveItem>> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x5C9;
+        let offset = 0x25C9;
         let max_len = 20;
 
         let item_count = self.sav[offset] as usize;
@@ -86,8 +84,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_bag_items(&self, save_bag_items: &Vec<SaveItem>) -> Result<Patch> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x5C9;
+        let offset = 0x25C9;
         let max_len = 20;
 
         let item_count = save_bag_items.len();

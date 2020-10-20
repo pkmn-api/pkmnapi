@@ -6,11 +6,11 @@ impl PkmnapiDB {
     pub fn get_map_pic(&self, map_id: &u8) -> Result<Map> {
         self.map_id_validate(map_id)?;
 
-        let bank_offset_base = PkmnapiDB::ROM_PAGE * 0x06;
+        let bank_offset_base = PkmnapiDB::ROM_PAGE * 0x03;
         let bank_offset = (bank_offset_base + 0x23D) + (*map_id as usize);
         let bank_id = self.rom[bank_offset];
 
-        let bank = ((bank_id as usize) - 0x01) * (PkmnapiDB::ROM_PAGE * 0x02);
+        let bank = ((bank_id as usize) - 0x01) * PkmnapiDB::ROM_PAGE;
 
         if bank == 0x00 {
             return Err(error::Error::MapInvalid(*map_id));
@@ -26,8 +26,7 @@ impl PkmnapiDB {
         }
 
         let tileset_bank_pointer = 0xC7BE + ((tileset as usize) * 0x0C);
-        let tileset_bank =
-            ((self.rom[tileset_bank_pointer] as usize) - 0x01) * (PkmnapiDB::ROM_PAGE * 0x02);
+        let tileset_bank = ((self.rom[tileset_bank_pointer] as usize) - 0x01) * PkmnapiDB::ROM_PAGE;
         let tileset_block_pointer = tileset_bank + self.get_pointer(tileset_bank_pointer + 1);
         let tileset_graphics_pointer = tileset_bank + self.get_pointer(tileset_bank_pointer + 3);
 

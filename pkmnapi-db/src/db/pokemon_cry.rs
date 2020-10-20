@@ -21,14 +21,14 @@ impl PkmnapiDB {
     pub fn get_pokemon_cry(&self, pokedex_id: &u8) -> Result<Cry> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
         let offset = (offset_base + 0x1446) + ((internal_id as usize) * 0x03);
 
         let base = self.rom[offset];
         let pitch = self.rom[offset + 1];
         let length = self.rom[offset + 2];
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x04;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
         let offset = (offset_base + 0x3C) + ((base as usize) * 0x09);
 
         let cry: Cry = (0..3)
@@ -38,7 +38,7 @@ impl PkmnapiDB {
                 self.get_pointer(cursor_offset)
             })
             .map(|channel_offset| {
-                let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
+                let offset_base = PkmnapiDB::ROM_PAGE;
                 let offset = offset_base + channel_offset;
 
                 self.rom[offset..]
@@ -77,7 +77,7 @@ impl PkmnapiDB {
     pub fn set_pokemon_cry(&self, pokedex_id: &u8, pokemon_cry: &Cry) -> Result<Patch> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
         let offset = (offset_base + 0x1446) + ((internal_id as usize) * 0x03);
 
         let pokemon_cry_data = pokemon_cry.to_raw();

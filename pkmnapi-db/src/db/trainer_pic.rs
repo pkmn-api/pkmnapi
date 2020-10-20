@@ -7,12 +7,12 @@ impl PkmnapiDB {
     pub fn get_trainer_pic(&self, trainer_id: &u8) -> Result<Pic> {
         self.trainer_id_validate(trainer_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
         let offset_base = offset_base + 0x1914;
 
         let offset = offset_base + (((*trainer_id - 1) as usize) * 0x05);
 
-        let pointer_base = PkmnapiDB::ROM_PAGE * 0x24;
+        let pointer_base = PkmnapiDB::ROM_PAGE * 0x12;
         let pointer = pointer_base + self.get_pointer(offset);
 
         let pic = Pic::new(&self.rom[pointer..])?;
@@ -33,11 +33,11 @@ impl PkmnapiDB {
             return Err(error::Error::PicTooLarge);
         }
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
         let offset_base = offset_base + 0x1914;
         let offset = offset_base + (((*trainer_id - 1) as usize) * 0x05);
 
-        let pointer_base = PkmnapiDB::ROM_PAGE * 0x24;
+        let pointer_base = PkmnapiDB::ROM_PAGE * 0x12;
         let pointer = pointer_base + self.get_pointer(offset);
 
         Ok(Patch::new(&pointer, &pixels))

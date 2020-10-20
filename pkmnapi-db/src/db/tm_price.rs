@@ -37,8 +37,8 @@ impl PkmnapiDB {
     pub fn get_tm_price(&self, tm_id: &u8) -> Result<TMPrice> {
         let _max_id = self.tm_id_validate(tm_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x3D;
-        let offset = (offset_base + 0x1FA7) + (((*tm_id as usize - 1) as f32 / 2.0) as usize);
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1E;
+        let offset = (offset_base + 0x3FA7) + (((*tm_id as usize - 1) as f32 / 2.0) as usize);
         let value = {
             if ((tm_id - 1) % 2) == 0 {
                 (self.rom[offset] & 0xF0) >> 4
@@ -80,8 +80,8 @@ impl PkmnapiDB {
     pub fn set_tm_price(&self, tm_id: &u8, tm_price: &TMPrice) -> Result<Patch> {
         let _max_id = self.tm_id_validate(tm_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x3D;
-        let offset = (offset_base + 0x1FA7) + ((((*tm_id as usize) - 1) as f32 / 2.0) as usize);
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1E;
+        let offset = (offset_base + 0x3FA7) + ((((*tm_id as usize) - 1) as f32 / 2.0) as usize);
         let value = {
             if ((tm_id - 1) % 2) == 0 {
                 (self.rom[offset] & 0x0F) | (tm_price.to_raw()[0] << 0x04)

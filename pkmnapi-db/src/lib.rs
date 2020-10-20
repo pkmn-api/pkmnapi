@@ -58,8 +58,7 @@ pub struct PkmnapiDB {
 }
 
 impl PkmnapiDB {
-    pub const ROM_PAGE: usize = 0x2000;
-    pub const X_ROM_PAGE: usize = 0x4000;
+    pub const ROM_PAGE: usize = 0x4000;
 
     /// Create new database
     ///
@@ -274,7 +273,7 @@ impl PkmnapiDB {
     /// assert_eq!(pokemon_internal_max, 190);
     /// ```
     pub fn pokemon_internal_max(&self) -> usize {
-        let offset_base = PkmnapiDB::X_ROM_PAGE * 0x1C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
         let offset = offset_base + 0x1E5F;
 
         (self.rom[offset] as usize) - 1
@@ -304,7 +303,7 @@ impl PkmnapiDB {
     /// assert_eq!(pokedex_id, 1);
     /// ```
     pub fn pokemon_name_to_pokedex_id(&self, pokemon_name: &PokemonName) -> Option<u8> {
-        let offset_base = PkmnapiDB::X_ROM_PAGE * 0x07;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x07;
         let offset = offset_base + 0x021E;
         let pokemon_internal_max = self.pokemon_internal_max();
 
@@ -350,7 +349,7 @@ impl PkmnapiDB {
             return Err(error::Error::PokedexIDInvalid(*pokedex_id));
         }
 
-        let offset_base = PkmnapiDB::X_ROM_PAGE * 0x10;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x10;
         let offset = offset_base + 0x1024;
         let pokemon_internal_max = self.pokemon_internal_max();
 
@@ -390,7 +389,7 @@ impl PkmnapiDB {
             return Err(error::Error::InternalIDInvalid(*internal_id));
         }
 
-        let offset_base = PkmnapiDB::X_ROM_PAGE * 0x10;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x10;
         let offset = (offset_base + 0x1024) + (*internal_id as usize);
 
         Ok(self.rom[offset])
@@ -486,7 +485,7 @@ impl PkmnapiDB {
     pub fn type_id_bounds(&self) -> (usize, usize) {
         let min_id = 0usize;
 
-        let offset_base = PkmnapiDB::X_ROM_PAGE * 0x08;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x08;
         let pointer_base = offset_base + 0x7DAE;
 
         let max_index = self.rom[pointer_base..]
@@ -554,7 +553,7 @@ impl PkmnapiDB {
     pub fn type_effect_id_bounds(&self) -> (usize, usize) {
         let min_id = 0usize;
 
-        let offset_base = PkmnapiDB::X_ROM_PAGE * 0x0F;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0F;
         let pointer = offset_base + 0x2474;
 
         let max_index = self.rom[pointer..].iter().position(|&r| r == 0xFF).unwrap();
@@ -623,7 +622,7 @@ impl PkmnapiDB {
     pub fn trainer_id_bounds(&self) -> (usize, usize) {
         let min_id = 1usize;
 
-        let offset_base = (PkmnapiDB::X_ROM_PAGE * 0x0E) + 0x19FF;
+        let offset_base = (PkmnapiDB::ROM_PAGE * 0x0E) + 0x19FF;
 
         let max_offset = self.rom[offset_base..]
             .iter()
@@ -819,7 +818,7 @@ impl PkmnapiDB {
     pub fn item_id_bounds(&self) -> (usize, usize) {
         let min_id = 1usize;
 
-        let offset_base = PkmnapiDB::X_ROM_PAGE * 0x01;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
         let offset_base = offset_base + 0x072B;
 
         let max_offset = self.rom[offset_base..]
@@ -890,7 +889,7 @@ impl PkmnapiDB {
     pub fn move_id_bounds(&self) -> (usize, usize) {
         let min_id = 1usize;
 
-        let offset_base = PkmnapiDB::X_ROM_PAGE * 0x0E;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
 
         let max_index = self.rom[offset_base..]
             .chunks(2)
@@ -957,7 +956,7 @@ impl PkmnapiDB {
     pub fn map_id_bounds(&self) -> (usize, usize) {
         let min_id = 0usize;
 
-        let offset_base = PkmnapiDB::X_ROM_PAGE * 0x03;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x03;
         let offset = offset_base + 0x0EEB;
 
         let max_id = self.rom[offset..]

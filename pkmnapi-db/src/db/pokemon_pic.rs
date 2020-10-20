@@ -29,16 +29,17 @@ impl PkmnapiDB {
         pokemon_pic_face: &PokemonPicFace,
     ) -> Result<Pic> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
+        let (_, max_pokedex_id) = self.pokedex_id_bounds();
 
         let (offset, bank_offset) = {
-            if pokedex_id == &151 {
-                let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
+            if pokedex_id == &(max_pokedex_id as u8) {
+                let offset_base = PkmnapiDB::ROM_PAGE;
                 let offset = offset_base + 0x025B;
                 let bank_offset = (self.rom[0x163A] - 1) * 0x02;
 
                 (offset, bank_offset as usize)
             } else {
-                let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
+                let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
                 let offset = (offset_base + 0x03DE) + (((*pokedex_id as usize) - 1) * 0x1C);
 
                 let bank_offset = match internal_id {
@@ -48,7 +49,7 @@ impl PkmnapiDB {
                     _ if internal_id < self.rom[0x165B] - 1 => self.rom[0x165D],
                     _ => self.rom[0x1661],
                 };
-                let bank_offset = (bank_offset - 1) * 0x02;
+                let bank_offset = bank_offset - 1;
 
                 (offset, bank_offset as usize)
             }
@@ -113,16 +114,17 @@ impl PkmnapiDB {
         }
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
+        let (_, max_pokedex_id) = self.pokedex_id_bounds();
 
         let (offset, bank_offset) = {
-            if pokedex_id == &151 {
-                let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
+            if pokedex_id == &(max_pokedex_id as u8) {
+                let offset_base = PkmnapiDB::ROM_PAGE;
                 let offset = offset_base + 0x025B;
                 let bank_offset = (self.rom[0x163A] - 1) * 0x02;
 
                 (offset, bank_offset as usize)
             } else {
-                let offset_base = PkmnapiDB::ROM_PAGE * 0x1C;
+                let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
                 let offset = (offset_base + 0x03DE) + (((*pokedex_id as usize) - 1) * 0x1C);
 
                 let bank_offset = match internal_id {
@@ -132,7 +134,7 @@ impl PkmnapiDB {
                     _ if internal_id < self.rom[0x165B] - 1 => self.rom[0x165D],
                     _ => self.rom[0x1661],
                 };
-                let bank_offset = (bank_offset - 1) * 0x02;
+                let bank_offset = bank_offset - 1;
 
                 (offset, bank_offset as usize)
             }

@@ -41,7 +41,7 @@ impl PkmnapiDB {
     pub fn get_pokedex_text(&self, pokedex_id: &u8) -> Result<PokedexText> {
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1E;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0F;
         let pointer_offset = (offset_base + 0x447E) + ((internal_id as usize) * 2);
 
         let pointer = offset_base + self.get_pointer(pointer_offset);
@@ -50,8 +50,8 @@ impl PkmnapiDB {
             pointer + { self.rom[pointer..].iter().position(|&r| r == 0x50).unwrap() } + 0x06;
 
         let pointer = self.get_pointer(pointer_offset);
-        let pointer_base = (PkmnapiDB::ROM_PAGE * 2) * (self.rom[pointer_offset + 2] as usize);
-        let pointer = pointer + pointer_base - (PkmnapiDB::ROM_PAGE * 2);
+        let pointer_base = PkmnapiDB::ROM_PAGE * (self.rom[pointer_offset + 2] as usize);
+        let pointer = pointer + pointer_base - PkmnapiDB::ROM_PAGE;
 
         let pokedex_text = PokedexText::from(&self.rom[pointer..]);
 
@@ -103,7 +103,7 @@ impl PkmnapiDB {
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1E;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0F;
         let pointer_offset = (offset_base + 0x447E) + ((internal_id as usize) * 2);
 
         let pointer = offset_base + self.get_pointer(pointer_offset);
@@ -112,8 +112,8 @@ impl PkmnapiDB {
             pointer + { self.rom[pointer..].iter().position(|&r| r == 0x50).unwrap() } + 0x06;
 
         let pointer = self.get_pointer(pointer_offset);
-        let pointer_base = (PkmnapiDB::ROM_PAGE * 2) * (self.rom[pointer_offset + 2] as usize);
-        let pointer = pointer + pointer_base - (PkmnapiDB::ROM_PAGE * 2);
+        let pointer_base = PkmnapiDB::ROM_PAGE * (self.rom[pointer_offset + 2] as usize);
+        let pointer = pointer + pointer_base - PkmnapiDB::ROM_PAGE;
 
         Ok(Patch::new(&pointer, &pokedex_text.to_raw()))
     }

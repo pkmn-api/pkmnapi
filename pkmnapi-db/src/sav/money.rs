@@ -1,7 +1,6 @@
 use crate::error::Result;
 use crate::patch::*;
 use crate::sav::Sav;
-use crate::PkmnapiDB;
 
 impl Sav {
     /// Get save money
@@ -25,8 +24,7 @@ impl Sav {
     /// );
     /// ```
     pub fn get_money(&self) -> Result<u32> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x5F3;
+        let offset = 0x25F3;
 
         let money = self.sav[offset..(offset + 3)]
             .iter()
@@ -69,8 +67,7 @@ impl Sav {
     /// );
     /// ```
     pub fn set_money(&self, money: &u32) -> Result<Patch> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x01;
-        let offset = offset_base + 0x5F3;
+        let offset = 0x25F3;
 
         let data: Vec<u8> = (0..3)
             .map(|exp| {

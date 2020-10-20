@@ -44,7 +44,7 @@ impl PkmnapiDB {
     pub fn get_item_name(&self, item_id: &u8) -> Result<ItemName> {
         let (min_id, max_id) = self.item_id_validate(item_id)?;
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
+        let offset_base = PkmnapiDB::ROM_PAGE;
         let offset_base = offset_base + 0x072B;
         let offset = self.rom[offset_base..]
             .iter()
@@ -122,7 +122,7 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x02;
+        let offset_base = PkmnapiDB::ROM_PAGE;
         let offset_base = offset_base + 0x072B;
         let offset = self.rom[offset_base..]
             .iter()

@@ -42,7 +42,8 @@ impl PkmnapiDB {
     /// );
     /// ```
     pub fn get_trainer_name(&self, trainer_id: &u8) -> Result<TrainerName> {
-        let offset_base = (PkmnapiDB::ROM_PAGE * 0x1C) + 0x19FF;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
+        let offset_base = offset_base + 0x19FF;
 
         let (min_id, max_id) = self.trainer_id_validate(trainer_id)?;
         let offset = self.rom[offset_base..]
@@ -121,7 +122,8 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = (PkmnapiDB::ROM_PAGE * 0x1C) + 0x19FF;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
+        let offset_base = offset_base + 0x19FF;
         let offset = self.rom[offset_base..]
             .iter()
             .enumerate()

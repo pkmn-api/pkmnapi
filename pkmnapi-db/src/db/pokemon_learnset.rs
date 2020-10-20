@@ -49,14 +49,13 @@ impl PkmnapiDB {
     /// );
     /// ```
     pub fn get_pokemon_learnset(&self, pokedex_id: &u8) -> Result<Vec<PokemonLearnset>> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1D;
-        let offset = offset_base + 0x105C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
+        let offset = offset_base + 0x305C;
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let pointer_offset = offset + ((internal_id as usize) * 0x02);
-        let pointer =
-            (offset_base - (PkmnapiDB::ROM_PAGE * 0x03)) + self.get_pointer(pointer_offset);
+        let pointer = offset_base - PkmnapiDB::ROM_PAGE + self.get_pointer(pointer_offset);
 
         let position = self.rom[pointer..].iter().position(|&r| r == 0x00).unwrap() + 0x01;
 
@@ -128,14 +127,13 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x1D;
-        let offset = offset_base + 0x105C;
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x0E;
+        let offset = offset_base + 0x305C;
 
         let internal_id = self.pokedex_id_to_internal_id(pokedex_id)?;
 
         let pointer_offset = offset + ((internal_id as usize) * 0x02);
-        let pointer =
-            (offset_base - (PkmnapiDB::ROM_PAGE * 0x03)) + self.get_pointer(pointer_offset);
+        let pointer = offset_base - PkmnapiDB::ROM_PAGE + self.get_pointer(pointer_offset);
 
         let position = self.rom[pointer..].iter().position(|&r| r == 0x00).unwrap() + 0x01;
 

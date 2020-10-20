@@ -5,8 +5,8 @@ use crate::PkmnapiDB;
 
 impl PkmnapiDB {
     pub fn get_player_names(&self) -> Result<PlayerNames> {
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x03;
-        let offset = offset_base + 0x0AA8;
+        let offset_base = PkmnapiDB::ROM_PAGE;
+        let offset = offset_base + 0x2AA8;
 
         let player_names = PlayerNames::from(&self.rom[offset..]);
 
@@ -27,9 +27,9 @@ impl PkmnapiDB {
             ));
         }
 
-        let offset_base = PkmnapiDB::ROM_PAGE * 0x03;
-        let offset_a = offset_base + 0x0AA8;
-        let offset_b = offset_base + 0x0AF2;
+        let offset_base = PkmnapiDB::ROM_PAGE;
+        let offset_a = offset_base + 0x2AA8;
+        let offset_b = offset_base + 0x2AF2;
         let offset_raw_start = offset_a + player_names_data_len;
         let offset_raw_len = offset_b - offset_a - player_names_data_len;
 
