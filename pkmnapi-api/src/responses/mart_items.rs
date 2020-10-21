@@ -1,4 +1,4 @@
-use pkmnapi_db::{ItemName, MartItem, MoveName, TM};
+use pkmnapi_db::{ItemName, MartItem, MoveName, TMMove};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -17,7 +17,7 @@ impl MartItemsResponseAll {
         mart_ids: &Vec<u8>,
         mart_items: &HashMap<u8, Vec<MartItem>>,
         item_names: &HashMap<u8, ItemName>,
-        tm_moves: &HashMap<u8, TM>,
+        tm_moves: &HashMap<u8, TMMove>,
         move_names: &HashMap<u8, MoveName>,
     ) -> MartItemsResponseAll {
         MartItemsResponseAll {
@@ -45,7 +45,7 @@ impl MartItemsResponse {
         mart_id: &u8,
         mart_items: &Vec<MartItem>,
         item_names: &HashMap<u8, ItemName>,
-        tm_moves: &HashMap<u8, TM>,
+        tm_moves: &HashMap<u8, TMMove>,
         move_names: &HashMap<u8, MoveName>,
     ) -> MartItemsResponse {
         MartItemsResponse {
@@ -62,7 +62,7 @@ impl MartItemsResponseData {
         mart_id: &u8,
         mart_items: &Vec<MartItem>,
         item_names: &HashMap<u8, ItemName>,
-        tm_moves: &HashMap<u8, TM>,
+        tm_moves: &HashMap<u8, TMMove>,
         move_names: &HashMap<u8, MoveName>,
     ) -> MartItemsResponseData {
         BaseResponseData {

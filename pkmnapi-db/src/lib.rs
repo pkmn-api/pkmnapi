@@ -21,7 +21,6 @@ pub mod patch;
 pub mod pic;
 pub mod sav;
 pub mod string;
-pub mod types;
 
 mod db;
 
@@ -33,6 +32,7 @@ use header::*;
 use patch::*;
 use sav::*;
 use std::cmp;
+use std::collections::HashMap;
 use std::io::Cursor;
 use std::num::Wrapping;
 
@@ -221,13 +221,26 @@ impl PkmnapiDB {
         .concat();
     }
 
-    pub fn get_pointer(&self, offset: usize) -> usize {
+    fn get_all<T>(&self, ids: &Vec<u8>, func: impl Fn(&u8) -> Result<T>) -> Result<HashMap<u8, T>> {
+        let all: HashMap<u8, T> = ids
+            .iter()
+            .map(|id| {
+                let one = func(id)?;
+
+                Ok((*id, one))
+            })
+            .collect::<Result<HashMap<u8, T>>>()?;
+
+        Ok(all)
+    }
+
+    fn get_pointer(&self, offset: usize) -> usize {
         let mut cursor = Cursor::new(&self.rom[offset..(offset + 2)]);
 
         cursor.read_u16::<LittleEndian>().unwrap_or(0) as usize
     }
 
-    pub fn get_tiles(&self, offset: usize, tile_count: usize, hi_bit: bool) -> Vec<Vec<u8>> {
+    fn get_tiles(&self, offset: usize, tile_count: usize, hi_bit: bool) -> Vec<Vec<u8>> {
         let hi_bit = if hi_bit { 0x01 } else { 0x00 };
         let lo_bit = hi_bit ^ 0x01;
 
@@ -285,7 +298,6 @@ impl PkmnapiDB {
     ///
     /// ```
     /// use pkmnapi_db::string::*;
-    /// use pkmnapi_db::types::*;
     /// use pkmnapi_db::*;
     /// use std::fs;
     /// # use std::env;

@@ -6,16 +6,7 @@ use std::collections::HashMap;
 
 impl PkmnapiDB {
     pub fn get_pokemon_cry_all(&self, pokedex_ids: &Vec<u8>) -> Result<HashMap<u8, Cry>> {
-        let pokemon_cry_all: HashMap<u8, Cry> = pokedex_ids
-            .iter()
-            .map(|pokedex_id| {
-                let pokemon_cry = self.get_pokemon_cry(pokedex_id)?;
-
-                Ok((*pokedex_id, pokemon_cry))
-            })
-            .collect::<Result<HashMap<u8, Cry>>>()?;
-
-        Ok(pokemon_cry_all)
+        self.get_all(pokedex_ids, |id| self.get_pokemon_cry(id))
     }
 
     pub fn get_pokemon_cry(&self, pokedex_id: &u8) -> Result<Cry> {

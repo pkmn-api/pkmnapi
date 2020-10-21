@@ -9,16 +9,7 @@ impl PkmnapiDB {
         &self,
         pokedex_ids: &Vec<u8>,
     ) -> Result<HashMap<u8, Vec<PokemonMachine>>> {
-        let pokemon_machines_all: HashMap<u8, Vec<PokemonMachine>> = pokedex_ids
-            .iter()
-            .map(|pokedex_id| {
-                let pokemon_machines = self.get_pokemon_machines(pokedex_id)?;
-
-                Ok((*pokedex_id, pokemon_machines))
-            })
-            .collect::<Result<HashMap<u8, Vec<PokemonMachine>>>>()?;
-
-        Ok(pokemon_machines_all)
+        self.get_all(pokedex_ids, |id| self.get_pokemon_machines(id))
     }
 
     /// Get Pokémon machines by Pokédex ID

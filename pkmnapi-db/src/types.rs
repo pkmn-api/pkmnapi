@@ -1,1 +1,0 @@
-//! Pkmnapi types module

@@ -2,7 +2,7 @@ use pkmnapi_db::*;
 
 mod common;
 
-macro_rules! get_hm_test {
+macro_rules! get_hm_move_test {
     ($test_name:ident, $hm_id:expr, $move_id:expr) => {
         #[test]
         #[ignore]
@@ -10,10 +10,10 @@ macro_rules! get_hm_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.get_hm(&$hm_id) {
-                Ok(hm) => assert_eq!(
-                    hm,
-                    HM { move_id: $move_id },
+            match db.get_hm_move(&$hm_id) {
+                Ok(hm_move) => assert_eq!(
+                    hm_move,
+                    HMMove { move_id: $move_id },
                     "Searched for HM ID: {}",
                     $hm_id
                 ),
@@ -23,8 +23,8 @@ macro_rules! get_hm_test {
     };
 }
 
-get_hm_test!(get_hm_1, 1, 15);
-get_hm_test!(get_hm_2, 2, 19);
-get_hm_test!(get_hm_3, 3, 57);
-get_hm_test!(get_hm_4, 4, 70);
-get_hm_test!(get_hm_5, 5, 148);
+get_hm_move_test!(get_hm_move_1, 1, 15);
+get_hm_move_test!(get_hm_move_2, 2, 19);
+get_hm_move_test!(get_hm_move_3, 3, 57);
+get_hm_move_test!(get_hm_move_4, 4, 70);
+get_hm_move_test!(get_hm_move_5, 5, 148);

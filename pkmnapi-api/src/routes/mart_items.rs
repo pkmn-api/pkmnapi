@@ -43,12 +43,12 @@ pub fn get_mart_items_all(
             _ => None,
         })
         .collect();
-    let tms = db.get_tm_all(&tm_ids)?;
-    let move_ids = tms.iter().map(|(_, tm)| tm.move_id).collect();
+    let tm_moves = db.get_tm_move_all(&tm_ids)?;
+    let move_ids = tm_moves.iter().map(|(_, tm)| tm.move_id).collect();
     let move_names = db.get_move_name_all(&move_ids)?;
 
     let response =
-        MartItemsResponseAll::new(&mart_ids, &mart_items, &item_names, &tms, &move_names);
+        MartItemsResponseAll::new(&mart_ids, &mart_items, &item_names, &tm_moves, &move_names);
 
     Ok(Json(response))
 }
@@ -79,11 +79,12 @@ pub fn get_mart_items(
             _ => None,
         })
         .collect();
-    let tms = db.get_tm_all(&tm_ids)?;
-    let move_ids = tms.iter().map(|(_, tm)| tm.move_id).collect();
+    let tm_moves = db.get_tm_move_all(&tm_ids)?;
+    let move_ids = tm_moves.iter().map(|(_, tm)| tm.move_id).collect();
     let move_names = db.get_move_name_all(&move_ids)?;
 
-    let response = MartItemsResponse::new(&mart_id, &mart_items, &item_names, &tms, &move_names);
+    let response =
+        MartItemsResponse::new(&mart_id, &mart_items, &item_names, &tm_moves, &move_names);
 
     Ok(Json(response))
 }

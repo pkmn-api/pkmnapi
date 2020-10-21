@@ -1,4 +1,4 @@
-use pkmnapi_db::{MoveName, PokemonMachine, HM, TM};
+use pkmnapi_db::{HMMove, MoveName, PokemonMachine, TMMove};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -16,8 +16,8 @@ impl PokemonMachinesResponseAll {
     pub fn new(
         pokedex_ids: &Vec<u8>,
         pokemon_machines: &HashMap<u8, Vec<PokemonMachine>>,
-        tm_moves: &HashMap<u8, TM>,
-        hm_moves: &HashMap<u8, HM>,
+        tm_moves: &HashMap<u8, TMMove>,
+        hm_moves: &HashMap<u8, HMMove>,
         move_names: &HashMap<u8, MoveName>,
     ) -> PokemonMachinesResponseAll {
         PokemonMachinesResponseAll {
@@ -44,8 +44,8 @@ impl PokemonMachinesResponse {
     pub fn new(
         pokedex_id: &u8,
         pokemon_machines: &Vec<PokemonMachine>,
-        tm_moves: &HashMap<u8, TM>,
-        hm_moves: &HashMap<u8, HM>,
+        tm_moves: &HashMap<u8, TMMove>,
+        hm_moves: &HashMap<u8, HMMove>,
         move_names: &HashMap<u8, MoveName>,
     ) -> PokemonMachinesResponse {
         PokemonMachinesResponse {
@@ -67,8 +67,8 @@ impl PokemonMachinesResponseData {
     pub fn new(
         pokedex_id: &u8,
         pokemon_machines: &Vec<PokemonMachine>,
-        tm_moves: &HashMap<u8, TM>,
-        hm_moves: &HashMap<u8, HM>,
+        tm_moves: &HashMap<u8, TMMove>,
+        hm_moves: &HashMap<u8, HMMove>,
         move_names: &HashMap<u8, MoveName>,
     ) -> PokemonMachinesResponseData {
         BaseResponseData {

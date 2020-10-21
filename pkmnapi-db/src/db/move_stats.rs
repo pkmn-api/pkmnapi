@@ -7,16 +7,7 @@ use std::io::Cursor;
 
 impl PkmnapiDB {
     pub fn get_move_stats_all(&self, move_ids: &Vec<u8>) -> Result<HashMap<u8, MoveStats>> {
-        let move_stats_all: HashMap<u8, MoveStats> = move_ids
-            .iter()
-            .map(|move_id| {
-                let move_stats = self.get_move_stats(move_id)?;
-
-                Ok((*move_id, move_stats))
-            })
-            .collect::<Result<HashMap<u8, MoveStats>>>()?;
-
-        Ok(move_stats_all)
+        self.get_all(move_ids, |id| self.get_move_stats(id))
     }
 
     /// Get move stats by move ID

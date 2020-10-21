@@ -5,16 +5,7 @@ use std::collections::HashMap;
 
 impl PkmnapiDB {
     pub fn get_pokemon_moveset_all(&self, pokedex_ids: &Vec<u8>) -> Result<HashMap<u8, Vec<u8>>> {
-        let pokemon_moveset_all: HashMap<u8, Vec<u8>> = pokedex_ids
-            .iter()
-            .map(|pokedex_id| {
-                let pokemon_moveset = self.get_pokemon_moveset(pokedex_id)?;
-
-                Ok((*pokedex_id, pokemon_moveset))
-            })
-            .collect::<Result<HashMap<u8, Vec<u8>>>>()?;
-
-        Ok(pokemon_moveset_all)
+        self.get_all(pokedex_ids, |id| self.get_pokemon_moveset(id))
     }
 
     /// Get Pokémon moveset by Pokédex ID

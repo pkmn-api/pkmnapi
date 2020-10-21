@@ -6,16 +6,7 @@ use std::collections::HashMap;
 
 impl PkmnapiDB {
     pub fn get_type_name_all(&self, type_ids: &Vec<u8>) -> Result<HashMap<u8, TypeName>> {
-        let type_name_all: HashMap<u8, TypeName> = type_ids
-            .iter()
-            .map(|type_id| {
-                let type_name = self.get_type_name(type_id)?;
-
-                Ok((*type_id, type_name))
-            })
-            .collect::<Result<HashMap<u8, TypeName>>>()?;
-
-        Ok(type_name_all)
+        self.get_all(type_ids, |id| self.get_type_name(id))
     }
 
     /// Get type name by type ID

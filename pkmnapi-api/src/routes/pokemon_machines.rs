@@ -33,7 +33,7 @@ pub fn get_pokemon_machines_all(
             _ => None,
         })
         .collect();
-    let tm_moves = db.get_tm_all(&tm_ids)?;
+    let tm_moves = db.get_tm_move_all(&tm_ids)?;
     let hm_ids = pokemon_machines
         .iter()
         .map(|(_, machine)| machine)
@@ -43,7 +43,7 @@ pub fn get_pokemon_machines_all(
             _ => None,
         })
         .collect();
-    let hm_moves = db.get_hm_all(&hm_ids)?;
+    let hm_moves = db.get_hm_move_all(&hm_ids)?;
     let move_ids = [
         tm_moves
             .iter()
@@ -86,7 +86,7 @@ pub fn get_pokemon_machines(
             _ => None,
         })
         .collect();
-    let tm_moves = db.get_tm_all(&tm_ids)?;
+    let tm_moves = db.get_tm_move_all(&tm_ids)?;
     let hm_ids = pokemon_machines
         .iter()
         .filter_map(|machine| match machine {
@@ -94,7 +94,7 @@ pub fn get_pokemon_machines(
             _ => None,
         })
         .collect();
-    let hm_moves = db.get_hm_all(&hm_ids)?;
+    let hm_moves = db.get_hm_move_all(&hm_ids)?;
     let move_ids = [
         tm_moves
             .iter()

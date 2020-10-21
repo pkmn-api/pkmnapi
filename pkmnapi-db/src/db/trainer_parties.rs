@@ -8,16 +8,7 @@ impl PkmnapiDB {
         &self,
         trainer_ids: &Vec<u8>,
     ) -> Result<HashMap<u8, Vec<Party>>> {
-        let trainer_parties_all: HashMap<u8, Vec<Party>> = trainer_ids
-            .iter()
-            .map(|trainer_id| {
-                let trainer_parties = self.get_trainer_parties(trainer_id)?;
-
-                Ok((*trainer_id, trainer_parties))
-            })
-            .collect::<Result<HashMap<u8, Vec<Party>>>>()?;
-
-        Ok(trainer_parties_all)
+        self.get_all(trainer_ids, |id| self.get_trainer_parties(id))
     }
 
     pub fn get_trainer_parties(&self, trainer_id: &u8) -> Result<Vec<Party>> {

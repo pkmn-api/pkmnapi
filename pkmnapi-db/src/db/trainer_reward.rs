@@ -5,16 +5,7 @@ use std::collections::HashMap;
 
 impl PkmnapiDB {
     pub fn get_trainer_reward_all(&self, trainer_ids: &Vec<u8>) -> Result<HashMap<u8, u32>> {
-        let trainer_reward_all: HashMap<u8, u32> = trainer_ids
-            .iter()
-            .map(|trainer_id| {
-                let trainer_reward = self.get_trainer_reward(trainer_id)?;
-
-                Ok((*trainer_id, trainer_reward))
-            })
-            .collect::<Result<HashMap<u8, u32>>>()?;
-
-        Ok(trainer_reward_all)
+        self.get_all(trainer_ids, |id| self.get_trainer_reward(id))
     }
 
     /// Get trainer reward by trainer ID

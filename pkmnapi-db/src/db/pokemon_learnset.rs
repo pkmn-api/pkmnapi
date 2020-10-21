@@ -8,16 +8,7 @@ impl PkmnapiDB {
         &self,
         pokedex_ids: &Vec<u8>,
     ) -> Result<HashMap<u8, Vec<PokemonLearnset>>> {
-        let pokemon_learnset_all: HashMap<u8, Vec<PokemonLearnset>> = pokedex_ids
-            .iter()
-            .map(|pokedex_id| {
-                let pokemon_learnset = self.get_pokemon_learnset(pokedex_id)?;
-
-                Ok((*pokedex_id, pokemon_learnset))
-            })
-            .collect::<Result<HashMap<u8, Vec<PokemonLearnset>>>>()?;
-
-        Ok(pokemon_learnset_all)
+        self.get_all(pokedex_ids, |id| self.get_pokemon_learnset(id))
     }
 
     /// Get Pokémon learnset by Pokédex ID

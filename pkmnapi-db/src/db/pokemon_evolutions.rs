@@ -8,16 +8,7 @@ impl PkmnapiDB {
         &self,
         pokedex_ids: &Vec<u8>,
     ) -> Result<HashMap<u8, Vec<PokemonEvolution>>> {
-        let pokemon_evolutions_all: HashMap<u8, Vec<PokemonEvolution>> = pokedex_ids
-            .iter()
-            .map(|pokedex_id| {
-                let pokemon_evolutions = self.get_pokemon_evolutions(pokedex_id)?;
-
-                Ok((*pokedex_id, pokemon_evolutions))
-            })
-            .collect::<Result<HashMap<u8, Vec<PokemonEvolution>>>>()?;
-
-        Ok(pokemon_evolutions_all)
+        self.get_all(pokedex_ids, |id| self.get_pokemon_evolutions(id))
     }
 
     /// Get Pokémon evolutions by Pokédex ID

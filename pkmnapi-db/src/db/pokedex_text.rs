@@ -6,16 +6,7 @@ use std::collections::HashMap;
 
 impl PkmnapiDB {
     pub fn get_pokedex_text_all(&self, pokedex_ids: &Vec<u8>) -> Result<HashMap<u8, PokedexText>> {
-        let pokedex_text_all: HashMap<u8, PokedexText> = pokedex_ids
-            .iter()
-            .map(|pokedex_id| {
-                let pokedex_text = self.get_pokedex_text(pokedex_id)?;
-
-                Ok((*pokedex_id, pokedex_text))
-            })
-            .collect::<Result<HashMap<u8, PokedexText>>>()?;
-
-        Ok(pokedex_text_all)
+        self.get_all(pokedex_ids, |id| self.get_pokedex_text(id))
     }
 
     /// Get Pokédex entry text by Pokédex ID

@@ -4,20 +4,11 @@ use crate::PkmnapiDB;
 use std::collections::HashMap;
 
 impl PkmnapiDB {
-    pub fn get_hm_all(&self, hm_ids: &Vec<u8>) -> Result<HashMap<u8, HM>> {
-        let hm_all: HashMap<u8, HM> = hm_ids
-            .iter()
-            .map(|hm_id| {
-                let hm = self.get_hm(hm_id)?;
-
-                Ok((*hm_id, hm))
-            })
-            .collect::<Result<HashMap<u8, HM>>>()?;
-
-        Ok(hm_all)
+    pub fn get_tm_move_all(&self, tm_ids: &Vec<u8>) -> Result<HashMap<u8, TMMove>> {
+        self.get_all(tm_ids, |id| self.get_tm_move(id))
     }
 
-    /// Get HM by HM ID
+    /// Get TM move by TM ID
     ///
     /// # Example
     ///
@@ -30,22 +21,22 @@ impl PkmnapiDB {
     /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
-    /// let hm = db.get_hm(&1).unwrap();
+    /// let tm_move = db.get_tm_move(&1).unwrap();
     ///
-    /// assert_eq!(hm, HM { move_id: 0x0F });
+    /// assert_eq!(tm_move, TMMove { move_id: 0x05 });
     /// ```
-    pub fn get_hm(&self, hm_id: &u8) -> Result<HM> {
-        let _max_id = self.hm_id_validate(hm_id)?;
+    pub fn get_tm_move(&self, tm_id: &u8) -> Result<TMMove> {
+        let _max_id = self.tm_id_validate(tm_id)?;
 
-        let offset_base = 0x3052;
-        let offset = offset_base + ((*hm_id as usize) - 1);
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x04;
+        let offset = (offset_base + 0x3773) + ((*tm_id as usize) - 1);
 
-        let hm = HM::from(self.rom[offset]);
+        let tm_move = TMMove::from(self.rom[offset]);
 
-        Ok(hm)
+        Ok(tm_move)
     }
 
-    /// Set HM by HM ID
+    /// Set TM move by TM ID
     ///
     /// # Example
     ///
@@ -59,71 +50,71 @@ impl PkmnapiDB {
     /// let rom = fs::read(rom_path).unwrap();
     /// let db = PkmnapiDB::new(&rom, None).unwrap();
     ///
-    /// let patch = db.set_hm(&1, &HM { move_id: 0x42 }).unwrap();
+    /// let patch = db.set_tm_move(&1, &TMMove { move_id: 0x42 }).unwrap();
     ///
     /// assert_eq!(
     ///     patch,
     ///     Patch {
-    ///         offset: 0x3052,
+    ///         offset: 0x13773,
     ///         length: 0x01,
     ///         data: vec![0x42]
     ///     }
     /// );
     /// ```
-    pub fn set_hm(&self, hm_id: &u8, hm: &HM) -> Result<Patch> {
-        let _max_id = self.hm_id_validate(hm_id)?;
+    pub fn set_tm_move(&self, tm_id: &u8, tm: &TMMove) -> Result<Patch> {
+        let _max_id = self.tm_id_validate(tm_id)?;
 
-        let offset_base = 0x3052;
-        let offset = offset_base + ((*hm_id as usize) - 1);
+        let offset_base = PkmnapiDB::ROM_PAGE * 0x04;
+        let offset = (offset_base + 0x3773) + ((*tm_id as usize) - 1);
 
-        Ok(Patch::new(&offset, &hm.to_raw()))
+        Ok(Patch::new(&offset, &tm.to_raw()))
     }
 }
 
-/// HM
+/// TM move
 ///
 /// # Example
 ///
 /// ```
 /// use pkmnapi_db::*;
 ///
-/// let hm = HM::from(0x01);
+/// let tm_move = TMMove::from(0x01);
 ///
-/// assert_eq!(hm, HM { move_id: 0x01 });
+/// assert_eq!(tm_move, TMMove { move_id: 0x01 });
 /// ```
 #[derive(Debug, PartialEq)]
-pub struct HM {
+pub struct TMMove {
     pub move_id: u8,
 }
 
-impl From<u8> for HM {
-    /// Convert u8 to HM
+impl From<u8> for TMMove {
+    /// Convert u8 to TM move
     ///
     /// # Example
     ///
     /// ```
     /// use pkmnapi_db::*;
     ///
-    /// let hm = HM::from(0x01);
+    /// let tm_move = TMMove::from(0x01);
     ///
-    /// assert_eq!(hm, HM { move_id: 0x01 });
+    /// assert_eq!(tm_move, TMMove { move_id: 0x01 });
     /// ```
     fn from(move_id: u8) -> Self {
-        HM { move_id }
+        TMMove { move_id }
     }
 }
 
-impl HM {
-    /// HM to raw bytes
+impl TMMove {
+    /// TM move to raw bytes
     ///
     /// # Example
     ///
     /// ```
     /// use pkmnapi_db::*;
     ///
-    /// let hm = HM::from(0x01);
+    /// let tm_move = TMMove::from(0x01);
     ///
-    /// let raw = hm.to_raw();
+    /// let raw = tm_move.to_raw();
     ///
     /// assert_eq!(raw, vec![0x01]);
     /// ```

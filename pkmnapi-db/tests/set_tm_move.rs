@@ -11,7 +11,7 @@ macro_rules! set_tm_test {
         fn $test_name() {
             let db = common::load_rom();
 
-            match db.set_tm(&$tm_id, &TM { move_id: $move_id }) {
+            match db.set_tm_move(&$tm_id, &TMMove { move_id: $move_id }) {
                 Ok(patch) => assert_eq!(
                     patch,
                     Patch {

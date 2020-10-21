@@ -6,16 +6,7 @@ use std::collections::HashMap;
 
 impl PkmnapiDB {
     pub fn get_trade_all(&self, trade_ids: &Vec<u8>) -> Result<HashMap<u8, Trade>> {
-        let trade_all: HashMap<u8, Trade> = trade_ids
-            .iter()
-            .map(|trade_id| {
-                let trade = self.get_trade(trade_id)?;
-
-                Ok((*trade_id, trade))
-            })
-            .collect::<Result<HashMap<u8, Trade>>>()?;
-
-        Ok(trade_all)
+        self.get_all(trade_ids, |id| self.get_trade(id))
     }
 
     /// Get trade by trade ID

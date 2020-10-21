@@ -1,4 +1,4 @@
-use pkmnapi_db::{MoveName, HM};
+use pkmnapi_db::{HMMove, MoveName};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -14,19 +14,19 @@ pub type HMMoveResponseAll = BaseResponseAll<HMMoveResponseData>;
 impl HMMoveResponseAll {
     pub fn new(
         hm_ids: &Vec<u8>,
-        hms: &HashMap<u8, HM>,
+        hm_moves: &HashMap<u8, HMMove>,
         move_names: &HashMap<u8, MoveName>,
     ) -> HMMoveResponseAll {
         HMMoveResponseAll {
             data: hm_ids
                 .iter()
                 .map(|hm_id| {
-                    let hm = hms.get(hm_id).unwrap();
+                    let hm_move = hm_moves.get(hm_id).unwrap();
 
                     HMMoveResponseData::new(
                         hm_id,
-                        hms.get(hm_id).unwrap(),
-                        move_names.get(&hm.move_id).unwrap(),
+                        hm_moves.get(hm_id).unwrap(),
+                        move_names.get(&hm_move.move_id).unwrap(),
                     )
                 })
                 .collect(),
@@ -38,9 +38,9 @@ impl HMMoveResponseAll {
 }
 
 impl HMMoveResponse {
-    pub fn new(hm_id: &u8, hm: &HM, move_name: &MoveName) -> HMMoveResponse {
+    pub fn new(hm_id: &u8, hm_move: &HMMove, move_name: &MoveName) -> HMMoveResponse {
         HMMoveResponse {
-            data: HMMoveResponseData::new(hm_id, hm, move_name),
+            data: HMMoveResponseData::new(hm_id, hm_move, move_name),
             links: Links {
                 _self: utils::generate_url("hms/moves", Some(&hm_id.to_string())),
             },
@@ -49,12 +49,12 @@ impl HMMoveResponse {
 }
 
 impl HMMoveResponseData {
-    pub fn new(hm_id: &u8, hm: &HM, move_name: &MoveName) -> HMMoveResponseData {
+    pub fn new(hm_id: &u8, hm_move: &HMMove, move_name: &MoveName) -> HMMoveResponseData {
         BaseResponseData {
             id: hm_id.to_string(),
             _type: BaseResponseType::hm_moves,
             attributes: HMMoveResponseAttributes {
-                _move: MoveNameResponseData::new(&hm.move_id, move_name),
+                _move: MoveNameResponseData::new(&hm_move.move_id, move_name),
             },
             links: Links {
                 _self: utils::generate_url("hms/moves", Some(&hm_id.to_string())),

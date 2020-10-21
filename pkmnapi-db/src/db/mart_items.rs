@@ -5,16 +5,7 @@ use std::collections::HashMap;
 
 impl PkmnapiDB {
     pub fn get_mart_items_all(&self, mart_ids: &Vec<u8>) -> Result<HashMap<u8, Vec<MartItem>>> {
-        let mart_items_all: HashMap<u8, Vec<MartItem>> = mart_ids
-            .iter()
-            .map(|mart_id| {
-                let mart_items = self.get_mart_items(mart_id)?;
-
-                Ok((*mart_id, mart_items))
-            })
-            .collect::<Result<HashMap<u8, Vec<MartItem>>>>()?;
-
-        Ok(mart_items_all)
+        self.get_all(mart_ids, |id| self.get_mart_items(id))
     }
 
     /// Get mart items by mart ID
