@@ -53,6 +53,7 @@ table! {
         date_create -> Varchar,
         date_expire -> Varchar,
         access_token_hash -> Varchar,
+        delete_code -> Nullable<Varchar>,
         rom_id -> Nullable<Varchar>,
         sav_id -> Nullable<Varchar>,
     }

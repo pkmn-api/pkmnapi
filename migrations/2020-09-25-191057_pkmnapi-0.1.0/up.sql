@@ -28,6 +28,7 @@ CREATE TABLE "users" (
     "date_create"        VARCHAR NOT NULL,
     "date_expire"        VARCHAR NOT NULL,
     "access_token_hash"  VARCHAR NOT NULL,
+    "delete_code"        VARCHAR,
     "rom_id"             VARCHAR,
     "sav_id"             VARCHAR,
     PRIMARY KEY("id"),

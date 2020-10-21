@@ -44,8 +44,13 @@ impl Pkmnapi {
                     .allow_burst(NonZeroU32::new(count).unwrap())
             });
         let cors = rocket_cors::CorsOptions {
-            allowed_headers: AllowedHeaders::some(&["Authorization", "Accept"]),
-            allow_credentials: true,
+            allowed_headers: AllowedHeaders::some(&[
+                "Accept",
+                "Authorization",
+                "Content-Type",
+                "X-Patch-Description",
+            ]),
+            send_wildcard: true,
             ..Default::default()
         }
         .to_cors()
@@ -58,6 +63,8 @@ impl Pkmnapi {
             .mount(
                 "/v1",
                 routes![
+                    routes::access_tokens::delete_access_token,
+                    routes::access_tokens::post_access_token_delete,
                     routes::access_tokens::post_access_token,
                     routes::hm_moves::get_hm_move_all,
                     routes::hm_moves::get_hm_move,

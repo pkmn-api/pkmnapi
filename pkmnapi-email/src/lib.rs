@@ -23,8 +23,11 @@ use lettre_email::{EmailBuilder, Mailbox};
 use std::env;
 use tera::Tera;
 
+static BASE_HTML: &'static str = include_str!("../templates/base.html");
 static ACCESS_TOKEN_TXT: &'static str = include_str!("../templates/access_token.txt");
 static ACCESS_TOKEN_HTML: &'static str = include_str!("../templates/access_token.html");
+static DELETE_CODE_TXT: &'static str = include_str!("../templates/delete_code.txt");
+static DELETE_CODE_HTML: &'static str = include_str!("../templates/delete_code.html");
 
 /// PkmnapiEmail
 ///
@@ -109,32 +112,56 @@ impl PkmnapiEmail {
 
 pub enum PkmnapiEmailTemplate {
     AccessToken(String),
+    DeleteCode(String, String),
 }
 
 impl PkmnapiEmailTemplate {
     pub fn subject(&self) -> Result<String, String> {
         let subject = match self {
             PkmnapiEmailTemplate::AccessToken(_) => "Pkmnapi access token".to_owned(),
+            PkmnapiEmailTemplate::DeleteCode(_, _) => "Pkmnapi delete access token".to_owned(),
         };
 
         Ok(subject)
     }
 
     pub fn body_html(&self, subject: &String) -> Result<String, String> {
-        let body = match self {
+        let content = match self {
             PkmnapiEmailTemplate::AccessToken(access_token) => {
                 let mut context = tera::Context::new();
 
-                context.insert("subject", &subject);
                 context.insert("access_token", &access_token);
 
-                let body = match Tera::one_off(ACCESS_TOKEN_HTML, &context, true) {
-                    Ok(body) => body,
+                let content = match Tera::one_off(ACCESS_TOKEN_HTML, &context, true) {
+                    Ok(content) => content,
                     Err(e) => return Err(e.to_string()),
                 };
 
-                body
+                content
             }
+            PkmnapiEmailTemplate::DeleteCode(email_address, delete_code) => {
+                let mut context = tera::Context::new();
+
+                context.insert("email_address", &email_address);
+                context.insert("delete_code", &delete_code);
+
+                let content = match Tera::one_off(DELETE_CODE_HTML, &context, true) {
+                    Ok(content) => content,
+                    Err(e) => return Err(e.to_string()),
+                };
+
+                content
+            }
+        };
+
+        let mut context = tera::Context::new();
+
+        context.insert("subject", &subject);
+        context.insert("content", &content);
+
+        let body = match Tera::one_off(BASE_HTML, &context, true) {
+            Ok(body) => body,
+            Err(e) => return Err(e.to_string()),
         };
 
         Ok(body)
@@ -148,6 +175,19 @@ impl PkmnapiEmailTemplate {
                 context.insert("access_token", &access_token);
 
                 let body = match Tera::one_off(ACCESS_TOKEN_TXT, &context, true) {
+                    Ok(body) => body,
+                    Err(e) => return Err(e.to_string()),
+                };
+
+                body
+            }
+            PkmnapiEmailTemplate::DeleteCode(email_address, delete_code) => {
+                let mut context = tera::Context::new();
+
+                context.insert("email_address", &email_address);
+                context.insert("delete_code", &delete_code);
+
+                let body = match Tera::one_off(DELETE_CODE_TXT, &context, true) {
                     Ok(body) => body,
                     Err(e) => return Err(e.to_string()),
                 };

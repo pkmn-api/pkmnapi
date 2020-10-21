@@ -6,9 +6,11 @@ sort_by = "weight"
 
 ### [Access Tokens](@/endpoints/access_tokens.md)
 
-| Endpoint                                                                 | Description                |
-|--------------------------------------------------------------------------|----------------------------|
-| [POST /v1/access_tokens](@/endpoints/access_tokens.md#post-access-token) | Creates a new access token |
+| Endpoint                                                                               | Description                       |
+|----------------------------------------------------------------------------------------|-----------------------------------|
+| [POST /v1/access_tokens](@/endpoints/access_tokens.md#post-access-token)               | Creates a new access token        |
+| [POST /v1/access_tokens/delete](@/endpoints/access_tokens.md#post-access-token-delete) | Requests an access token deletion |
+| [DELETE /v1/access_tokens](@/endpoints/access_tokens.md#delete-access-token)           | Deletes an access token           |
 
 ### [HM Moves](@/endpoints/hm_moves.md)
 

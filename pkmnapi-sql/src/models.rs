@@ -117,6 +117,7 @@ pub struct User {
     pub date_create: String,
     pub date_expire: String,
     pub access_token_hash: String,
+    pub delete_code: Option<String>,
     pub rom_id: Option<String>,
     pub sav_id: Option<String>,
 }
@@ -138,6 +139,7 @@ pub struct NewUser {
     pub date_create: String,
     pub date_expire: String,
     pub access_token_hash: String,
+    pub delete_code: Option<String>,
     pub rom_id: Option<String>,
     pub sav_id: Option<String>,
 }
@@ -162,6 +164,7 @@ impl NewUser {
     /// assert_eq!(new_user.date_create.len(), 20);
     /// assert_eq!(new_user.date_expire.len(), 20);
     /// assert_eq!(new_user.access_token_hash.len(), 64);
+    /// assert_eq!(new_user.delete_code, None);
     /// assert_eq!(new_user.rom_id, None);
     /// assert_eq!(new_user.sav_id, None);
     /// assert_eq!(access_token.len(), 64);
@@ -171,6 +174,7 @@ impl NewUser {
         let date_expire =
             (Utc::now() + Duration::seconds(600)).to_rfc3339_opts(SecondsFormat::Secs, true);
         let access_token = utils::random_id(64);
+        let delete_code = None;
         let rom_id = None;
         let sav_id = None;
 
@@ -181,6 +185,7 @@ impl NewUser {
             date_create,
             date_expire,
             access_token_hash,
+            delete_code,
             rom_id,
             sav_id,
         };

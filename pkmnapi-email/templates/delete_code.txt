@@ -1,0 +1,3 @@
+Please click here to delete your access token: https://www.pkmnapi.com/actions/delete-user?email_address={{ email_address }}&code={{ delete_code }}
+
+If you did not request this email, someone else may have done so.
