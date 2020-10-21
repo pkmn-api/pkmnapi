@@ -18,6 +18,13 @@ sort_by = "weight"
 | [GET /v1/hms/moves/:hm_id](@/endpoints/hm_moves.md#get-hm-move)   | Gets a HM move          |
 | [POST /v1/hms/moves/:hm_id](@/endpoints/hm_moves.md#post-hm-move) | Updates a HM move       |
 
+### [HM Names](@/endpoints/hm_names.md)
+
+| Endpoint                                                          | Description             |
+|-------------------------------------------------------------------|-------------------------|
+| [GET /v1/hms/names](@/endpoints/hm_names.md#get-hm-name-all)      | Gets a list of HM names |
+| [GET /v1/hms/names/:hm_id](@/endpoints/hm_names.md#get-hm-name)   | Gets a HM name          |
+
 ### [Icons](@/endpoints/icons.md)
 
 | Endpoint                                                | Description  |
@@ -216,6 +223,13 @@ sort_by = "weight"
 | [GET /v1/tms/moves](@/endpoints/tm_moves.md#get-tm-move-all)      | Gets a list of TM moves |
 | [GET /v1/tms/moves/:tm_id](@/endpoints/tm_moves.md#get-tm-move)   | Gets a TM's move        |
 | [POST /v1/tms/moves/:tm_id](@/endpoints/tm_moves.md#post-tm-move) | Updates a TM's move     |
+
+### [TM Names](@/endpoints/tm_names.md)
+
+| Endpoint                                                          | Description             |
+|-------------------------------------------------------------------|-------------------------|
+| [GET /v1/tms/names](@/endpoints/tm_names.md#get-tm-name-all)      | Gets a list of TM names |
+| [GET /v1/tms/names/:tm_id](@/endpoints/tm_names.md#get-tm-name)   | Gets a TM name          |
 
 ### [TM Prices](@/endpoints/tm_prices.md)
 

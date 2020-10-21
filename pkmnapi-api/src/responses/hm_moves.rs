@@ -25,7 +25,7 @@ impl HMMoveResponseAll {
 
                     HMMoveResponseData::new(
                         hm_id,
-                        hm_moves.get(hm_id).unwrap(),
+                        hm_move,
                         move_names.get(&hm_move.move_id).unwrap(),
                     )
                 })

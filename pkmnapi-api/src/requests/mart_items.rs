@@ -13,7 +13,7 @@ impl MartItemsRequest {
             .iter()
             .map(|mart_item| match mart_item._type {
                 MartItemsRequestAttributesItemType::item_names => MartItem::ITEM(mart_item.id),
-                MartItemsRequestAttributesItemType::tm_moves => MartItem::TM(mart_item.id),
+                MartItemsRequestAttributesItemType::tm_names => MartItem::TM(mart_item.id),
             })
             .collect()
     }
@@ -43,5 +43,5 @@ pub struct MartItemsRequestAttributesItem {
 #[allow(non_camel_case_types)]
 pub enum MartItemsRequestAttributesItemType {
     item_names,
-    tm_moves,
+    tm_names,
 }

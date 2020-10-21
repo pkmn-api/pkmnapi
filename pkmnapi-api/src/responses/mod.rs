@@ -1,6 +1,7 @@
 pub mod base;
 pub mod errors;
 pub mod hm_moves;
+pub mod hm_names;
 pub mod item_names;
 pub mod links;
 pub mod map_pokemon;
@@ -23,6 +24,7 @@ pub mod roms;
 pub mod sav_player_names;
 pub mod savs;
 pub mod tm_moves;
+pub mod tm_names;
 pub mod tm_prices;
 pub mod trades;
 pub mod trainer_names;

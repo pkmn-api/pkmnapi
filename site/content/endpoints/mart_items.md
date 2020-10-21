@@ -44,10 +44,10 @@ Authorization: Bearer <access_token>
 | `data[].attributes.mart_items`                                   | array  |                                                        |
 | `data[].attributes.mart_items[]`                                 | object |                                                        |
 | `data[].attributes.mart_items[].id`                              | number | ID of mart item.                                       |
-| `data[].attributes.mart_items[].type`                            | string | Type of mart item. Must be "item_names" or "tm_moves". |
+| `data[].attributes.mart_items[].type`                            | string | Type of mart item. Must be "item_names" or "tm_names". |
 | `data[].attributes.mart_items[].attributes`                      | object |                                                        |
 | `data[].attributes.mart_items[].attributes.name`                 | string | Item name. (If type is "item_names")                   |
-| `data[].attributes.mart_items[].attributes.move`                 | string | Move. (If type is "tm_moves")                          |
+| `data[].attributes.mart_items[].attributes.move`                 | string | Move. (If type is "tm_names")                          |
 | `data[].attributes.mart_items[].attributes.move.id`              | string | ID of move.                                            |
 | `data[].attributes.mart_items[].attributes.move.type`            | string | Type of move. Must be "move_names".                    |
 | `data[].attributes.mart_items[].attributes.move.attributes`      | object |                                                        |
@@ -172,10 +172,10 @@ Authorization: Bearer <access_token>
 | `data.attributes.mart_items`                                   | array  |                                                        |
 | `data.attributes.mart_items[]`                                 | object |                                                        |
 | `data.attributes.mart_items[].id`                              | number | ID of mart item.                                       |
-| `data.attributes.mart_items[].type`                            | string | Type of mart item. Must be "item_names" or "tm_moves". |
+| `data.attributes.mart_items[].type`                            | string | Type of mart item. Must be "item_names" or "tm_names". |
 | `data.attributes.mart_items[].attributes`                      | object |                                                        |
 | `data.attributes.mart_items[].attributes.name`                 | string | Item name. (If type is "item_names")                   |
-| `data.attributes.mart_items[].attributes.move`                 | string | Move. (If type is "tm_moves")                          |
+| `data.attributes.mart_items[].attributes.move`                 | string | Move. (If type is "tm_names")                          |
 | `data.attributes.mart_items[].attributes.move.id`              | string | ID of move.                                            |
 | `data.attributes.mart_items[].attributes.move.type`            | string | Type of move. Must be "move_names".                    |
 | `data.attributes.mart_items[].attributes.move.attributes`      | object |                                                        |

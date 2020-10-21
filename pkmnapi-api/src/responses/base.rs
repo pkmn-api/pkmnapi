@@ -27,6 +27,7 @@ pub struct BaseResponseAll<T> {
 #[allow(non_camel_case_types)]
 pub enum BaseResponseType {
     hm_moves,
+    hm_names,
     icons,
     item_names,
     map_pokemon,
@@ -49,6 +50,7 @@ pub enum BaseResponseType {
     sav_player_names,
     savs,
     tm_moves,
+    tm_names,
     tm_prices,
     trades,
     trainer_names,

@@ -1,11 +1,11 @@
-use pkmnapi_db::{ItemName, MartItem, MoveName, TMMove};
+use pkmnapi_db::{ItemName, MartItem, TMName};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use crate::responses::base::{BaseResponse, BaseResponseAll, BaseResponseData, BaseResponseType};
 use crate::responses::item_names::ItemNameResponseData;
 use crate::responses::links::Links;
-use crate::responses::tm_moves::TMMoveResponseData;
+use crate::responses::tm_names::TMNameResponseData;
 use crate::utils;
 
 pub type MartItemsResponse = BaseResponse<MartItemsResponseAttributes>;
@@ -17,8 +17,7 @@ impl MartItemsResponseAll {
         mart_ids: &Vec<u8>,
         mart_items: &HashMap<u8, Vec<MartItem>>,
         item_names: &HashMap<u8, ItemName>,
-        tm_moves: &HashMap<u8, TMMove>,
-        move_names: &HashMap<u8, MoveName>,
+        tm_names: &HashMap<u8, TMName>,
     ) -> MartItemsResponseAll {
         MartItemsResponseAll {
             data: mart_ids
@@ -28,8 +27,7 @@ impl MartItemsResponseAll {
                         &mart_id,
                         &mart_items.get(mart_id).unwrap(),
                         item_names,
-                        tm_moves,
-                        move_names,
+                        tm_names,
                     )
                 })
                 .collect(),
@@ -45,11 +43,10 @@ impl MartItemsResponse {
         mart_id: &u8,
         mart_items: &Vec<MartItem>,
         item_names: &HashMap<u8, ItemName>,
-        tm_moves: &HashMap<u8, TMMove>,
-        move_names: &HashMap<u8, MoveName>,
+        tm_names: &HashMap<u8, TMName>,
     ) -> MartItemsResponse {
         MartItemsResponse {
-            data: MartItemsResponseData::new(mart_id, mart_items, item_names, tm_moves, move_names),
+            data: MartItemsResponseData::new(mart_id, mart_items, item_names, tm_names),
             links: Links {
                 _self: utils::generate_url("marts/items", Some(&mart_id.to_string())),
             },
@@ -62,8 +59,7 @@ impl MartItemsResponseData {
         mart_id: &u8,
         mart_items: &Vec<MartItem>,
         item_names: &HashMap<u8, ItemName>,
-        tm_moves: &HashMap<u8, TMMove>,
-        move_names: &HashMap<u8, MoveName>,
+        tm_names: &HashMap<u8, TMName>,
     ) -> MartItemsResponseData {
         BaseResponseData {
             id: mart_id.to_string(),
@@ -77,13 +73,9 @@ impl MartItemsResponseData {
                             item_names.get(item_id).unwrap(),
                         )),
                         MartItem::TM(tm_id) => {
-                            let tm = tm_moves.get(tm_id).unwrap();
+                            let tm_name = tm_names.get(tm_id).unwrap();
 
-                            mart_item::TM(TMMoveResponseData::new(
-                                tm_id,
-                                tm,
-                                move_names.get(&tm.move_id).unwrap(),
-                            ))
+                            mart_item::TM(TMNameResponseData::new(tm_id, tm_name))
                         }
                     })
                     .collect(),
@@ -105,5 +97,5 @@ pub struct MartItemsResponseAttributes {
 #[serde(untagged)]
 pub enum mart_item {
     ITEM(ItemNameResponseData),
-    TM(TMMoveResponseData),
+    TM(TMNameResponseData),
 }
