@@ -4,6 +4,7 @@ compile_sass = true
 highlight_code = true
 theme = "book"
 title = "pkmnapi"
+hard_link_static = true
 
 [extra]
 api_domain = "https://api.pkmnapi.com"

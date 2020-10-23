@@ -1,6 +1,7 @@
 secrets/data
 secrets/data.zip
 site/public
+site/static/documentation
 target
 Cargo.lock
 *.db

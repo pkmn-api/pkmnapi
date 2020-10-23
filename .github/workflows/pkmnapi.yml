@@ -168,6 +168,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        override: true
+    - name: Document pkmnapi-api
+      run: |
+        cargo doc --no-deps
+        cp -r target/doc ../site/static/documentation/pkmnapi_api
+      working-directory: pkmnapi-api
+    - name: Document pkmnapi-db
+      run: |
+        cargo doc --no-deps
+        cp -r target/doc ../site/static/documentation/pkmnapi_db
+      working-directory: pkmnapi-db
+    - name: Document pkmnapi-email
+      run: |
+        cargo doc --no-deps
+        cp -r target/doc ../site/static/documentation/pkmnapi_email
+      working-directory: pkmnapi-email
+    - name: Document pkmnapi-sql
+      run: |
+        cargo doc --no-deps
+        cp -r target/doc ../site/static/documentation/pkmnapi_sql
+      working-directory: pkmnapi-sql
     - name: Build
       uses: shalzz/zola-deploy-action@master
       env:
