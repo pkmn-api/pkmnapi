@@ -5,14 +5,14 @@ use pkmnapi_db::*;
 fn new_success() {
     let rom = vec![0u8; 1024];
 
-    PkmnapiDB::new(&rom, None).unwrap();
+    PkmnapiDB::new(&rom).build().unwrap();
 }
 
 #[test]
 fn new_failure() {
     let rom = vec![];
 
-    match PkmnapiDB::new(&rom, None) {
+    match PkmnapiDB::new(&rom).build() {
         Err(e) => assert_eq!(e, error::Error::HeaderTooSmall),
         _ => {}
     };
@@ -44,7 +44,7 @@ fn header_success() {
         vec![0x1A, 0x41],                                            // global_checksum
     ]
     .concat();
-    let db = PkmnapiDB::new(&rom, None).unwrap();
+    let db = PkmnapiDB::new(&rom).build().unwrap();
     let header = Header::from(&rom).unwrap();
 
     assert_eq!(db.header, header);
@@ -76,7 +76,7 @@ fn header_verify_success() {
         vec![0x1A, 0x41],                                            // global_checksum
     ]
     .concat();
-    let db = PkmnapiDB::new(&rom, None).unwrap();
+    let db = PkmnapiDB::new(&rom).build().unwrap();
 
     assert_eq!(db.header.verify_checksum(), true);
 }
@@ -107,7 +107,7 @@ fn header_verify_fail() {
         vec![0x1A, 0x41],                                            // global_checksum
     ]
     .concat();
-    let db = PkmnapiDB::new(&rom, None).unwrap();
+    let db = PkmnapiDB::new(&rom).build().unwrap();
 
     assert_eq!(db.header.verify_checksum(), false);
 }
@@ -138,7 +138,7 @@ fn verify_checksum_success() {
         vec![0x1A, 0x41],                                            // global_checksum
     ]
     .concat();
-    let mut db = PkmnapiDB::new(&rom, None).unwrap();
+    let mut db = PkmnapiDB::new(&rom).build().unwrap();
 
     db.header.global_checksum = 0x1A41;
 
@@ -171,7 +171,7 @@ fn verify_checksum_fail() {
         vec![0x1A, 0x41],                                            // global_checksum
     ]
     .concat();
-    let mut db = PkmnapiDB::new(&rom, None).unwrap();
+    let mut db = PkmnapiDB::new(&rom).build().unwrap();
 
     db.header.global_checksum = 0x1234;
 
@@ -204,7 +204,7 @@ fn verify_hash_success() {
         vec![0x1A, 0x41],                                            // global_checksum
     ]
     .concat();
-    let db = PkmnapiDB::new(&rom, None).unwrap();
+    let db = PkmnapiDB::new(&rom).build().unwrap();
 
     assert_eq!(db.verify_hash("b933af3d953bedd6ed3911ef6724cfa2"), true);
 }
@@ -235,7 +235,7 @@ fn verify_hash_fail() {
         vec![0x1A, 0x41],                                            // global_checksum
     ]
     .concat();
-    let db = PkmnapiDB::new(&rom, None).unwrap();
+    let db = PkmnapiDB::new(&rom).build().unwrap();
 
     assert_eq!(db.verify_hash("0123456789abcdef0123456789abcdef"), false);
 }

@@ -21,7 +21,7 @@ pub fn post_rom<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let rom_data = utils::get_data_raw(data);
 
-    let db = match PkmnapiDB::new(&rom_data, None) {
+    let db = match PkmnapiDB::new(&rom_data).build() {
         Ok(db) => db,
         Err(_) => return Err(RomErrorInvalidRom::new()),
     };

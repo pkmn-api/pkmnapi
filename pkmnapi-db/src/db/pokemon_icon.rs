@@ -19,7 +19,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    /// let db = PkmnapiDB::new(&rom).build().unwrap();
     ///
     /// let pokemon_icon = db.get_pokemon_icon(&1).unwrap();
     ///
@@ -59,7 +59,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    /// let db = PkmnapiDB::new(&rom).build().unwrap();
     ///
     /// let patch = db
     ///     .set_pokemon_icon(

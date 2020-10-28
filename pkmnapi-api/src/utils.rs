@@ -68,12 +68,17 @@ pub fn get_db(
             ))
         }
     };
-    let sav = match sql.select_user_sav_by_access_token(&connection, &access_token) {
-        Ok(Some(sav)) => Some(sav.data),
-        _ => None,
+
+    let mut db = PkmnapiDB::new(&rom_data.data);
+
+    match sql.select_user_sav_by_access_token(&connection, &access_token) {
+        Ok(Some(sav)) => {
+            db.sav(sav.data);
+        }
+        _ => {}
     };
 
-    let db = match PkmnapiDB::new(&rom_data.data, sav) {
+    let db = match db.build() {
         Ok(db) => db,
         Err(_) => return Err(RomErrorInvalidRom::new()),
     };

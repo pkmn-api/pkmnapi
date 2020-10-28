@@ -19,7 +19,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    /// let db = PkmnapiDB::new(&rom).build().unwrap();
     ///
     /// let tm_price = db.get_tm_price(&1).unwrap();
     ///
@@ -55,7 +55,7 @@ impl PkmnapiDB {
     /// # let rom_path = env::var("PKMN_ROM").expect("Set the PKMN_ROM environment variable to point to the ROM location");
     ///
     /// let rom = fs::read(rom_path).unwrap();
-    /// let db = PkmnapiDB::new(&rom, None).unwrap();
+    /// let db = PkmnapiDB::new(&rom).build().unwrap();
     ///
     /// let patch = db.set_tm_price(&1, &TMPrice { value: 9000 }).unwrap();
     ///
