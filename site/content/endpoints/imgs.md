@@ -5,11 +5,56 @@ weight = 1
 
 | Endpoint                                         | Description              |
 |--------------------------------------------------|--------------------------|
+| [GET /v1/imgs/game_boy](#get-game-boy)           | Gets the Game Boy image  |
 | [GET /v1/imgs/pokemon_logo](#get-pokemon-logo)   | Gets the Pokémon logo    |
 | [POST /v1/imgs/pokemon_logo](#post-pokemon-logo) | Updates the Pokémon logo |
 | [GET /v1/imgs/town_map](#get-town-map)           | Gets the town map        |
 
 ---
+
+### GET /v1/imgs/game_boy {#get-game-boy}
+
+Gets the Game Boy image
+
+#### Request Parameters
+
+{% api_request_params() %}
+| header | `Accept` | string | | Type of image to return. Must be "image/png" or "image/jpeg". |
+{% end %}
+
+#### Example Request
+
+**Header:**
+
+{% api_headers() %}
+GET /v1/imgs/game_boy
+Host: {{API_HOST}}
+Authorization: Bearer <access_token>
+Accept: image/png
+{% end %}
+
+**Body:**
+
+{{ api_response() }}
+
+#### Response Parameters
+
+{{ api_response_params() }}
+
+#### Example Response
+
+**Header:**
+
+{% api_headers() %}
+HTTP/1.1 200 OK
+Content-Type: image/png
+Content-Disposition: attachment; filename="game_boy.png"
+Server: pkmnapi/0.1.0
+{% end %}
+
+**Body:**
+
+![game_boy.png](/img/response/game_boy.png)
 
 ### GET /v1/imgs/pokemon_logo {#get-pokemon-logo}
 

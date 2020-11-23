@@ -4,6 +4,49 @@ use std::fs;
 
 mod common;
 
+test!(get_game_boy_png_200, (client, access_token) {
+    let request = client
+        .get("/v1/imgs/game_boy")
+        .header(common::auth_header(&access_token));
+
+    let mut response = request.dispatch();
+    let response_body = response.body_bytes().unwrap();
+    let headers = response.headers();
+
+    let body = fs::read("../secrets/data/game_boy.png").unwrap();
+
+    assert_eq!(response_body, body);
+    assert_eq!(response.status(), Status::Ok);
+
+    common::assert_headers(headers, vec![
+        ("Content-Disposition", "attachment; filename=\"game_boy.png\""),
+        ("Content-Type", "image/png"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
+
+test!(get_game_boy_jpeg_200, (client, access_token) {
+    let request = client
+        .get("/v1/imgs/game_boy")
+        .header(Accept::JPEG)
+        .header(common::auth_header(&access_token));
+
+    let mut response = request.dispatch();
+    let response_body = response.body_bytes().unwrap();
+    let headers = response.headers();
+
+    let body = fs::read("../secrets/data/game_boy.jpg").unwrap();
+
+    assert_eq!(response_body, body);
+    assert_eq!(response.status(), Status::Ok);
+
+    common::assert_headers(headers, vec![
+        ("Content-Disposition", "attachment; filename=\"game_boy.jpg\""),
+        ("Content-Type", "image/jpeg"),
+        ("Server", "pkmnapi/0.1.0"),
+    ])
+});
+
 test!(get_pokemon_logo_png_200, (client, access_token) {
     let request = client
         .get("/v1/imgs/pokemon_logo")

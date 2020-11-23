@@ -37,6 +37,7 @@ sort_by = "weight"
 
 | Endpoint                                                            | Description              |
 |---------------------------------------------------------------------|--------------------------|
+| [GET /v1/imgs/game_boy](@/endpoints/imgs.md#get-game-boy)           | Gets the Game Boy image  |
 | [GET /v1/imgs/pokemon_logo](@/endpoints/imgs.md#get-pokemon-logo)   | Gets the Pokémon logo    |
 | [POST /v1/imgs/pokemon_logo](@/endpoints/imgs.md#post-pokemon-logo) | Updates the Pokémon logo |
 | [GET /v1/imgs/town_map](@/endpoints/imgs.md#get-town-map)           | Gets the town map        |

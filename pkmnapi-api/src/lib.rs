@@ -72,6 +72,8 @@ impl Pkmnapi {
                     routes::hm_names::get_hm_name_all,
                     routes::hm_names::get_hm_name,
                     routes::icons::get_icon,
+                    routes::imgs::get_game_boy_jpeg,
+                    routes::imgs::get_game_boy_png,
                     routes::imgs::get_pokemon_logo_jpeg,
                     routes::imgs::get_pokemon_logo_png,
                     routes::imgs::get_town_map_jpeg,

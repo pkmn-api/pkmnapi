@@ -11,6 +11,54 @@ use crate::guards::*;
 use crate::responses::errors::*;
 use crate::utils;
 
+#[get("/imgs/game_boy", format = "image/png", rank = 1)]
+pub fn get_game_boy_png<'a>(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Response<'a>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let game_boy = db.get_game_boy_img()?;
+    let img = game_boy.to_png()?;
+
+    let response = Response::build()
+        .header(ContentType::PNG)
+        .header(Header::new(
+            "Content-Disposition",
+            r#"attachment; filename="game_boy.png""#,
+        ))
+        .sized_body(Cursor::new(img))
+        .finalize();
+
+    Ok(response)
+}
+
+#[get("/imgs/game_boy", format = "image/jpeg", rank = 2)]
+pub fn get_game_boy_jpeg<'a>(
+    sql: State<PkmnapiSQL>,
+    _rate_limit: RateLimit,
+    access_token: Result<AccessToken, AccessTokenError>,
+) -> Result<Response<'a>, ResponseError> {
+    let access_token = utils::get_access_token(access_token)?;
+    let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
+
+    let game_boy = db.get_game_boy_img()?;
+    let img = game_boy.to_jpeg()?;
+
+    let response = Response::build()
+        .header(ContentType::JPEG)
+        .header(Header::new(
+            "Content-Disposition",
+            r#"attachment; filename="game_boy.jpg""#,
+        ))
+        .sized_body(Cursor::new(img))
+        .finalize();
+
+    Ok(response)
+}
+
 #[get("/imgs/pokemon_logo", format = "image/png", rank = 1)]
 pub fn get_pokemon_logo_png<'a>(
     sql: State<PkmnapiSQL>,
@@ -20,8 +68,8 @@ pub fn get_pokemon_logo_png<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokemong_logo = db.get_pokemon_logo_img()?;
-    let img = pokemong_logo.to_png()?;
+    let pokemon_logo = db.get_pokemon_logo_img()?;
+    let img = pokemon_logo.to_png()?;
 
     let response = Response::build()
         .header(ContentType::PNG)
@@ -44,8 +92,8 @@ pub fn get_pokemon_logo_jpeg<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokemong_logo = db.get_pokemon_logo_img()?;
-    let img = pokemong_logo.to_jpeg()?;
+    let pokemon_logo = db.get_pokemon_logo_img()?;
+    let img = pokemon_logo.to_jpeg()?;
 
     let response = Response::build()
         .header(ContentType::JPEG)
@@ -122,8 +170,8 @@ pub fn get_town_map_png<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokemong_logo = db.get_town_map_img()?;
-    let img = pokemong_logo.to_png()?;
+    let town_map = db.get_town_map_img()?;
+    let img = town_map.to_png()?;
 
     let response = Response::build()
         .header(ContentType::PNG)
@@ -146,8 +194,8 @@ pub fn get_town_map_jpeg<'a>(
     let access_token = utils::get_access_token(access_token)?;
     let (db, _) = utils::get_db_with_applied_patches(&sql, &access_token)?;
 
-    let pokemong_logo = db.get_town_map_img()?;
-    let img = pokemong_logo.to_jpeg()?;
+    let town_map = db.get_town_map_img()?;
+    let img = town_map.to_jpeg()?;
 
     let response = Response::build()
         .header(ContentType::JPEG)

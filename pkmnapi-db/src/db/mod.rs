@@ -1,3 +1,4 @@
+mod game_boy_img;
 mod hm_moves;
 mod hm_names;
 mod icon;
@@ -33,6 +34,7 @@ mod trainer_reward;
 mod type_effect;
 mod type_name;
 
+pub use game_boy_img::*;
 pub use hm_moves::*;
 pub use hm_names::*;
 pub use icon::*;
