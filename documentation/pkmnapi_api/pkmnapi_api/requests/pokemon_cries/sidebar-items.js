@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["PokemonCryRequestType",""]],"struct":[["PokemonCryRequestAttributes",""]],"type":[["PokemonCryRequest",""]]});

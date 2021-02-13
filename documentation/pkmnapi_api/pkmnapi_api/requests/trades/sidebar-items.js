@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["TradeRequestType",""]],"struct":[["TradeRequestAttributes",""],["TradeRequestAttributesPokemon",""]],"type":[["TradeRequest",""]]});

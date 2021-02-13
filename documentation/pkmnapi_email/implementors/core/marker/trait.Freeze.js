@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["pkmnapi_email"] = [{"text":"impl Freeze for <a class=\"struct\" href=\"pkmnapi_email/struct.PkmnapiEmail.html\" title=\"struct pkmnapi_email::PkmnapiEmail\">PkmnapiEmail</a>","synthetic":true,"types":["pkmnapi_email::PkmnapiEmail"]},{"text":"impl Freeze for <a class=\"enum\" href=\"pkmnapi_email/enum.PkmnapiEmailTemplate.html\" title=\"enum pkmnapi_email::PkmnapiEmailTemplate\">PkmnapiEmailTemplate</a>","synthetic":true,"types":["pkmnapi_email::PkmnapiEmailTemplate"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["PokemonMachinesResponseAttributesMachine",""]],"struct":[["PokemonMachinesResponseAttributes",""]],"type":[["PokemonMachinesResponse",""],["PokemonMachinesResponseAll",""],["PokemonMachinesResponseData",""]]});

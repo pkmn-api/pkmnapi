@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["TMMoveResponseAttributes",""]],"type":[["TMMoveResponse",""],["TMMoveResponseAll",""],["TMMoveResponseData",""]]});

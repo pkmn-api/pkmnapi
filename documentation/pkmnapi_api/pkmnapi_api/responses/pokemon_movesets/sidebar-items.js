@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["PokemonMovesetResponseAttributes",""],["PokemonMovesetResponseAttributesMoveset",""]],"type":[["PokemonMovesetResponse",""],["PokemonMovesetResponseAll",""],["PokemonMovesetResponseData",""]]});

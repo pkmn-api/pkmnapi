@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["TypeEffectResponseAttributes",""]],"type":[["TypeEffectResponse",""],["TypeEffectResponseAll",""],["TypeEffectResponseData",""]]});

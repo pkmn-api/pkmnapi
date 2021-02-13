@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["PokemonMovesetRequestType",""]],"struct":[["PokemonMovesetRequestAttributes",""],["PokemonMovesetRequestAttributesMoveset",""],["PokemonMovesetRequestAttributesMovesetMove",""]],"type":[["PokemonMovesetRequest",""]]});

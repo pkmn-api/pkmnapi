@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["PkmnapiEmailTemplate",""]],"struct":[["PkmnapiEmail","PkmnapiEmail"]]});

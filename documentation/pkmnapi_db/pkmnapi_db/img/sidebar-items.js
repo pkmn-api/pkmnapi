@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Gif",""],["Img","Representation of an img"]]});

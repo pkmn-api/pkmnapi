@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["access_token_hash",""],["date_create",""],["date_expire",""],["delete_code",""],["id",""],["rom_id",""],["sav_id",""],["star","Represents `table_name.*`, which is sometimes needed for efficient count queries. It cannot be used in place of `all_columns`, and has a `SqlType` of `()` to prevent it being used that way"]]});

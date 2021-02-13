@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["PokemonLearnsetResponseAttributes",""],["PokemonLearnsetResponseAttributesLearnset",""]],"type":[["PokemonLearnsetResponse",""],["PokemonLearnsetResponseAll",""],["PokemonLearnsetResponseData",""]]});

@@ -1,0 +1,38 @@
+<script type="text/javascript">
+    var xhr = new XMLHttpRequest();
+    var params = window.location.search
+        .split(/[\?&]/g)
+        .filter(function (param) {
+            return Boolean(param);
+        }).map(function (param) {
+            return param.replace(/^[\?&]/, '').split('=');
+        }).reduce(function (acc, param) {
+            acc[param[0]] = param[1];
+
+            return acc;
+        }, {});
+    var data = {
+        data: {
+            type: 'access_tokens',
+            attributes: {
+                code: params.code,
+                email_address: params.email_address
+            }
+        }
+    };
+    var _onRedirect = function () {
+        window.location.href = '/';
+    };
+
+    xhr.addEventListener('load', function () {
+        _onRedirect();
+    });
+
+    xhr.addEventListener('error', function () {
+        _onRedirect();
+    });
+
+    xhr.open('DELETE', 'https://api.pkmnapi.com/v1/access_tokens', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify(data));
+</script>

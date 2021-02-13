@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["PokemonLearnsetRequestType",""]],"struct":[["PokemonLearnsetRequestAttributes",""],["PokemonLearnsetRequestAttributesLearnset",""],["PokemonLearnsetRequestAttributesLearnsetMove",""]],"type":[["PokemonLearnsetRequest",""]]});

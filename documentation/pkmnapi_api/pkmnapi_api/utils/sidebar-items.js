@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["from_numeric_str",""],["generate_url",""],["get_access_token",""],["get_data",""],["get_data_raw",""],["get_db",""],["get_db_with_applied_patches",""],["get_etag",""],["get_patch_description",""],["insert_rom_patch",""]]});

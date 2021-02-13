@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["MoveStatsRequestType",""]],"struct":[["MoveStatsRequestAttributes",""],["MoveStatsRequestAttributesType",""]],"type":[["MoveStatsRequest",""]]});

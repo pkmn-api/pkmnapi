@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["TypeNameResponseAttributes",""]],"type":[["TypeNameResponse",""],["TypeNameResponseAll",""],["TypeNameResponseData",""]]});

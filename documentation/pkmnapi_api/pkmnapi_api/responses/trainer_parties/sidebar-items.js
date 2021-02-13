@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["TrainerPartiesResponseAttributes",""],["TrainerPartiesResponseAttributesParty",""],["TrainerPartiesResponseAttributesPartyPokemon",""]],"type":[["TrainerPartiesResponse",""],["TrainerPartiesResponseAll",""],["TrainerPartiesResponseData",""]]});

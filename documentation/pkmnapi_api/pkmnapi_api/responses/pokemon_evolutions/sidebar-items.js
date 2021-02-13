@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["PokemonEvolutionsResponseAttributesEvolutionType",""]],"struct":[["PokemonEvolutionsResponseAttributes",""],["PokemonEvolutionsResponseAttributesEvolution",""]],"type":[["PokemonEvolutionsResponse",""],["PokemonEvolutionsResponseAll",""],["PokemonEvolutionsResponseData",""]]});

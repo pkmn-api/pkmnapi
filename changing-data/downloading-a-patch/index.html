@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+      <title>
+
+pkmnapi | Changing Data | Downloading a Patch
+</title>
+
+      
+      
+
+      <!-- CSS -->
+      
+
+      <link rel="stylesheet" href="https://www.pkmnapi.com/book.css">
+      
+<link rel="stylesheet" href="https://www.pkmnapi.com/style.css">
+
+
+      
+      
+    </head>
+
+    <body>
+        <div class="menu">
+            
+<a href="https://github.com/pkmn-api/pkmnapi" class="github-corner" aria-label="View source on GitHub" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#2b303b; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+            <nav role="navigation">
+                <ul>
+                    
+    <li>
+        <a href="/">
+            Home
+        </a>
+    </li>
+    
+    
+    
+        
+        
+        
+        
+        
+        <li >
+            
+            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;introduction&#x2F;">
+                <strong>1.</strong>
+                Introduction
+            </a>
+            
+        </li>
+    
+        
+        
+        <li >
+            
+            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;getting-started&#x2F;">
+                <strong>2.</strong>
+                Getting Started
+            </a>
+            
+                <ul>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;getting-started&#x2F;creating-an-access-token&#x2F;">
+                                <strong>2.1.</strong>
+                                Creating an Access Token
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;getting-started&#x2F;using-an-access-token&#x2F;">
+                                <strong>2.2.</strong>
+                                Using an Access Token
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;getting-started&#x2F;uploading-a-rom&#x2F;">
+                                <strong>2.3.</strong>
+                                Uploading a ROM
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;getting-started&#x2F;getting-data&#x2F;">
+                                <strong>2.4.</strong>
+                                Getting Data
+                            </a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        
+        
+        <li >
+            
+            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;changing-data&#x2F;">
+                <strong>3.</strong>
+                Changing Data
+            </a>
+            
+                <ul>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;changing-data&#x2F;patching-in-general&#x2F;">
+                                <strong>3.1.</strong>
+                                Patching in General
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;changing-data&#x2F;updating-brocks-name&#x2F;">
+                                <strong>3.2.</strong>
+                                Updating BROCK&#x27;s Name
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;changing-data&#x2F;updating-brocks-image&#x2F;">
+                                <strong>3.3.</strong>
+                                Updating BROCK&#x27;s Image
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;changing-data&#x2F;updating-brocks-pokemon&#x2F;">
+                                <strong>3.4.</strong>
+                                Updating BROCK&#x27;s Pokémon
+                            </a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;changing-data&#x2F;downloading-a-patch&#x2F;">
+                                <strong>3.5.</strong>
+                                Downloading a Patch
+                            </a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        
+        
+        <li >
+            
+            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;">
+                <strong>4.</strong>
+                Endpoints
+            </a>
+            
+                <ul>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;access-tokens&#x2F;">
+                                <strong>4.1.</strong>
+                                Access Tokens
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;hm-moves&#x2F;">
+                                <strong>4.2.</strong>
+                                HM Moves
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;hm-names&#x2F;">
+                                <strong>4.3.</strong>
+                                HM Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;icons&#x2F;">
+                                <strong>4.4.</strong>
+                                Icons
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;imgs&#x2F;">
+                                <strong>4.5.</strong>
+                                Imgs
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;item-names&#x2F;">
+                                <strong>4.6.</strong>
+                                Item Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;map-pics&#x2F;">
+                                <strong>4.7.</strong>
+                                Map Pics
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;map-pokemon&#x2F;">
+                                <strong>4.8.</strong>
+                                Map Pokémon
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;mart-items&#x2F;">
+                                <strong>4.9.</strong>
+                                Mart Items
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;move-names&#x2F;">
+                                <strong>4.10.</strong>
+                                Move Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;move-stats&#x2F;">
+                                <strong>4.11.</strong>
+                                Move Stats
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;player-names&#x2F;">
+                                <strong>4.12.</strong>
+                                Player Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokedex-entries&#x2F;">
+                                <strong>4.13.</strong>
+                                Pokédex Entries
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokedex-texts&#x2F;">
+                                <strong>4.14.</strong>
+                                Pokédex Texts
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-cries&#x2F;">
+                                <strong>4.15.</strong>
+                                Pokémon Cries
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-evolutions&#x2F;">
+                                <strong>4.16.</strong>
+                                Pokémon Evolutions
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-icons&#x2F;">
+                                <strong>4.17.</strong>
+                                Pokémon Icons
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-learnset&#x2F;">
+                                <strong>4.18.</strong>
+                                Pokémon Learnsets
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-machines&#x2F;">
+                                <strong>4.19.</strong>
+                                Pokémon Machines
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-moveset&#x2F;">
+                                <strong>4.20.</strong>
+                                Pokémon Movesets
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-names&#x2F;">
+                                <strong>4.21.</strong>
+                                Pokémon Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-pics&#x2F;">
+                                <strong>4.22.</strong>
+                                Pokémon Pics
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-stats&#x2F;">
+                                <strong>4.23.</strong>
+                                Pokémon Stats
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;rom-patches&#x2F;">
+                                <strong>4.24.</strong>
+                                ROM Patches
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;roms&#x2F;">
+                                <strong>4.25.</strong>
+                                ROMs
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;sav-player-names&#x2F;">
+                                <strong>4.26.</strong>
+                                SAV Player Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;savs&#x2F;">
+                                <strong>4.27.</strong>
+                                SAVs
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;status&#x2F;">
+                                <strong>4.28.</strong>
+                                Status
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;tm-moves&#x2F;">
+                                <strong>4.29.</strong>
+                                TM Moves
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;tm-names&#x2F;">
+                                <strong>4.30.</strong>
+                                TM Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;tm-prices&#x2F;">
+                                <strong>4.31.</strong>
+                                TM Prices
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;trades&#x2F;">
+                                <strong>4.32.</strong>
+                                Trades
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;trainer-names&#x2F;">
+                                <strong>4.33.</strong>
+                                Trainer Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;trainer-parties&#x2F;">
+                                <strong>4.34.</strong>
+                                Trainer Parties
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;trainer-pics&#x2F;">
+                                <strong>4.35.</strong>
+                                Trainer Pics
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;trainer-rewards&#x2F;">
+                                <strong>4.36.</strong>
+                                Trainer Rewards
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;type-effects&#x2F;">
+                                <strong>4.37.</strong>
+                                Type Effects
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;type-names&#x2F;">
+                                <strong>4.38.</strong>
+                                Type Names
+                            </a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        
+        
+        <li >
+            
+            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;faqs&#x2F;">
+                <strong>5.</strong>
+                FAQs
+            </a>
+            
+        </li>
+    
+        
+        
+        <li >
+            
+            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;disclaimer&#x2F;">
+                <strong>6.</strong>
+                Disclaimer
+            </a>
+            
+        </li>
+    
+        
+        
+        <li >
+            
+            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;documentation&#x2F;">
+                <strong>7.</strong>
+                Documentation
+            </a>
+            
+        </li>
+    
+
+                </ul>
+            </nav>
+            
+            
+        </div>
+
+        <div class="page">
+            <div class="page__header">
+                <div class="menu-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <span class="search-icon">🔎</span>
+                
+            </div>
+
+            <div class="page__content">
+                
+                <div class="search-container">
+                    <input id="search" type="search" placeholder="Search..">
+                    <div class="search-results">
+                        <div class="search-results__header"></div>
+                        <ul class="search-results__items"></ul>
+                    </div>
+                </div>
+                
+                <div class="book-content">
+                    
+    <h1>Downloading a Patch</h1>
+    <p>In order to incorporate the previous changes into the actual ROM, you must download a patch file.</p>
+<blockquote>
+<p>📄 Patch files are in <a href="http://fileformats.archiveteam.org/wiki/IPS_(binary_patch_format)" target="_blank">IPS format</a>. After downloading, you must apply the IPS patch manually.</p>
+</blockquote>
+<p>Request a patch by sending a request to the <code><a href="https://www.pkmnapi.com/endpoints/rom-patches/#get-rom-patches">GET /v1/roms/patches</a></code> endpoint:</p>
+<div class="snippet">
+<div class="snippet__langs">
+<div class="snippet__lang selected" data-lang="bash">
+    bash
+</div>
+<div class="snippet__lang" data-lang="js">
+    js
+</div>
+</div>
+<div class="snippet__code" data-lang="bash">
+<pre style="background-color:#2b303b;">
+<code class="language-bash" data-lang="bash"><span style="color:#bf616a;">curl </span><span style="color:#c0c5ce;">\
+</span><span style="color:#bf616a;">    -H </span><span style="color:#c0c5ce;">&#39;</span><span style="color:#a3be8c;">Authorization: Bearer &lt;access_token&gt;</span><span style="color:#c0c5ce;">&#39; \
+</span><span style="color:#bf616a;">    -H </span><span style="color:#c0c5ce;">&#39;</span><span style="color:#a3be8c;">Accept: application/patch</span><span style="color:#c0c5ce;">&#39; \
+    https://api.pkmnapi.com/v1/roms/patches
+</span></code></pre></div>
+<div class="snippet__code hidden" data-lang="js">
+<pre style="background-color:#2b303b;">
+<code class="language-js" data-lang="js"><span style="color:#b48ead;">const </span><span style="color:#bf616a;">xhr </span><span style="color:#c0c5ce;">= new XMLHttpRequest();
+
+</span><span style="color:#bf616a;">xhr</span><span style="color:#c0c5ce;">.</span><span style="color:#96b5b4;">addEventListener</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">load</span><span style="color:#c0c5ce;">&#39;, () </span><span style="color:#b48ead;">=&gt; </span><span style="color:#c0c5ce;">{
+    </span><span style="color:#ebcb8b;">console</span><span style="color:#c0c5ce;">.</span><span style="color:#96b5b4;">log</span><span style="color:#c0c5ce;">(</span><span style="color:#bf616a;">xhr</span><span style="color:#c0c5ce;">.</span><span style="color:#bf616a;">response</span><span style="color:#c0c5ce;">);
+});
+
+</span><span style="color:#bf616a;">xhr</span><span style="color:#c0c5ce;">.</span><span style="color:#96b5b4;">open</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">GET</span><span style="color:#c0c5ce;">&#39;, &#39;</span><span style="color:#a3be8c;">https://api.pkmnapi.com/v1/roms/patches</span><span style="color:#c0c5ce;">&#39;, </span><span style="color:#d08770;">true</span><span style="color:#c0c5ce;">);
+</span><span style="color:#bf616a;">xhr</span><span style="color:#c0c5ce;">.</span><span style="color:#96b5b4;">setRequestHeader</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">Authorization</span><span style="color:#c0c5ce;">&#39;, &#39;</span><span style="color:#a3be8c;">Bearer &lt;access_token&gt;</span><span style="color:#c0c5ce;">&#39;);
+</span><span style="color:#bf616a;">xhr</span><span style="color:#c0c5ce;">.</span><span style="color:#96b5b4;">setRequestHeader</span><span style="color:#c0c5ce;">(&#39;</span><span style="color:#a3be8c;">Accept</span><span style="color:#c0c5ce;">&#39;, &#39;</span><span style="color:#a3be8c;">application/patch</span><span style="color:#c0c5ce;">&#39;);
+</span><span style="color:#bf616a;">xhr</span><span style="color:#c0c5ce;">.</span><span style="color:#96b5b4;">send</span><span style="color:#c0c5ce;">(</span><span style="color:#d08770;">null</span><span style="color:#c0c5ce;">);
+</span></code></pre></div>
+</div>
+
+
+                </div>
+            </div>
+
+            <div class="prev-link">
+                
+    
+        <a class="previous" href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;changing-data&#x2F;updating-brocks-pokemon&#x2F;"><</a>
+    
+
+            </div>
+
+            <div class="next-link">
+                
+    
+        
+        
+        
+        
+            
+            
+            
+                
+            
+        
+            
+            
+            
+        
+            
+            
+            
+                
+            
+                
+            
+                
+            
+                
+            
+        
+            
+            
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                <a class="next" href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;">></a>
+                
+                
+            
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+                
+            
+        
+            
+            
+            
+        
+            
+            
+            
+        
+            
+            
+            
+        
+    
+
+            </div>
+        </div>
+
+        
+
+            
+            <script type="text/javascript" src="https://www.pkmnapi.com/elasticlunr.min.js"></script>
+            <script type="text/javascript" src="https://www.pkmnapi.com/search_index.en.js"></script>
+            
+            <script type="text/javascript" src="https://www.pkmnapi.com/book.js"></script>
+        
+<script type="text/javascript" src="https://www.pkmnapi.com/app.js"></script>
+
+    </body>
+
+</html>

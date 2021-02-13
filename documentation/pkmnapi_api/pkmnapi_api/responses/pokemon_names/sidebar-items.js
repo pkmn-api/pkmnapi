@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["PokemonNameResponseAttributes",""]],"type":[["PokemonNameResponse",""],["PokemonNameResponseAll",""],["PokemonNameResponseData",""]]});

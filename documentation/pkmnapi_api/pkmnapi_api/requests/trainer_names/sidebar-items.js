@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["TrainerNameRequestType",""]],"struct":[["TrainerNameRequestAttributes",""]],"type":[["TrainerNameRequest",""]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["PokemonIconRequestType",""]],"struct":[["PokemonIconRequestAttributes",""],["PokemonIconRequestAttributesIcon",""]],"type":[["PokemonIconRequest",""]]});

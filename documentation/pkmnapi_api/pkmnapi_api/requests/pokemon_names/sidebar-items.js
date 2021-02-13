@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["PokemonNameRequestType",""]],"struct":[["PokemonNameRequestAttributes",""]],"type":[["PokemonNameRequest",""]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["SavPlayerNameResponseAttributes",""]],"type":[["SavPlayerNameResponse",""]]});

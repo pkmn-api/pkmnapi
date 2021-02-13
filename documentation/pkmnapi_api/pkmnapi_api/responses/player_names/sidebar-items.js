@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["PlayerNamesResponseAttributes",""]],"type":[["PlayerNamesResponse",""]]});

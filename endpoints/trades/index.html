@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+      <title>
+
+pkmnapi | Endpoints | Trades
+</title>
+
+      
+      
+
+      <!-- CSS -->
+      
+
+      <link rel="stylesheet" href="https://www.pkmnapi.com/book.css">
+      
+<link rel="stylesheet" href="https://www.pkmnapi.com/style.css">
+
+
+      
+      
+    </head>
+
+    <body>
+        <div class="menu">
+            
+<a href="https://github.com/pkmn-api/pkmnapi" class="github-corner" aria-label="View source on GitHub" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#2b303b; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+            <nav role="navigation">
+                <ul>
+                    
+    <li>
+        <a href="/">
+            Home
+        </a>
+    </li>
+    
+    
+    
+        
+        
+        
+        
+        
+        <li >
+            
+            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;introduction&#x2F;">
+                <strong>1.</strong>
+                Introduction
+            </a>
+            
+        </li>
+    
+        
+        
+        <li >
+            
+            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;getting-started&#x2F;">
+                <strong>2.</strong>
+                Getting Started
+            </a>
+            
+                <ul>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;getting-started&#x2F;creating-an-access-token&#x2F;">
+                                <strong>2.1.</strong>
+                                Creating an Access Token
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;getting-started&#x2F;using-an-access-token&#x2F;">
+                                <strong>2.2.</strong>
+                                Using an Access Token
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;getting-started&#x2F;uploading-a-rom&#x2F;">
+                                <strong>2.3.</strong>
+                                Uploading a ROM
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;getting-started&#x2F;getting-data&#x2F;">
+                                <strong>2.4.</strong>
+                                Getting Data
+                            </a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        
+        
+        <li >
+            
+            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;changing-data&#x2F;">
+                <strong>3.</strong>
+                Changing Data
+            </a>
+            
+                <ul>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;changing-data&#x2F;patching-in-general&#x2F;">
+                                <strong>3.1.</strong>
+                                Patching in General
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;changing-data&#x2F;updating-brocks-name&#x2F;">
+                                <strong>3.2.</strong>
+                                Updating BROCK&#x27;s Name
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;changing-data&#x2F;updating-brocks-image&#x2F;">
+                                <strong>3.3.</strong>
+                                Updating BROCK&#x27;s Image
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;changing-data&#x2F;updating-brocks-pokemon&#x2F;">
+                                <strong>3.4.</strong>
+                                Updating BROCK&#x27;s Pokémon
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;changing-data&#x2F;downloading-a-patch&#x2F;">
+                                <strong>3.5.</strong>
+                                Downloading a Patch
+                            </a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        
+        
+        <li >
+            
+            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;">
+                <strong>4.</strong>
+                Endpoints
+            </a>
+            
+                <ul>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;access-tokens&#x2F;">
+                                <strong>4.1.</strong>
+                                Access Tokens
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;hm-moves&#x2F;">
+                                <strong>4.2.</strong>
+                                HM Moves
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;hm-names&#x2F;">
+                                <strong>4.3.</strong>
+                                HM Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;icons&#x2F;">
+                                <strong>4.4.</strong>
+                                Icons
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;imgs&#x2F;">
+                                <strong>4.5.</strong>
+                                Imgs
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;item-names&#x2F;">
+                                <strong>4.6.</strong>
+                                Item Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;map-pics&#x2F;">
+                                <strong>4.7.</strong>
+                                Map Pics
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;map-pokemon&#x2F;">
+                                <strong>4.8.</strong>
+                                Map Pokémon
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;mart-items&#x2F;">
+                                <strong>4.9.</strong>
+                                Mart Items
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;move-names&#x2F;">
+                                <strong>4.10.</strong>
+                                Move Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;move-stats&#x2F;">
+                                <strong>4.11.</strong>
+                                Move Stats
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;player-names&#x2F;">
+                                <strong>4.12.</strong>
+                                Player Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokedex-entries&#x2F;">
+                                <strong>4.13.</strong>
+                                Pokédex Entries
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokedex-texts&#x2F;">
+                                <strong>4.14.</strong>
+                                Pokédex Texts
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-cries&#x2F;">
+                                <strong>4.15.</strong>
+                                Pokémon Cries
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-evolutions&#x2F;">
+                                <strong>4.16.</strong>
+                                Pokémon Evolutions
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-icons&#x2F;">
+                                <strong>4.17.</strong>
+                                Pokémon Icons
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-learnset&#x2F;">
+                                <strong>4.18.</strong>
+                                Pokémon Learnsets
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-machines&#x2F;">
+                                <strong>4.19.</strong>
+                                Pokémon Machines
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-moveset&#x2F;">
+                                <strong>4.20.</strong>
+                                Pokémon Movesets
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-names&#x2F;">
+                                <strong>4.21.</strong>
+                                Pokémon Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-pics&#x2F;">
+                                <strong>4.22.</strong>
+                                Pokémon Pics
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;pokemon-stats&#x2F;">
+                                <strong>4.23.</strong>
+                                Pokémon Stats
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;rom-patches&#x2F;">
+                                <strong>4.24.</strong>
+                                ROM Patches
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;roms&#x2F;">
+                                <strong>4.25.</strong>
+                                ROMs
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;sav-player-names&#x2F;">
+                                <strong>4.26.</strong>
+                                SAV Player Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;savs&#x2F;">
+                                <strong>4.27.</strong>
+                                SAVs
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;status&#x2F;">
+                                <strong>4.28.</strong>
+                                Status
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;tm-moves&#x2F;">
+                                <strong>4.29.</strong>
+                                TM Moves
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;tm-names&#x2F;">
+                                <strong>4.30.</strong>
+                                TM Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;tm-prices&#x2F;">
+                                <strong>4.31.</strong>
+                                TM Prices
+                            </a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;trades&#x2F;">
+                                <strong>4.32.</strong>
+                                Trades
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;trainer-names&#x2F;">
+                                <strong>4.33.</strong>
+                                Trainer Names
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;trainer-parties&#x2F;">
+                                <strong>4.34.</strong>
+                                Trainer Parties
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;trainer-pics&#x2F;">
+                                <strong>4.35.</strong>
+                                Trainer Pics
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;trainer-rewards&#x2F;">
+                                <strong>4.36.</strong>
+                                Trainer Rewards
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;type-effects&#x2F;">
+                                <strong>4.37.</strong>
+                                Type Effects
+                            </a>
+                        </li>
+                    
+                        <li >
+                            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;type-names&#x2F;">
+                                <strong>4.38.</strong>
+                                Type Names
+                            </a>
+                        </li>
+                    
+                </ul>
+            
+        </li>
+    
+        
+        
+        <li >
+            
+            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;faqs&#x2F;">
+                <strong>5.</strong>
+                FAQs
+            </a>
+            
+        </li>
+    
+        
+        
+        <li >
+            
+            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;disclaimer&#x2F;">
+                <strong>6.</strong>
+                Disclaimer
+            </a>
+            
+        </li>
+    
+        
+        
+        <li >
+            
+            <a href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;documentation&#x2F;">
+                <strong>7.</strong>
+                Documentation
+            </a>
+            
+        </li>
+    
+
+                </ul>
+            </nav>
+            
+            
+        </div>
+
+        <div class="page">
+            <div class="page__header">
+                <div class="menu-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                
+                <span class="search-icon">🔎</span>
+                
+            </div>
+
+            <div class="page__content">
+                
+                <div class="search-container">
+                    <input id="search" type="search" placeholder="Search..">
+                    <div class="search-results">
+                        <div class="search-results__header"></div>
+                        <ul class="search-results__items"></ul>
+                    </div>
+                </div>
+                
+                <div class="book-content">
+                    
+    <h1>Trades</h1>
+    <table><thead><tr><th>Endpoint</th><th>Description</th></tr></thead><tbody>
+<tr><td><a href="https://www.pkmnapi.com/endpoints/trades/#get-trade-all">GET /v1/trades</a></td><td>Gets a list of trades</td></tr>
+<tr><td><a href="https://www.pkmnapi.com/endpoints/trades/#get-trade">GET /v1/trades/:trade_id</a></td><td>Gets a trade</td></tr>
+<tr><td><a href="https://www.pkmnapi.com/endpoints/trades/#post-trade">POST /v1/trades/:trade_id</a></td><td>Updates a trade</td></tr>
+</tbody></table>
+<hr />
+<h3 id="get-trade-all">GET /v1/trades</h3>
+<p>Gets a list of trades</p>
+<h4 id="request-parameters">Request Parameters</h4>
+None
+<h4 id="example-request">Example Request</h4>
+<p><strong>Header:</strong></p>
+<pre style="background-color:#2b303b;">
+<code class="language-http" data-lang="http"><span style="color:#c0c5ce;">GET /v1/trades
+Host: api.pkmnapi.com
+Authorization: Bearer &lt;access_token&gt;
+</span></code></pre>
+<p><strong>Body:</strong></p>
+<p>None</p>
+<h4 id="response-parameters">Response Parameters</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        
+        <tr>
+            
+            
+            <td>
+                <code>data</code>                                   
+            </td>
+            
+            <td>
+                array  
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[]</code>                                 
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].id</code>                              
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Trade ID. (identical to <code>:trade_id</code>)               
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].type</code>                            
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Type of resource. Must be &quot;trades&quot;.                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes</code>                      
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes.give</code>                 
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                Pokémon to give.                                   
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes.give.id</code>              
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Pokédex ID.                                        
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes.give.type</code>            
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Type of Pokémon resource. Must be &quot;pokemon_names&quot;. 
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes.give.attributes</code>      
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes.give.attributes.name</code> 
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Pokémon name.                                      
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes.give.links</code>           
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes.give.links.self</code>      
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Link to Pokémon resource.                          
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes.get</code>                  
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                Pokémon to get.                                    
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes.get.id</code>               
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Pokédex ID.                                        
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes.get.type</code>             
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Type of Pokémon resource. Must be &quot;pokemon_names&quot;. 
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes.get.attributes</code>       
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes.get.attributes.name</code>  
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Pokémon name.                                      
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes.get.links</code>            
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes.get.links.self</code>       
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Link to Pokémon resource.                          
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].attributes.nickname</code>             
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Pokémon nickname.                                  
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].links</code>                           
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data[].links.self</code>                      
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Link to current resource.                          
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>links</code>                                  
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>links.self</code>                             
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Link to list resource.                             
+            </td>
+            
+        </tr>
+        
+    </tbody>
+</table>
+<h4 id="example-response">Example Response</h4>
+<p><strong>Headers:</strong></p>
+<pre style="background-color:#2b303b;">
+<code class="language-http" data-lang="http"><span style="color:#c0c5ce;">HTTP/1.1 200 OK
+Content-Type: application/json
+Server: pkmnapi/0.1.0
+</span></code></pre>
+<p><strong>Body:</strong></p>
+<pre style="background-color:#2b303b;">
+<code class="language-json" data-lang="json"><span style="color:#c0c5ce;">{
+    &quot;</span><span style="color:#a3be8c;">data</span><span style="color:#c0c5ce;">&quot;: [
+        {
+            &quot;</span><span style="color:#a3be8c;">id</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">0</span><span style="color:#c0c5ce;">&quot;,
+            &quot;</span><span style="color:#a3be8c;">type</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">trades</span><span style="color:#c0c5ce;">&quot;,
+            &quot;</span><span style="color:#a3be8c;">attributes</span><span style="color:#c0c5ce;">&quot;: {
+                &quot;</span><span style="color:#a3be8c;">give</span><span style="color:#c0c5ce;">&quot;: {
+                    &quot;</span><span style="color:#a3be8c;">id</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">33</span><span style="color:#c0c5ce;">&quot;,
+                    &quot;</span><span style="color:#a3be8c;">type</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">pokemon_names</span><span style="color:#c0c5ce;">&quot;,
+                    &quot;</span><span style="color:#a3be8c;">attributes</span><span style="color:#c0c5ce;">&quot;: {
+                        &quot;</span><span style="color:#a3be8c;">name</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">NIDORINO</span><span style="color:#c0c5ce;">&quot;
+                    },
+                    &quot;</span><span style="color:#a3be8c;">links</span><span style="color:#c0c5ce;">&quot;: {
+                        &quot;</span><span style="color:#a3be8c;">self</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">https://api.pkmnapi.com/v1/pokemon/names/33</span><span style="color:#c0c5ce;">&quot;
+                    }
+                },
+                &quot;</span><span style="color:#a3be8c;">get</span><span style="color:#c0c5ce;">&quot;: {
+                    &quot;</span><span style="color:#a3be8c;">id</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">30</span><span style="color:#c0c5ce;">&quot;,
+                    &quot;</span><span style="color:#a3be8c;">type</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">pokemon_names</span><span style="color:#c0c5ce;">&quot;,
+                    &quot;</span><span style="color:#a3be8c;">attributes</span><span style="color:#c0c5ce;">&quot;: {
+                        &quot;</span><span style="color:#a3be8c;">name</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">NIDORINA</span><span style="color:#c0c5ce;">&quot;
+                    },
+                    &quot;</span><span style="color:#a3be8c;">links</span><span style="color:#c0c5ce;">&quot;: {
+                        &quot;</span><span style="color:#a3be8c;">self</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">https://api.pkmnapi.com/v1/pokemon/names/30</span><span style="color:#c0c5ce;">&quot;
+                    }
+                },
+                &quot;</span><span style="color:#a3be8c;">nickname</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">TERRY</span><span style="color:#c0c5ce;">&quot;
+            },
+            &quot;</span><span style="color:#a3be8c;">links</span><span style="color:#c0c5ce;">&quot;: {
+                &quot;</span><span style="color:#a3be8c;">self</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">https://api.pkmnapi.com/v1/trades/0</span><span style="color:#c0c5ce;">&quot;
+            }
+        },
+        </span><span style="background-color:#bf616a;color:#2b303b;">...</span><span style="color:#c0c5ce;">
+    ],
+    &quot;</span><span style="color:#a3be8c;">links</span><span style="color:#c0c5ce;">&quot;: {
+        &quot;</span><span style="color:#a3be8c;">self</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">https://api.pkmnapi.com/v1/trades</span><span style="color:#c0c5ce;">&quot;
+    }
+}
+</span></code></pre>
+<hr />
+<h3 id="get-trade">GET /v1/trades/:trade_id</h3>
+<p>Gets a trade</p>
+<h4 id="request-parameters-1">Request Parameters</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Location</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Required?</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        
+        <tr>
+            
+            
+            <td>
+                url 
+            </td>
+            
+            <td>
+                <code>:trade_id</code> 
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                ✔️ 
+            </td>
+            
+            <td>
+                Trade ID. 
+            </td>
+            
+        </tr>
+        
+    </tbody>
+</table>
+<h4 id="example-request-1">Example Request</h4>
+<p><strong>Header:</strong></p>
+<pre style="background-color:#2b303b;">
+<code class="language-http" data-lang="http"><span style="color:#c0c5ce;">GET /v1/trades/0
+Host: api.pkmnapi.com
+Authorization: Bearer &lt;access_token&gt;
+</span></code></pre>
+<p><strong>Body:</strong></p>
+<p>None</p>
+<h4 id="response-parameters-1">Response Parameters</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        
+        <tr>
+            
+            
+            <td>
+                <code>data</code>                                 
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.id</code>                              
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Trade ID. (identical to <code>:trade_id</code>)               
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.type</code>                            
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Type of resource. Must be &quot;trades&quot;.                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes</code>                      
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes.give</code>                 
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                Pokémon to give.                                   
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes.give.id</code>              
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Pokédex ID.                                        
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes.give.type</code>            
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Type of Pokémon resource. Must be &quot;pokemon_names&quot;. 
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes.give.attributes</code>      
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes.give.attributes.name</code> 
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Pokémon name.                                      
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes.give.links</code>           
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes.give.links.self</code>      
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Link to Pokémon resource.                          
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes.get</code>                  
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                Pokémon to give.                                   
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes.get.id</code>               
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Pokédex ID.                                        
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes.get.type</code>             
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Type of Pokémon resource. Must be &quot;pokemon_names&quot;. 
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes.get.attributes</code>       
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes.get.attributes.name</code>  
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Pokémon name.                                      
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes.get.links</code>            
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes.get.links.self</code>       
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Link to Pokémon resource.                          
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.attributes.nickname</code>             
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Pokémon nickname.                                  
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.links</code>                           
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>data.links.self</code>                      
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Link to current resource.                          
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>links</code>                                
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                <code>links.self</code>                           
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                Link to current resource.                          
+            </td>
+            
+        </tr>
+        
+    </tbody>
+</table>
+<h4 id="example-response-1">Example Response</h4>
+<p><strong>Headers:</strong></p>
+<pre style="background-color:#2b303b;">
+<code class="language-http" data-lang="http"><span style="color:#c0c5ce;">HTTP/1.1 200 OK
+Content-Type: application/json
+Server: pkmnapi/0.1.0
+</span></code></pre>
+<p><strong>Body:</strong></p>
+<pre style="background-color:#2b303b;">
+<code class="language-json" data-lang="json"><span style="color:#c0c5ce;">{
+    &quot;</span><span style="color:#a3be8c;">data</span><span style="color:#c0c5ce;">&quot;: {
+        &quot;</span><span style="color:#a3be8c;">id</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">0</span><span style="color:#c0c5ce;">&quot;,
+        &quot;</span><span style="color:#a3be8c;">type</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">trades</span><span style="color:#c0c5ce;">&quot;,
+        &quot;</span><span style="color:#a3be8c;">attributes</span><span style="color:#c0c5ce;">&quot;: {
+            &quot;</span><span style="color:#a3be8c;">give</span><span style="color:#c0c5ce;">&quot;: {
+                &quot;</span><span style="color:#a3be8c;">id</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">33</span><span style="color:#c0c5ce;">&quot;,
+                &quot;</span><span style="color:#a3be8c;">type</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">pokemon_names</span><span style="color:#c0c5ce;">&quot;,
+                &quot;</span><span style="color:#a3be8c;">attributes</span><span style="color:#c0c5ce;">&quot;: {
+                    &quot;</span><span style="color:#a3be8c;">name</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">NIDORINO</span><span style="color:#c0c5ce;">&quot;
+                },
+                &quot;</span><span style="color:#a3be8c;">links</span><span style="color:#c0c5ce;">&quot;: {
+                    &quot;</span><span style="color:#a3be8c;">self</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">https://api.pkmnapi.com/v1/pokemon/names/33</span><span style="color:#c0c5ce;">&quot;
+                }
+            },
+            &quot;</span><span style="color:#a3be8c;">get</span><span style="color:#c0c5ce;">&quot;: {
+                &quot;</span><span style="color:#a3be8c;">id</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">30</span><span style="color:#c0c5ce;">&quot;,
+                &quot;</span><span style="color:#a3be8c;">type</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">pokemon_names</span><span style="color:#c0c5ce;">&quot;,
+                &quot;</span><span style="color:#a3be8c;">attributes</span><span style="color:#c0c5ce;">&quot;: {
+                    &quot;</span><span style="color:#a3be8c;">name</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">NIDORINA</span><span style="color:#c0c5ce;">&quot;
+                },
+                &quot;</span><span style="color:#a3be8c;">links</span><span style="color:#c0c5ce;">&quot;: {
+                    &quot;</span><span style="color:#a3be8c;">self</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">https://api.pkmnapi.com/v1/pokemon/names/30</span><span style="color:#c0c5ce;">&quot;
+                }
+            },
+            &quot;</span><span style="color:#a3be8c;">nickname</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">TERRY</span><span style="color:#c0c5ce;">&quot;
+        },
+        &quot;</span><span style="color:#a3be8c;">links</span><span style="color:#c0c5ce;">&quot;: {
+            &quot;</span><span style="color:#a3be8c;">self</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">https://api.pkmnapi.com/v1/trades/0</span><span style="color:#c0c5ce;">&quot;
+        }
+    },
+    &quot;</span><span style="color:#a3be8c;">links</span><span style="color:#c0c5ce;">&quot;: {
+        &quot;</span><span style="color:#a3be8c;">self</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">https://api.pkmnapi.com/v1/trades/0</span><span style="color:#c0c5ce;">&quot;
+    }
+}
+</span></code></pre>
+<hr />
+<h3 id="post-trade">POST /v1/trades/:trade_id</h3>
+<p>Updates a trade</p>
+<h4 id="request-parameters-2">Request Parameters</h4>
+<table>
+    <thead>
+        <tr>
+            <th>Location</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Required?</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        
+        <tr>
+            
+            
+            <td>
+                url    
+            </td>
+            
+            <td>
+                <code>:trade_id</code>                
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                ✔️ 
+            </td>
+            
+            <td>
+                Trade ID.                       
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                header 
+            </td>
+            
+            <td>
+                <code>X-Patch-Description</code>      
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+            <td>
+                Description of change.          
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                body   
+            </td>
+            
+            <td>
+                <code>data</code>                     
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                ✔️ 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                body   
+            </td>
+            
+            <td>
+                <code>data.type</code>                
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                ✔️ 
+            </td>
+            
+            <td>
+                Type of data. Must be &quot;trades&quot;. 
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                body   
+            </td>
+            
+            <td>
+                <code>data.attributes</code>          
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                ✔️ 
+            </td>
+            
+            <td>
+                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                body   
+            </td>
+            
+            <td>
+                <code>data.attributes.give</code>     
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                ✔️ 
+            </td>
+            
+            <td>
+                Pokémon to give.                
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                body   
+            </td>
+            
+            <td>
+                <code>data.attributes.give.id</code>  
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                ✔️ 
+            </td>
+            
+            <td>
+                Pokédex ID.                     
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                body   
+            </td>
+            
+            <td>
+                <code>data.attributes.get</code>      
+            </td>
+            
+            <td>
+                object 
+            </td>
+            
+            <td>
+                ✔️ 
+            </td>
+            
+            <td>
+                Pokémon to get.                 
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                body   
+            </td>
+            
+            <td>
+                <code>data.attributes.get.id</code>   
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                ✔️ 
+            </td>
+            
+            <td>
+                Pokédex ID.                     
+            </td>
+            
+        </tr>
+        
+        <tr>
+            
+            
+            <td>
+                body   
+            </td>
+            
+            <td>
+                <code>data.attributes.nickname</code> 
+            </td>
+            
+            <td>
+                string 
+            </td>
+            
+            <td>
+                ✔️ 
+            </td>
+            
+            <td>
+                Pokémon nickname.               
+            </td>
+            
+        </tr>
+        
+    </tbody>
+</table>
+<h4 id="example-request-2">Example Request</h4>
+<p><strong>Header:</strong></p>
+<pre style="background-color:#2b303b;">
+<code class="language-http" data-lang="http"><span style="color:#c0c5ce;">POST /v1/trades/0
+Host: api.pkmnapi.com
+Authorization: Bearer &lt;access_token&gt;
+Content-Type: application/json
+X-Patch-Description: Update BULBASAUR to LEAFY-BOI
+</span></code></pre>
+<p><strong>Body:</strong></p>
+<div class="snippet__code" data-lang="bash">
+<pre style="background-color:#2b303b;">
+<code class="language-bash" data-lang="bash"><span style="color:#c0c5ce;">{
+    &quot;</span><span style="color:#a3be8c;">data</span><span style="color:#c0c5ce;">&quot;</span><span style="color:#bf616a;">: </span><span style="color:#c0c5ce;">{
+        &quot;</span><span style="color:#a3be8c;">type</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">trades</span><span style="color:#c0c5ce;">&quot;,
+        &quot;</span><span style="color:#a3be8c;">attributes</span><span style="color:#c0c5ce;">&quot;: {
+            &quot;</span><span style="color:#a3be8c;">give</span><span style="color:#c0c5ce;">&quot;: {
+                &quot;</span><span style="color:#a3be8c;">id</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">3</span><span style="color:#c0c5ce;">&quot;
+            },
+            &quot;</span><span style="color:#a3be8c;">get</span><span style="color:#c0c5ce;">&quot;: {
+                &quot;</span><span style="color:#a3be8c;">id</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">6</span><span style="color:#c0c5ce;">&quot;
+            },
+            &quot;</span><span style="color:#a3be8c;">nickname</span><span style="color:#c0c5ce;">&quot;: &quot;</span><span style="color:#a3be8c;">CHARCHAR</span><span style="color:#c0c5ce;">&quot;
+        }
+    }
+}
+</span></code></pre></div>
+<h4 id="response-parameters-2">Response Parameters</h4>
+None
+<h4 id="example-response-2">Example Response</h4>
+<p><strong>Headers:</strong></p>
+<pre style="background-color:#2b303b;">
+<code class="language-http" data-lang="http"><span style="color:#c0c5ce;">HTTP/1.1 202 Accepted
+Content-Type: application/json
+Server: pkmnapi/0.1.0
+</span></code></pre>
+<p><strong>Body:</strong></p>
+<pre style="background-color:#2b303b;">
+<code class="language-json" data-lang="json"><span style="color:#c0c5ce;">{}
+</span></code></pre>
+
+                </div>
+            </div>
+
+            <div class="prev-link">
+                
+    
+        <a class="previous" href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;tm-prices&#x2F;"><</a>
+    
+
+            </div>
+
+            <div class="next-link">
+                
+    
+        <a class="next" href="https:&#x2F;&#x2F;www.pkmnapi.com&#x2F;endpoints&#x2F;trainer-names&#x2F;">></a>
+    
+
+            </div>
+        </div>
+
+        
+
+            
+            <script type="text/javascript" src="https://www.pkmnapi.com/elasticlunr.min.js"></script>
+            <script type="text/javascript" src="https://www.pkmnapi.com/search_index.en.js"></script>
+            
+            <script type="text/javascript" src="https://www.pkmnapi.com/book.js"></script>
+        
+<script type="text/javascript" src="https://www.pkmnapi.com/app.js"></script>
+
+    </body>
+
+</html>

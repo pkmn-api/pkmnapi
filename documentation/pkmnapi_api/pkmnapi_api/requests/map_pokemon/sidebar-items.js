@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["MapPokemonRequestType",""]],"struct":[["MapPokemonRequestAttributes",""],["MapPokemonRequestAttributesArea",""],["MapPokemonRequestAttributesPokemon",""],["MapPokemonRequestAttributesPokemonInfo",""]],"type":[["MapPokemonRequest",""]]});

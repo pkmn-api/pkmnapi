@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["CGBFlag","Flag for CGB support"],["CartridgeType","Cartridge type"],["DestinationCode","Destination code"],["NewLicenseeCode","New licensee code"],["OldLicenseeCode","Old licensee code"],["RamSize","RAM size"],["RomSize","ROM size"],["SGBFlag","Flag for SGB support"]],"struct":[["Header","Representation of a ROM header"]]});

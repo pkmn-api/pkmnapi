@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["TrainerRewardResponseAttributes",""]],"type":[["TrainerRewardResponse",""],["TrainerRewardResponseAll",""],["TrainerRewardResponseData",""]]});

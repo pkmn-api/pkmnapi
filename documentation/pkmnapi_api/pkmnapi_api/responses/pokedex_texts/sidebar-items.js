@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["PokedexTextResponseAttributes",""]],"type":[["PokedexTextResponse",""],["PokedexTextResponseAll",""],["PokedexTextResponseData",""]]});

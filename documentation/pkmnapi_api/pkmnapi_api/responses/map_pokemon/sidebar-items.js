@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["MapPokemonResponseAttributes",""],["MapPokemonResponseAttributesArea",""],["MapPokemonResponseAttributesPokemon",""]],"type":[["MapPokemonResponse",""],["MapPokemonResponseAll",""],["MapPokemonResponseData",""]]});

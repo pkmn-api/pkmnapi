@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["PokemonCryResponseAttributes",""]],"type":[["PokemonCryResponse",""],["PokemonCryResponseAll",""],["PokemonCryResponseData",""]]});

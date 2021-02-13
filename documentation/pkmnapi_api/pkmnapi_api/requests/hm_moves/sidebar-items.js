@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["HMMoveRequestType",""]],"struct":[["HMMoveRequestAttributes",""],["HMMoveRequestAttributesMove",""]],"type":[["HMMoveRequest",""]]});

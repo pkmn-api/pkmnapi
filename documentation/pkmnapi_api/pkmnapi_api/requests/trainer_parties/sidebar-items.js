@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["TrainerPartiesRequestType",""]],"struct":[["TrainerPartiesRequestAttributes",""],["TrainerPartiesRequestAttributesParty",""],["TrainerPartiesRequestAttributesPartyPokemon",""],["TrainerPartiesRequestAttributesPartyPokemonAttributes",""]],"type":[["TrainerPartiesRequest",""]]});

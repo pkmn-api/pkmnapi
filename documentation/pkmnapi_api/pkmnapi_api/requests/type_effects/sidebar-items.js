@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["TypeEffectRequestType",""]],"struct":[["TypeEffectRequestAttributes",""],["TypeEffectRequestAttributesType",""]],"type":[["TypeEffectRequest",""]]});

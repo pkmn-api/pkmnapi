@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["RomPatchResponseType",""]],"struct":[["RomPatchResponseAttributes",""]],"type":[["RomPatchResponse",""],["RomPatchResponseAll",""],["RomPatchResponseData",""]]});

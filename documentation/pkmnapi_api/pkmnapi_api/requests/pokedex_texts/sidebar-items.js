@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["PokedexTextRequestType",""]],"struct":[["PokedexTextRequestAttributes",""]],"type":[["PokedexTextRequest",""]]});

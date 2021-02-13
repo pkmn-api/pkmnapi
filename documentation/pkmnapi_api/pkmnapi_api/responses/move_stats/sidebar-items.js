@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["MoveStatsResponseAttributes",""]],"type":[["MoveStatsResponse",""],["MoveStatsResponseAll",""],["MoveStatsResponseData",""]]});

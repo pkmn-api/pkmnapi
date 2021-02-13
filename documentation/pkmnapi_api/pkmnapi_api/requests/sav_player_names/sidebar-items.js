@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["SavPlayerNameRequestType",""]],"struct":[["SavPlayerNameRequestAttributes",""]],"type":[["SavPlayerNameRequest",""]]});
