@@ -1,3 +1,4 @@
+use rocket_okapi::JsonSchema;
 use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;
@@ -10,13 +11,13 @@ impl ItemNameRequest {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum ItemNameRequestType {
     item_names,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct ItemNameRequestAttributes {
     pub name: String,
 }

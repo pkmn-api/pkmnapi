@@ -1,4 +1,5 @@
 use pkmnapi_db::PokemonIcon;
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -65,12 +66,12 @@ impl PokemonIconResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct PokemonIconResponseAttributes {
     icon: PokemonIconResponseAttributesIcon,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct PokemonIconResponseAttributesIcon {
     id: String,
 
@@ -81,5 +82,5 @@ pub struct PokemonIconResponseAttributesIcon {
     links: Links,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct PokemonIconResponseAttributesIconAttributes {}

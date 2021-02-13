@@ -1,3 +1,4 @@
+use rocket_okapi::JsonSchema;
 use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;
@@ -10,19 +11,19 @@ impl HMMoveRequest {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum HMMoveRequestType {
     hm_moves,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct HMMoveRequestAttributes {
     #[serde(rename = "move")]
     pub _move: HMMoveRequestAttributesMove,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct HMMoveRequestAttributesMove {
     #[serde(deserialize_with = "crate::utils::from_numeric_str")]
     pub id: u8,

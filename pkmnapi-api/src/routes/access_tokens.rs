@@ -3,6 +3,7 @@ use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_okapi::openapi;
 use validator;
 
 use crate::guards::*;
@@ -10,6 +11,7 @@ use crate::requests::access_tokens::*;
 use crate::responses::errors::*;
 use crate::utils;
 
+#[openapi]
 #[post("/access_tokens", format = "application/json", data = "<data>")]
 pub fn post_access_token(
     sql: State<PkmnapiSQL>,
@@ -82,6 +84,7 @@ pub fn post_access_token(
     ))
 }
 
+#[openapi]
 #[post("/access_tokens/delete", format = "application/json", data = "<data>")]
 pub fn post_access_token_delete(
     sql: State<PkmnapiSQL>,
@@ -159,6 +162,7 @@ pub fn post_access_token_delete(
     ))
 }
 
+#[openapi]
 #[delete("/access_tokens", format = "application/json", data = "<data>")]
 pub fn delete_access_token(
     sql: State<PkmnapiSQL>,

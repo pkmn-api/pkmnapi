@@ -1,4 +1,5 @@
 use pkmnapi_db::{ItemName, PokemonEvolution, PokemonName};
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -88,12 +89,12 @@ impl PokemonEvolutionsResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct PokemonEvolutionsResponseAttributes {
     pub evolutions: Vec<PokemonEvolutionsResponseAttributesEvolution>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct PokemonEvolutionsResponseAttributesEvolution {
     pub evolution_type: PokemonEvolutionsResponseAttributesEvolutionType,
 
@@ -146,7 +147,7 @@ impl PokemonEvolutionsResponseAttributesEvolution {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum PokemonEvolutionsResponseAttributesEvolutionType {
     level,

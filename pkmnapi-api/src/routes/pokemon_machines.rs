@@ -3,6 +3,7 @@ use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_okapi::openapi;
 
 use crate::guards::*;
 use crate::requests::pokemon_machines::*;
@@ -10,6 +11,7 @@ use crate::responses::errors::*;
 use crate::responses::pokemon_machines::*;
 use crate::utils;
 
+#[openapi]
 #[get("/pokemon/machines")]
 pub fn get_pokemon_machines_all(
     sql: State<PkmnapiSQL>,
@@ -68,6 +70,7 @@ pub fn get_pokemon_machines_all(
     Ok(Json(response))
 }
 
+#[openapi]
 #[get("/pokemon/machines/<pokedex_id>")]
 pub fn get_pokemon_machines(
     sql: State<PkmnapiSQL>,
@@ -119,6 +122,7 @@ pub fn get_pokemon_machines(
     Ok(Json(response))
 }
 
+#[openapi]
 #[post(
     "/pokemon/machines/<pokedex_id>",
     format = "application/json",

@@ -1,14 +1,15 @@
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::responses::links::Links;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct BaseResponse<T> {
     pub data: BaseResponseData<T>,
     pub links: Links,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct BaseResponseData<T> {
     pub id: String,
     #[serde(rename = "type")]
@@ -17,13 +18,13 @@ pub struct BaseResponseData<T> {
     pub links: Links,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct BaseResponseAll<T> {
     pub data: Vec<T>,
     pub links: Links,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum BaseResponseType {
     hm_moves,

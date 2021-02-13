@@ -5,6 +5,7 @@ use rocket::response::status;
 use rocket::response::Response;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_okapi::openapi;
 use std::io::Cursor;
 
 use crate::guards::*;
@@ -13,6 +14,7 @@ use crate::responses::errors::*;
 use crate::responses::pokemon_cries::*;
 use crate::utils;
 
+#[openapi]
 #[get("/pokemon/cries", format = "application/json")]
 pub fn get_pokemon_cry_all(
     sql: State<PkmnapiSQL>,
@@ -33,6 +35,7 @@ pub fn get_pokemon_cry_all(
     Ok(Json(response))
 }
 
+#[openapi]
 #[get("/pokemon/cries/<pokedex_id>", format = "application/json", rank = 1)]
 pub fn get_pokemon_cry_json(
     sql: State<PkmnapiSQL>,
@@ -76,6 +79,7 @@ pub fn get_pokemon_cry_wav<'a>(
     Ok(response)
 }
 
+#[openapi]
 #[post(
     "/pokemon/cries/<pokedex_id>",
     format = "application/json",

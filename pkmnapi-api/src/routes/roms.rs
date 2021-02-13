@@ -4,6 +4,7 @@ use rocket::http::{ContentType, Header, Status};
 use rocket::response::status;
 use rocket::response::Response;
 use rocket::{Data, State};
+use rocket_okapi::openapi;
 use std::io::Cursor;
 
 use crate::guards::*;
@@ -77,6 +78,7 @@ pub fn get_rom<'a>(
     Ok(response)
 }
 
+#[openapi]
 #[delete("/roms")]
 pub fn delete_rom(
     sql: State<PkmnapiSQL>,

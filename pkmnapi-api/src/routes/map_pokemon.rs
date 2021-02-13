@@ -3,6 +3,7 @@ use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_okapi::openapi;
 
 use crate::guards::*;
 use crate::requests::map_pokemon::*;
@@ -10,6 +11,7 @@ use crate::responses::errors::*;
 use crate::responses::map_pokemon::*;
 use crate::utils;
 
+#[openapi]
 #[get("/maps/pokemon")]
 pub fn get_map_pokemon_all(
     sql: State<PkmnapiSQL>,
@@ -52,6 +54,7 @@ pub fn get_map_pokemon_all(
     Ok(Json(response))
 }
 
+#[openapi]
 #[get("/maps/pokemon/<map_id>")]
 pub fn get_map_pokemon(
     sql: State<PkmnapiSQL>,
@@ -85,6 +88,7 @@ pub fn get_map_pokemon(
     Ok(Json(response))
 }
 
+#[openapi]
 #[post("/maps/pokemon/<map_id>", format = "application/json", data = "<data>")]
 pub fn post_map_pokemon(
     sql: State<PkmnapiSQL>,

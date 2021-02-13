@@ -4,6 +4,11 @@ weight = 4
 sort_by = "weight"
 +++
 
+<p class="swagger-link">
+    <a href="https://api.pkmnapi.com/swagger/" target="_blank">Swagger Doc</a>
+    <img src="https://validator.swagger.io/validator?url=http://api.pkmnapi.com/v1/openapi.json" title="Swagger" />
+</p>
+
 ### [Access Tokens](@/endpoints/access_tokens.md)
 
 | Endpoint                                                                               | Description                       |

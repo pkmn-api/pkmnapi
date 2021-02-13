@@ -1,3 +1,4 @@
+use rocket_okapi::JsonSchema;
 use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;
@@ -10,13 +11,13 @@ impl TMPriceRequest {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum TMPriceRequestType {
     tm_prices,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct TMPriceRequestAttributes {
     pub price: u32,
 }

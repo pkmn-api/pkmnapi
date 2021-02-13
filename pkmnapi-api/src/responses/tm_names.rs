@@ -1,4 +1,5 @@
 use pkmnapi_db::TMName;
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -50,7 +51,7 @@ impl TMNameResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct TMNameResponseAttributes {
     pub name: String,
 }

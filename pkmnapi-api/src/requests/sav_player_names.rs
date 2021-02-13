@@ -1,3 +1,4 @@
+use rocket_okapi::JsonSchema;
 use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;
@@ -11,13 +12,13 @@ impl SavPlayerNameRequest {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum SavPlayerNameRequestType {
     sav_player_names,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct SavPlayerNameRequestAttributes {
     pub name: String,
 }

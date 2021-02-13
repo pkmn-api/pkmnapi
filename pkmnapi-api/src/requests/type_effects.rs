@@ -1,3 +1,4 @@
+use rocket_okapi::JsonSchema;
 use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;
@@ -18,20 +19,20 @@ impl TypeEffectRequest {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum TypeEffectRequestType {
     type_effects,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct TypeEffectRequestAttributes {
     pub attacking_type: TypeEffectRequestAttributesType,
     pub defending_type: TypeEffectRequestAttributesType,
     pub multiplier: f32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct TypeEffectRequestAttributesType {
     #[serde(deserialize_with = "crate::utils::from_numeric_str")]
     pub id: u8,

@@ -2,6 +2,7 @@ use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_okapi::openapi;
 
 use crate::guards::*;
 use crate::requests::trainer_rewards::*;
@@ -9,6 +10,7 @@ use crate::responses::errors::*;
 use crate::responses::trainer_rewards::*;
 use crate::utils;
 
+#[openapi]
 #[get("/trainers/rewards")]
 pub fn get_trainer_reward_all(
     sql: State<PkmnapiSQL>,
@@ -29,6 +31,7 @@ pub fn get_trainer_reward_all(
     Ok(Json(response))
 }
 
+#[openapi]
 #[get("/trainers/rewards/<trainer_id>")]
 pub fn get_trainer_reward(
     sql: State<PkmnapiSQL>,
@@ -46,6 +49,7 @@ pub fn get_trainer_reward(
     Ok(Json(response))
 }
 
+#[openapi]
 #[post(
     "/trainers/rewards/<trainer_id>",
     format = "application/json",

@@ -1,4 +1,5 @@
 use pkmnapi_db::{Party, PokemonName};
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -86,17 +87,17 @@ impl TrainerPartiesResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct TrainerPartiesResponseAttributes {
     pub parties: Vec<TrainerPartiesResponseAttributesParty>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct TrainerPartiesResponseAttributesParty {
     pub party: Vec<TrainerPartiesResponseAttributesPartyPokemon>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct TrainerPartiesResponseAttributesPartyPokemon {
     pub level: u8,
     pub pokemon: PokemonNameResponseData,

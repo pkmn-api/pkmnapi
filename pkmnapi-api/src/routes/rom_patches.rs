@@ -4,6 +4,7 @@ use rocket::response::status;
 use rocket::response::Response;
 use rocket::State;
 use rocket_contrib::json::Json;
+use rocket_okapi::openapi;
 use std::io::Cursor;
 
 use crate::guards::*;
@@ -11,6 +12,7 @@ use crate::responses::errors::*;
 use crate::responses::rom_patches::*;
 use crate::utils;
 
+#[openapi]
 #[get("/roms/patches", format = "application/json", rank = 1)]
 pub fn get_rom_patches(
     sql: State<PkmnapiSQL>,
@@ -107,6 +109,7 @@ pub fn get_rom_patch<'a>(
     Ok(response)
 }
 
+#[openapi]
 #[delete("/roms/patches/<patch_id>")]
 pub fn delete_rom_patch(
     sql: State<PkmnapiSQL>,

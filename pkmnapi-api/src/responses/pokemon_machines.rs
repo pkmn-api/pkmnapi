@@ -1,4 +1,5 @@
 use pkmnapi_db::{HMMove, MoveName, PokemonMachine, TMMove};
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -104,12 +105,12 @@ impl PokemonMachinesResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct PokemonMachinesResponseAttributes {
     pub machines: Vec<PokemonMachinesResponseAttributesMachine>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 #[serde(untagged)]
 pub enum PokemonMachinesResponseAttributesMachine {

@@ -4,6 +4,7 @@ use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_okapi::openapi;
 
 use crate::guards::*;
 use crate::requests::player_names::*;
@@ -11,6 +12,7 @@ use crate::responses::errors::*;
 use crate::responses::player_names::*;
 use crate::utils;
 
+#[openapi]
 #[get("/player_names")]
 pub fn get_player_names(
     sql: State<PkmnapiSQL>,
@@ -27,6 +29,7 @@ pub fn get_player_names(
     Ok(Json(response))
 }
 
+#[openapi]
 #[post("/player_names", format = "application/json", data = "<data>")]
 pub fn post_player_names(
     sql: State<PkmnapiSQL>,

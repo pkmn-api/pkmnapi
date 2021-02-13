@@ -1,3 +1,4 @@
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -57,7 +58,7 @@ impl TrainerRewardResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct TrainerRewardResponseAttributes {
     pub reward: u32,
 }

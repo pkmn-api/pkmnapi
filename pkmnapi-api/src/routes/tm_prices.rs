@@ -3,6 +3,7 @@ use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_okapi::openapi;
 
 use crate::guards::*;
 use crate::requests::tm_prices::*;
@@ -10,6 +11,7 @@ use crate::responses::errors::*;
 use crate::responses::tm_prices::*;
 use crate::utils;
 
+#[openapi]
 #[get("/tms/prices")]
 pub fn get_tm_price_all(
     sql: State<PkmnapiSQL>,
@@ -28,6 +30,7 @@ pub fn get_tm_price_all(
     Ok(Json(response))
 }
 
+#[openapi]
 #[get("/tms/prices/<tm_id>")]
 pub fn get_tm_price(
     sql: State<PkmnapiSQL>,
@@ -45,6 +48,7 @@ pub fn get_tm_price(
     Ok(Json(response))
 }
 
+#[openapi]
 #[post("/tms/prices/<tm_id>", format = "application/json", data = "<data>")]
 pub fn post_tm_price(
     sql: State<PkmnapiSQL>,

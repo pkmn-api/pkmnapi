@@ -1,4 +1,5 @@
 use pkmnapi_db::PokemonLearnset;
+use rocket_okapi::JsonSchema;
 use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;
@@ -17,18 +18,18 @@ impl PokemonLearnsetRequest {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum PokemonLearnsetRequestType {
     pokemon_learnsets,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct PokemonLearnsetRequestAttributes {
     pub learnset: Vec<PokemonLearnsetRequestAttributesLearnset>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct PokemonLearnsetRequestAttributesLearnset {
     pub level: u8,
 
@@ -36,7 +37,7 @@ pub struct PokemonLearnsetRequestAttributesLearnset {
     pub _move: PokemonLearnsetRequestAttributesLearnsetMove,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct PokemonLearnsetRequestAttributesLearnsetMove {
     #[serde(deserialize_with = "crate::utils::from_numeric_str")]
     pub id: u8,

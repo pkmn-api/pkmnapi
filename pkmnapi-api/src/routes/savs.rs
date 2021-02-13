@@ -4,6 +4,7 @@ use rocket::http::{ContentType, Header, Status};
 use rocket::response::status;
 use rocket::response::Response;
 use rocket::{Data, State};
+use rocket_okapi::openapi;
 use std::io::Cursor;
 
 use crate::guards::*;
@@ -71,6 +72,7 @@ pub fn get_sav<'a>(
     Ok(response)
 }
 
+#[openapi]
 #[delete("/savs")]
 pub fn delete_sav(
     sql: State<PkmnapiSQL>,

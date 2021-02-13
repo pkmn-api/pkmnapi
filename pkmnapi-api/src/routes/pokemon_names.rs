@@ -4,6 +4,7 @@ use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_okapi::openapi;
 
 use crate::guards::*;
 use crate::requests::pokemon_names::*;
@@ -11,6 +12,7 @@ use crate::responses::errors::*;
 use crate::responses::pokemon_names::*;
 use crate::utils;
 
+#[openapi]
 #[get("/pokemon/names")]
 pub fn get_pokemon_name_all(
     sql: State<PkmnapiSQL>,
@@ -31,6 +33,7 @@ pub fn get_pokemon_name_all(
     Ok(Json(response))
 }
 
+#[openapi]
 #[get("/pokemon/names/<pokedex_id>")]
 pub fn get_pokemon_name(
     sql: State<PkmnapiSQL>,
@@ -48,6 +51,7 @@ pub fn get_pokemon_name(
     Ok(Json(response))
 }
 
+#[openapi]
 #[post(
     "/pokemon/names/<pokedex_id>",
     format = "application/json",

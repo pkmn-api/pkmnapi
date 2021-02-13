@@ -1,3 +1,4 @@
+use rocket_okapi::JsonSchema;
 use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;
@@ -26,13 +27,13 @@ impl MoveStatsRequest {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum MoveStatsRequestType {
     move_stats,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct MoveStatsRequestAttributes {
     pub effect: u8,
     pub power: u8,
@@ -43,7 +44,7 @@ pub struct MoveStatsRequestAttributes {
     pub pp: u8,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct MoveStatsRequestAttributesType {
     #[serde(deserialize_with = "crate::utils::from_numeric_str")]
     pub id: u8,

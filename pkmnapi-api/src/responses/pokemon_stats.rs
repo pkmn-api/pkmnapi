@@ -1,4 +1,5 @@
 use pkmnapi_db::{PokemonStats, TypeName};
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -83,7 +84,7 @@ impl PokemonStatsResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct PokemonStatsResponseAttributes {
     pub base_hp: u8,
     pub base_attack: u8,

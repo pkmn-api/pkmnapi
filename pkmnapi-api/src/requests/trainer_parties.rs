@@ -1,4 +1,5 @@
 use pkmnapi_db::{Party, PartyPokemon};
+use rocket_okapi::JsonSchema;
 use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;
@@ -27,29 +28,29 @@ impl TrainerPartiesRequest {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum TrainerPartiesRequestType {
     trainer_parties,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct TrainerPartiesRequestAttributes {
     pub parties: Vec<TrainerPartiesRequestAttributesParty>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct TrainerPartiesRequestAttributesParty {
     pub party: Vec<TrainerPartiesRequestAttributesPartyPokemon>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct TrainerPartiesRequestAttributesPartyPokemon {
     pub level: u8,
     pub pokemon: TrainerPartiesRequestAttributesPartyPokemonAttributes,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct TrainerPartiesRequestAttributesPartyPokemonAttributes {
     #[serde(deserialize_with = "crate::utils::from_numeric_str")]
     pub id: u8,

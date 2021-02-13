@@ -1,4 +1,5 @@
 use pkmnapi_db::{MoveStats, TypeName};
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -71,7 +72,7 @@ impl MoveStatsResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct MoveStatsResponseAttributes {
     pub effect: u8,
     pub power: u8,

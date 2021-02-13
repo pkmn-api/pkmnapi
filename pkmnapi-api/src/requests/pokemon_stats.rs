@@ -1,3 +1,4 @@
+use rocket_okapi::JsonSchema;
 use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;
@@ -47,13 +48,13 @@ impl PokemonStatsRequest {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum PokemonStatsRequestType {
     pokemon_stats,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct PokemonStatsRequestAttributes {
     pub base_hp: u8,
     pub base_attack: u8,
@@ -66,7 +67,7 @@ pub struct PokemonStatsRequestAttributes {
     pub growth_rate: u8,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct PokemonStatsRequestAttributesType {
     #[serde(deserialize_with = "crate::utils::from_numeric_str")]
     pub id: u8,

@@ -1,4 +1,5 @@
 use pkmnapi_db::{ItemName, MartItem, TMName};
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -87,12 +88,12 @@ impl MartItemsResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct MartItemsResponseAttributes {
     pub mart_items: Vec<mart_item>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 #[serde(untagged)]
 pub enum mart_item {

@@ -1,4 +1,5 @@
 use pkmnapi_db::TrainerName;
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -55,7 +56,7 @@ impl TrainerNameResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct TrainerNameResponseAttributes {
     pub name: String,
 }

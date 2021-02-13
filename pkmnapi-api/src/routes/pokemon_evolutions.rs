@@ -3,6 +3,7 @@ use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_okapi::openapi;
 
 use crate::guards::*;
 use crate::requests::pokemon_evolutions::*;
@@ -10,6 +11,7 @@ use crate::responses::errors::*;
 use crate::responses::pokemon_evolutions::*;
 use crate::utils;
 
+#[openapi]
 #[get("/pokemon/evolutions")]
 pub fn get_pokemon_evolutions_all(
     sql: State<PkmnapiSQL>,
@@ -57,6 +59,7 @@ pub fn get_pokemon_evolutions_all(
     Ok(Json(response))
 }
 
+#[openapi]
 #[get("/pokemon/evolutions/<pokedex_id>")]
 pub fn get_pokemon_evolutions(
     sql: State<PkmnapiSQL>,
@@ -97,6 +100,7 @@ pub fn get_pokemon_evolutions(
     Ok(Json(response))
 }
 
+#[openapi]
 #[post(
     "/pokemon/evolutions/<pokedex_id>",
     format = "application/json",

@@ -2,6 +2,7 @@ use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_okapi::openapi;
 
 use crate::guards::*;
 use crate::requests::trainer_parties::*;
@@ -9,6 +10,7 @@ use crate::responses::errors::*;
 use crate::responses::trainer_parties::*;
 use crate::utils;
 
+#[openapi]
 #[get("/trainers/parties")]
 pub fn get_trainer_parties_all(
     sql: State<PkmnapiSQL>,
@@ -42,6 +44,7 @@ pub fn get_trainer_parties_all(
     Ok(Json(response))
 }
 
+#[openapi]
 #[get("/trainers/parties/<trainer_id>")]
 pub fn get_trainer_parties(
     sql: State<PkmnapiSQL>,
@@ -70,6 +73,7 @@ pub fn get_trainer_parties(
     Ok(Json(response))
 }
 
+#[openapi]
 #[post(
     "/trainers/parties/<trainer_id>",
     format = "application/json",

@@ -3,6 +3,7 @@ use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_okapi::openapi;
 
 use crate::guards::*;
 use crate::requests::move_stats::*;
@@ -10,6 +11,7 @@ use crate::responses::errors::*;
 use crate::responses::move_stats::*;
 use crate::utils;
 
+#[openapi]
 #[get("/moves/stats")]
 pub fn get_move_stats_all(
     sql: State<PkmnapiSQL>,
@@ -35,6 +37,7 @@ pub fn get_move_stats_all(
     Ok(Json(response))
 }
 
+#[openapi]
 #[get("/moves/stats/<move_id>")]
 pub fn get_move_stats(
     sql: State<PkmnapiSQL>,
@@ -53,6 +56,7 @@ pub fn get_move_stats(
     Ok(Json(response))
 }
 
+#[openapi]
 #[post("/moves/stats/<move_id>", format = "application/json", data = "<data>")]
 pub fn post_move_stats(
     sql: State<PkmnapiSQL>,

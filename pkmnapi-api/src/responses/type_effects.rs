@@ -1,4 +1,5 @@
 use pkmnapi_db::{TypeEffect, TypeName};
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -77,7 +78,7 @@ impl TypeEffectResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct TypeEffectResponseAttributes {
     pub attacking_type: TypeNameResponseData,
     pub defending_type: TypeNameResponseData,

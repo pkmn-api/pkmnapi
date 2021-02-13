@@ -1,5 +1,10 @@
+use okapi::openapi3::Responses;
 use rocket::response::status;
 use rocket_contrib::json::Json;
+use rocket_okapi::gen::OpenApiGenerator;
+use rocket_okapi::response::OpenApiResponder;
+use rocket_okapi::util::add_schema_response;
+use rocket_okapi::OpenApiError;
 use serde::Serialize;
 
 mod access_token_error_email;
@@ -60,6 +65,19 @@ pub enum ResponseError {
 impl From<pkmnapi_db::error::Error> for ResponseError {
     fn from(err: pkmnapi_db::error::Error) -> Self {
         NotFoundError::new(BaseErrorResponseId::error_not_found, Some(err.to_string()))
+    }
+}
+
+type ResultOpenApiResponder = Result<Responses, OpenApiError>;
+
+impl OpenApiResponder<'_> for ResponseError {
+    fn responses(gen: &mut OpenApiGenerator) -> ResultOpenApiResponder {
+        let mut responses = Responses::default();
+        let schema = gen.schema_generator().schema_for_any();
+
+        add_schema_response(&mut responses, 500, "application/json", schema.into())?;
+
+        Ok(responses)
     }
 }
 

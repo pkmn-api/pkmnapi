@@ -19,6 +19,8 @@ use pkmnapi_sql::*;
 use rocket::fairing::AdHoc;
 use rocket::Rocket;
 use rocket_cors::AllowedHeaders;
+use rocket_okapi::routes_with_openapi;
+use rocket_okapi::swagger_ui::{make_swagger_ui, SwaggerUIConfig, UrlObject};
 use std::env;
 use std::num::NonZeroU32;
 use std::time::Duration;
@@ -62,7 +64,7 @@ impl Pkmnapi {
             .mount("/", routes![routes::status::status,])
             .mount(
                 "/v1",
-                routes![
+                routes_with_openapi![
                     routes::access_tokens::delete_access_token,
                     routes::access_tokens::post_access_token_delete,
                     routes::access_tokens::post_access_token,
@@ -71,20 +73,9 @@ impl Pkmnapi {
                     routes::hm_moves::post_hm_move,
                     routes::hm_names::get_hm_name_all,
                     routes::hm_names::get_hm_name,
-                    routes::icons::get_icon,
-                    routes::imgs::get_game_boy_jpeg,
-                    routes::imgs::get_game_boy_png,
-                    routes::imgs::get_pokemon_logo_jpeg,
-                    routes::imgs::get_pokemon_logo_png,
-                    routes::imgs::get_town_map_jpeg,
-                    routes::imgs::get_town_map_png,
-                    routes::imgs::post_pokemon_logo_jpeg,
-                    routes::imgs::post_pokemon_logo_png,
                     routes::item_names::get_item_name_all,
                     routes::item_names::get_item_name,
                     routes::item_names::post_item_name,
-                    routes::map_pics::get_map_pic_jpeg,
-                    routes::map_pics::get_map_pic_png,
                     routes::map_pokemon::get_map_pokemon_all,
                     routes::map_pokemon::get_map_pokemon,
                     routes::map_pokemon::post_map_pokemon,
@@ -107,7 +98,6 @@ impl Pkmnapi {
                     routes::pokedex_texts::post_pokedex_text,
                     routes::pokemon_cries::get_pokemon_cry_all,
                     routes::pokemon_cries::get_pokemon_cry_json,
-                    routes::pokemon_cries::get_pokemon_cry_wav,
                     routes::pokemon_cries::post_pokemon_cry,
                     routes::pokemon_evolutions::get_pokemon_evolutions_all,
                     routes::pokemon_evolutions::get_pokemon_evolutions,
@@ -127,25 +117,15 @@ impl Pkmnapi {
                     routes::pokemon_names::get_pokemon_name_all,
                     routes::pokemon_names::get_pokemon_name,
                     routes::pokemon_names::post_pokemon_name,
-                    routes::pokemon_pics::get_pokemon_pic_jpeg,
-                    routes::pokemon_pics::get_pokemon_pic_png,
-                    routes::pokemon_pics::post_pokemon_pic_jpeg,
-                    routes::pokemon_pics::post_pokemon_pic_png,
                     routes::pokemon_stats::get_pokemon_stats_all,
                     routes::pokemon_stats::get_pokemon_stats,
                     routes::pokemon_stats::post_pokemon_stats,
                     routes::rom_patches::delete_rom_patch,
-                    routes::rom_patches::get_rom_patch,
-                    routes::rom_patches::get_rom_patches_raw,
                     routes::rom_patches::get_rom_patches,
                     routes::roms::delete_rom,
-                    routes::roms::get_rom,
-                    routes::roms::post_rom,
                     routes::sav_player_names::get_sav_player_name,
                     routes::sav_player_names::post_sav_player_name,
                     routes::savs::delete_sav,
-                    routes::savs::get_sav,
-                    routes::savs::post_sav,
                     routes::tm_moves::get_tm_move_all,
                     routes::tm_moves::get_tm_move,
                     routes::tm_moves::post_tm_move,
@@ -163,10 +143,6 @@ impl Pkmnapi {
                     routes::trainer_parties::get_trainer_parties_all,
                     routes::trainer_parties::get_trainer_parties,
                     routes::trainer_parties::post_trainer_parties,
-                    routes::trainer_pics::get_trainer_pic_jpeg,
-                    routes::trainer_pics::get_trainer_pic_png,
-                    routes::trainer_pics::post_trainer_pic_jpeg,
-                    routes::trainer_pics::post_trainer_pic_png,
                     routes::trainer_rewards::get_trainer_reward_all,
                     routes::trainer_rewards::get_trainer_reward,
                     routes::trainer_rewards::post_trainer_reward,
@@ -178,6 +154,38 @@ impl Pkmnapi {
                     routes::type_names::post_type_name,
                 ],
             )
+            .mount(
+                "/v1",
+                routes![
+                    routes::icons::get_icon,
+                    routes::imgs::get_game_boy_jpeg,
+                    routes::imgs::get_game_boy_png,
+                    routes::imgs::get_pokemon_logo_jpeg,
+                    routes::imgs::get_pokemon_logo_png,
+                    routes::imgs::get_town_map_jpeg,
+                    routes::imgs::get_town_map_png,
+                    routes::imgs::post_pokemon_logo_jpeg,
+                    routes::imgs::post_pokemon_logo_png,
+                    routes::map_pics::get_map_pic_jpeg,
+                    routes::map_pics::get_map_pic_png,
+                    routes::pokemon_cries::get_pokemon_cry_wav,
+                    routes::pokemon_pics::get_pokemon_pic_jpeg,
+                    routes::pokemon_pics::get_pokemon_pic_png,
+                    routes::pokemon_pics::post_pokemon_pic_jpeg,
+                    routes::pokemon_pics::post_pokemon_pic_png,
+                    routes::rom_patches::get_rom_patch,
+                    routes::rom_patches::get_rom_patches_raw,
+                    routes::roms::get_rom,
+                    routes::roms::post_rom,
+                    routes::savs::get_sav,
+                    routes::savs::post_sav,
+                    routes::trainer_pics::get_trainer_pic_jpeg,
+                    routes::trainer_pics::get_trainer_pic_png,
+                    routes::trainer_pics::post_trainer_pic_jpeg,
+                    routes::trainer_pics::post_trainer_pic_png,
+                ],
+            )
+            .mount("/swagger", make_swagger_ui(&Pkmnapi::get_docs()))
             .register(catchers![
                 routes::errors::not_found,
                 routes::errors::too_many_requests,
@@ -187,5 +195,12 @@ impl Pkmnapi {
                 res.set_raw_header("Server", concat!("pkmnapi/", env!("CARGO_PKG_VERSION")));
             }))
             .attach(cors)
+    }
+
+    pub fn get_docs() -> SwaggerUIConfig {
+        SwaggerUIConfig {
+            urls: vec![UrlObject::new("Swagger", "../v1/openapi.json")],
+            ..Default::default()
+        }
     }
 }

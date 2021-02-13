@@ -1,4 +1,5 @@
 use pkmnapi_db::PokemonMachine;
+use rocket_okapi::JsonSchema;
 use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;
@@ -24,18 +25,18 @@ impl PokemonMachinesRequest {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum PokemonMachinesRequestType {
     pokemon_machines,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct PokemonMachinesRequestAttributes {
     machines: Vec<PokemonMachinesRequestAttributesMachine>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct PokemonMachinesRequestAttributesMachine {
     #[serde(deserialize_with = "crate::utils::from_numeric_str")]
     pub id: u8,
@@ -44,7 +45,7 @@ pub struct PokemonMachinesRequestAttributesMachine {
     pub _type: PokemonMachinesRequestAttributesMachineType,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum PokemonMachinesRequestAttributesMachineType {
     tm_moves,

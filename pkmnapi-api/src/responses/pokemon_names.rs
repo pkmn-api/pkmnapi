@@ -1,4 +1,5 @@
 use pkmnapi_db::PokemonName;
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -58,7 +59,7 @@ impl PokemonNameResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct PokemonNameResponseAttributes {
     pub name: String,
 }

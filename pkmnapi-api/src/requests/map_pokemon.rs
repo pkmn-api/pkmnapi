@@ -1,4 +1,5 @@
 use pkmnapi_db::{MapPokemonArea, MapPokemonInfo};
+use rocket_okapi::JsonSchema;
 use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;
@@ -35,31 +36,31 @@ impl MapPokemonRequest {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum MapPokemonRequestType {
     map_pokemon,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct MapPokemonRequestAttributes {
     pub grass: MapPokemonRequestAttributesArea,
     pub water: MapPokemonRequestAttributesArea,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct MapPokemonRequestAttributesArea {
     pub encounter_rate: u8,
     pub pokemon: Vec<MapPokemonRequestAttributesPokemon>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct MapPokemonRequestAttributesPokemon {
     pub level: u8,
     pub pokemon: MapPokemonRequestAttributesPokemonInfo,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct MapPokemonRequestAttributesPokemonInfo {
     #[serde(deserialize_with = "crate::utils::from_numeric_str")]
     pub id: u8,

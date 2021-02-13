@@ -1,5 +1,6 @@
 use pkmnapi_sql::models::RomPatch;
-use serde::Serialize;
+use rocket_okapi::JsonSchema;
+use serde::{Deserialize, Serialize};
 
 use crate::responses::base::{BaseResponse, BaseResponseAll, BaseResponseData, BaseResponseType};
 use crate::responses::links::Links;
@@ -52,13 +53,13 @@ impl RomPatchResponseData {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum RomPatchResponseType {
     rom_patches,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct RomPatchResponseAttributes {
     #[serde(skip_serializing_if = "Option::is_none")]
     description: Option<String>,

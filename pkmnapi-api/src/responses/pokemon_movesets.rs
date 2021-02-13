@@ -1,4 +1,5 @@
 use pkmnapi_db::MoveName;
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -77,12 +78,12 @@ impl PokemonMovesetResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct PokemonMovesetResponseAttributes {
     pub moveset: Vec<PokemonMovesetResponseAttributesMoveset>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct PokemonMovesetResponseAttributesMoveset {
     #[serde(rename = "move")]
     pub _move: MoveNameResponseData,

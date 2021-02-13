@@ -1,4 +1,5 @@
 use pkmnapi_db::{MoveName, PokemonLearnset};
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -78,12 +79,12 @@ impl PokemonLearnsetResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct PokemonLearnsetResponseAttributes {
     pub learnset: Vec<PokemonLearnsetResponseAttributesLearnset>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct PokemonLearnsetResponseAttributesLearnset {
     pub level: u8,
 

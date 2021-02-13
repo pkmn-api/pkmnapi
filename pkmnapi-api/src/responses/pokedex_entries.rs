@@ -1,4 +1,5 @@
 use pkmnapi_db::PokedexEntry;
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -60,7 +61,7 @@ impl PokedexEntryResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct PokedexEntryResponseAttributes {
     pub species: String,
     pub height: u32,

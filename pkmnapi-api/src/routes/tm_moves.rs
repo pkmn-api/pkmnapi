@@ -3,6 +3,7 @@ use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_okapi::openapi;
 
 use crate::guards::*;
 use crate::requests::tm_moves::*;
@@ -10,6 +11,7 @@ use crate::responses::errors::*;
 use crate::responses::tm_moves::*;
 use crate::utils;
 
+#[openapi]
 #[get("/tms/moves")]
 pub fn get_tm_move_all(
     sql: State<PkmnapiSQL>,
@@ -30,6 +32,7 @@ pub fn get_tm_move_all(
     Ok(Json(response))
 }
 
+#[openapi]
 #[get("/tms/moves/<tm_id>")]
 pub fn get_tm_move(
     sql: State<PkmnapiSQL>,
@@ -48,6 +51,7 @@ pub fn get_tm_move(
     Ok(Json(response))
 }
 
+#[openapi]
 #[post("/tms/moves/<tm_id>", format = "application/json", data = "<data>")]
 pub fn post_tm_move(
     sql: State<PkmnapiSQL>,

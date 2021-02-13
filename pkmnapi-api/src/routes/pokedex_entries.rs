@@ -4,6 +4,7 @@ use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_okapi::openapi;
 
 use crate::guards::*;
 use crate::requests::pokedex_entries::*;
@@ -11,6 +12,7 @@ use crate::responses::errors::*;
 use crate::responses::pokedex_entries::*;
 use crate::utils;
 
+#[openapi]
 #[get("/pokedex/entries")]
 pub fn get_pokedex_entry_all(
     sql: State<PkmnapiSQL>,
@@ -31,6 +33,7 @@ pub fn get_pokedex_entry_all(
     Ok(Json(response))
 }
 
+#[openapi]
 #[get("/pokedex/entries/<pokedex_id>")]
 pub fn get_pokedex_entry(
     sql: State<PkmnapiSQL>,
@@ -48,6 +51,7 @@ pub fn get_pokedex_entry(
     Ok(Json(response))
 }
 
+#[openapi]
 #[post(
     "/pokedex/entries/<pokedex_id>",
     format = "application/json",

@@ -27,6 +27,19 @@
             text-align:center;
         }
     }
+
+    .swagger-link {
+        a {
+            margin-right:10px;
+            line-height:30px;
+            display:inline-block;
+            float:left;
+        }
+
+        img {
+            display:inline-block;
+        }
+    }
 }
 
 .snippet {

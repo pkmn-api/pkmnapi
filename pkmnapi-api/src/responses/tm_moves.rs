@@ -1,4 +1,5 @@
 use pkmnapi_db::{MoveName, TMMove};
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -63,7 +64,7 @@ impl TMMoveResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct TMMoveResponseAttributes {
     #[serde(rename = "move")]
     pub _move: MoveNameResponseData,

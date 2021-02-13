@@ -1,12 +1,14 @@
 use pkmnapi_sql::*;
 use rocket::State;
 use rocket_contrib::json::Json;
+use rocket_okapi::openapi;
 
 use crate::guards::*;
 use crate::responses::errors::*;
 use crate::responses::tm_names::*;
 use crate::utils;
 
+#[openapi]
 #[get("/tms/names")]
 pub fn get_tm_name_all(
     sql: State<PkmnapiSQL>,
@@ -25,6 +27,7 @@ pub fn get_tm_name_all(
     Ok(Json(response))
 }
 
+#[openapi]
 #[get("/tms/names/<tm_id>")]
 pub fn get_tm_name(
     sql: State<PkmnapiSQL>,

@@ -1,6 +1,7 @@
 use pkmnapi_db::{
     PokemonEvolution, PokemonEvolutionItem, PokemonEvolutionLevel, PokemonEvolutionTrade,
 };
+use rocket_okapi::JsonSchema;
 use serde::Deserialize;
 
 use crate::requests::base::BaseRequest;
@@ -27,18 +28,18 @@ impl PokemonEvolutionsRequest {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum PokemonEvolutionsRequestType {
     pokemon_evolutions,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct PokemonEvolutionsRequestAttributes {
     pub evolutions: Vec<evolution>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 #[serde(untagged)]
 pub enum evolution {
@@ -47,51 +48,51 @@ pub enum evolution {
     TRADE(PokemonEvolutionsRequestAttributesEvolutionTrade),
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct PokemonEvolutionsRequestAttributesEvolutionLevel {
     pub evolution_type: PokemonEvolutionsRequestAttributesEvolutionLevelType,
     pub level: u8,
     pub pokemon: PokemonEvolutionsRequestAttributesEvolutionPokemon,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum PokemonEvolutionsRequestAttributesEvolutionLevelType {
     level,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct PokemonEvolutionsRequestAttributesEvolutionItem {
     pub evolution_type: PokemonEvolutionsRequestAttributesEvolutionItemType,
     pub item: PokemonEvolutionsRequestAttributesEvolutionItemAttributes,
     pub pokemon: PokemonEvolutionsRequestAttributesEvolutionPokemon,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum PokemonEvolutionsRequestAttributesEvolutionItemType {
     item,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct PokemonEvolutionsRequestAttributesEvolutionTrade {
     pub evolution_type: PokemonEvolutionsRequestAttributesEvolutionTradeType,
     pub pokemon: PokemonEvolutionsRequestAttributesEvolutionPokemon,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 #[allow(non_camel_case_types)]
 pub enum PokemonEvolutionsRequestAttributesEvolutionTradeType {
     trade,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct PokemonEvolutionsRequestAttributesEvolutionItemAttributes {
     #[serde(deserialize_with = "crate::utils::from_numeric_str")]
     pub id: u8,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct PokemonEvolutionsRequestAttributesEvolutionPokemon {
     #[serde(deserialize_with = "crate::utils::from_numeric_str")]
     pub id: u8,

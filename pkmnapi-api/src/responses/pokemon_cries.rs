@@ -1,4 +1,5 @@
 use pkmnapi_db::cry::Cry;
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -54,7 +55,7 @@ impl PokemonCryResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct PokemonCryResponseAttributes {
     pub base: u8,
     pub pitch: u8,

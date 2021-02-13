@@ -1,4 +1,5 @@
 use pkmnapi_db::PlayerNames;
+use rocket_okapi::JsonSchema;
 use serde::Serialize;
 
 use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};
@@ -36,7 +37,7 @@ impl PlayerNamesResponse {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, JsonSchema)]
 pub struct PlayerNamesResponseAttributes {
     player: Vec<String>,
     rival: Vec<String>,

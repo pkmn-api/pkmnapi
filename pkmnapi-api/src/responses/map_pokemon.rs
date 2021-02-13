@@ -1,4 +1,5 @@
 use pkmnapi_db::{MapPokemon, PokemonName};
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -98,19 +99,19 @@ impl MapPokemonResponseData {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct MapPokemonResponseAttributes {
     pub grass: MapPokemonResponseAttributesArea,
     pub water: MapPokemonResponseAttributesArea,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct MapPokemonResponseAttributesArea {
     pub encounter_rate: u8,
     pub pokemon: Vec<MapPokemonResponseAttributesPokemon>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct MapPokemonResponseAttributesPokemon {
     pub level: u8,
     pub pokemon: PokemonNameResponseData,

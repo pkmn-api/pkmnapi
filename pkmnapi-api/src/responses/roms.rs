@@ -1,5 +1,6 @@
 use pkmnapi_sql::models::Rom;
-use serde::Serialize;
+use rocket_okapi::JsonSchema;
+use serde::{Deserialize, Serialize};
 use std::env;
 
 use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};
@@ -37,7 +38,7 @@ impl RomResponse {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct RomResponseAttributes {
     pub name: String,
     pub hash: String,

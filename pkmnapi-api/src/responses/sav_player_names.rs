@@ -1,5 +1,6 @@
 use pkmnapi_db::sav::SavePlayerName;
-use serde::Serialize;
+use rocket_okapi::JsonSchema;
+use serde::{Deserialize, Serialize};
 
 use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};
 use crate::responses::links::Links;
@@ -28,7 +29,7 @@ impl SavPlayerNameResponse {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct SavPlayerNameResponseAttributes {
     name: String,
 }

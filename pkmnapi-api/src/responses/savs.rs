@@ -1,5 +1,6 @@
 use pkmnapi_sql::models::Sav;
-use serde::Serialize;
+use rocket_okapi::JsonSchema;
+use serde::{Deserialize, Serialize};
 
 use crate::responses::base::{BaseResponse, BaseResponseData, BaseResponseType};
 use crate::responses::links::Links;
@@ -26,5 +27,5 @@ impl SavResponse {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub struct SavResponseAttributes {}

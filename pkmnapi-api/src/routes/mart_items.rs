@@ -3,6 +3,7 @@ use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_okapi::openapi;
 
 use crate::guards::*;
 use crate::requests::mart_items::*;
@@ -10,6 +11,7 @@ use crate::responses::errors::*;
 use crate::responses::mart_items::*;
 use crate::utils;
 
+#[openapi]
 #[get("/marts/items")]
 pub fn get_mart_items_all(
     sql: State<PkmnapiSQL>,
@@ -50,6 +52,7 @@ pub fn get_mart_items_all(
     Ok(Json(response))
 }
 
+#[openapi]
 #[get("/marts/items/<mart_id>")]
 pub fn get_mart_items(
     sql: State<PkmnapiSQL>,
@@ -83,6 +86,7 @@ pub fn get_mart_items(
     Ok(Json(response))
 }
 
+#[openapi]
 #[post("/marts/items/<mart_id>", format = "application/json", data = "<data>")]
 pub fn post_mart_items(
     sql: State<PkmnapiSQL>,

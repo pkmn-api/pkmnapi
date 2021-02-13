@@ -3,6 +3,7 @@ use pkmnapi_sql::*;
 use rocket::response::status;
 use rocket::State;
 use rocket_contrib::json::{Json, JsonError, JsonValue};
+use rocket_okapi::openapi;
 
 use crate::guards::*;
 use crate::requests::trades::*;
@@ -10,6 +11,7 @@ use crate::responses::errors::*;
 use crate::responses::trades::*;
 use crate::utils;
 
+#[openapi]
 #[get("/trades")]
 pub fn get_trade_all(
     sql: State<PkmnapiSQL>,
@@ -36,6 +38,7 @@ pub fn get_trade_all(
     Ok(Json(response))
 }
 
+#[openapi]
 #[get("/trades/<trade_id>")]
 pub fn get_trade(
     sql: State<PkmnapiSQL>,
@@ -55,6 +58,7 @@ pub fn get_trade(
     Ok(Json(response))
 }
 
+#[openapi]
 #[post("/trades/<trade_id>", format = "application/json", data = "<data>")]
 pub fn post_trade(
     sql: State<PkmnapiSQL>,
